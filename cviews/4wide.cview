@@ -1,0 +1,363 @@
+{
+    height = 1600;
+    name = "Chinook Graphs";
+    width = 10240;
+    worlds = (
+	{
+	    col = 4;
+	    colp = 60;
+	    name = NWICE;
+	    row = 0;
+	    rowp = 50;
+	    world = {
+		eye = {
+		    hangle = "-4.836668";
+		    vangle = "-2.475";
+		    x = 460.3849;
+		    y = 1769.449;
+		    z = 1580.476;
+		};
+		overlay = {
+		    string = "NWIce Cluster";
+		};
+		overlayclass = GLOverlay;
+		scene = {
+		    objects = (
+			{
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/nwice/";
+				    key = cpu_user;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			},
+			{
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/nwice/";
+				    key = load_five;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    x = 343;
+			    y = 0;
+			    z = 0;
+			},
+			{
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/nwice/";
+				    key = pkts_in;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    x = 0;
+			    y = 0;
+			    z = 250;
+			},
+			{
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/nwice/";
+				    key = pkts_out;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    x = 343;
+			    y = 0;
+			    z = 250;
+			}
+		    );
+		};
+	    };
+	},
+	{
+	    col = 1;
+	    colp = 100;
+	    name = NWFS;
+	    row = 0;
+	    rowp = 50;
+	    world = {
+		eye = {
+		    hangle = "-5.136666";
+		    vangle = "-2.491668";
+		    x = 496.9597;
+		    y = 1123.201;
+		    z = 967.4175;
+		};
+		overlay = {
+		    string = "NWFS Archive";
+		};
+		overlayclass = GLOverlay;
+		scene = {
+		    objects = (
+			{
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/nwfs/";
+				    key = cpu_user;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			},
+			{
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/nwfs/";
+				    key = bytes_in;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    x = 0;
+			    y = 0;
+			    z = 250;
+			},
+			{
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/nwfs/";
+				    key = bytes_out;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    x = 200;
+			    y = 0;
+			    z = 0;
+			},
+			{
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/nwfs/";
+				    key = load_five;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    x = 200;
+			    y = 0;
+			    z = 250;
+			}
+		    );
+		};
+	    };
+	},
+	{
+	    col = 0;
+	    colp = 200;
+	    name = Chinook;
+	    row = 0;
+	    rowp = 50;
+	    world = {
+		        imageCycleTime = 60;
+        imageDailyDir = YES;
+        imageDir = /home/efelix/images;
+        imagePrefix = chinook;
+
+		eye = {
+		    hangle = "-4.72";
+		    vangle = "-2.441667";
+		    x = 1173.848;
+		    y = 1874.553;
+		    z = 2032.575;
+		};
+		overlay = {
+		    string = "Chinook Super Computer";
+		};
+		overlayclass = GLOverlay;
+		scene = {
+		    objects = (
+			{
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = cpu_user;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    x = 0;
+			    y = 0;
+			    z = 750;
+			},
+			{
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = mem_used;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    x = 0;
+			    y = 0;
+			    z = 500;
+			},
+			{
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = load_fifteen;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    x = 0;
+			    y = 0;
+			    z = 250;
+			},
+			{
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = front_panel_temp;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			}
+		    );
+		};
+	    };
+	},
+	{
+	    col = 3;
+	    colp = 40;
+	    name = "EMSL File System";
+	    row = 0;
+	    rowp = 50;
+	    world = {
+		eye = {
+		    hangle = "-5.128332";
+		    vangle = "-2.416666";
+		    x = 475.8503;
+		    y = 1324.622;
+		    z = 1363.065;
+		};
+		overlay = {
+		    string = EMSLFS;
+		};
+		overlayclass = GLOverlay;
+		scene = {
+		    objects = (
+			{
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/emslfs/";
+				    key = bytes_out;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 0.5;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			},
+			{
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/emslfs/";
+				    key = bytes_in;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 0.5;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    x = 0;
+			    y = 0;
+			    z = 250;
+			},
+			{
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/emslfs/";
+				    key = cpu_user;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 0.5;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    x = 0;
+			    y = 0;
+			    z = 500;
+			}
+		    );
+		};
+	    };
+	}
+    );
+}

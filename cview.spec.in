@@ -1,0 +1,92 @@
+
+Name: @PACKAGE_NAME@
+Version: @VERSION@
+Release: 7%{?dist}
+Summary: PNL Waterfall Visualization Tool
+Group: System Environment/Base
+License: Private
+Source: %{name}-%{version}.tar.gz
+Requires: gnustep-base, AntTweakBar, ImageMagick, mesa-libGL, mesa-libGLU, freeglut
+BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel, freeglut-devel
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
+
+%description
+PNL Waterfall Visualization Tool
+
+%package -n libcview
+Summary: PNL common cview library
+Group: System Environment/Libraries
+License: Private
+
+%description -n libcview
+PNL common library for cview packages
+
+%package -n libcview-devel
+Summary: PNL common cview library development files
+Group: System Environment/Libraries
+License: Private
+
+%description -n libcview-devel
+PNL development library and files for cview packages
+
+%package -n libcview-data
+Summary: PNL common cview data management library
+Group: System Environment/Libraries
+License: Private
+
+%description -n libcview-data
+PNL common data management library for cview packages
+
+%package -n libcview-data-devel
+Summary: PNL common cview data management library development files
+Group: System Environment/Libraries
+License: Private
+
+%description -n libcview-data-devel
+PNL development data management library for cview packages
+
+%prep
+%setup  -q 
+
+%build
+%configure 
+%{__make} %{_smp_mflags}
+
+%install
+DESTDIR="$RPM_BUILD_ROOT" make install
+# install tests to sharedir
+mkdir -p "$RPM_BUILD_ROOT/%{_datadir}/%{name}/tests"
+cp tests/* "$RPM_BUILD_ROOT/%{_datadir}/%{name}/tests"
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-,root,root)
+%doc README
+%{_bindir}/cviewall
+%{_bindir}/cview
+%{_bindir}/oscview
+%{_datadir}/%{name}/tests
+
+%files -n libcview
+%defattr(-,root,root)
+%{_libdir}/libcview.so.0*
+%{_datadir}/%{name}/*.txf
+
+%files -n libcview-devel
+%defattr(-,root,root)
+%{_libdir}/libcview.a
+%{_libdir}/libcview.so
+%{_libdir}/libcview.la
+
+%files -n libcview-data
+%defattr(-,root,root)
+%{_libdir}/libcview-data.so.0*
+
+%files -n libcview-data-devel
+%defattr(-,root,root)
+%{_libdir}/libcview-data.so
+%{_libdir}/libcview-data.la
+%{_libdir}/libcview-data.a
+%{_includedir}/%{name}/*

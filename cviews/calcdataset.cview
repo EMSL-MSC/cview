@@ -1,0 +1,90 @@
+{
+    height = 600;
+    name = "GLScreen Test";
+    width = 800;
+    worlds = (
+	{
+	    col = 0;
+	    colp = 50;
+	    name = TL;
+	    row = 0;
+	    rowp = 50;
+	    world = {
+		eye = {
+		    hangle = "-4.725001";
+		    move_speed = 10;
+		    rotate_speed = 0.025;
+		    strafe_speed = 10;
+		    vangle = "-2.461667";
+		    x = 220.4894;
+		    y = 789.6295;
+		    z = 798.1223;
+		};
+		imageCycleTime = 0;
+		imageDailyDir = NO;
+		imageDir = .;
+		imagePrefix = glworld;
+		scene = {
+		    objects = (
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (
+					SinDataSet
+				    );
+				    formula = "$0:2:/:50:+";
+				    planes = (
+					{
+					    dx = 0;
+					    height = 128;
+					    width = 500;
+					}
+				    );
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 16;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGridSurface;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    dx = 0;
+				    height = 128;
+				    width = 500;
+				};
+				dataSetClass = SinDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 16;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGridSurface;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 200;
+			}
+		    );
+		};
+	    };
+	}
+    );
+}

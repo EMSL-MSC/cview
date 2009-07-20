@@ -1,0 +1,78 @@
+{
+    height = <*I822>;
+    name = "EMSLFS NWperf";
+    width = <*I1072>;
+    worlds = (
+        {
+            col = <*I0>;
+            colp = <*I50>;
+            name = MAIN;
+            row = <*I0>;
+            rowp = <*I50>;
+            world = {
+                eye = {
+                    hangle = <*R-5.728333>;
+                    vangle = <*R-2.416666>;
+                    x = <*R726.8073>;
+                    y = <*R864.419>;
+                    z = <*R326.9666>;
+                };
+                scene = {
+                    objects = (
+                        {
+                            object = {
+                                dataSet = {
+                                    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/emslfs/";
+                                    key = cpu_user;
+                                };
+                                dataSetClass = WebDataSet;
+                                isVisible = <*BY>;
+                                xTicks = <*I50>;
+                                yTicks = <*I32>;
+								fontScale=<*R0.3>;
+                            };
+                            objectclass = GLGrid;
+                            x = <*R0>;
+                            y = <*R0>;
+                            z = <*R0>;
+                        },
+                        {
+                            object = {
+                                dataSet = {
+                                    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/emslfs/";
+                                    key = bytes_in;
+                                };
+                                dataSetClass = WebDataSet;
+                                isVisible = <*BY>;
+                                xTicks = <*I50>;
+                                yTicks = <*I32>;
+								fontScale=<*R0.3>;
+                            };
+                            objectclass = GLGrid;
+                            x = <*R100>;
+                            y = <*R0>;
+                            z = <*R0>;
+                        },
+                        {
+                            object = {
+                                dataSet = {
+                                    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/emslfs/";
+                                    key = bytes_out;
+                                };
+                                dataSetClass = WebDataSet;
+                                isVisible = <*BY>;
+                                xTicks = <*I50>;
+                                yTicks = <*I32>;
+								fontScale=<*R0.3>;
+                            };
+                            objectclass = GLGrid;
+                            x = <*R200>;
+                            y = <*R0>;
+                            z = <*R0>;
+                        }
+                    );
+                };
+            };
+        }
+    );
+}

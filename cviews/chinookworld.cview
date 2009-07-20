@@ -1,0 +1,135 @@
+{
+		eye = {
+		    hangle = "-4.72";
+		    vangle = "-2.441667";
+		    x = 1195.549;
+		    y = 2239.716;
+		    z = 2255.726;
+		};
+		overlay = {
+		    objects = (
+			{
+			    align = YES;
+			    halign = 1;
+			    object = {
+				filename = data/chinook.png;
+				h = 128;
+				isVisible = YES;
+				w = 256;
+			    };
+			    objectclass = GLImage;
+			    valign = -1;
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			},
+			{
+			    align = YES;
+			    halign = "-1";
+			    object = {
+				colorB = 1;
+				colorG = 1;
+				colorR = 1;
+				fontfile = terminus.txf;
+				isVisible = YES;
+				rotX = 0;
+				rotY = 0;
+				rotZ = 0;
+				scaleX = 1;
+				scaleY = "-1";
+				scaleZ = 1;
+				string = Chinook;
+			    };
+			    objectclass = GLText;
+			    valign = 1;
+			    x = 0;
+			    y = 100;
+			    z = 0;
+			}
+		    );
+		};
+		scene = {
+		    objects = (
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = cpu_user;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 750;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = mem_used;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 50;
+			    z = 500;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = mlx4_0:1:port_rcv_data;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 100;
+			    z = 250;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = mlx4_0:1:port_xmit_data;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 150;
+			    z = 0;
+			},
+		    );
+		};
+}

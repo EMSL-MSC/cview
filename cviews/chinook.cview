@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//GNUstep//DTD plist 0.9//EN" "http://www.gnustep.org/plist-0_9.xml">
+<plist version="0.9">
+<dict>
+    <key>height</key>
+    <integer>1132</integer>
+    <key>name</key>
+    <string>Chinook NWperf</string>
+    <key>width</key>
+    <integer>1592</integer>
+    <key>worlds</key>
+    <array>
+	<dict>
+	    <key>col</key>
+	    <integer>0</integer>
+	    <key>colp</key>
+	    <integer>50</integer>
+	    <key>name</key>
+	    <string>MAIN</string>
+	    <key>row</key>
+	    <integer>0</integer>
+	    <key>rowp</key>
+	    <integer>50</integer>
+	    <key>world</key>
+	    <dict>
+		<key>eye</key>
+		<dict>
+		    <key>hangle</key>
+		    <real>-4.72</real>
+		    <key>vangle</key>
+		    <real>-2.45</real>
+		    <key>x</key>
+		    <real>623.8766</real>
+		    <key>y</key>
+		    <real>2173.948</real>
+		    <key>z</key>
+		    <real>1600.384</real>
+		</dict>
+		<key>scene</key>
+		<dict>
+		    <key>objects</key>
+		    <array>
+			<dict>
+			    <key>object</key>
+			    <dict>
+				<key>dataSet</key>
+				<dict>
+				    <key>baseURL</key>
+				    <string>http://chumbucket.emsl.pnl.gov/cluster/chinook/</string>				    <key>key</key>
+				    <string>cpu_user</string>
+				</dict>
+				<key>dataSetClass</key>
+				<string>WebDataSet</string>				<key>fontScale</key>
+				<real>1.2</real>
+				<key>isVisible</key>
+				<true/>
+				<key>xTicks</key>
+				<integer>50</integer>
+				<key>yTicks</key>
+				<integer>32</integer>
+			    </dict>
+			    <key>objectclass</key>
+			    <string>GLGrid</string>			    <key>x</key>
+			    <real>0</real>
+			    <key>y</key>
+			    <real>0</real>
+			    <key>z</key>
+			    <real>0</real>
+			</dict>
+			<dict>
+			    <key>object</key>
+			    <dict>
+				<key>dataSet</key>
+				<dict>
+				    <key>baseURL</key>
+				    <string>http://chumbucket.emsl.pnl.gov/cluster/chinook/</string>				    <key>key</key>
+				    <string>md0_write</string>
+				</dict>
+				<key>dataSetClass</key>
+				<string>WebDataSet</string>				<key>fontScale</key>
+				<real>1.2</real>
+				<key>isVisible</key>
+				<true/>
+				<key>xTicks</key>
+				<integer>50</integer>
+				<key>yTicks</key>
+				<integer>32</integer>
+			    </dict>
+			    <key>objectclass</key>
+			    <string>GLGrid</string>			    <key>x</key>
+			    <real>0</real>
+			    <key>y</key>
+			    <real>0</real>
+			    <key>z</key>
+			    <real>-300</real>
+			</dict>
+			<dict>
+			    <key>object</key>
+			    <dict>
+				<key>dataSet</key>
+				<dict>
+				    <key>baseURL</key>
+				    <string>http://chumbucket.emsl.pnl.gov/cluster/chinook/</string>				    <key>key</key>
+				    <string>md0_read</string>
+				</dict>
+				<key>dataSetClass</key>
+				<string>WebDataSet</string>				<key>fontScale</key>
+				<real>1.2</real>
+				<key>isVisible</key>
+				<true/>
+				<key>xTicks</key>
+				<integer>50</integer>
+				<key>yTicks</key>
+				<integer>32</integer>
+			    </dict>
+			    <key>objectclass</key>
+			    <string>GLGrid</string>			    <key>x</key>
+			    <real>0</real>
+			    <key>y</key>
+			    <real>0</real>
+			    <key>z</key>
+			    <real>-600</real>
+			</dict>
+			<dict>
+			    <key>object</key>
+			    <dict>
+				<key>dataSet</key>
+				<dict>
+				    <key>baseURL</key>
+				    <string>http://chumbucket.emsl.pnl.gov/cluster/chinook/</string>				    <key>key</key>
+				    <string>power_ambient</string>
+				</dict>
+				<key>dataSetClass</key>
+				<string>WebDataSet</string>				<key>fontScale</key>
+				<real>1.2</real>
+				<key>isVisible</key>
+				<true/>
+				<key>xTicks</key>
+				<integer>50</integer>
+				<key>yTicks</key>
+				<integer>32</integer>
+			    </dict>
+			    <key>objectclass</key>
+			    <string>GLGrid</string>			    <key>x</key>
+			    <real>0</real>
+			    <key>y</key>
+			    <real>0</real>
+			    <key>z</key>
+			    <real>-900</real>
+			</dict>
+		    </array>
+		</dict>
+	    </dict>
+	</dict>
+    </array>
+</dict>
+</plist>

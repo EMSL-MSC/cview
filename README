@@ -1,0 +1,35 @@
+LICENSE
+
+
+	This distribution falls under the Battelle Memorial Institute Open Source license.  See the file COPYING for the full license text.
+
+	The distribution contains Fonts from http://linuxlibertine.sourceforge.net/Libertine-EN.html, see the license files in the data directory for full text of the licences it is under.
+
+
+
+REQUIREMENTS
+
+	autoconf/automake
+
+	Linux -
+		gnustep-base
+		ImageMagick > 9.0
+		ftgl
+		freetype2
+
+	Mac OS X - 
+		Ports
+			ImageMagick
+			pkgconfig
+			ftgl
+			freetype2
+		
+	Optionally you can add the AntTweakBar for ease in editing your cview files from:
+		http://www.antisphere.com/Wiki/tools:anttweakbar
+
+
+FAQ:
+
+	Q. When building the code on Mac OS X, configure cannot find some packages that are installed.
+	A. Copy the pkg.m4 file for pkgconfig into the proper directory: cp /opt/local/share/aclocal/pkg.m4 /opt/local/share/aclocal-1.10/
+

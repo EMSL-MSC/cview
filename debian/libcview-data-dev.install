@@ -1,0 +1,14 @@
+usr/include/cview/cview-data.h
+usr/include/cview/calcdataset.h
+usr/include/cview/CalculatedDataSet.h
+usr/include/cview/DataSet.h
+usr/include/cview/DictionaryExtra.h
+usr/include/cview/ListComp.h
+usr/include/cview/PList.h
+usr/include/cview/SinDataSet.h
+usr/include/cview/UpdateThread.h
+usr/include/cview/WebDataSet.h
+usr/lib/libcview-data.so
+usr/lib/libcview-data.a
+usr/lib/libcview-data.la
+

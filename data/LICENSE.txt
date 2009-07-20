@@ -1,0 +1,5 @@
+File in this directory are covererd by other licenses.  Please see the appropriate license file for them
+
+LinLibertine_Re.ttf is covered by the OFL and GPL license. Available from http://linuxlibertine.sourceforge.net/Libertine-EN.html
+
+

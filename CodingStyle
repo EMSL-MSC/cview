@@ -1,0 +1,9 @@
+Please code to the following standards for CVIEW code
+
+
+
+Doxygen use:
+Use the @<command> form of doxygen tags, not the \<command> form
+Each Class should include a set of author lines listing major contributors to the code
+Each Class should include a group definition block.  Current groups are cview3d, cviewdata, and cviewapp.
+

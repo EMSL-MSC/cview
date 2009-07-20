@@ -1,0 +1,57 @@
+Source: cview
+Section: admin
+Priority: optional
+Maintainer: David Brown <dmlb2000@gmail.com>
+Build-Depends: cdbs (>= 0.4.15), debhelper (>= 4.1.16), autoconf (>= 2.59), libtool (>= 1.5.2), automake, autotools-dev, freeglut-dev, libmagick9-dev, libgraphicsmagick1-dev, gobjc, libgnustep-base-dev
+Standards-Version: 0.1
+
+Package: cview
+Architecture: any
+Depends: ${shlibs:Depends}, libcview0
+Description: cview executable
+ cview is the cluster viewing tool used at PNL to view large data sets of
+ clustered systems.
+
+Package: cviewall
+Architecture: any
+Depends: ${shlibs:Depends}, libcview0
+Description: cview executable
+ cview is the cluster viewing tool used at PNL to view large data sets of
+ clustered systems.
+
+Package: libcview0
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: cview libraries
+ cview is the cluster viewing tool used at PNL to view large data sets of
+ clustered systems.
+ .
+ This package contains the libcview library.
+
+Package: libcview-dev
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: cview libraries
+ cview is the cluster viewing tool used at PNL to view large data sets of
+ clustered systems.
+ .
+ This package contains the libcview development files.
+
+Package: libcview-data0
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: cview data management libraries
+ cview is the cluster viewing tool used at PNL to view large data sets of
+ clustered systems.
+ .
+ This package contains the libcview-data library.
+
+Package: libcview-data-dev
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: cview data management libraries
+ cview is the cluster viewing tool used at PNL to view large data sets of
+ clustered systems.
+ .
+ This package contains header files for developing with the libcview-data package
+

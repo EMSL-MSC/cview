@@ -1,0 +1,29 @@
+
+/**
+@mainpage CVIEW a 3d Graphics engine
+@image html sample.png CVIEW sample on a 80+ nodes Lustre Filesystem Cluster
+
+@section intro Introduction
+
+CVIEW is a graphics engine for displaying information in a 3 dimensional interactive environment.  One of its main uses is to display large waterfall graphs that contain metrics gathered from 2323 computers that are part of a large cluster.
+
+Cview consists of two libraries and applications in the directories:
+- libcview - 3d Graphics engine
+- libcview-data - Data Management libraries
+- src - CVIEW application
+- tests - Test programs
+
+@section license License
+This distribution falls under the Battelle Memorial Institute Open Source license.  See the file COPYING for the full license text.
+
+The distribution contains Fonts from http://linuxlibertine.sourceforge.net/Libertine-EN.html, see the license files in the data directory for full text of the licences it is under.
+@section features Features
+- Overlay capability for displaying text, images or other information in front of the world.
+- Create sub screens within the main window
+
+
+@defgroup cview3d CVIEW 3d graphics library
+@defgroup cviewdata CVIEW data management library
+@defgroup cviewapp CVIEW applications
+*/
+
