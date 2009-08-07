@@ -105,6 +105,6 @@ X Y Bandwidth Latency Iter
 -initWithURL: (NSURL *)url columnName: (NSString *)col;
 /**internal function*/
 -initWithData;
--(float *)expandDataSetForX: (int)x andY: (int)y;
--(float *)contractDataSetForX: (int)x andY: (int)y;
+-(float *)expandDataSetWidth: (int)w andHeight: (int)h;
+-(float *)contractDataSetWidth: (int)w andHeight: (int)h;
 @end

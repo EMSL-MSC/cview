@@ -249,6 +249,7 @@ int findStringInArray(NSArray *arr,NSString *str) {
 
 	return self;
 }
+-(float *)expandDataSetWidth: (int)w andHeight: (int)h;
 
 -(float *)expandDataSetForX: (int)x andY: (int)y {
 	int nw,nh;
@@ -256,10 +257,10 @@ int findStringInArray(NSArray *arr,NSString *str) {
 	float *d;
 	
 	nw=width;
-	while (x>nw)
+	while (w>nw)
 		nw*=2;
 	nh=height;
-	while (y>nh)
+	while (h>nh)
 		nh*=2;
 //	NSLog(@"expand: %d %d %d %d %d %d",x,width,nw,y,height,nh);
 	
@@ -279,13 +280,13 @@ int findStringInArray(NSArray *arr,NSString *str) {
 	return d;
 }
 
--(float *)contractDataSetForX: (int)x andY: (int)y {
+-(float *)contractDataSetWidth: (int)w andHeight: (int)h;
 	int nw,nh;
 	int r;
 	float *d;
 
-	nw=x;
-	nh=y;
+	nw=w;
+	nh=h;
 
 	if (nw!=width || nh != height) {
 		//NSLog(@"contract: %d %d %d  %d %d %d",x,width,nw,y,height,nh);
