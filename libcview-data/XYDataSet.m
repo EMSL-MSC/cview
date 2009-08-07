@@ -193,21 +193,17 @@ int findStringInArray(NSArray *arr,NSString *str) {
 */
 #define FMTBUFLEN 1024
 -initWithData {
-	int x,y,i,num;
+	int x,y,i;
 	int MaxX=1,MaxY=1;
 	float val;
-	NSString *str;
 	char *ptr,*end,*sptr;
-	char *tmp;
-	char format[FMTBUFLEN]="";
-	long fmtleft=FMTBUFLEN-1;
 
 	//check for any defaults set in alloc
 	if (xIndex==-1) xIndex=0;
 	if (yIndex==-1) yIndex=1;
 	if (colIndex==-1) colIndex=2;
 
-	[self initWithName: [dataURL absoluteString] Width: 64 Height: 64];
+	[self initWithName: [dataURL absoluteString] Width: 2 Height: 2];
 
 	float *d = (float *)[data mutableBytes];
 	char *s = (char *)[rawData bytes];
@@ -231,8 +227,8 @@ int findStringInArray(NSArray *arr,NSString *str) {
 				ptr++; //eat bad input
 			}
 		}
-		if (x>width || y>height) {
-			d=[self expandDataSetForX: x andY: y];
+		if (x>=width || y>=height) {
+			d=[self expandDataSetWidth: x+1 andHeight: y+1];
 		}
 		MaxX=MAX(MaxX,x);
 		MaxY=MAX(MaxY,y);
@@ -240,21 +236,23 @@ int findStringInArray(NSArray *arr,NSString *str) {
 		//if (y==0)
 		//NSLog(@"scan: %p %p %d %d %f",ptr,end,x,y,val);
 	}
-	d=[self contractDataSetForX: MaxX+1 andY: MaxY+1];//base zero
+		NSLog(@"Max: %d %d",MaxX,MaxY);
+	d=[self contractDataSetWidth: MaxX+1 andHeight: MaxY+1];//base zero
 
 	//NSLog(@"Scan Done");
-	d[50+600*width]=5.0;
 	currentScale = 128.0/10;
 	[self lockMax: 10];
 
 	return self;
 }
--(float *)expandDataSetWidth: (int)w andHeight: (int)h;
 
--(float *)expandDataSetForX: (int)x andY: (int)y {
+-(float *)expandDataSetWidth: (int)w andHeight: (int)h {
 	int nw,nh;
 	int r;
 	float *d;
+	int sw,sh;
+	sw=width;
+	sh=height;
 	
 	nw=width;
 	while (w>nw)
@@ -262,7 +260,7 @@ int findStringInArray(NSArray *arr,NSString *str) {
 	nh=height;
 	while (h>nh)
 		nh*=2;
-//	NSLog(@"expand: %d %d %d %d %d %d",x,width,nw,y,height,nh);
+	//NSLog(@"expand: %d %d %d    %d %d %d",w,width,nw,h,height,nh);
 	
 	if (nw!=width || nh!=height) {
 		[data setLength: sizeof(float)*nw*nh];
@@ -270,7 +268,7 @@ int findStringInArray(NSArray *arr,NSString *str) {
 		
 		if (nw!=width) {
 			for (r=height-1;r>0;r--) {
-				memcpy(d+r*nw,d+r*width,sizeof(float)*width);
+				memcpy(d+r*nw,d+r*width,sizeof(float)*(width));
 				memset(d+r*width,0,sizeof(float)*(nw-width));
 			}
 		}
@@ -280,7 +278,7 @@ int findStringInArray(NSArray *arr,NSString *str) {
 	return d;
 }
 
--(float *)contractDataSetWidth: (int)w andHeight: (int)h;
+-(float *)contractDataSetWidth: (int)w andHeight: (int)h {
 	int nw,nh;
 	int r;
 	float *d;
@@ -288,22 +286,26 @@ int findStringInArray(NSArray *arr,NSString *str) {
 	nw=w;
 	nh=h;
 
-	if (nw!=width || nh != height) {
-		//NSLog(@"contract: %d %d %d  %d %d %d",x,width,nw,y,height,nh);
-#if 0
+	if (nw != width || nh != height) {
+		NSLog(@"contract: %d %d %d  %d %d %d",w,width,nw,h,height,nh);
+#if 1
 		//This seems backwards compared to the expand, but this works..
-		if ( nh!=height) {
+		if (nh != height) {
 			d = [data mutableBytes];
 
-			for (r=1;r<width;r++) 
+			for (r=1;r<width;r++) {
+				//NSLog(@"%d %d",r*nh,r*height);
 				memcpy(d+r*nh,d+r*height,sizeof(float)*nh);
+			}
 		}
 #else
-		if ( nw!=width) {
+		if (nw != width) {
 			d = [data mutableBytes];
 
-			for (r=1;r<height;r++) 
+			for (r=1;r<height;r++) {
+				//NSLog(@"%d %d",r*nw,r*width);
 				memcpy(d+r*nw,d+r*width,sizeof(float)*nw);
+			}
 		}
 #endif
 		[data setLength: sizeof(float)*nw*nh];

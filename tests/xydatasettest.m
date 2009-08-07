@@ -69,13 +69,13 @@ int main(int argc,char *argv[], char *env[]) {
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
 
-	XYDataSet *f = [[XYDataSet alloc] initWithURL: [NSURL URLWithString: @"file:///home/efelix/tmp/1024-xo-after-4.out"] columnName: @"Latency" columnXName: @"X" columnYName: @"Y"];
-	XYDataSet *h = [[XYDataSet alloc] initWithURL: [NSURL URLWithString: @"file:///home/efelix/tmp/1024-xo-after-4.out"] columnNum: 3];
-	[h contractDataSetForX: 768 andY: 512];
+	XYDataSet *f = [[XYDataSet alloc] initWithURL: [NSURL URLWithString: @"file:///home/efelix/tmp/1024-xo-after-4.out"] columnName: @"Iter" columnXName: @"X" columnYName: @"Y"];
+	XYDataSet *h = [[XYDataSet alloc] initWithURL: [NSURL URLWithString: @"file:///home/efelix/tmp/1024-xo-after-4.out"] columnNum: 4];
+	[h contractDataSetWidth: 512 andHeight: 1024];
 
-	XYDataSet *f1 = [[XYDataSet alloc] initWithURL: [NSURL URLWithString: @"file:///home/efelix/tmp/1024-xo-after-4.out"] columnName: @"BandWidth"];
+	XYDataSet *f1 = [[XYDataSet alloc] initWithURL: [NSURL URLWithString: @"file:///home/efelix/tmp/1024-xo-after-4.out"] columnName: @"Bandwidth"];
 	XYDataSet *h1 = [[XYDataSet alloc] initWithURL: [NSURL URLWithString: @"file:///home/efelix/tmp/1024-xo-after-4.out"] columnNum: 2 columnXNum: 0 columnYNum: 1];
-	[h1 contractDataSetForX: 768 andY: 512];
+	[h1 contractDataSetWidth: 768 andHeight: 512];
 
 	GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test" withWidth: 1000 andHeight: 800];
 
