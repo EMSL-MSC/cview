@@ -18,6 +18,7 @@ AC_PROG_OBJC
 AC_PROG_LIBTOOL
 
 OPTBUILD=""
+OBJCFLAGS="-g"
 
 AC_ARG_ENABLE([tests],
 	AS_HELP_STRING([--enable-tests],[Compile Test Code]),
