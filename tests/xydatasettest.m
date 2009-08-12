@@ -69,14 +69,26 @@ int main(int argc,char *argv[], char *env[]) {
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
 
-	XYDataSet *f = [[XYDataSet alloc] initWithURL: [NSURL URLWithString: @"file:///home/efelix/tmp/1024-xo-after-4.out"] columnName: @"Iter" columnXName: @"X" columnYName: @"Y"];
-	XYDataSet *h = [[XYDataSet alloc] initWithURL: [NSURL URLWithString: @"file:///home/efelix/tmp/1024-xo-after-4.out"] columnNum: 4];
-	[h contractDataSetWidth: 512 andHeight: 1024];
+	NSString *testdata = find_resource_path(@"testdata.xy");
+	if (testdata == nil) {
+		NSLog(@"Error Loading Test Data");
+		exit(1);
+	}
+		
 
-	XYDataSet *f1 = [[XYDataSet alloc] initWithURL: [NSURL URLWithString: @"file:///home/efelix/tmp/1024-xo-after-4.out"] columnName: @"Bandwidth"];
-	XYDataSet *h1 = [[XYDataSet alloc] initWithURL: [NSURL URLWithString: @"file:///home/efelix/tmp/1024-xo-after-4.out"] columnNum: 2 columnXNum: 0 columnYNum: 1];
-	[h1 contractDataSetWidth: 768 andHeight: 512];
-
+	XYDataSet *f = [[XYDataSet alloc] initWithURL: [NSURL fileURLWithPath: testdata] columnName: @"Mandelbrot" columnXName: @"X" columnYName: @"Y"];
+	XYDataSet *h = [[XYDataSet alloc] initWithURL: [NSURL fileURLWithPath: testdata] columnNum: 4];
+	[h contractDataSetWidth: 400 andHeight: 500];
+	[f lockMax: 4];
+	[h lockMax: 4];
+	[f autoScale:200];
+	
+	XYDataSet *f1 = [[XYDataSet alloc] initWithURL: [NSURL fileURLWithPath: testdata] columnName: @"BinaryOpFun"];
+	XYDataSet *h1 = [[XYDataSet alloc] initWithURL: [NSURL fileURLWithPath: testdata] columnNum: 2 columnXNum: 0 columnYNum: 1];
+	[h1 contractDataSetWidth: 400 andHeight: 500];
+	[f1 lockMax: 256];
+	[h1 lockMax: 256];
+	
 	GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test" withWidth: 1000 andHeight: 800];
 
 	Scene * scene1 = [[Scene alloc] init];
@@ -100,6 +112,9 @@ int main(int argc,char *argv[], char *env[]) {
 		setScene: scene2] 
 		setEye: [[[Eye alloc] init] setX: 1050.0 Y: 2700.0 Z: 2700.0 Hangle:-4.72 Vangle: -2.45]
 	];
+	
+	NSLog(@"%@",[gw1 getPList]);
+	
 	[g run];
 
 	[pool release];

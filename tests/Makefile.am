@@ -9,6 +9,7 @@ INCLUDES = $(all_includes) -I$(top_srcdir)/libcview -I$(top_srcdir)/libcview-dat
 # the library search path.
 noinst_PROGRAMS = datasettest glgridtest glscreentest webdatasettest calcdatasettest calcdatatest xydatasettest
 EXTRA_DIST = funcdata
+noinst_DATA = testdata.xy
 
 calcdatasettest_SOURCES = calcdatasettest.m
 
@@ -24,4 +25,6 @@ xydatasettest_SOURCES = xydatasettest.m
 
 glgridtest_SOURCES = glgridtest.m
 
+testdata.xy: funcdata
+	python funcdata xy > testdata.xy
 

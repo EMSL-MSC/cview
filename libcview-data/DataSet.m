@@ -59,11 +59,17 @@ All rights reserved.
 #import <Foundation/Foundation.h>
 #import <sys/param.h>  //for max/min
 #import "DataSet.h"
+#import "DictionaryExtra.h"
 #import "math.h"
+
+#define DS_DEFAULT_LIMIT 100.0
+//I wish there was magic to stringify into
+#define S(x) @ #x
+#define DS_DEFAULT_LIMIT_S S(DS_DEFAULT_LIMIT)
 
 @implementation DataSet
 
-- initWithName: (NSString *)n Width: (int)w Height: (int)h {
+-initWithName: (NSString *)n Width: (int)w Height: (int)h {
 	[self initWithWidth: w Height: h];
 	name = n;
 	[name retain];
@@ -78,9 +84,10 @@ All rights reserved.
 	data = [[NSMutableData alloc] initWithLength: w*h*sizeof(float)];
 	currentScale = 1.0;
 	currentMax = 1.0;
-	currentLimit = 128.0;
+	if (currentLimit==0.0)
+		currentLimit = DS_DEFAULT_LIMIT;
 	rateSuffix=@"None!";
-	lockedMax=0;
+	//lockedMax=0;
 	allowScaling=YES;
 	textDescription=name;
 #ifdef __APPLE__
@@ -92,13 +99,19 @@ All rights reserved.
 }
 
 -initWithPList: (id)list {
-	NSLog(@"initWithPList: DataSet:%@",[self class]);	
+	NSLog(@"initWithPList: DataSet:%@",[self class]);
+	lockedMax = [[list objectForKey:@"lockedMax" missing: @"0"] floatValue];
+	currentLimit = [[list objectForKey:@"limit" missing: DS_DEFAULT_LIMIT_S] floatValue];
 	return self;
 }
 
 -getPList {
 	NSLog(@"getPList: DataSet:%@",self);
 	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity: 5];
+	if (lockedMax != 0)
+		[dict setObject: [NSNumber numberWithFloat: lockedMax] forKey: @"lockedMax"];
+	if (currentLimit != DS_DEFAULT_LIMIT)
+		[dict setObject: [NSNumber numberWithFloat: currentLimit] forKey: @"limit"];
 	return dict;
 }
 
@@ -175,7 +188,7 @@ All rights reserved.
 	int i;
 
 	//NSLog(@"allowScaling: %d",allowScaling);
-	if (allowScaling == NO) {
+	if (lockedMax > 0.0) {
 		currentMax=lockedMax;
 		return lockedMax;
 	}
@@ -206,8 +219,7 @@ All rights reserved.
 
 - lockMax: (int)max {
 	lockedMax = (float)max;
-	currentMax = (float)max;
-	allowScaling = NO;
+
 	[self autoScale];
 	return self;
 }
@@ -222,20 +234,22 @@ All rights reserved.
 	//figure out a scaling that will make the data be <limit> 'high'..  could be configuarable.
 	int i;
 	float *d = (float *)[data mutableBytes];
-	float newscale;
+	float newscale,u;
 	float oldmax = [self resetMax];
 	
 	if (allowScaling) {
 		//newscale = MAX(1.0,currentLimit/oldmax);
 		newscale = currentLimit/oldmax;
 	
-		for (i=0;i<width*height;i++)
-			d[i] = (d[i]/currentScale)*newscale;
-		
+		for (i=0;i<width*height;i++) {
+			u=(d[i]/currentScale)*newscale;
+			d[i]=MIN(currentLimit+1,MAX(u,0.0));
+		}
 		currentScale=newscale;
 		[self resetMax];
 		NSLog(@"scale(%@): %.2f %6f %.2f %d",name,oldmax,newscale,currentMax,currentLimit);
 	}
+
 	return self;
 }
 
@@ -262,7 +276,7 @@ All rights reserved.
 		
 	for (i=0;i<width*height;i++) {
 		to[i] = frm[i]*currentScale;
-		max = MAX(max,frm[i]);
+		max = MIN(currentLimit+1,MAX(max,frm[i]));
 		if (frm[i] > currentMax) {
 			//NSLog(@"bigger(%@): %6f > %6f",name,frm[i],currentMax);
 			rescale = YES;

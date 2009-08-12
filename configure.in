@@ -22,7 +22,8 @@ OBJCFLAGS="-g"
 
 AC_ARG_ENABLE([tests],
 	AS_HELP_STRING([--enable-tests],[Compile Test Code]),
-	[OPTBUILD+=' tests '],
+	[OPTBUILD+=' tests ' AC_DEFINE([CVIEW_TEST_BUILD],[1],[Test programs are being built])],
+	[AC_DEFINE([CVIEW_TEST_BUILD],[0],[Test programs are being built])],
 	)
 
 AC_ARG_ENABLE([gcallocdebug],

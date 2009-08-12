@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: latin-1 -*-
 """
 
 This file is port of the CVIEW graphics system, which is goverened by the following License
@@ -79,7 +80,7 @@ ypoints=500
 
 #Function
 def datafunc1(x,y):
-	"Binary Op Fun"
+	"BinaryOpFun"
 	#return abs(math.sin(x)*math.tan(y)/(time.time()%30+1))
 	#x+=time.time()%xpoints
 	#x %= xpoints
@@ -106,7 +107,7 @@ def mandel(x,y):
 	return lp
 
 def sombrero(x,y):
-	"Sombrero Function"
+	"SombreroFunction"
 	s=math.sqrt(x**2+y**2)
 	if s==0.0:
 		return 0.3
@@ -125,6 +126,20 @@ class filer(file):
 		os.rename(self._tmpname,self._realname)
 		return ret
 
+def xydata(funcs):
+	print "X Y",
+	for f in funcs:
+		print f.__doc__,
+	print
+
+	xd = (xmax-xmin)/xpoints
+	yd = (ymax-ymin)/ypoints
+	for i in range(xpoints):
+		for j in range(ypoints):
+			print i,j,
+			for f in funcs:
+				print f(xmin+xd*i,ymin+yd*j),
+			print
 
 def main(func):
 	data=zeros((xpoints,ypoints),Float32)
@@ -162,4 +177,8 @@ def main(func):
 
 
 if __name__ == "__main__":
-	main(datafunc1)
+	import sys
+	if len(sys.argv)>1 and sys.argv[1]=='xy':
+		xydata((datafunc1,sombrero,mandel))
+	else:
+		main(datafunc1)

@@ -95,6 +95,7 @@ int findStringInArray(NSArray *arr,NSString *str) {
 	s->colIndex=-1;
 	return s;
 }
+
 -(void)readHeaders {
 	NSString *str;
 	NSArray *arr;
@@ -187,11 +188,11 @@ int findStringInArray(NSArray *arr,NSString *str) {
 	return [self initWithData];
 }
 /*
-	by the time we get here colIndex,xIndex, and yIndex should be valid. 
+	by the time we get here colIndex,xIndex, and yIndex should be valid, else defaults will be used. 
 
 	we are going start with a smallish data array, and then grow it as needed by doubling it, then at the end shrink it if needed.
 */
-#define FMTBUFLEN 1024
+
 -initWithData {
 	int x,y,i;
 	int MaxX=1,MaxY=1;
@@ -236,12 +237,11 @@ int findStringInArray(NSArray *arr,NSString *str) {
 		//if (y==0)
 		//NSLog(@"scan: %p %p %d %d %f",ptr,end,x,y,val);
 	}
-		NSLog(@"Max: %d %d",MaxX,MaxY);
+	NSLog(@"XYDataSet Max: %d %d",MaxX,MaxY);
 	d=[self contractDataSetWidth: MaxX+1 andHeight: MaxY+1];//base zero
 
 	//NSLog(@"Scan Done");
-	currentScale = 128.0/10;
-	[self lockMax: 10];
+	[self autoScale];
 
 	return self;
 }
@@ -287,7 +287,7 @@ int findStringInArray(NSArray *arr,NSString *str) {
 	nh=h;
 
 	if (nw != width || nh != height) {
-		NSLog(@"contract: %d %d %d  %d %d %d",w,width,nw,h,height,nh);
+		//NSLog(@"contract: %d %d %d  %d %d %d",w,width,nw,h,height,nh);
 #if 1
 		//This seems backwards compared to the expand, but this works..
 		if (nh != height) {
@@ -316,37 +316,48 @@ int findStringInArray(NSArray *arr,NSString *str) {
 
 }
 
-- autoScale {
-	//figure out a scaling that will make the data be <limit> 'high'..  could be configuarable.
-	int i;
-	float u;
-	float *d = (float *)[data mutableBytes];
+-(int)convertTagToIndex:(NSString *)col {
+	int index=-1;
+	NSLog(@"%@",col);
 	
+	index = findStringInArray(headers, (NSString *)col);
+
+	if (index==-1) 
+		index = [col intValue];
 	
-		for (i=0;i<width*height;i++) {
-			u=(d[i]*currentScale);
-			u=MIN(129.0,MAX(u,0.0));
-			d[i] = u;
-		}
-	return self;
-}
+	return index;
+}	
 
 -initWithPList: (id)list {
+	id tmp;
 	NSLog(@"initWithPList: %@",[self class]);
 
 	[super initWithPList: list];
 
-	NSURL *url = [NSURL URLWithString: [list objectForKey: @"baseURL"]];
-	id col = [list objectForKey: @"column"];
-
-	if ([col isKindOfClass: [NSNumber class]]) {
-		[self initWithURL: url columnNum: [(NSNumber *)col intValue]];
+	dataURL = [NSURL URLWithString: [list objectForKey: @"dataURL"]];
+	theCol = [list objectForKey: @"column"]; //required field
+	[self readHeaders];
+	
+	colIndex = [self convertTagToIndex: theCol];
+				  
+	if (colIndex==-1) {
+		NSLog(@"Error finding Column Tag in plist");
+		return nil;
 	}
-	else {	///@todo check for string and error out?
-		[self initWithURL: url columnName: col];
+
+	tmp = [list objectForKey:@"X"];
+	if (tmp) {
+		theX = tmp;
+		xIndex = [self convertTagToIndex: theX];
 	}
 
-	return self;
+	tmp = [list objectForKey:@"Y"];
+	if (tmp) {
+		theY = tmp;
+		yIndex = [self convertTagToIndex: theY];
+	}
+
+	return [self initWithData];
 }
 
 -getPList {
