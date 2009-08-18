@@ -204,7 +204,7 @@ int findStringInArray(NSArray *arr,NSString *str) {
 	if (yIndex==-1) yIndex=1;
 	if (colIndex==-1) colIndex=2;
 
-	[self initWithName: [dataURL absoluteString] Width: 2 Height: 2];
+	[self initWithName: [NSString stringWithFormat: @"%@-%@", [dataURL absoluteString],theCol] Width: 2 Height: 2];
 
 	float *d = (float *)[data mutableBytes];
 	char *s = (char *)[rawData bytes];
