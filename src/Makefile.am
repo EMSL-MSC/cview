@@ -3,7 +3,7 @@ AM_OBJCFLAGS=-g -Wall $(WAND_CFLAGS)  -fobjc-exceptions $(FTGL_CFLAGS)
 OBJCDEPMODE = depmode=gcc
 BASELDFLAGS = $(FOUNDATION_LDFLAGS) $(WAND_LIBS) \
 	$(top_srcdir)/libcview/libcview.la $(top_srcdir)/libcview-data/libcview-data.la \
-	$(ATB_LDFLAGS)
+	$(ATB_LDFLAGS) $(FTGL_LIBS)
 
 # set the include path found by configure
 INCLUDES = $(all_includes) -I$(top_srcdir)/libcview -I$(top_srcdir)/libcview-data
