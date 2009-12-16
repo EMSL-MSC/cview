@@ -9,11 +9,13 @@ BASELDFLAGS = $(FOUNDATION_LDFLAGS) $(WAND_LIBS) \
 INCLUDES = $(all_includes) -I$(top_srcdir)/libcview -I$(top_srcdir)/libcview-data
 
 # the library search path.
-bin_PROGRAMS = cview cviewall $(SRC_COND_COMPILES)
+bin_PROGRAMS = clustat cview cviewall $(SRC_COND_COMPILES)
 EXTRA_PROGRAMS=oscview
 
 EXTRA_DIST = *.h
 
+clustat_SOURCES = clustat.m ObjectTracker.m CViewScreenDelegate.m
+clustat_LDFLAGS =  $(OPENGL_LDFLAGS) $(BASELDFLAGS)
 cview_SOURCES = ObjectTracker.m cview.m CViewScreenDelegate.m
 cview_LDFLAGS = $(OPENGL_LDFLAGS) $(BASELDFLAGS)
 cviewall_SOURCES = cviewall.m CViewScreenDelegate.m 

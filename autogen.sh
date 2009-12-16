@@ -9,6 +9,6 @@ else
 	aclocal;
 fi
 autoheader
-automake-1.10 --add-missing --copy 
+automake --add-missing --copy 
 autoconf --force
 ./configure $*

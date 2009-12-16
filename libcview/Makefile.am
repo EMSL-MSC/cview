@@ -11,7 +11,12 @@ lib_LTLIBRARIES = libcview.la
 libcview_la_SOURCES = ColorMap.m GLImage.m DrawableObject.m Eye.m \
 	GLGrid.m GLGridSurface.m GLScreen.m GLWorld.m Scene.m \
 	utils.m GLPointGrid.m GLRibbonGrid.m \
-	GLText.m DefaultGLScreenDelegate.m MultiGrid.m
+	GLText.m DefaultGLScreenDelegate.m MultiGrid.m \
+    DataCenter/Rack.m DataCenter/Node.m DataCenter/Locatable.m \
+    DataCenter/Isle.m DataCenter/Location.m DataCenter/PMM.m \
+    DataCenter/DrawableArray.m DataCenterLoader.m GLDataCenterGrid.m \
+    DataCenter/IsleOffsets.m
+
 if HAVE_ATB
 libcview_la_SOURCES += AntTweakBarOverlay.m AntTweakBarManager.m 
 endif
