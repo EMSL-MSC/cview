@@ -59,15 +59,30 @@ All rights reserved.
 #include <gl.h>
 #include <glut.h>
 #include <string.h>
+#include <FTGL/ftgl.h>
 #include "cview.h"
 
-void drawString3D(float x,float y,float z,void *font,NSString *string,float offset) {
+void drawString3D_glut(float x,float y,float z,void *font,NSString *string,float offset) {
 	int i;
 	const char *s = [string UTF8String];
 	//NSLog(@"drawString3D: %@",string);
 	glRasterPos3f(x, y - offset, z);
 	for (i = 0;i < strlen(s);i++)
 		glutBitmapCharacter(font, (int)s[i]);
+}
+
+void drawString3D(float x,float y,float z,void *font,NSString *string,float offset) {
+	static FTGLfont *theFont=NULL;
+
+	if (theFont==NULL) {
+		theFont = ftglCreateBitmapFont([find_resource_path(@"LinLibertine_Re.ttf") UTF8String]);
+		ftglSetFontFaceSize(theFont,14,72);
+		ftglSetFontCharMap(theFont,ft_encoding_unicode);
+	}
+//	NSLog(@"drawString3D: %@ %p",string,theFont);
+	glRasterPos3f(x, y - offset, z);
+
+	ftglRenderFont(theFont,[string UTF8String], FTGL_RENDER_ALL);
 }
 
 

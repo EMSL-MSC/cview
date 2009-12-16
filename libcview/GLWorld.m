@@ -171,10 +171,15 @@ All rights reserved.
 }
 
 -gl2DProlog {
-	int width = glutGet(GLUT_WINDOW_WIDTH);
-	int height = glutGet(GLUT_WINDOW_HEIGHT);
+	GLint viewport[4];
+	int width;
+	int height;
 
-//	NSLog(@"Prolog: %dx%d",width,height);
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	width=viewport[2];
+	height=viewport[3];
+
+	//NSLog(@"Prolog: %dx%d",width,height);
 	
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
