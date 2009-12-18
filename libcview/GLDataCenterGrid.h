@@ -9,12 +9,16 @@
 #import "DataCenter/Drawable.h"
 #import "Foundation/NSEnumerator.h"
 #import "DataCenter/Isle.h"
+#import "DataCenter/Point.h"
 @interface GLDataCenterGrid: GLGrid <Drawable> {
     DrawableArray *isles;
+@private
+    VertArray *floorArray;
 }
 -init;
 -drawData;
 -draw;
+-drawFloor;
 -(NSEnumerator*)getEnumerator;
 -addIsle: (Isle*) isle;
 @end

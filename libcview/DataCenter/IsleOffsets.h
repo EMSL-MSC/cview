@@ -10,8 +10,10 @@
 
 #define WIDE_RACK_WIDTH         1
 
+#import "Point.h"
 @interface IsleOffsets {
 }
 +(float)getIsleOffset: (int) isleNum;
++(VertArray*)getDataCenterFloor;
 @end
 #endif

@@ -4,13 +4,15 @@
 #import "cview.h"
 #import "DataSet.h"
 #import "GLDataCenterGrid.h"
-
+#import "DataCenter/IsleOffsets.h"
+void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
 extern GLuint g_textureID;
 @implementation  GLDataCenterGrid
 // TODO: update this draw function
 -init {
     [super init];
     self->isles = [[DrawableArray alloc] init];
+    self->floorArray = [IsleOffsets getDataCenterFloor];
     return self;
 }
 /*
@@ -56,8 +58,17 @@ extern GLuint g_textureID;
     glVertex3f(0,10000,0);
     glVertex3f(0,0,-10000);
     glVertex3f(0,0,10000);
-    
     glEnd();
+   
+    int x = 1000;
+    glColor3f(0,0,1);
+    drawString3D( x,0,0,GLUT_BITMAP_HELVETICA_12,@"  +X-Axis", 0);
+    drawString3D(-x,0,0,GLUT_BITMAP_HELVETICA_12,@"  -X-Axis", 0);
+    drawString3D(0, x,0,GLUT_BITMAP_HELVETICA_12,@"  +Y-Axis", 0);
+    drawString3D(0,-x,0,GLUT_BITMAP_HELVETICA_12,@"  -Y-Axis", 0);
+    drawString3D(0,0, x,GLUT_BITMAP_HELVETICA_12,@"  +Z-Axis", 0);
+    drawString3D(0,0,-x,GLUT_BITMAP_HELVETICA_12,@"  -Z-Axis", 0);
+
     glPopMatrix();
     return self;
 }
@@ -87,7 +98,15 @@ extern void loadTexture( void );
 }
 -drawFloor {
     //TODO: add stuff here to draw floor tiles
-    
+    if(self->floorArray == nil)
+        return self;
+    // No textures for now...
+    glDisable(GL_TEXTURE_2D);
+    glColor3f(0.5,0.5,0.5);
+    // Draw the rack itself, consisting of 6 sides
+    glInterleavedArrays(GL_T2F_V3F, 0, self->floorArray->verts);
+    glDrawArrays(GL_POLYGON, 0, self->floorArray->vertCount);
+
     return self;
 }
 -glDraw {

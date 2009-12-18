@@ -10,5 +10,9 @@ typedef struct
     float tu, tv;
     float x, y, z;
 } Vertex;
+typedef struct {
+    Vertex *verts;
+    int vertCount;
+} VertArray;
 
 #endif

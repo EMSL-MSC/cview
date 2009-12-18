@@ -16,8 +16,8 @@
     int height;
     int depth;
 }
-+(void)drawGLQuad: (struct Point) p1 andP2: (struct Point) p2
-      andP3: (struct Point) p3 andP4: (struct Point) p4;
++(void)drawGLQuad: (Point) p1 andP2: (Point) p2
+            andP3: (Point) p3 andP4: (Point) p4;
 -setName: (NSString *) name;
 -(NSString*) getName;
 -setLocation: (Location*) location;
