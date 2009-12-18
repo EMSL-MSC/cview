@@ -116,13 +116,13 @@ int main(int argc,char *argv[], char *env[]) {
 
 	Scene * scene1 = [[Scene alloc] init];
 
-	NSURL *baseurl = [NSURL URLWithString: [args stringForKey: @"url"]];
-	NSString *index = [NSString stringWithContentsOfURL: [NSURL URLWithString: @"index" relativeToURL: baseurl]];
-	if (index == nil) 
-		usage([NSString stringWithFormat: @"Index file not found at given URL:%@",baseurl],-2);
+	//NSURL *baseurl = [NSURL URLWithString: [args stringForKey: @"url"]];
+	//NSString *index = [NSString stringWithContentsOfURL: [NSURL URLWithString: @"index" relativeToURL: baseurl]];
+	//if (index == nil) 
+//		usage([NSString stringWithFormat: @"Index file not found at given URL:%@",baseurl],-2);
 
-	NSScanner *scanner = [NSScanner scannerWithString: index];
-	NSMutableSet *indexes = [NSMutableSet setWithCapacity: 10];
+//	NSScanner *scanner = [NSScanner scannerWithString: index];
+//	NSMutableSet *indexes = [NSMutableSet setWithCapacity: 10];
 
 	NSString *str;
 	DrawableObject *o;
@@ -130,14 +130,15 @@ int main(int argc,char *argv[], char *env[]) {
     /*  Here is where we loop through and add all objects to the scene
      *
      */
-	while ([scanner scanUpToString: NEWLINE intoString: &str] == YES) {
+//	while ([scanner scanUpToString: NEWLINE intoString: &str] == YES) {
 		//NSLog(@"string: %@",str);
-		[indexes addObject: str];		
+//		[indexes addObject: str];		
 
-		NSArray *arr = [args arrayForKey: @"metrics"];
-		if ([arr containsObject: str] || [arr containsObject: @"all"] ) {
+//		NSArray *arr = [args arrayForKey: @"metrics"];
+//		if ([arr containsObject: str] || [arr containsObject: @"all"] ) {
 		    NSLog(@"string: %@ is going to be included in the project!!!!!",str);
-            WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: baseurl andKey: str];
+            //WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: baseurl andKey: str];
+            WebDataSet *d = nil;
             // A little testing of my own, pretty much just useless code :-D
 /*
             int uuu;
@@ -173,9 +174,9 @@ int main(int argc,char *argv[], char *env[]) {
             [d autorelease];
             /// This would be bad. how to fix... [t autorelease];
             [o autorelease];
-		}
+//		}
 
-	}
+//	}
 		//[[toggler objectAtIndex: 0] show];
 		[[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50] 
 			setScene: scene1] 

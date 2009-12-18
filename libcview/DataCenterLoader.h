@@ -5,6 +5,8 @@
 #import "DataCenter/Isle.h"
 #import "DataCenter/Rack.h"
 #import "DataCenter/Node.h"
+#import <gl.h>
+
 /**
     @author Brock Erwin
     This class is only an interim one needed due to the fact that

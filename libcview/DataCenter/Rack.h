@@ -11,6 +11,10 @@
   */
 @interface Rack : Locatable <Drawable> {
     DrawableArray *nodes;
+@private
+    BOOL vertsSetUp;
+    int vertCount;
+    Vertex* rackVerts;
 }
 +(unsigned int) texture;
 +setTexture:(unsigned int)_texture;

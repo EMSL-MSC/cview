@@ -5,6 +5,7 @@
 #import "DataSet.h"
 #import "GLDataCenterGrid.h"
 
+extern GLuint g_textureID;
 @implementation  GLDataCenterGrid
 // TODO: update this draw function
 -init {
@@ -66,10 +67,49 @@
     self->isles = [self->isles addDrawableObject: isle];
     return self;
 }
+
+typedef struct
+{
+    float tu, tv;
+    float x, y, z;
+} Vertex;
+
+Vertex g_quadVertices[] =
+{
+    { 0.0f,0.0f, -1.0f,-1.0f, 0.0f },
+    { 1.0f,0.0f,  1.0f,-1.0f, 0.0f },
+    { 1.0f,1.0f,  1.0f, 1.0f, 0.0f },
+    { 0.0f,1.0f, -1.0f, 1.0f, 0.0f }
+};
+
+//FIXME
+extern void loadTexture( void );
+ 
 -draw {
+    if(!g_textureID)
+        loadTexture();
     //NSLog(@"[GLDataCenterGrid draw]");
     //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);		// Clear The Screen And The Depth Buffer
 	//glLoadIdentity();						// Reset The View
+
+    //drawString3D(100,10,100,GLUT_BITMAP_HELVETICA_12,@"Yo, yo, I am a coool looking string and my name is BROOOOOOOOOOOOOOOOOOOOOCK", 0);
+
+//    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture( GL_TEXTURE_2D, g_textureID );
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+ 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    //glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    //glInterleavedArrays( GL_T2F_V3F, 0, g_quadVertices );
+    //glDrawArrays( GL_QUADS, 0, 4 );
+/*
+    glBegin(GL_QUADS);    glColor3f(1.0,1.0,1.0);    glTexCoord2f(0.0,0.0);    glVertex3f(0, 0, 0);   
+    //glColor3f(0,1,0);    glTexCoord2f(0.0,1.0);    glVertex3f(500, 0, 0);    //glColor3f(0,0,1);
+    glTexCoord2f(1.0,1.0);    glVertex3f(500, 0, 1000);    //glColor3f(.5,.5,.2);    glTexCoord2f(1.0,0.0);
+    glVertex3f(0, 0, 1000);    glEnd();
+*/
     [self drawOriginAxis];
     [self->isles draw];
     GLenum err = glGetError();
@@ -82,6 +122,7 @@
 }
 -drawFloor {
     //TODO: add stuff here to draw floor tiles
+    return self;
 }
 -glDraw {
     float max = [dataSet getScaledMax];
@@ -100,7 +141,7 @@
     [self drawFloor];
 	//[self drawPlane];
 	//[self drawData];
-	//[self drawAxis];
+	[self drawAxis];
 	//[self drawTitles];
     return self;
 }

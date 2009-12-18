@@ -9,7 +9,15 @@
 #include <gl.h>
 #include <glut.h>
 #include <stdio.h>
-#include <stdlib.h>    
+#include <stdlib.h>   
+struct BMPImage
+{
+    int   width;
+    int   height;
+    char *data;
+}; 
+typedef struct BMPImage BMPImage;
+GLuint g_textureID = 0;
 @implementation DataCenterLoader
 -init {
     [super init];
@@ -96,6 +104,87 @@ int myImageLoad(const char *filename, anImage *image) {
     // we're done.
     return 1;
 }
+void getBitmapImageData( char *pFileName, BMPImage *pImage )
+{
+    FILE *pFile = NULL;
+    unsigned short nNumPlanes;
+    unsigned short nNumBPP;
+	int i;
+
+    if( (pFile = fopen(pFileName, "rb") ) == NULL )
+		printf("ERROR: getBitmapImageData - %s not found\n",pFileName);
+
+    // Seek forward to width and height info
+    fseek( pFile, 18, SEEK_CUR );
+
+    if( (i = fread(&pImage->width, 4, 1, pFile) ) != 1 )
+		printf("ERROR: getBitmapImageData - Couldn't read width from %s.\n", pFileName);
+
+    if( (i = fread(&pImage->height, 4, 1, pFile) ) != 1 )
+		printf("ERROR: getBitmapImageData - Couldn't read height from %s.\n", pFileName);
+
+    if( (fread(&nNumPlanes, 2, 1, pFile) ) != 1 )
+		printf("ERROR: getBitmapImageData - Couldn't read plane count from %s.\n", pFileName);
+	
+    if( nNumPlanes != 1 )
+		printf( "ERROR: getBitmapImageData - Plane count from %s is not 1: %u\n", pFileName, nNumPlanes );
+ glTexCoord2f(0.0,0.0);
+
+    if( (i = fread(&nNumBPP, 2, 1, pFile)) != 1 )
+		printf( "ERROR: getBitmapImageData - Couldn't read BPP from %s.\n", pFileName );
+	
+    if( nNumBPP != 24 )
+		printf( "ERROR: getBitmapImageData - BPP from %s is not 24: %u\n", pFileName, nNumBPP );
+
+    // Seek forward to image data
+    fseek( pFile, 24, SEEK_CUR );
+
+	// Calculate the image's total size in bytes. Note how we multiply the 
+	// result of (width * height) by 3. This is becuase a 24 bit color BMP 
+	// file will give you 3 bytes per pixel.
+    int nTotalImagesize = (pImage->width * pImage->height) * 3;
+
+    pImage->data = (char*) malloc( nTotalImagesize );
+	
+    if( (i = fread(pImage->data, nTotalImagesize, 1, pFile) ) != 1 )
+		printf("ERROR: getBitmapImageData - Couldn't read image data from %s.\n", pFileName);
+
+    //
+	// Finally, rearrange BGR to RGB
+	//
+	
+	char charTemp;
+    for( i = 0; i < nTotalImagesize; i += 3 )
+	{ 
+		charTemp = pImage->data[i];
+		pImage->data[i] = pImage->data[i+2];
+		pImage->data[i+2] = charTemp;
+    }
+}
+void loadTexture( void )	
+{
+	BMPImage textureImage;
+	
+    getBitmapImageData( "/home/berwin/cview/data/rack.bmp", &textureImage );
+    NSLog(@"textureID = %u", g_textureID);
+	glGenTextures( 1, &g_textureID );
+	glBindTexture( GL_TEXTURE_2D, g_textureID );
+
+//	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+//	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+ 	glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+
+	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, textureImage.width, textureImage.height, 
+	               0, GL_RGB, GL_UNSIGNED_BYTE, textureImage.data );
+    GLenum err = glGetError();
+    if(err != GL_NO_ERROR)
+        NSLog(@"There was a glError (init), error number: %d", err);
+}
+
+
 -(unsigned int)loadImage: (NSString *)filename {
     // Load Texture
     anImage *image1;
@@ -112,10 +201,11 @@ int myImageLoad(const char *filename, anImage *image) {
     }
     unsigned int texture;
     glGenTextures(1, &texture);
+    NSLog(@"texture == %u", texture);
     glBindTexture(GL_TEXTURE_2D, texture);   // 2d texture (x and y size)
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR); // scale linearly when image bigger than texture
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR); // scale linearly when image smalled than texture
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, image1->sizeX, image1->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, image1->data);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, image1->sizeX, image1->sizeY, 0, GL_RGBA, GL_UNSIGNED_BYTE, image1->data);
 
     GLenum err = glGetError();
     if(err != GL_NO_ERROR)
@@ -176,8 +266,8 @@ int myImageLoad(const char *filename, anImage *image) {
     [self parseSerialNumbersFile: @"../data/Chinook Serial numbers.csv"];
     /* Load some images for textures */
     // Rack front image
-    //[Rack setTexture: [self loadImage: @"../data/rack.bmp"]];
-        
+   // [Rack setTexture: [self loadImage: @"../data/rack.bmp"]];
+//       loadTexture(); 
     return self->dcg;
 }
 //  isleName will be like "C1" or "C5"....i know it makes no sense,
@@ -336,7 +426,7 @@ int myImageLoad(const char *filename, anImage *image) {
             range.location = 1;
             range.length = [element length] - 2;
             // This substring crap removes quotes from the beginning and end of the string
-            // if there are any...
+            // if there are any...    g
             if([element characterAtIndex: 0] == '"' &&
                [element characterAtIndex: [element length] - 1] == '"')
                 element = [element substringWithRange: range]; 

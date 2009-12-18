@@ -9,7 +9,6 @@
 #import "DataCenter/Drawable.h"
 #import "Foundation/NSEnumerator.h"
 #import "DataCenter/Isle.h"
-
 @interface GLDataCenterGrid: GLGrid <Drawable> {
     DrawableArray *isles;
 }
