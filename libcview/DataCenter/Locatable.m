@@ -3,8 +3,8 @@
 #import <glut.h>
 
 @implementation Locatable
-+(void)drawGLQuad: (struct Point) p1 andP2: (struct Point) p2
-      andP3: (struct Point) p3 andP4: (struct Point) p4 {
++(void)drawGLQuad: (Point) p1 andP2: (Point) p2
+            andP3: (Point) p3 andP4: (Point) p4 {
     glBegin(GL_QUADS);
     glTexCoord2f(0.0,0.0);    glVertex3f(p1.x, p1.y, p1.z);
     glTexCoord2f(0.0,1.0);    glVertex3f(p2.x, p2.y, p2.z);

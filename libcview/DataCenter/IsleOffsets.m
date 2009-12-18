@@ -30,4 +30,7 @@
         return 0;
     }
 }
++(void*)getDataCenterFloor() { 
+    /* Te
+}
 @end

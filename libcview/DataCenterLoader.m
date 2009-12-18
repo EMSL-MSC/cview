@@ -21,6 +21,7 @@ GLuint g_textureID = 0;
 @implementation DataCenterLoader
 -init {
     [super init];
+    srand( time(NULL) );
     self->dcg = nil;
     return self;
 }
@@ -216,7 +217,11 @@ void loadTexture( void )
 /*
 	MagickWand *wand = NewMagickWand();
 	///@todo optionaly pull from a resource instead of the full filename
-	MagickBooleanType status = MagickReadImage (wand, [filename UTF8String]);
+	MagickBooleanType ssrand( time(NULL) );
+    r = (float)rand() / (float)RAND_MAX;
+    g = 1.0-r;
+    b = 0.0;
+tatus = MagickReadImage (wand, [filename UTF8String]);
     NSMutableData *image;
     int tw,th;
 	if ( status == MagickFalse )
