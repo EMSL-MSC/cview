@@ -5,6 +5,7 @@
 #import "DrawableArray.h"
 #import "Node.h"
 #import "Point.h"
+#import "../GLText.h"
 
 /**
   * interface Rack
@@ -15,15 +16,21 @@
     DrawableArray *nodes;
 @private
     BOOL vertsSetUp;
-    int vertCount;
-    Vertex* rackVerts;
+    BOOL wireframe;     // if yes draw the racks as wireframe
+    //int vertCount;
+    //Vertex* rackVerts;
+    VertArray *rack;
     float r,g,b; // color stuff...
+    GLText *gltName;
+    int face; // degress in which the rack is facing
 }
 +(unsigned int) texture;
 +setTexture:(unsigned int)_texture;
 -initRackVerts;
+-initWithName:(NSString*)_name;
 -draw;
 -addNode: (Node*) node;
+-setFace: (int) _face;
 @end
 
 #endif // RACK_H

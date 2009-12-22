@@ -21,6 +21,7 @@
 -addRack: (Rack*) rack;
 -(NSEnumerator*) getEnumerator;
 -setface: (int) _face;
+-(int)getFace;
 // Adds up all the rack widths that it contains
 -(int)getWidth;
 @end

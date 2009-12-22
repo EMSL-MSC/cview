@@ -16,27 +16,26 @@
     self->face = _face;
     return self;
 }
-#define PI 3.1415
-#define standardrackwidth 
+-(int)getFace {
+    return face;
+}
 -draw {
-    Location *l = [self getLocation];
-    int x = [l getx];
-    int y = [l gety];
-    int scale = 100;
-    float thenum = 0;// = cos((self->face/180)*PI)*rowscale*[self getWidth];
-    if(self->face == 0)
+    //Location *l = [self getLocation];
+    //int x = [l getx];
+    //int y = [l gety];
+    int scale = 3.5*TILE_WIDTH; // Spacing between isles
+    float thenum = 0;
+    //if(self->face == 0)
         thenum = -[self getWidth]+STANDARD_RACK_WIDTH;
     thenum -= STANDARD_RACK_WIDTH*[IsleOffsets getIsleOffset: [[self getLocation] getx]];
-
+    int additionalstuff = 0;
+    if([[self getLocation] getx] > 6)
+        additionalstuff = 20*TILE_WIDTH;
     glPushMatrix();
-    //NSLog(@"self->face == %d", self->face);
     // Move this isle one way or the other depending on which way it's facing...
-    glTranslatef(thenum,0,scale*[[self getLocation] getx]);
-    //NSLog(@"rackArray count == %f",thenum);
-    //NSLog(@"rackArray count == %f", cos((double)PI));
-    //NSLog(@"rackArray count == %d", self->face);
-    glRotatef(self->face,0,1,0);
-    //NSLog(@"y = %d", [[self getLocation] getx]);
+    glTranslatef(thenum,0,scale*([[self getLocation] getx]-1)+0.5*STANDARD_RACK_DEPTH
+                    +additionalstuff);
+    
     [self->rackArray draw];
     glPopMatrix();
     return self;

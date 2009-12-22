@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <time.h>
 #import <Foundation/Foundation.h>
+#import "IsleOffsets.h"
 void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
 @implementation Rack
 static unsigned int texture;
@@ -21,9 +22,18 @@ static unsigned int texture;
     r = (float)rand() / (float)RAND_MAX;
     g = 1.0-r;
     b = 0.0;
-
+    self->wireframe = YES;
+    self->gltName = nil;
     vertsSetUp = NO;
     self->nodes = [[DrawableArray alloc] init];
+    return self;
+}
+-initWithName: (NSString*)_name {
+    [self init];
+    [self setName: _name];
+    self->gltName = [[GLText alloc] initWithString: [self getName] andFont: @"LinLibertine_Re.ttf"];
+    [self->gltName setScale: .4];
+    [self->gltName setRotationOnX: 90 Y: 180 Z: 0];
     return self;
 }
 void setQuadArrayVertex(Vertex* v, Point p1, Point p2, Point p3, Point p4) {
@@ -67,15 +77,26 @@ void setQuadArrayVertex(Vertex* v, Point p1, Point p2, Point p3, Point p4) {
     p7.x = p3.x; p7.y = p3.y; p7.z = 0.5*d;
     p8.x = p4.x; p8.y = p4.y; p8.z = 0.5*d;
     // 6 quads, 4 verts per quad, 24 verts total
-    self->vertCount = 24;
-    rackVerts = malloc(sizeof(Vertex)*24);  // Don't forget to free this...
-    setQuadArrayVertex(&rackVerts[0],  p1, p2, p3, p4);  // Front
-    setQuadArrayVertex(&rackVerts[4],  p1, p5, p6, p2);  // Left side
-    setQuadArrayVertex(&rackVerts[8],  p2, p6, p7, p3);  // Top side
-    setQuadArrayVertex(&rackVerts[12], p4, p3, p7, p8);  // Right side
-    setQuadArrayVertex(&rackVerts[16], p1, p4, p8, p5);  // Bottom side
-    setQuadArrayVertex(&rackVerts[20], p5, p8, p7, p6);  // Back side
+    rack = malloc(sizeof(VertArray));
+    self->rack->vertCount = 24;
+    self->rack->verts = malloc(sizeof(Vertex)*self->rack->vertCount);  // Don't forget to free this...
+
+    setQuadArrayVertex(&rack->verts[0],  p1, p2, p3, p4);  // Front
+    setQuadArrayVertex(&rack->verts[4],  p1, p5, p6, p2);  // Left side
+    setQuadArrayVertex(&rack->verts[8],  p2, p6, p7, p3);  // Top side
+    setQuadArrayVertex(&rack->verts[12], p4, p3, p7, p8);  // Right side
+    setQuadArrayVertex(&rack->verts[16], p1, p4, p8, p5);  // Bottom side
+    setQuadArrayVertex(&rack->verts[20], p5, p8, p7, p6);  // Back side
     vertsSetUp = YES;
+/*
+    setQuadArrayVertex(&rack->verts[0],  p1, p5, p6, p2);  // Left side
+    setQuadArrayVertex(&rack->verts[4],  p2, p6, p7, p3);  // Top side
+    setQuadArrayVertex(&rack->verts[8], p4, p3, p7, p8);  // Right side
+    setQuadArrayVertex(&rack->verts[12], p1, p4, p8, p5);  // Bottom side
+    setQuadArrayVertex(&rack->verts[16], p5, p8, p7, p6);  // Back side
+    vertsSetUp = YES;
+    */
+
     return self;
 }
 -draw {
@@ -85,32 +106,44 @@ void setQuadArrayVertex(Vertex* v, Point p1, Point p2, Point p3, Point p4) {
     glPushMatrix(); // Save matrix state
     // Draw this rack based on it's location within its isle
     glTranslatef([self getWidth]*[[self getLocation] getx], 0, 0);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     glEnable(GL_CULL_FACE);
     //glEnable(GL_TEXTURE_2D);
     glDisable(GL_TEXTURE_2D);
-    glColor3f(r,g,b);
+    //glColor3f(r,g,b);
+    glColor3f(.1,.1,.3);
+    glRotatef(self->face,0,1,0);
     // Draw the rack itself, consisting of 6 sides
-    glInterleavedArrays(GL_T2F_V3F, 0, self->rackVerts);
-    glDrawArrays(GL_QUADS, 0, 24);
+    glInterleavedArrays(GL_T2F_V3F, 0, self->rack->verts);
+    if(wireframe == YES)
+        glDrawArrays(GL_LINES, 0, self->rack->vertCount);
+    else
+        glDrawArrays(GL_QUADS, 0, self->rack->vertCount);
 
     glColor3f(1,1,1);
-    drawString3D(0,[self getHeight],0,GLUT_BITMAP_HELVETICA_12,[self getName], 0);
+    glPushMatrix();
+    glTranslatef(0,[self getHeight]*-0.5+STANDARD_NODE_HEIGHT*-0.5,[self getDepth]*-0.5);
+    if((int)[self getDepth] != (int)STANDARD_RACK_DEPTH)
+        NSLog(@"Z = %f",[self getDepth]);
     [self->nodes draw];
+    glPopMatrix();
+    glTranslatef(11.2,.5001*STANDARD_RACK_HEIGHT,6);
+    // Draw the rack name
+    //drawString3D(0,[self getHeight],0,GLUT_BITMAP_HELVETICA_12,[self getName], 0);
+    [gltName glDraw];
     glPopMatrix();  
-
     GLenum err = glGetError();
-    if(err != GL_NO_ERROR) {
-        NSLog(@"There was a glError, error number: %d", err);
-        printf("error in hex: %x\n", err);
-    }
-
+    if(err != GL_NO_ERROR)
+        NSLog(@"There was a glError, error number: %x", err);
     return self;
 }
 -addNode: (Node*) node {
+    // Kinda cryptic line, don't you think?
+    [node setLocation: [[[[Location alloc] init] setx: 0] sety: [self->nodes count]]];
     [self->nodes addDrawableObject: node];
+    return self;
+}
+-setFace: (int) _face {
+    self->face = _face;
     return self;
 }
 @end

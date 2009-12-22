@@ -12,9 +12,9 @@
 @interface Locatable : NSObject {
     Location *location;
     NSString *name;
-    int width;
-    int height;
-    int depth;
+    float width;
+    float height;
+    float depth;
 }
 +(void)drawGLQuad: (Point) p1 andP2: (Point) p2
             andP3: (Point) p3 andP4: (Point) p4;
@@ -22,12 +22,12 @@
 -(NSString*) getName;
 -setLocation: (Location*) location;
 -(Location*) getLocation;
--setWidth: (int) _width;
--setHeight: (int) _height;
--setDepth: (int) _depth;
--(int)getWidth;
--(int)getHeight;
--(int)getDepth;
+-setWidth: (float) _width;
+-setHeight: (float) _height;
+-setDepth: (float) _depth;
+-(float)getWidth;
+-(float)getHeight;
+-(float)getDepth;
 @end
 
 #endif // LOCATABLE_H

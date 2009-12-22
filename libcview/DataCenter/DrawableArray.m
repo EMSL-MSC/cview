@@ -22,7 +22,7 @@
     if(enumerator == nil)
         NSLog(@"[DrawableArray draw]: enumerator was nil!");
     id element;
-    int x = 0;
+    //int x = 0;
     //NSLog(@"drawableObjecs count == %d", [drawableObjects count]);
     while((element = [enumerator nextObject]) != nil) {
         //NSLog(@"x == %d", x++);

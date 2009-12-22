@@ -5,47 +5,46 @@
 #import "DataSet.h"
 #import "GLDataCenterGrid.h"
 #import "DataCenter/IsleOffsets.h"
+#import "DataCenterLoader.h"
 void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
 extern GLuint g_textureID;
 @implementation  GLDataCenterGrid
 // TODO: update this draw function
 -init {
     [super init];
-    self->isles = [[DrawableArray alloc] init];
-    self->floorArray = [IsleOffsets getDataCenterFloor];
+    self->csvFilePath = nil;
+    [self doInit];
     return self;
 }
-/*
--drawData {
-	int i,j;
-	float *dl;
-	float *verts;
-	verts = [dataRow mutableBytes];
+-(NSString*) get_csvFilePath {
+    return self->csvFilePath;
+}
+-doInit {
+    self->isles = [[DrawableArray alloc] init];
+    self->floorArray1 = [IsleOffsets getDataCenterFloorPart1];
+    self->floorArray2 = [IsleOffsets getDataCenterFloorPart2];
+    self->floorArray3 = [IsleOffsets getDataCenterFloorPart3];
+    if(self->csvFilePath != nil) {
+        DataCenterLoader *dcl = [[DataCenterLoader alloc] init];
+        [dcl LoadGLDataCenterGrid: self];
+        [dcl autorelease];
+    }
+    return self;
+}
+-initWithPList: (id)list {
+    NSLog(@"initWithPList: %@", [self class]);
+    DataSet *ds;
+    [super initWithPList: list];
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glPushMatrix();	
-	glScalef(xscale,yscale,zscale);
-
-	glVertexPointer(3, GL_FLOAT, 0, verts);
-	glColorPointer(3, GL_FLOAT, 0, [colorRow mutableBytes]);
-
-	for (i=0;i<[dataSet width];i++) {
-		dl=[dataSet dataRow: i];
-
-
-		[colorMap doMapWithData: dl thatHasLength: [dataSet height] toColors: [colorRow mutableBytes]];
-		//is there a gooder way? FIXME
-		for (j=0;j<[dataSet height];j++) {
-			verts[j*3+1] = dl[j];
-			verts[j*3+0] = (float)i;
-		}	
-		glDrawArrays(GL_POINTS,0,[dataSet height]);
-	}
-
-	glPopMatrix();
-	return self;
-}*/
+    self->csvFilePath = [[list objectForKey: @"csvFilePath"] retain];
+    NSLog(@"csvFilePath = %@", self->csvFilePath);
+    [self doInit];
+    return self;
+}
+-(void)dealloc {
+    [csvFilePath release];
+    [super dealloc];
+}
 -drawOriginAxis {
     glPushMatrix();
     //glLoadIdentity();
@@ -72,6 +71,24 @@ extern GLuint g_textureID;
     glPopMatrix();
     return self;
 }
+-drawGrid {
+    glBegin(GL_LINES);
+    glColor3f(0,0,0);
+    int nx = -10, ny = 100;
+    int i;
+    for(i=nx;i<ny;++i) {
+        glVertex3f(-nx*TILE_WIDTH,-1,i*TILE_WIDTH);
+        glVertex3f(-ny*TILE_WIDTH,-1,i*TILE_WIDTH);
+        glVertex3f(-i*TILE_WIDTH,-1,nx*TILE_WIDTH);
+        glVertex3f(-i*TILE_WIDTH,-1,ny*TILE_WIDTH);
+   }
+
+    glEnd();
+    glPushMatrix();
+
+    glPopMatrix();
+    return self;
+}
 -addIsle: (Isle*) isle {
     //NSLog(@"In addIsle:");
     // Add the passed rack to our rackArray
@@ -81,13 +98,13 @@ extern GLuint g_textureID;
 
 
 //FIXME
-extern void loadTexture( void );
- 
 -draw {
-    if(!g_textureID)
-        loadTexture();
-    [self drawOriginAxis];
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    //[self drawOriginAxis];
     [self drawFloor];
+    //[self drawGrid];
     [self->isles draw];
     GLenum err = glGetError();
     if(err != GL_NO_ERROR) {
@@ -98,18 +115,32 @@ extern void loadTexture( void );
 }
 -drawFloor {
     //TODO: add stuff here to draw floor tiles
-    if(self->floorArray == nil)
+    if(self->floorArray1 == NULL || self->floorArray2 == NULL || self->floorArray3 == NULL)
         return self;
     // No textures for now...
     glDisable(GL_TEXTURE_2D);
     glColor3f(0.5,0.5,0.5);
     // Draw the rack itself, consisting of 6 sides
-    glInterleavedArrays(GL_T2F_V3F, 0, self->floorArray->verts);
-    glDrawArrays(GL_POLYGON, 0, self->floorArray->vertCount);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    glInterleavedArrays(GL_T2F_V3F, 0, self->floorArray1->verts);
+    glDrawArrays(GL_POLYGON, 0, self->floorArray1->vertCount);
+
+    glInterleavedArrays(GL_T2F_V3F, 0, self->floorArray2->verts);
+    glDrawArrays(GL_POLYGON, 0, self->floorArray2->vertCount);
+
+    glInterleavedArrays(GL_T2F_V3F, 0, self->floorArray3->verts);
+    glDrawArrays(GL_POLYGON, 0, self->floorArray3->vertCount);
+
+    //glCullFace(GL_FRONT);
 
     return self;
 }
+    
 -glDraw {
+    [self draw];
+    return self;
+
     float max = [dataSet getScaledMax];
 	
 	if (currentMax != max) {
@@ -119,11 +150,9 @@ extern void loadTexture( void );
 		colorMap = [ColorMap mapWithMax: currentMax];
 		[colorMap retain];
 	}
-
 	glScalef(1.0,1.0,1.0); 
-	
     [self draw];
-    [self drawFloor];
+    //[self drawFloor];
 	//[self drawPlane];
 	//[self drawData];
 	[self drawAxis];

@@ -13,10 +13,14 @@
 @interface GLDataCenterGrid: GLGrid <Drawable> {
     DrawableArray *isles;
 @private
-    VertArray *floorArray;
+    VertArray *floorArray1;
+    VertArray *floorArray2;
+    VertArray *floorArray3;
+    NSString *csvFilePath;
 }
+-(NSString*) get_csvFilePath;
 -init;
--drawData;
+-doInit;
 -draw;
 -drawFloor;
 -(NSEnumerator*)getEnumerator;

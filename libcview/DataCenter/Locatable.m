@@ -31,25 +31,25 @@
 -(Location*) getLocation; {
     return self->location;
 }
--setWidth: (int) _width {
+-setWidth: (float) _width {
     self->width = _width;
     return self;
 }
--(int) getWidth; {
+-(float) getWidth; {
     return self->width;
 }
--setHeight: (int) _height {
+-setHeight: (float) _height {
     self->height = _height;
     return self;
 }
--(int) getHeight; {
+-(float) getHeight; {
     return self->height;
 }
--setDepth: (int) _depth {
+-setDepth: (float) _depth {
     self->depth = _depth;
     return self;
 }
--(int) getDepth; {
+-(float) getDepth; {
     return self->depth;
 }
 

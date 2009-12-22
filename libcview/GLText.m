@@ -171,8 +171,9 @@ All rights reserved.
 	float bounds[6];
 	ftglGetFontBBox(theFont,[string UTF8String],[string length],bounds);
 	glPushMatrix();
+    //printf("bounds[4] = %f\n", bounds[4]);
 
-	glTranslatef(0,bounds[4],0);
+	//glTranslatef(0,bounds[4],0);
 	glScalef(scale[0],-scale[1],scale[2]);	
 	glRotatef(rotates[0],1.0,0.0,0.0);
 	glRotatef(rotates[1],0.0,1.0,0.0);
