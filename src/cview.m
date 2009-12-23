@@ -121,11 +121,25 @@ All rights reserved.
 /**@file cview.m
 	@ingroup cviewapp
 */
+void usage(NSString *msg,int ecode) {
+	if (ecode) {
+		NSLog(@"%@\n",msg);
+	}
 
+	printf("\ncview use:\n\
+cview -c setup.cview\n\
+\n\
+    to load up a 3D view of the data center use: src/cview -c cviews/3d_datacenter.cview \n\
+    or try one of the other cview files located in the cviews folder \n\
+    if you would like help writing your own cview file see the README in the cviews folder \n\
+	\n\n");
+
+    exit(ecode);
+}
 int main(int argc,char *argv[], char *env[]) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	ENABLEDEBUGALLOC;
-
+    //usage(@"yo yo yo", 1);
 #ifdef CLS_DUMP
 	GSDebugAllocationActiveRecordingObjects(CLS_DUMP);
 #endif

@@ -14,6 +14,8 @@ extern GLuint g_textureID;
     [super init];
     self->csvFilePath = nil;
     [self doInit];
+    [Node setNodeArray: NULL];
+    [Rack setRackArray: NULL];
     return self;
 }
 -(NSString*) get_csvFilePath {
@@ -33,12 +35,13 @@ extern GLuint g_textureID;
 }
 -initWithPList: (id)list {
     NSLog(@"initWithPList: %@", [self class]);
-    DataSet *ds;
     [super initWithPList: list];
 
-    self->csvFilePath = [[list objectForKey: @"csvFilePath"] retain];
+    self->csvFilePath = [[list objectForKey: @"csvFilePath"
+            missing: @"data/Chinook Serial numbers.csv"] retain];
     NSLog(@"csvFilePath = %@", self->csvFilePath);
     [self doInit];
+    [Node setDataSet: self->dataSet];
     return self;
 }
 -(void)dealloc {

@@ -233,4 +233,18 @@ All rights reserved.
 -(NSString *)getDataKey {
 	return dataKey;
 }
+-(float*)dataRowByString:(NSString*)xTick {
+    //TODO:
+    indexByString
+    
+}
+-initializeIndexByStringDictionary {
+    // Must read all xTicks to determine their appropriate index
+    int i;
+    for(i=0;i<[self width]; ++i)
+        [indexByString setObject: [NSNumber numberWithInt: i]
+            forKey: [self columnTick: i]];
+
+    }
+}
 @end

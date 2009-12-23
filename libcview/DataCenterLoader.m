@@ -17,55 +17,30 @@
     self->dcg = nil;
     return self;
 }
--(GLDataCenterGrid*) LoadGLDataCenterGrid: (GLDataCenterGrid*) _dcg {
-    //NSLog(@"[DataCenterLoader init]");
-    if(_dcg == nil) {
-        NSLog(@"LoadGLDataCenterGrid was passed a nil parameter!");
-        return nil;
-    }
-    self->dcg = _dcg;
-    // reads file into memory as an NSString
-    NSString *fileString = [NSString stringWithContentsOfFile: [self->dcg get_csvFilePath]];
-    if(fileString == nil) {
-        NSLog(@"Could not open \"%@\"! Please look in [DataCenterLoader LoadGLDataCenterGrid]",[self->dcg get_csvFilePath]);
-        return self;
-    }
-    NSArray *arr = [self parseIt: fileString];
-    NSEnumerator *enumerator = [arr objectEnumerator];
-    id element;
+-(NSMutableArray*)parseIt: (NSString*) file {
+    NSMutableArray *arr = [NSMutableArray array];
+    NSRange range;
     int x = 0;
-    NSString* rack = nil;
-    NSString* node = nil;
-    NSRange range;  // Used to remove those darn quotes from a csv file
-    while((element = [enumerator nextObject]) != nil) {
-        //NSLog(@"element == %@, x == %d", element, x);
-        element = [element uppercaseString];
-        if([element length] >= 3) {
-            range.location = 1;
-            range.length = [element length] - 2;
-            // This substring crap removes quotes from the beginning and end of the string
-            // if there are any...    g
-            if([element characterAtIndex: 0] == '"' &&
-               [element characterAtIndex: [element length] - 1] == '"')
-                element = [element substringWithRange: range]; 
-        }
-        if(x++ == 0)
-            rack = element;
-        else if(x == 2) {
-            node = element;
-        }else if(x == 7) {
-            x = 0;
-            //NSLog(@"x == 7");
-            // Make sure we don't include the "labels" in the csv file
-            // in our data set, just throw that crap away!
-            //NSLog(@"rack: %@ node: %@", rack, node);
-            if(!([rack compare: @"RACK"] == NSOrderedSame &&
-                 [node compare: @"DEVICE"] == NSOrderedSame)) {
-                    [self insertNode: node andRack: rack];
+    range.location = 0;
+    int quote = 0;
+    while(x < [file length]) {
+        while(quote == 1 ||
+              ([file characterAtIndex:x] != ',' &&
+               [file characterAtIndex:x] != '\n')) {
+            if([file characterAtIndex:x] == '"') {
+                if(quote == 0)  
+                    quote = 1;
+                else
+                    quote = 0;
             }
+            ++x;
         }
+        range.length = x - range.location;
+        [arr addObject: [file substringWithRange: range]];        
+        range.location = x + 1;
+        ++x;
     }
-    return self->dcg;
+    return arr;
 }
 //  isleName will be like "C1" or "C5"....i know it makes no sense,
 //  but this format was already predetermined in the Chinook Serial Numbers file...
@@ -169,37 +144,65 @@
     // because there should only be one occurance of each node in the Chinook
     // Serial Numbers file........(we think)
     //NSLog(@"Creating Node: %@", node);
-    nodeObj = [[[Node alloc] init] setDS: [self->dcg getDataSet]];
+    nodeObj = [[Node alloc] init];
     [nodeObj setName: [node retain]];
     [nodeObj setTemperature: 0];
-    [[nodeObj setWidth: STANDARD_NODE_WIDTH] setHeight: STANDARD_NODE_HEIGHT];
+    [[[nodeObj setWidth: STANDARD_NODE_WIDTH]
+               setHeight: STANDARD_NODE_HEIGHT]
+               setDepth: STANDARD_NODE_DEPTH];
     [rackObj addNode: nodeObj]; // Add the node object to the rack object
     //NSLog(@"Debug.");
     return self;
 } // insertNode: andRack
--(NSMutableArray*)parseIt: (NSString*) file {
-    NSMutableArray *arr = [NSMutableArray array];
-    NSRange range;
-    int x = 0;
-    range.location = 0;
-    int quote = 0;
-    while(x < [file length]) {
-        while(quote == 1 ||
-              ([file characterAtIndex:x] != ',' &&
-               [file characterAtIndex:x] != '\n')) {
-            if([file characterAtIndex:x] == '"') {
-                if(quote == 0)  
-                    quote = 1;
-                else
-                    quote = 0;
-            }
-            ++x;
-        }
-        range.length = x - range.location;
-        [arr addObject: [file substringWithRange: range]];        
-        range.location = x + 1;
-        ++x;
+-(GLDataCenterGrid*) LoadGLDataCenterGrid: (GLDataCenterGrid*) _dcg {
+    //NSLog(@"[DataCenterLoader init]");
+    if(_dcg == nil) {
+        NSLog(@"LoadGLDataCenterGrid was passed a nil parameter!");
+        return nil;
     }
-    return arr;
+    self->dcg = _dcg;
+    // reads file into memory as an NSString
+    NSString *fileString = [NSString stringWithContentsOfFile: [self->dcg get_csvFilePath]];
+    if(fileString == nil) {
+        NSLog(@"Could not open \"%@\"! Please look in [DataCenterLoader LoadGLDataCenterGrid]",[self->dcg get_csvFilePath]);
+        return nil;
+    }
+    NSArray *arr = [self parseIt: fileString];
+    NSEnumerator *enumerator = [arr objectEnumerator];
+    id element;
+    int x = 0;
+    NSString* rack = nil;
+    NSString* node = nil;
+    NSRange range;  // Used to remove those darn quotes from a csv file
+    while((element = [enumerator nextObject]) != nil) {
+        //NSLog(@"element == %@, x == %d", element, x);
+        element = [element uppercaseString];
+        if([element length] >= 3) {
+            range.location = 1;
+            range.length = [element length] - 2;
+            // This substring crap removes quotes from the beginning and end of the string
+            // if there are any...    g
+            if([element characterAtIndex: 0] == '"' &&
+               [element characterAtIndex: [element length] - 1] == '"')
+                element = [element substringWithRange: range]; 
+        }
+        if(x++ == 0)
+            rack = element;
+        else if(x == 2) {
+            node = element;
+        }else if(x == 7) {
+            x = 0;
+            //NSLog(@"x == 7");
+            // Make sure we don't include the "labels" in the csv file
+            // in our data set, just throw that crap away!
+            //NSLog(@"rack: %@ node: %@", rack, node);
+            if(!([rack compare: @"RACK"] == NSOrderedSame &&
+                 [node compare: @"DEVICE"] == NSOrderedSame)) {
+                    [self insertNode: node andRack: rack];
+            }
+        }
+    }
+    return self->dcg;
 }
+
 @end

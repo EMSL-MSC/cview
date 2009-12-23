@@ -19,14 +19,14 @@
     BOOL wireframe;     // if yes draw the racks as wireframe
     //int vertCount;
     //Vertex* rackVerts;
-    VertArray *rack;
     float r,g,b; // color stuff...
     GLText *gltName;
     int face; // degress in which the rack is facing
 }
+//+(VertArray*) rackArray;
++(void) setRackArray: (VertArray*) _rackArray;
 +(unsigned int) texture;
 +setTexture:(unsigned int)_texture;
--initRackVerts;
 -initWithName:(NSString*)_name;
 -draw;
 -addNode: (Node*) node;

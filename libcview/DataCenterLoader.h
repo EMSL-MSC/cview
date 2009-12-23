@@ -20,7 +20,6 @@
 }
 -init;
 // Loads a GLDataCenterGrid
--(GLDataCenterGrid*) LoadGLDataCenterGrid: (GLDataCenterGrid*) _dcg;
 /** You must pass this message a file that is
     comma separated and the format looks like this:
 "Rack","Device","Component Description","Part#","Serial Number","Start Date","Phase"
@@ -33,7 +32,6 @@ https://cvs.pnl.gov/chinook   (scroll to the bottom of the page)
 FYI, only the first two fields really matter (at this point).  The rest I don't use
 -Brock
 */
-//-insertNode: (NSString*) node: andRack: (NSString*)rack;
--parseSerialNumbersFile: (NSString*) file;
+-(GLDataCenterGrid*) LoadGLDataCenterGrid: (GLDataCenterGrid*) _dcg;
 @end
 #endif // DATACENTERLOADER_H

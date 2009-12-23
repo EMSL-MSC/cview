@@ -9,7 +9,8 @@
 #define STANDARD_RACK_HEIGHT    78.89
 
 #define STANDARD_NODE_WIDTH     20  // just guessing now..
-#define STANDARD_NODE_HEIGHT    ((STANDARD_RACK_HEIGHT / 42)-5)
+#define STANDARD_NODE_HEIGHT    (STANDARD_RACK_HEIGHT / (42))
+#define STANDARD_NODE_DEPTH     (STANDARD_RACK_DEPTH - 10)
 
 #define WIDE_RACK_WIDTH         1
 

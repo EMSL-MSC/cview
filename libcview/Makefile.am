@@ -1,5 +1,5 @@
 OBJC=gcc
-AM_OBJCFLAGS=-g -Wall  -fobjc-exceptions -O0 -DPKG_DATA_DIR=\@\"$(pkgdatadir)/\"
+AM_OBJCFLAGS=-g -Wall -pg -fobjc-exceptions -O0 -DPKG_DATA_DIR=\@\"$(pkgdatadir)/\"
 OBJCDEPMODE = depmode=gcc
 
 # set the include path found by configure
