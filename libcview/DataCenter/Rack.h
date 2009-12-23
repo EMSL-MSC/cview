@@ -17,6 +17,7 @@
 @private
     BOOL vertsSetUp;
     BOOL wireframe;     // if yes draw the racks as wireframe
+    BOOL drawname;
     //int vertCount;
     //Vertex* rackVerts;
     float r,g,b; // color stuff...

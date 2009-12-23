@@ -4,16 +4,18 @@
 #import "Drawable.h"
 #import "Point.h"
 #import "../../libcview-data/WebDataSet.h"
+#import "../GLText.h"
 /**
     @author Brock Erwin
 	@ingroup cview3d
 */
 @interface Node : Locatable <Drawable> {
     float temperature;
-    int gotit;
+    GLText *gltName;
+    BOOL drawname;
 }
 +(void)setNodeArray:(VertArray*)_nodeArray;
-+(void)setDataSet: (DataSet*)_dataSet;
++(void)setWebDataSet: (WebDataSet*)_dataSet;
 -setTemperature: (float) temperature;
 -(float)getTemperature;
 @end

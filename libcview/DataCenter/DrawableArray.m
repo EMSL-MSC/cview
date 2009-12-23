@@ -14,6 +14,23 @@
     //NSLog(@"drawableObjecs count == %d", [drawableObjects count]);
     return self;
 }
+-drawOne {
+    //NSLog(@"about to get an enumerator...");
+    if(self->drawableObjects == nil)
+        NSLog(@"[DrawableArray draw]: self->drawableObjects was nil!");
+    NSEnumerator *enumerator = [self->drawableObjects objectEnumerator];
+    if(enumerator == nil)
+        NSLog(@"[DrawableArray draw]: enumerator was nil!");
+    id element;
+    //int x = 0;
+    //NSLog(@"drawableObjecs count == %d", [drawableObjects count]);
+    element = [enumerator nextObject];
+        //NSLog(@"x == %d", x++);
+        [element draw];
+    
+    //NSLog(@"After the draw loop!");
+    return self;
+}
 -draw {
     //NSLog(@"about to get an enumerator...");
     if(self->drawableObjects == nil)

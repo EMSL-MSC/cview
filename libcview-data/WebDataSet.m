@@ -75,11 +75,13 @@ All rights reserved.
 }
 */
 -initWithUrlBase: (NSURL *)base andKey: (NSString *)key {
+    indexByString = nil;
 	int w,h,retrys;
 	Class handlerClass;
 	NSURLHandle *handle;
 	NSDate *d;
 
+    indexByString = nil;
 	baseURL = [base retain];
 	dataKey = key;
 	dataURL = [[NSURL URLWithString: [NSString stringWithFormat: @"%@.data",key] relativeToURL: base] retain];
@@ -129,11 +131,13 @@ All rights reserved.
 	[textDescription retain];
 	NSLog(@"description: %p",textDescription);
 	NSLog(@"rateSuffix: %@",rateSuffix);
+    [self initializeIndexByStringDictionary];
 	return self;
 }
 /**@objcdef dataUpdateInterval specify how often the thread will reload the DataSet*/
 -initWithPList: (id)list {
 	NSLog(@"initWithPList: %@",[self class]);
+    indexByString = nil;
 
 	[super initWithPList: list];
 
@@ -146,6 +150,7 @@ All rights reserved.
 
 	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
 	[thread startUpdateThread: [args floatForKey: @"dataUpdateInterval"]];
+    [self initializeIndexByStringDictionary];
 	return self;
 }
 
@@ -175,6 +180,7 @@ All rights reserved.
 }
 
 -(BOOL)updateData {
+    NSLog(@"WebDataSet: Updating web data....");
 	BOOL abort;
 	NSData *Xt;
 	NSData *Yt;
@@ -234,17 +240,29 @@ All rights reserved.
 	return dataKey;
 }
 -(float*)dataRowByString:(NSString*)xTick {
-    //TODO:
-    indexByString
-    
+    if(indexByString != nil) {
+        //NSLog(@"index is: %d, xTick = %@", [[indexByString objectForKey: xTick] intValue], xTick);
+        id obj = [indexByString objectForKey: xTick];
+        if(obj != nil)
+            return [self dataRow: [obj intValue]]; 
+        else
+            return NULL;
+    }else{
+        NSLog(@"Uh-oh, just tried to find stuff when the dictionary wasn't even instantialized!!!!");
+        return NULL;   // Hasn't been instantialized!!!
+    }
 }
 -initializeIndexByStringDictionary {
     // Must read all xTicks to determine their appropriate index
+    if(indexByString != nil)
+        [indexByString autorelease];
+    indexByString = [[NSMutableDictionary alloc] init];
     int i;
-    for(i=0;i<[self width]; ++i)
+    for(i=0;i<[self width]; ++i) {
+        //NSLog(@"key = %@, object = %d, i = %d", [self columnTick: i], [[NSNumber numberWithInt: i] intValue], i);
         [indexByString setObject: [NSNumber numberWithInt: i]
-            forKey: [self columnTick: i]];
-
+            forKey: [[self columnTick: i] uppercaseString]];
     }
+    return self;
 }
 @end

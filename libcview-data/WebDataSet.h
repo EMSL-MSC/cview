@@ -106,4 +106,5 @@ digraph tickfile {
 -(NSString *)getDataKey;
 /** get row of data based on xTick string **/
 -(float*)dataRowByString:(NSString*)xTick;
+-initializeIndexByStringDictionary;
 @end

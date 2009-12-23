@@ -37,6 +37,7 @@
                     +additionalstuff);
     
     [self->rackArray draw];
+    
     glPopMatrix();
     return self;
 }

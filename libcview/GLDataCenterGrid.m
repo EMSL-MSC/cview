@@ -41,7 +41,7 @@ extern GLuint g_textureID;
             missing: @"data/Chinook Serial numbers.csv"] retain];
     NSLog(@"csvFilePath = %@", self->csvFilePath);
     [self doInit];
-    [Node setDataSet: self->dataSet];
+    [Node setWebDataSet: self->dataSet];
     return self;
 }
 -(void)dealloc {

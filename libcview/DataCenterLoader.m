@@ -144,8 +144,7 @@
     // because there should only be one occurance of each node in the Chinook
     // Serial Numbers file........(we think)
     //NSLog(@"Creating Node: %@", node);
-    nodeObj = [[Node alloc] init];
-    [nodeObj setName: [node retain]];
+    nodeObj = [[Node alloc] initWithName: [node retain]];
     [nodeObj setTemperature: 0];
     [[[nodeObj setWidth: STANDARD_NODE_WIDTH]
                setHeight: STANDARD_NODE_HEIGHT]

@@ -28,6 +28,7 @@ static VertArray *rackArray;
     g = 1.0-r;
     b = 0.0;
     self->wireframe = YES;
+    self->drawname = YES;
     self->gltName = nil;
     vertsSetUp = NO;
     self->nodes = [[DrawableArray alloc] init];
@@ -36,10 +37,7 @@ static VertArray *rackArray;
 -initWithName: (NSString*)_name {
     [self init];
     [self setName: _name];
-    self->gltName = [[GLText alloc] initWithString: [self getName] andFont: @"LinLibertine_Re.ttf"];
-    [self->gltName setScale: .4];
-    [self->gltName setRotationOnX: 90 Y: 180 Z: 0];
-    return self;
+        return self;
 }
 extern VertArray* createBox(float w, float h, float d);
 -draw {
@@ -70,10 +68,17 @@ extern VertArray* createBox(float w, float h, float d);
         NSLog(@"Z = %f",[self getDepth]);
     [self->nodes draw];
     glPopMatrix();
-    glTranslatef(11.2,.5001*STANDARD_RACK_HEIGHT,6);
     // Draw the rack name
     //drawString3D(0,[self getHeight],0,GLUT_BITMAP_HELVETICA_12,[self getName], 0);
-    //[gltName glDraw];
+    if(drawname == YES) {
+        glTranslatef(11.2,.5001*STANDARD_RACK_HEIGHT,6);
+        if(self->gltName == nil) {
+            self->gltName = [[GLText alloc] initWithString: [self getName] andFont: @"LinLibertine_Re.ttf"];
+            [self->gltName setScale: .4];
+            [self->gltName setRotationOnX: 90 Y: 180 Z: 0];
+        }
+        [gltName glDraw];
+    }
     glPopMatrix();  
     GLenum err = glGetError();
     if(err != GL_NO_ERROR)
@@ -81,8 +86,10 @@ extern VertArray* createBox(float w, float h, float d);
     return self;
 }
 -addNode: (Node*) node {
-    // Kinda cryptic line, don't you think?
-    [node setLocation: [[[[Location alloc] init] setx: 0] sety: [self->nodes count]]];
+    int y = [self->nodes count];
+    if(y > 9)
+        ++y;    // Account for the standard gap in most every rack
+    [node setLocation: [[[[Location alloc] init] setx: 0] sety: y]];
     [self->nodes addDrawableObject: node];
     return self;
 }

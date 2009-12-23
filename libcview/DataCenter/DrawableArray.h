@@ -15,6 +15,7 @@
 }
 -addDrawableObject: (id <Drawable>) drawableObject;
 -draw;
+-drawOne;
 -(NSEnumerator*)getEnumerator;
 -(int)count;
 @end
