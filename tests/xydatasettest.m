@@ -89,7 +89,7 @@ int main(int argc,char *argv[], char *env[]) {
 	[f1 lockMax: 256];
 	[h1 lockMax: 256];
 	
-	GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test" withWidth: 1000 andHeight: 800];
+	GLScreen * g = [[GLScreen alloc] initName: @"XYDataSet Test" withWidth: 1000 andHeight: 800];
 
 	Scene * scene1 = [[Scene alloc] init];
 	o=[[[[GLGrid alloc] initWithDataSet: f] setXTicks: 50] setYTicks: 50];
