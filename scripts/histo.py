@@ -95,7 +95,6 @@ a cview histogram.  After data collection, the class can output the
 		self.isSharedY = isSharedY # we don't share yTicks by default
 		self.datapoints = {} # dict of datapoints indexed by tuple (xTick,yTick)
 		self.isCumulative = isCumul # default histo is not cumulative
-		self.c_datapoints = {} # dict for storing cumulative data
 
 	def __sync__(self):
 		# synchronize xticks and yticks w/ group 
@@ -112,34 +111,17 @@ a cview histogram.  After data collection, the class can output the
 		self.xTicksList.sort(self.xTickSort)
 		self.yTicksList.sort(self.yTickSort)
 
-		# fill in holes in datapoints dictionary with zeros
-		for xTick in self.xTicksList:
-			for yTick in self.yTicksList:
-				if not self.datapoints.has_key((xTick, yTick)):
-					self.datapoints[(xTick, yTick)] = 0
-
-		# create cumulative data
-		if self.isCumulative:
-			self.c_datapoints = {}
-			for xTick in self.xTicksList:
-				cumul = 0
-				for yTick in self.yTicksList:
-					if self.datapoints[(xTick, yTick)] != 0:
-						cumul += self.datapoints[(xTick, yTick)]
-					self.c_datapoints[(xTick, yTick)] = cumul
-
 
 	def __str__(self): 
 		self.__sync__()
-		if self.isCumulative:
-			dp = self.c_datapoints
-		else:
-			dp = self.datapoints
 
 		strRep = ''
 		for yTick in self.yTicksList:
 			for xTick in self.xTicksList:
-				strRep += str(dp[(xTick, yTick)]) + ' '
+				if self.datapoints.has_key((xTick, yTick)):
+					strRep += str(self.datapoints[(xTick, yTick)]) + ' '
+				else:
+					strRep += str(0) + ' '
 			strRep += '\n'
 
 		return strRep
@@ -212,14 +194,20 @@ histograms is combined into the caller.
 					f.write(struct.pack('32s', str(yTick)))
 				f.close()
 
-				if histo.isCumulative:
-					dp = histo.c_datapoints
-				else:
-					dp = histo.datapoints
+				dp = histo.datapoints
 				f = open(pathPrefix + '.data', 'w')
 				for xTick in histo.xTicksList:
+					cumul = 0
 					for yTick in histo.yTicksList:
-						f.write(struct.pack('f', dp[(xTick, yTick)]))
+						if histo.isCumulative:
+							if dp.has_key((xTick, yTick)):
+								cumul += dp[(xTick, yTick)]
+							f.write(struct.pack('f', cumul))
+						elif dp.has_key((xTick, yTick)):
+							f.write(struct.pack('f', dp[(xTick, yTick)]))
+						else:
+							f.write(struct.pack('f', 0))
+							
 				f.close()
 	writeToFiles = staticmethod(writeToFiles) # creates static method
 
@@ -453,7 +441,7 @@ if __name__ == '__main__':
 	c = cviewHisto('output', 'c', 'f/sec') # directory 'output' must exist
 	c.set('x0','y0', 1)
 	c.set('x1','y0', 2)
-	c.set('x0','y1', 2)
+	#c.set('x0','y1', 2)
 	c.set('x1','y1', 3)
 	print c
 

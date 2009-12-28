@@ -59,15 +59,31 @@ All rights reserved.
 #include <gl.h>
 #include <glut.h>
 #include <string.h>
+#include <FTGL/ftgl.h>
+#include "config.h"
 #include "cview.h"
 
-void drawString3D(float x,float y,float z,void *font,NSString *string,float offset) {
+void drawString3D_glut(float x,float y,float z,void *font,NSString *string,float offset) {
 	int i;
 	const char *s = [string UTF8String];
 	//NSLog(@"drawString3D: %@",string);
 	glRasterPos3f(x, y - offset, z);
 	for (i = 0;i < strlen(s);i++)
 		glutBitmapCharacter(font, (int)s[i]);
+}
+
+void drawString3D(float x,float y,float z,void *font,NSString *string,float offset) {
+	static FTGLfont *theFont=NULL;
+
+	if (theFont==NULL) {
+		theFont = ftglCreateBitmapFont([find_resource_path(@"LinLibertine_Re.ttf") UTF8String]);
+		ftglSetFontFaceSize(theFont,14,72);
+		ftglSetFontCharMap(theFont,ft_encoding_unicode);
+	}
+//	NSLog(@"drawString3D: %@ %p",string,theFont);
+	glRasterPos3f(x, y - offset, z);
+
+	ftglRenderFont(theFont,[string UTF8String], FTGL_RENDER_ALL);
 }
 
 
@@ -90,7 +106,11 @@ NSString *find_resource_path(NSString *filename) {
 	NSFileManager *mgr = [NSFileManager defaultManager];
 	NSString *file=nil;
 	///@todo Should we have the data paths here
-	NSArray *paths = [NSArray arrayWithObjects: @"",PKG_DATA_DIR,@"../data/",@"./data/",nil];
+	NSMutableArray *paths = [NSMutableArray arrayWithObjects: @"",PKG_DATA_DIR,@"../data/",@"./data/",nil];
+	#if CVIEW_TEST_BUILD
+		[paths addObject: @"../tests/"];
+		[paths addObject: @"./tests/"];
+	#endif
 
 	NSEnumerator *e = [paths objectEnumerator];
 	id o;
