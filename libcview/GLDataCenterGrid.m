@@ -13,9 +13,12 @@ extern GLuint g_textureID;
 -init {
     [super init];
     self->csvFilePath = nil;
+    self->jobIds = nil;
     [self doInit];
     [Node setNodeArray: NULL];
     [Rack setRackArray: NULL];
+    [Rack setGLTName: nil];
+    [Node setGLTName: nil];
     return self;
 }
 -(NSString*) get_csvFilePath {
@@ -40,6 +43,14 @@ extern GLuint g_textureID;
     self->csvFilePath = [[list objectForKey: @"csvFilePath"
             missing: @"data/Chinook Serial numbers.csv"] retain];
     NSLog(@"csvFilePath = %@", self->csvFilePath);
+    DataSet *ds;
+	Class c;
+	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
+	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
+		ds=[c alloc];
+		[ds initWithPList: [list objectForKey: @"jobIDDataSet"]];
+        jobIds = [ds retain];
+	}
     [self doInit];
     [Node setWebDataSet: self->dataSet];
     return self;
@@ -108,6 +119,18 @@ extern GLuint g_textureID;
     //[self drawOriginAxis];
     [self drawFloor];
     //[self drawGrid];
+    /*
+    if(self->isles != nil) {
+        NSEnumerator *enumerator = [self->rackArray getEnumerator];
+        if(enumerator != nil) {
+            id element;
+            while((element = [enumerator nextObject]) != nil) {
+                [element startFading];
+            }
+        }
+    }
+    */
+
     [self->isles draw];
     GLenum err = glGetError();
     if(err != GL_NO_ERROR) {

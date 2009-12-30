@@ -11,7 +11,12 @@ void drawString3D(float x,float y,float z,void *font,NSString *string,float offs
 @implementation Rack
 static unsigned int texture;
 static VertArray *rackArray;
+static GLText *gltName;
 
++setGLTName:(GLText*) _gltName {
+    gltName = _gltName;
+    return self;
+}
 +(void) setRackArray: (VertArray*) _rackArray {
     rackArray = _rackArray;
 }
@@ -29,7 +34,7 @@ static VertArray *rackArray;
     b = 0.0;
     self->wireframe = YES;
     self->drawname = YES;
-    self->gltName = nil;
+    //self->gltName = nil;
     vertsSetUp = NO;
     self->nodes = [[DrawableArray alloc] init];
     return self;
@@ -39,8 +44,27 @@ static VertArray *rackArray;
     [self setName: _name];
         return self;
 }
+-startFading {
+    if(self->nodes == nil)
+        return self;
+    NSEnumerator *enumerator = [self->nodes getEnumerator];
+    if(enumerator == nil)
+        NSLog(@"[DrawableArray draw]: enumerator was nil!");
+    id element;
+    while((element = [enumerator nextObject]) != nil) {
+        [element startFading];
+    }
+    return self;
+}
 extern VertArray* createBox(float w, float h, float d);
 -draw {
+
+    float random = (float)rand() / (float)RAND_MAX;
+    if(random > .98) {
+        NSLog(@"Fading TRIGGERED!");
+        [self startFading];
+        }
+
     if(rackArray == NULL) {
         rackArray = createBox([self getWidth],[self getHeight],[self getDepth]);
         //vertsSetUp = YES;
@@ -66,17 +90,16 @@ extern VertArray* createBox(float w, float h, float d);
     glTranslatef(0,[self getHeight]*-0.5+STANDARD_NODE_HEIGHT*-0.5,0);//[self getDepth]*-0.5);
     if((int)[self getDepth] != (int)STANDARD_RACK_DEPTH)
         NSLog(@"Z = %f",[self getDepth]);
-    [self->nodes draw];
+    [self->nodes draw]; // Draw the nodes
     glPopMatrix();
-    // Draw the rack name
-    //drawString3D(0,[self getHeight],0,GLUT_BITMAP_HELVETICA_12,[self getName], 0);
-    if(drawname == YES) {
-        glTranslatef(11.2,.5001*STANDARD_RACK_HEIGHT,6);
-        if(self->gltName == nil) {
-            self->gltName = [[GLText alloc] initWithString: [self getName] andFont: @"LinLibertine_Re.ttf"];
-            [self->gltName setScale: .4];
-            [self->gltName setRotationOnX: 90 Y: 180 Z: 0];
+    if(drawname == YES) {   // Draw the rack name
+        if(gltName == nil) {
+            gltName = [[GLText alloc] initWithString: [self getName] andFont: @"LinLibertine_Re.ttf"];
+            [gltName setScale: .4];
+            [gltName setRotationOnX: 90 Y: 180 Z: 0];
         }
+        [gltName setString: [self getName]];
+        glTranslatef(11.2,.5001*STANDARD_RACK_HEIGHT,6);
         [gltName glDraw];
     }
     glPopMatrix();  

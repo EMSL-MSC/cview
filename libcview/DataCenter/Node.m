@@ -1,21 +1,31 @@
 #import "Node.h"
 #import <Foundation/NSString.h>
 #import <gl.h>
+#import <glut.h>
 #import "IsleOffsets.h"
 #import "../../libcview-data/WebDataSet.h"
 @implementation Node
 static VertArray *nodeArray;
 static WebDataSet *dataSet;
+static GLText *gltName;
 +(void)setNodeArray:(VertArray*)_nodeArray {
     nodeArray = _nodeArray;
 }
 +(void)setWebDataSet:(WebDataSet*)_dataSet {
     dataSet = [_dataSet retain];
 }
++setGLTName:(GLText*) _gltName {
+    gltName = _gltName;
+    return self;
+}
 -init {
     [super init];
-    self->gltName = nil;
     self->drawname = YES;
+    self->fading = NO;
+    self->unfading = NO;
+    self->fadetime = 5;    // in seconds
+    self->fadestart = 0;
+    self->fadeval = 1;  // default to full opacity
     return self;
  }
 -initWithName:(NSString*)_name {
@@ -27,6 +37,16 @@ static WebDataSet *dataSet;
     if(dataSet != nil)
         [dataSet release];
     return [super dealloc];
+}
+-startFading {
+    fading = YES;
+    unfading = NO;
+    return self;
+}
+-startUnFading {
+    unfading = YES;
+    fading = NO;
+    return self;
 }
 -(float)getData: (NSString*)nodeName {
     // First find the nodename in the xticks array
@@ -47,25 +67,56 @@ extern VertArray* createBox(float w, float h, float d);
         NSLog(@"width = %f height = %f depth = %f", [self getWidth],[self getHeight],[self getDepth]);
     }
     glPushMatrix();
-    glTranslatef(0,STANDARD_NODE_HEIGHT*[[self getLocation] gety],0);
+    glTranslatef(0,STANDARD_NODE_HEIGHT*([[self getLocation] gety]+1),0);
     [self setTemperature: [self getData: [self getName]]];
     if(self->temperature != -1)
         self->temperature /=  100.0;
-    // No valid data found from the dataSet    
-    if(temperature == -1)
-        glColor3f(1,1,1);// color the node white
+    // TODO: GET THE CURRENT TIME
+    //float thetime = get_the_current_time();
+    double thetime = [[NSDate date] timeIntervalSince1970];
+
+    if(fading == YES || unfading == YES) {
+        double scale = 0.1; // must be between 0 and 1, inclusive
+        if(wasfading == NO) {
+            fadestart = thetime;    //we just started fading
+            wasfading = YES;
+        }
+        if(thetime - fadestart > fadetime) {    // time to stop fading
+            fading = NO;
+            unfading = NO;
+            wasfading = NO;
+            fadeval = scale;
+            NSLog(@"ENDED FADING!!!!");
+        }else{  // we're still fading baby!!!
+            fadeval = (1/fadetime)*(thetime-fadestart); // calculate the fade
+            if(fading == YES) 
+                fadeval = 1-fadeval;    // fading out, not in
+            fadeval = scale+(1-scale)*fadeval;
+        }
+        glutPostRedisplay();    // Tell glut to draw again - we're still fading
+    NSLog(@"fadeval = %f",fadeval);
+    }
+    glEnable(GL_BLEND);
+    if(temperature == -1)// No valid data found from the dataSet    
+        glColor4f(1,1,1,fadeval);// color the node white
     else
-        glColor3f(temperature, 1-temperature, 0);
+        glColor4f(temperature, 1-temperature, 0, fadeval);
     glInterleavedArrays(GL_T2F_V3F, 0, nodeArray->verts);
     glDrawArrays(GL_QUADS, 0, nodeArray->vertCount);    // Draw the node
     glTranslatef(STANDARD_NODE_DEPTH,0,0);
     if(drawname == YES) {
-        if(self->gltName == nil) {
-            self->gltName = [[GLText alloc] initWithString: [self getName] andFont: @"LinLibertine_Re.ttf"];
-            //self->gltName = [[GLText alloc] initWithString: [self getName] andFont: @"LinLibertine_Re.ttf"];
-            [self->gltName setScale: .1];
-            //[self->gltName setRotationOnX: 90 Y: 180 Z: 0];
+        if(gltName == nil) {
+            gltName = [[GLText alloc] initWithString: [self getName] andFont: @"LinLibertine_Re.ttf"];
+            [gltName setScale: .06];
+            [gltName setRotationOnX: 0 Y: 0 Z: 180];
+            [gltName setColorRed: 0 Green: 0 Blue: 0];
         }
+        [gltName setString: [[self getName] lowercaseString]];
+        if([[self getLocation] gety] % 2 == 0)  // every other node, change name locations
+            glTranslatef(-20,0,-0.5*STANDARD_NODE_DEPTH-1);
+        else
+            glTranslatef(-30,0,-0.5*STANDARD_NODE_DEPTH-1);
+            
         [gltName glDraw];   // Draw the node name
     }
     glPopMatrix();

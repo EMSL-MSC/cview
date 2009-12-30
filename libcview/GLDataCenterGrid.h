@@ -13,6 +13,7 @@
 @interface GLDataCenterGrid: GLGrid <Drawable> {
     DrawableArray *isles;
 @private
+    WebDataSet *jobIds;
     VertArray *floorArray1;
     VertArray *floorArray2;
     VertArray *floorArray3;

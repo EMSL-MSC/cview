@@ -11,11 +11,19 @@
 */
 @interface Node : Locatable <Drawable> {
     float temperature;
-    GLText *gltName;
     BOOL drawname;
+    BOOL fading;
+    BOOL unfading;
+    BOOL wasfading;
+    float fadetime;
+    float fadestart;
+    double fadeval;
 }
 +(void)setNodeArray:(VertArray*)_nodeArray;
 +(void)setWebDataSet: (WebDataSet*)_dataSet;
++setGLTName:(GLText*) _gltName;
+-startFading;   // Used to make this node transparent over time
+-startUnFading; // opposite of above
 -setTemperature: (float) temperature;
 -(float)getTemperature;
 @end

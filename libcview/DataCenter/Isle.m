@@ -10,6 +10,7 @@
     [super init];
     self->rackArray = [[DrawableArray alloc] init];
     self->face = 0;
+    
     return self;
 }
 -setface: (int) _face {
@@ -23,7 +24,7 @@
     //Location *l = [self getLocation];
     //int x = [l getx];
     //int y = [l gety];
-    int scale = 3.5*TILE_WIDTH; // Spacing between isles
+       int scale = 3.5*TILE_WIDTH; // Spacing between isles
     float thenum = 0;
     //if(self->face == 0)
         thenum = -[self getWidth]+STANDARD_RACK_WIDTH;
