@@ -6,6 +6,7 @@
 #import "GLDataCenterGrid.h"
 #import "DataCenter/IsleOffsets.h"
 #import "DataCenterLoader.h"
+#import "DictionaryExtra.h"
 void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
 extern GLuint g_textureID;
 @implementation  GLDataCenterGrid
@@ -14,6 +15,7 @@ extern GLuint g_textureID;
     [super init];
     self->csvFilePath = nil;
     self->jobIds = nil;
+    self->jobIdIndex = 0;
     [self doInit];
     [Node setNodeArray: NULL];
     [Rack setRackArray: NULL];
@@ -37,14 +39,18 @@ extern GLuint g_textureID;
     return self;
 }
 -(Node*)findNodeObjectByName:(NSString*) _name {
+    //NSLog(@"name = %@", _name);
     if(self->isles == nil)
         return nil;
     NSEnumerator *enumerator = [self->isles getEnumerator];
     if(enumerator == nil)
         return nil;
     id element;
+    Node *node;
     while((element = [enumerator nextObject]) != nil) {
-        return [element findNodeObjectByName: _name];
+        node = [element findNodeObjectByName: _name];
+        if(node != nil)
+            return node;
     }
     return nil;
 }
@@ -55,15 +61,30 @@ extern GLuint g_textureID;
     for(i=0;i<[jobIds width];++i) {
         dl = [jobIds dataRow: i];
 //        dl[0] should be all we care about here...
-        if(jobid == dl[0])
-            [nodeArray addDrawableObject: [self findNodeObjectByName: [jobIds columnTick: i]]];
+        if(jobid == dl[0]) {
+            Node *node =  [self findNodeObjectByName: [jobIds columnTick: i]];
+            if(node != nil)
+                [nodeArray addDrawableObject: node];
+            //NSLog(@"columtick: %@", [jobIds columnTick: i]);
+        }
+
     }
     //[nodeArray autorelease];
-    [nodeArray release];//auto or regular, not really sure which to use....
+    [nodeArray autorelease];//auto or regular, not really sure which to use....
     return nodeArray;
 }
 -doStuff {
-    NSLog(@"DOING SOME STUFF!");
+    if(jobIds == nil) {
+        NSLog(@"jobIds was nil!!!");
+        return self;
+    }
+    float *dr = [jobIds dataRow: jobIdIndex];
+    float job = dr[0];
+
+    NSLog(@"(%d) Now displaying jobs from jobid : %f", jobIdIndex, job);
+    [self fadeEverythingExceptJobID: job];
+    while(job == [jobIds dataRow: jobIdIndex++][0])
+        ;
     return self;
 }
 -fadeEverythingExceptJobID:(float) jobid {
@@ -79,13 +100,18 @@ extern GLuint g_textureID;
     
     //now, tell the nodes with our passed jobid to UNFADE
     DrawableArray *arr = [self getNodesRunningAJobID: jobid];
+    NSLog(@"Number of nodes in this job: %d", [arr count]);
     if(arr == nil)
         return self;
-    enumerator = [arr getEnumerator];
-    if(enumerator == nil)
+    [arr retain];
+    enumerator = [arr getEnumerator];//segfaults
+    if(enumerator == nil) {
+        [arr autorelease];
         return self;
+    }
     while((element = [enumerator nextObject]) != nil)
         [element startUnFading];
+    [arr autorelease];
     return self;
 }
 -initWithPList: (id)list {
@@ -104,7 +130,7 @@ extern GLuint g_textureID;
         jobIds = [ds retain];
 	}
     [self doInit];
-    [Node setWebDataSet: self->dataSet];
+    [Node setWebDataSet: (WebDataSet*)self->dataSet];
     return self;
 }
 -(void)dealloc {

@@ -40,15 +40,27 @@ static GLText *gltName;
     return self;
 }
 -(Node*)findNodeObjectByName:(NSString*) _name {
+    //NSLog(@"name we're tyring to find is: %@", _name);
     if(self->nodes == nil)
         return nil;
     NSEnumerator *enumerator = [self->nodes getEnumerator];
     if(enumerator == nil)
         return nil;
     id element;
-    while((element = [enumerator nextObject]) != nil)
-        if([[element getName] compare: _name])
+    while((element = [enumerator nextObject]) != nil) {
+        //NSLog(@"got here!");
+  //      NSLog(@"node name: %@", [element getName]);
+        if([element getName] != nil &&
+           [[element getName] caseInsensitiveCompare: _name] == NSOrderedSame) {
+     //       NSLog(@"found it!!!");
+            //NSLog(@"node name: %@", [element getName]);
+            //[element poopy];
             return element;
+        }
+    }
+ //   NSLog(@"returning nil");
+
+            //[element poopy];
     return nil;
      
 }

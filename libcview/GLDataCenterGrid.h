@@ -18,6 +18,7 @@
     VertArray *floorArray2;
     VertArray *floorArray3;
     NSString *csvFilePath;
+    int jobIdIndex;
 }
 -(NSString*) get_csvFilePath;
 -init;

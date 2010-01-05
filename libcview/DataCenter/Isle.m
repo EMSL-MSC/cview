@@ -20,8 +20,12 @@
     if(enumerator == nil)
         return nil;
     id element;
+    Node *node;
     while((element = [enumerator nextObject]) != nil) {
-        return [element findNodeObjectByName: _name];
+        //NSLog(@"ONE ITERATION OF THE ISLE LOOP**********");
+        node = [element findNodeObjectByName: _name];
+        if(node != nil)
+            return node;
     }
     return nil; 
 }

@@ -70,6 +70,8 @@ All rights reserved.
     for our own special key-presses.  After we've checked, we can pass
     this message to the super class and let it handle the key press however
     it wants.
+
+    Right now, the only thing that this class overrides is the '7' key press.
  */
 -(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
 
@@ -80,12 +82,20 @@ All rights reserved.
     switch (key) {
         case '7':
             objects = [[world scene] getAllObjects];
+            if(objects == nil) {
+                NSLog(@"objects was nil!!!");
+                break;
+            }
             enumerator = [objects objectEnumerator];
+            if(enumerator == nil) {
+                NSLog(@"enumerator was nil!!!");
+                break;
+            }
             // loop through scene objects while looking for a datacenter
-            while((enumerator = [enumerator nextObject]) != nil) {
-                if([enumerator isKindOfClass: [GLDataCenterGrid class]]) {
-                    // yes, send it our message
-                    [(GLDataCenterGrid*)enumerator doStuff];
+            id element;
+            while((element = [enumerator nextObject]) != nil) {
+                if([element isKindOfClass: [GLDataCenterGrid class]]) {
+                    [(GLDataCenterGrid*)element doStuff];  // yes, send it our message
                 }
             }
             break;
@@ -94,7 +104,7 @@ All rights reserved.
             handled=NO;
             break;
     }
-  //  if(!handled)    // call the super since we didn't handle it, let the super do that
+    if(!handled)    // call the super since we didn't handle it, let the super do that
         [super keyPress: key atX: x andY: y inGLWorld: world];
         return NO;
     return handled;

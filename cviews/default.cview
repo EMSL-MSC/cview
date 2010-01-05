@@ -15,11 +15,11 @@
 		imageDir = /tmp;
 		imagePrefix = chinook;
 		eye = {
-		    hangle = "-7.70";
+		    hangle = "-7.15";
 		    vangle = "-2.041667";
-		    x = -273.549;
-		    y = 227.716;
-		    z = 1687.726;
+		    x = 1159.549;
+		    y = 1227.716;
+		    z = -362.726;
 		};
         overlay = {
 		    objects = (

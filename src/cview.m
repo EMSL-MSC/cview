@@ -134,14 +134,14 @@ DESCRIPTION\n\
 OPTIONS\n\
     -c FILE.cview\n\
        TODO: add info about creating a cview file\n\
-       Defaults to chinook.cview (please change this)\n\
+       Defaults to cviews/default.cview\n\
     -dataUpdateInterval NUM\n\
        Where NUM is the number of seconds to wait before updating the dataset.\n\
        Defaults to 30.0 seconds if this option is not given.\n\
     -dumpClasses <?>\n\
        Don't know what this does right now.  Ask Evan.\n\
     -ScreenDelegate DELEGATE\n\
-       Start cview with the screen delegate DELEGATE. DELEGATE should be a\n\
+       Start cview with the screen delegate DELEGATE. DELEGATE must be a\n\
        subclass of DefaultScreenDelegate.  The delegate's job is\n\
        to handle key and mouse presses and decide what to do with them.\n\
        This probably shouldn't be changed by the standard user and \n\
@@ -177,7 +177,7 @@ int main(int argc,char *argv[], char *env[]) {
 	*/
 	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
 	[args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
-			@"chinook.cview", @"c",
+			@"cviews/default.cview", @"c",
 			@"30.0",@"dataUpdateInterval",
 			@"0",@"dumpclasses",
             @"DataCenterCViewScreenDelegate",@"ScreenDelegate",
