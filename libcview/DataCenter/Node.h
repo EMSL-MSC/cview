@@ -15,8 +15,8 @@
     BOOL fading;
     BOOL unfading;
     BOOL wasfading;
-    float fadetime;
-    float fadestart;
+    double fadetime;
+    double fadestart;
     double fadeval;
 }
 +(void)setNodeArray:(VertArray*)_nodeArray;

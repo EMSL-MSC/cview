@@ -13,12 +13,35 @@
     
     return self;
 }
+-(Node*)findNodeObjectByName:(NSString*) _name {
+    if(self->rackArray == nil)
+        return nil;
+    NSEnumerator *enumerator = [self->rackArray getEnumerator];
+    if(enumerator == nil)
+        return nil;
+    id element;
+    while((element = [enumerator nextObject]) != nil) {
+        return [element findNodeObjectByName: _name];
+    }
+    return nil; 
+}
 -setface: (int) _face {
     self->face = _face;
     return self;
 }
 -(int)getFace {
     return face;
+}
+-startFading {
+    if(self->rackArray == nil)
+        return self;
+    NSEnumerator *enumerator = [self->rackArray getEnumerator];
+    if(enumerator == nil)
+        return self;
+    id element;
+    while((element = [enumerator nextObject]) != nil)
+        [element startFading];
+    return self;
 }
 -draw {
     //Location *l = [self getLocation];

@@ -121,25 +121,41 @@ All rights reserved.
 /**@file cview.m
 	@ingroup cviewapp
 */
-void usage(NSString *msg,int ecode) {
-	if (ecode) {
-		NSLog(@"%@\n",msg);
-	}
-
-	printf("\ncview use:\n\
-cview -c setup.cview\n\
+/// Print usage information to stdout 
+void usage() {
+	printf("\nUsage: cview [OPTIONS] \n\
+DESCRIPTION\n\
+    cview will display 3d graphs from a given dataset specified in the .cview file\n\
+    cview is very flexible and can be configured to display any number of graphs in\n\
+    any number of \"screens\" (a window inside a window).\n\
+    most of the configuration is stored in the .cview file rather than\n\
+    passed on the command line.\n\
 \n\
-    to load up a 3D view of the data center use: src/cview -c cviews/3d_datacenter.cview \n\
-    or try one of the other cview files located in the cviews folder \n\
-    if you would like help writing your own cview file see the README in the cviews folder \n\
+OPTIONS\n\
+    -c FILE.cview\n\
+       TODO: add info about creating a cview file\n\
+       Defaults to chinook.cview (please change this)\n\
+    -dataUpdateInterval NUM\n\
+       Where NUM is the number of seconds to wait before updating the dataset.\n\
+       Defaults to 30.0 seconds if this option is not given.\n\
+    -dumpClasses <?>\n\
+       Don't know what this does right now.  Ask Evan.\n\
+    -ScreenDelegate DELEGATE\n\
+       Start cview with the screen delegate DELEGATE. DELEGATE should be a\n\
+       subclass of DefaultScreenDelegate.  The delegate's job is\n\
+       to handle key and mouse presses and decide what to do with them.\n\
+       This probably shouldn't be changed by the standard user and \n\
+       defaults to DataCenterCViewScreenDelegate\n\
+    -h\n\
+    -help\n\
+    -?\n\
+       Print this help message and exit.\n\
 	\n\n");
-
-    exit(ecode);
+    exit(0);
 }
 int main(int argc,char *argv[], char *env[]) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	ENABLEDEBUGALLOC;
-    //usage(@"yo yo yo", 1);
 #ifdef CLS_DUMP
 	GSDebugAllocationActiveRecordingObjects(CLS_DUMP);
 #endif
@@ -164,8 +180,14 @@ int main(int argc,char *argv[], char *env[]) {
 			@"chinook.cview", @"c",
 			@"30.0",@"dataUpdateInterval",
 			@"0",@"dumpclasses",
+            @"DataCenterCViewScreenDelegate",@"ScreenDelegate",
 			nil]];
 
+    // Print usage and exit if user passed -h, -?, or -help
+    if([args stringForKey: @"h"] != nil ||
+       [args stringForKey: @"?"] != nil ||
+       [args stringForKey: @"help"] != nil)
+        usage();
 	config = [args stringForKey: @"c"];
 	updateInterval = [args floatForKey: @"dataUpdateInterval"];
 	dumpclasses = [args integerForKey: @"dumpclasses"];
@@ -187,10 +209,23 @@ int main(int argc,char *argv[], char *env[]) {
 		printf("Error loading PList: %s. Exiting\n",[config UTF8String]);
 		exit(4);
 	}
-
 	GLScreen * g = [[GLScreen alloc] initWithPList:plist];
-	CViewScreenDelegate *cvsd = [[CViewScreenDelegate alloc] initWithScreen:g];
-	[g setDelegate: cvsd];
+
+    Class c;
+	c = NSClassFromString([args stringForKey: @"ScreenDelegate"]);
+	if (c == nil) { // if nil then the class wasn't found
+        NSLog(@"\"%@\" is not a valid class known to cview: Exiting",[args stringForKey: @"ScreenDelegate"]);
+        usage();    // print usage and exit
+    // Make sure that the passed screen delegate is properly subclassed
+	}else if(![c isSubclassOfClass: [DefaultGLScreenDelegate class]]) {
+        NSLog(@"\"%@\" is not a subclass of DefaultGLScreenDelegate: Exiting",[args stringForKey: @"ScreenDelegate"]);
+        usage();    // print usage and exit
+    }
+    DefaultGLScreenDelegate *delegate = [[c alloc] initWithScreen: g];
+
+    NSLog(@"stuff = %@", delegate);
+//	CViewScreenDelegate *cvsd = [[CViewScreenDelegate alloc] initWithScreen:g];
+	[g setDelegate: delegate];
 
 	//FIXME get rid of this soon, put it in delegate
 	MainKeyHandler *mkh = [[MainKeyHandler alloc] initWithRoot: g andPFile: config];

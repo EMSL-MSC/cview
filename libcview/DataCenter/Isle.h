@@ -24,5 +24,6 @@
 -(int)getFace;
 // Adds up all the rack widths that it contains
 -(int)getWidth;
+-startFading;// tell the whole isle to fade (become transparent) over time
 @end
 #endif // ISLE_H

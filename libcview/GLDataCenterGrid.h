@@ -22,7 +22,12 @@
 -(NSString*) get_csvFilePath;
 -init;
 -doInit;
+-(DrawableArray*)getNodesRunningAJobID:(float) jobid;
+/// Makes all nodes fade except for nodes with the passed jobid
+-fadeEverythingExceptJobID:(float) jobid;
+-doStuff;
 -draw;
+/// Draws the floor tiles
 -drawFloor;
 -(NSEnumerator*)getEnumerator;
 -addIsle: (Isle*) isle;

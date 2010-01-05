@@ -27,11 +27,12 @@
 +(void) setRackArray: (VertArray*) _rackArray;
 +(unsigned int) texture;
 +setTexture:(unsigned int)_texture;
-+setGLTName:(GLText*) _gltName;
++setGLTName:(GLText*) _gltName; // kind of 3d text we'll use to draw the rack name
 -initWithName:(NSString*)_name;
 -draw;
 -addNode: (Node*) node;
--setFace: (int) _face;
+-setFace: (int) _face;  // angle in degrees in which the rack is facing
+-startFading; // makes this rack start fading (being transparent) over a period of time
 @end
 
 #endif // RACK_H

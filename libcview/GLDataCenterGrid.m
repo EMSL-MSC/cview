@@ -36,6 +36,58 @@ extern GLuint g_textureID;
     }
     return self;
 }
+-(Node*)findNodeObjectByName:(NSString*) _name {
+    if(self->isles == nil)
+        return nil;
+    NSEnumerator *enumerator = [self->isles getEnumerator];
+    if(enumerator == nil)
+        return nil;
+    id element;
+    while((element = [enumerator nextObject]) != nil) {
+        return [element findNodeObjectByName: _name];
+    }
+    return nil;
+}
+-(DrawableArray*)getNodesRunningAJobID:(float) jobid {
+    int i;
+    float *dl;
+    DrawableArray *nodeArray = [[DrawableArray alloc] init];
+    for(i=0;i<[jobIds width];++i) {
+        dl = [jobIds dataRow: i];
+//        dl[0] should be all we care about here...
+        if(jobid == dl[0])
+            [nodeArray addDrawableObject: [self findNodeObjectByName: [jobIds columnTick: i]]];
+    }
+    //[nodeArray autorelease];
+    [nodeArray release];//auto or regular, not really sure which to use....
+    return nodeArray;
+}
+-doStuff {
+    NSLog(@"DOING SOME STUFF!");
+    return self;
+}
+-fadeEverythingExceptJobID:(float) jobid {
+    if(self->isles == nil)
+        return self;
+    NSEnumerator *enumerator = [self->isles getEnumerator];
+    if(enumerator == nil)
+        return self;
+    id element;
+    //loop through all isles, tell them to ---fade--- MUHAHAHA!
+    while((element = [enumerator nextObject]) != nil)
+        [element startFading];
+    
+    //now, tell the nodes with our passed jobid to UNFADE
+    DrawableArray *arr = [self getNodesRunningAJobID: jobid];
+    if(arr == nil)
+        return self;
+    enumerator = [arr getEnumerator];
+    if(enumerator == nil)
+        return self;
+    while((element = [enumerator nextObject]) != nil)
+        [element startUnFading];
+    return self;
+}
 -initWithPList: (id)list {
     NSLog(@"initWithPList: %@", [self class]);
     [super initWithPList: list];
@@ -96,22 +148,14 @@ extern GLuint g_textureID;
         glVertex3f(-i*TILE_WIDTH,-1,nx*TILE_WIDTH);
         glVertex3f(-i*TILE_WIDTH,-1,ny*TILE_WIDTH);
    }
-
     glEnd();
-    glPushMatrix();
-
-    glPopMatrix();
     return self;
 }
 -addIsle: (Isle*) isle {
-    //NSLog(@"In addIsle:");
     // Add the passed rack to our rackArray
     self->isles = [self->isles addDrawableObject: isle];
     return self;
 }
-
-
-//FIXME
 -draw {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
@@ -119,24 +163,10 @@ extern GLuint g_textureID;
     //[self drawOriginAxis];
     [self drawFloor];
     //[self drawGrid];
-    /*
-    if(self->isles != nil) {
-        NSEnumerator *enumerator = [self->rackArray getEnumerator];
-        if(enumerator != nil) {
-            id element;
-            while((element = [enumerator nextObject]) != nil) {
-                [element startFading];
-            }
-        }
-    }
-    */
-
     [self->isles draw];
     GLenum err = glGetError();
-    if(err != GL_NO_ERROR) {
-        NSLog(@"There was a glError, error number: %d", err);
-        printf("error in hex: %x\n", err);
-    }
+    if(err != GL_NO_ERROR)
+        NSLog(@"There was a glError, error number: %x", err);
     return self;
 }
 -drawFloor {

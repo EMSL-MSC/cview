@@ -14,9 +14,9 @@ EXTRA_PROGRAMS=oscview
 
 EXTRA_DIST = *.h
 
-cview_SOURCES = ObjectTracker.m cview.m CViewScreenDelegate.m
+cview_SOURCES = ObjectTracker.m cview.m CViewScreenDelegate.m DataCenterCViewScreenDelegate.m
 cview_LDFLAGS = $(OPENGL_LDFLAGS) $(BASELDFLAGS)
-cviewall_SOURCES = cviewall.m CViewScreenDelegate.m 
+cviewall_SOURCES = cviewall.m CViewScreenDelegate.m DataCenterCViewScreenDelegate.m
 cviewall_LDFLAGS = $(OPENGL_LDFLAGS) $(BASELDFLAGS)
 oscview_SOURCES =  oscview.m glutstub.c
 oscview_LDFLAGS = -lOSMesa -lGL -lGLU $(BASELDFLAGS)

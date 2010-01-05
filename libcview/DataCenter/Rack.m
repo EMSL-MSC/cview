@@ -39,6 +39,20 @@ static GLText *gltName;
     self->nodes = [[DrawableArray alloc] init];
     return self;
 }
+-(Node*)findNodeObjectByName:(NSString*) _name {
+    if(self->nodes == nil)
+        return nil;
+    NSEnumerator *enumerator = [self->nodes getEnumerator];
+    if(enumerator == nil)
+        return nil;
+    id element;
+    while((element = [enumerator nextObject]) != nil)
+        if([[element getName] compare: _name])
+            return element;
+    return nil;
+     
+}
+
 -initWithName: (NSString*)_name {
     [self init];
     [self setName: _name];
@@ -58,12 +72,13 @@ static GLText *gltName;
 }
 extern VertArray* createBox(float w, float h, float d);
 -draw {
-
+/*
     float random = (float)rand() / (float)RAND_MAX;
     if(random > .98) {
         NSLog(@"Fading TRIGGERED!");
         [self startFading];
         }
+        */
 
     if(rackArray == NULL) {
         rackArray = createBox([self getWidth],[self getHeight],[self getDepth]);
