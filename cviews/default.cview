@@ -1,0 +1,82 @@
+{
+    height = 1172;
+    name = "Chinook Graphs";
+    width = 1592;
+    worlds = (
+	{
+	    col = 0;
+	    colp = 200;
+	    name = Chinook;
+	    row = 0;
+	    rowp = 50;
+	    world = {
+		imageCycleTime = 0;
+		imageDailyDir = YES;
+		imageDir = /tmp;
+		imagePrefix = chinook;
+		eye = {
+		    hangle = "-7.70";
+		    vangle = "-2.041667";
+		    x = -273.549;
+		    y = 227.716;
+		    z = 1687.726;
+		};
+        overlay = {
+		    objects = (
+			{
+			    align = YES;
+			    halign = "-1";
+			    object = {
+				colorB = 1;
+				colorG = 1;
+				colorR = 1;
+				fontfile = LinLibertine_Re.ttf;
+				isVisible = YES;
+				rotX = 0;
+				rotY = 0;
+				rotZ = 0;
+				scaleX = 1;
+				scaleZ = 1;
+				string = "CPU Usage at the User Lever - Chinook";
+			    };
+			    objectclass = GLText;
+			    valign = 1;
+			    x = 0;
+			    y = 100;
+			    z = 0;
+			}
+		    );
+		};
+		scene = {
+		    objects = (
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = cputotals.user;
+				};
+                jobIDDataSet =  {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = job_id;
+				};
+				dataSetClass = WebDataSet;
+                csvFilePath = "data/Chinook Serial numbers.csv";
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				yTicks = 32;
+			    };
+			    objectclass = GLDataCenterGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 750;
+			}
+		    );
+		};
+	    };
+	}
+    );
+}
