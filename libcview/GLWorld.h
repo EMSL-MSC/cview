@@ -82,6 +82,8 @@ GLWorld is an encapsulation of a 3d world managed as a Scene of Objects.  It als
 -init;
 /// called to draw the entire world
 -glDraw;
+/// called when picking objects in the scene (does not render)
+//-glPickDraw;
 ///Internal call to setup the overlay drawing
 -gl2DProlog;
 ///Internal call to cleanup the overlay drawing

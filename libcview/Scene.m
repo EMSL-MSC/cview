@@ -288,6 +288,24 @@ All rights reserved.
 
 	return self;
 }
+/// loops through all objects in the scene and IF that object has a selector
+/// pickDrawX: andY: then it will send that message to that object
+-(NSMutableArray*)pickDrawX: (int)x andY: (int)y {
+	SceneObject *o;
+	NSEnumerator *list;
+	list = [objects objectEnumerator];
+    NSMutableArray *mashedTogether = [[NSMutableArray alloc] init];
+	while ( (o = [list nextObject]) ) {
+			if ([o->object respondsToSelector: @selector(pickDrawX:andY:)] == YES &&
+                [o->object visible]) {
+				glPushMatrix();
+				[self doTranslate: o];
+				[mashedTogether addObject: [(id)o->object pickDrawX: x andY: y]];
+				glPopMatrix();
+			}
+	}
+	return mashedTogether;
+}
 
 - (void) encodeWithCoder: (NSCoder*)aCoder {
 	[aCoder encodeObject: objects forKey: @"objects"];

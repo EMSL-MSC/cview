@@ -10,7 +10,6 @@
 void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
 extern GLuint g_textureID;
 @implementation  GLDataCenterGrid
-// TODO: update this draw function
 -init {
     [super init];
     self->csvFilePath = nil;
@@ -18,7 +17,6 @@ extern GLuint g_textureID;
     self->jobIdIndex = 0;
     [self doInit];
     [Node setNodeArray: NULL];
-    [Rack setRackArray: NULL];
     [Rack setGLTName: nil];
     [Node setGLTName: nil];
     return self;
@@ -64,12 +62,11 @@ extern GLuint g_textureID;
         if(jobid == dl[0]) {
             Node *node =  [self findNodeObjectByName: [jobIds columnTick: i]];
             if(node != nil)
-                [nodeArray addDrawableObject: node];
+                [nodeArray addDrawablePickableObject: node];
             //NSLog(@"columtick: %@", [jobIds columnTick: i]);
         }
 
     }
-    //[nodeArray autorelease];
     [nodeArray autorelease];//auto or regular, not really sure which to use....
     return nodeArray;
 }
@@ -179,20 +176,7 @@ extern GLuint g_textureID;
 }
 -addIsle: (Isle*) isle {
     // Add the passed rack to our rackArray
-    self->isles = [self->isles addDrawableObject: isle];
-    return self;
-}
--draw {
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    //[self drawOriginAxis];
-    [self drawFloor];
-    //[self drawGrid];
-    [self->isles draw];
-    GLenum err = glGetError();
-    if(err != GL_NO_ERROR)
-        NSLog(@"There was a glError, error number: %x", err);
+    self->isles = [self->isles addDrawablePickableObject: isle];
     return self;
 }
 -drawFloor {
@@ -218,7 +202,22 @@ extern GLuint g_textureID;
 
     return self;
 }
-    
+-draw {
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    [self drawOriginAxis];
+//    [self drawFloor];
+    //[self drawGrid];
+    [self->isles draw];
+    GLenum err = glGetError();
+    if(err != GL_NO_ERROR)
+        NSLog(@"There was a glError, error number: %x", err);
+    return self;
+}
+-(NSMutableArray*)pickDrawX: (int)x andY: (int)y {
+    return [isles pickDrawX: x andY: y];
+}
 -glDraw {
     [self draw];
     return self;

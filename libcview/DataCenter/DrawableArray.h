@@ -10,12 +10,17 @@
   */
 #import <Foundation/Foundation.h>
 #import "Drawable.h"
-@interface DrawableArray : NSObject <Drawable> {
+#import "Pickable.h"
+@interface DrawableArray : NSObject <Drawable, Pickable> {
     NSMutableArray *drawableObjects;
 }
--addDrawableObject: (id <Drawable>) drawableObject;
+-addDrawablePickableObject: (id <Drawable, Pickable>) drawableObject;
 -draw;
+/// called when picking objects in the scene (does not render)
+-(NSMutableArray*)pickDrawX: (int)x andY: (int)y;
+/// TODO: should remove this selector - just for testing purposes...
 -drawOne;
+/// Returns an enumerator for the drawable objects array it holds
 -(NSEnumerator*)getEnumerator;
 -(int)count;
 @end

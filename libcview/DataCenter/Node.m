@@ -130,6 +130,18 @@ extern VertArray* createBox(float w, float h, float d);
     }
     return self;
 }
+-(NSMutableArray*)pickDrawX: (int) x andY: (int) y {
+    NSMutableArray *ret = nil;
+
+
+    //TODO: do the pick
+    if(YES) { //if picked
+        ret = [[NSMutableArray alloc] init];
+        [ret addObject: self];
+    }
+    return ret;
+        
+}
 -setTemperature: (float) _temperature {
     self->temperature = _temperature;
     return self;

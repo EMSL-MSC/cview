@@ -58,6 +58,7 @@ All rights reserved.
 */
 #import <Foundation/Foundation.h>
 #import "DrawableObject.h"
+#import "DataCenter/Pickable.h"
 #import "PList.h"
 
 /**
@@ -78,7 +79,7 @@ All rights reserved.
 	@author Evan Felix
 	@ingroup cview3d
 */
-@interface Scene: DrawableObject <PList> {
+@interface Scene: DrawableObject <PList, Pickable> {
 	NSMutableArray *objects;
 }
 -init;
@@ -90,4 +91,6 @@ All rights reserved.
 -(NSArray *)getAllObjects;
 -(int)objectCount;
 -glDraw;
+/// called when picking objects in the scene (does not render)
+-(NSMutableArray*)pickDrawX: (int)x andY: (int)y;
 @end

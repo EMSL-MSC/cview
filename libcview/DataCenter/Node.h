@@ -2,6 +2,7 @@
 #define NODE_H
 #import "Locatable.h"
 #import "Drawable.h"
+#import "Pickable.h"
 #import "Point.h"
 #import "../../libcview-data/WebDataSet.h"
 #import "../GLText.h"
@@ -9,7 +10,7 @@
     @author Brock Erwin
 	@ingroup cview3d
 */
-@interface Node : Locatable <Drawable> {
+@interface Node : Locatable <Drawable, Pickable> {
     float temperature;
     BOOL drawname;
     BOOL fading;
@@ -22,6 +23,9 @@
 +(void)setNodeArray:(VertArray*)_nodeArray;
 +(void)setWebDataSet: (WebDataSet*)_dataSet;
 +setGLTName:(GLText*) _gltName;
+-draw;
+/// called when picking objects in the scene (does not render)
+-(NSMutableArray*)pickDrawX: (int)x andY: (int)y;
 -startFading;   // Used to make this node transparent over time
 -startUnFading; // opposite of above
 -setTemperature: (float) temperature;

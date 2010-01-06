@@ -10,13 +10,17 @@
   * 
   */
 
-@interface Isle : Locatable <Drawable> {
+@interface Isle : Locatable <Drawable, Pickable> {
     // Should hold an array of Rack objects
     DrawableArray *rackArray;
     int face;   // An angle, should be 0 or 180 degrees
+@private
+    VertArray *isleArray;   /// Used for drawing the whole isle as one big box
 }
 // Draws every rack in the rackArray by sending draw messages to each rack
 -draw;
+/// called when picking objects in the scene (does not render)
+-(NSMutableArray*)pickDrawX: (int)x andY: (int)y;
 // Adds a rack object to this isle object
 -addRack: (Rack*) rack;
 -(NSEnumerator*) getEnumerator;

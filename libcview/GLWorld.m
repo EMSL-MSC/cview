@@ -168,8 +168,22 @@ All rights reserved.
 	[self doDumpImage];
 
 	return self;
-}
+}/*
+-glPickDraw {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
 
+	glPushMatrix();
+	[eye lookAt];
+
+	if (scene && [scene visible])
+		[scene glPickDraw];
+	
+	glPopMatrix();
+    // We have no need to pick the overlay or
+    // do a dump image...
+	return self;
+}*/
 -gl2DProlog {
 	GLint viewport[4];
 	int width;

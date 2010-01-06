@@ -78,7 +78,7 @@
 				xTicks = 50;
 				yTicks = 32;
 			    };
-			    objectclass = GLGrid;
+			    objectclass = GLGridSurface;
 			    valign = 0;
 			    x = 0;
 			    y = 0;

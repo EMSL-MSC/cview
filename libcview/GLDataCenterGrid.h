@@ -10,7 +10,7 @@
 #import "Foundation/NSEnumerator.h"
 #import "DataCenter/Isle.h"
 #import "DataCenter/Point.h"
-@interface GLDataCenterGrid: GLGrid <Drawable> {
+@interface GLDataCenterGrid: GLGrid <Drawable, Pickable> {
     DrawableArray *isles;
 @private
     WebDataSet *jobIds;
@@ -28,6 +28,11 @@
 -fadeEverythingExceptJobID:(float) jobid;
 -doStuff;
 -draw;
+/**
+    called when picking objects in the scene (does not render)
+    @return An array of objects that were picked
+ */
+-(NSMutableArray*)pickDrawX: (int)x andY: (int)y;
 /// Draws the floor tiles
 -drawFloor;
 -(NSEnumerator*)getEnumerator;

@@ -105,8 +105,46 @@ All rights reserved.
             break;
     }
     if(!handled)    // call the super since we didn't handle it, let the super do that
-        [super keyPress: key atX: x andY: y inGLWorld: world];
-        return NO;
+        return [super keyPress: key atX: x andY: y inGLWorld: world];
     return handled;
 }
+
+-(BOOL)mouseButton: (int)button withState: (int)state atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
+    if (state == GLUT_DOWN) {
+        NSMutableArray *pickedObjects;
+        switch (button) {
+            case GLUT_LEFT_BUTTON:
+                glRenderMode(GL_SELECT);    // no rendering, just picking
+                pickedObjects = [[world scene] pickDrawX: x andY: y];
+                if(pickedObjects != nil) {
+                    NSEnumerator *enumerator =  [pickedObjects objectEnumerator];
+                    if(enumerator != nil) {
+                        id element;
+                        while((element = [enumerator nextObject]) != nil) {
+                            if([element respondsToSelector: @selector(getName:)])
+                                NSLog(@"picked object: %@", [element getName]);
+                            else
+                                NSLog(@"picked object: %@", element);
+                        }
+                    }
+                }
+                break;
+            case GLUT_MIDDLE_BUTTON:
+                break;
+            case GLUT_RIGHT_BUTTON:
+                break;
+            case 3: // WHEEL_UP
+                break;
+            case 4: // WHEEL_DOWN
+                break;
+            default:
+                break;
+        }
+    }
+    else {
+        NSLog(@"mouse was released!");
+    }
+    return [super mouseButton: button withState: state atX: x andY: y inGLWorld: world];
+}
+
 @end

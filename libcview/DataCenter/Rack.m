@@ -10,15 +10,11 @@
 void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
 @implementation Rack
 static unsigned int texture;
-static VertArray *rackArray;
 static GLText *gltName;
 
 +setGLTName:(GLText*) _gltName {
     gltName = _gltName;
     return self;
-}
-+(void) setRackArray: (VertArray*) _rackArray {
-    rackArray = _rackArray;
 }
 +(unsigned int)texture {
     return texture;
@@ -34,8 +30,8 @@ static GLText *gltName;
     b = 0.0;
     self->wireframe = YES;
     self->drawname = YES;
+    self->rackArray = NULL;
     //self->gltName = nil;
-    vertsSetUp = NO;
     self->nodes = [[DrawableArray alloc] init];
     return self;
 }
@@ -84,18 +80,9 @@ static GLText *gltName;
 }
 extern VertArray* createBox(float w, float h, float d);
 -draw {
-/*
-    float random = (float)rand() / (float)RAND_MAX;
-    if(random > .98) {
-        NSLog(@"Fading TRIGGERED!");
-        [self startFading];
-        }
-        */
-
-    if(rackArray == NULL) {
+    if(rackArray == NULL) 
         rackArray = createBox([self getWidth],[self getHeight],[self getDepth]);
-        //vertsSetUp = YES;
-    }
+
     glPushMatrix(); // Save matrix state
     // Draw this rack based on it's location within its isle
     glTranslatef([self getWidth]*[[self getLocation] getx], 0, 0);
@@ -135,12 +122,20 @@ extern VertArray* createBox(float w, float h, float d);
         NSLog(@"There was a glError, error number: %x", err);
     return self;
 }
+-(NSMutableArray*)pickDrawX: (int)x andY: (int)y {
+    NSMutableArray *ret;
+    //TODO: initial picking
+
+    if(YES)  // do the further picking 
+        ret = [nodes pickDrawX: x andY: y];
+    return ret;
+}
 -addNode: (Node*) node {
     int y = [self->nodes count];
     if(y > 9)
         ++y;    // Account for the standard gap in most every rack
     [node setLocation: [[[[Location alloc] init] setx: 0] sety: y]];
-    [self->nodes addDrawableObject: node];
+    [self->nodes addDrawablePickableObject: node];
     return self;
 }
 -setFace: (int) _face {

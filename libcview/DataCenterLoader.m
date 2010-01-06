@@ -120,6 +120,10 @@
         // Check for even row number
         if([[isleComponent substringFromIndex: 1] intValue] % 2 == 0)
             [isleObj setface: 180];   // Face the opposite direction for even isles
+
+        [[[isleObj setHeight: STANDARD_RACK_HEIGHT]
+                    setDepth: STANDARD_RACK_DEPTH]
+                    setWidth: 0];
         [isleObj setLocation: l];
         [self->dcg addIsle: isleObj];   // Add the object to our GLDataCenter object
     }
@@ -138,7 +142,9 @@
                     setDepth: STANDARD_RACK_DEPTH]
                     setWidth: STANDARD_RACK_WIDTH];
         [rackObj setFace: [isleObj getFace]];
-       [isleObj addRack: rackObj]; // Add the rack object to the isle object
+        [isleObj addRack: rackObj]; // Add the rack object to the isle object
+        // Add the width of this rack to the width of the isle
+        [isleObj setWidth: [isleObj getWidth] + [rackObj getWidth]];
     }
     // Well, we shouldn't have to test to see if the node has been created
     // because there should only be one occurance of each node in the Chinook
