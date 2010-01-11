@@ -58,8 +58,9 @@ All rights reserved.
 */
 #import <Foundation/Foundation.h>
 #import "DrawableObject.h"
-#import "DataCenter/Pickable.h"
 #import "PList.h"
+#import "Pickable.h"
+#import "IdArray.h"
 
 /**
 	A Container for storing a set of DrawableObject instances with associated 3d positions.
@@ -92,5 +93,14 @@ All rights reserved.
 -(int)objectCount;
 -glDraw;
 /// called when picking objects in the scene (does not render)
--(NSMutableArray*)pickDrawX: (int)x andY: (int)y;
+-glPickDraw:(IdArray*)ids;
+/**
+    @author Brock Erwin
+    @returns objects that correspond to a particular unique id.
+             nil if no id in glHits corresponds to an object in the scene
+    @param pickDrawIds are the ids which which we originally caled glPickDraw with
+           this is used so we don't compare hits with objects we didn't even test
+    @param glHits contain the unique ids that got hit and were returned from glRenderMode()
+ */
+-(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits;
 @end

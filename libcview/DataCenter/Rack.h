@@ -9,8 +9,9 @@
 #import "../GLText.h"
 
 /**
-  * interface Rack
-  * 
+    interface Rack
+    @author Brock Erwin
+
   */
 
 @interface Rack : Locatable <Drawable, Pickable> {
@@ -18,11 +19,7 @@
 @private
     BOOL wireframe;     // if yes draw the racks as wireframe
     BOOL drawname;
-    //int vertCount;
-    //Vertex* rackVerts;
     float r,g,b; // color stuff...
-    int face; // degress in which the rack is facing
-    VertArray *rackArray;
 }
 //+(void) setRackArray: (VertArray*) _rackArray;
 +(unsigned int) texture;
@@ -31,9 +28,10 @@
 -initWithName:(NSString*)_name;
 -draw;
 /// called when picking objects in the scene (does not render)
--(NSMutableArray*)pickDrawX: (int)x andY: (int)y;
+-glPickDraw: (IdArray*)ids;
+-(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits;
 -addNode: (Node*) node;
--setFace: (int) _face;  // angle in degrees in which the rack is facing
+-(int)nodeCount;
 -startFading; // makes this rack start fading (being transparent) over a period of time
 @end
 

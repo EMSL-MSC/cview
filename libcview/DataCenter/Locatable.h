@@ -1,6 +1,6 @@
 #ifndef LOCATABLE_H
 #define LOCATABLE_H
-#import "Location.h"
+#import "Vector.h"
 /**
     @author Brock Erwin
 
@@ -9,25 +9,64 @@
   */
 #import <Foundation/NSObject.h>
 #import "Point.h"
-@interface Locatable : NSObject {
-    Location *location;
+#import "Identifiable.h"
+#import "Drawable.h"
+#import "Pickable.h"
+@interface Locatable : Identifiable <Drawable, Pickable> {
+    Vector *location;
+    Vector *rotation;
     NSString *name;
     float width;
     float height;
     float depth;
+    // Used if you want to draw a box at a given location and rotation with a given width, height, and depth
+    // in this case call -draw; or you can call -glPickDraw to use that box for picking purposes
+    VertArray *boundingBox;
+    VertArray *wireframeBox;
 }
 +(void)drawGLQuad: (Point) p1 andP2: (Point) p2
             andP3: (Point) p3 andP4: (Point) p4;
 -setName: (NSString *) name;
 -(NSString*) getName;
--setLocation: (Location*) location;
--(Location*) getLocation;
+-setLocation: (Vector*) _location;
+-(Vector*) location;
+-setRotation: (Vector*) _rotation;
+-(Vector*) rotation;
 -setWidth: (float) _width;
 -setHeight: (float) _height;
 -setDepth: (float) _depth;
 -(float)getWidth;
 -(float)getHeight;
 -(float)getDepth;
+/**
+    Draws a opengl box (6 sided) at given location, rotation, width, depth, height
+  */
+-draw;
+-drawWireframe;
+/**
+    Easy way to do rotations and translations if you inherit this class.
+    Simply call: setLocation with your current location AND
+                 setRotation with your appropriate rotation
+        Then you can call setupForDraw and based on location and rotation
+        it will make gl calls to translate and rotate the current matrix
+
+    Make sure you call cleanUpAfterDraw once done drawing stuff
+  */
+-setupForDraw;
+-cleanUpAfterDraw;
+-glPickDraw: (IdArray*)ids;
+/**
+    called when picking objects in the scene (does not render)
+    @return An array of objects that were picked
+ */
+-glPickDraw:(IdArray*)ids;
+/**
+    @returns objects that correspond to a particular unique id.
+    @param pickDrawIds are the ids which which we originally caled glPickDraw with
+           this is used so we don't compare hits with objects we didn't even test
+    @param glHits contain the unique ids that got hit and were returned from glRenderMode()
+ */
+-(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits;
 @end
 
 #endif // LOCATABLE_H

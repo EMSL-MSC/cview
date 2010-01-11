@@ -56,6 +56,8 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
+#ifndef DATACENTERCVIEWSCREENDELEGATE_H
+#define DATACENTERCVIEWSCREENDELEGATE_H
 #import <Foundation/Foundation.h>
 #import "CViewScreenDelegate.h"
 //#import "DefaultGLScreenDelegate.h"
@@ -69,3 +71,4 @@ All rights reserved.
 }
 -(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world;
 @end
+#endif

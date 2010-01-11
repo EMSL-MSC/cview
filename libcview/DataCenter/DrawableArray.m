@@ -33,11 +33,15 @@
 }
 -draw {
     //NSLog(@"about to get an enumerator...");
-    if(self->drawableObjects == nil)
+    if(self->drawableObjects == nil) {
         NSLog(@"[DrawableArray draw]: self->drawableObjects was nil!");
+        return self;
+    }
     NSEnumerator *enumerator = [self->drawableObjects objectEnumerator];
-    if(enumerator == nil)
+    if(enumerator == nil) {
         NSLog(@"[DrawableArray draw]: enumerator was nil!");
+        return self;
+    }
     id element;
     //int x = 0;
     //NSLog(@"drawableObjecs count == %d", [drawableObjects count]);
@@ -48,28 +52,41 @@
     //NSLog(@"After the draw loop!");
     return self;
 }
--(NSMutableArray*)pickDrawX: (int)x andY: (int)y {
+-glPickDraw:(IdArray*) ids {
     if(self->drawableObjects == nil)
-        NSLog(@"[DrawableArray draw]: self->drawableObjects was nil!");
+        return self;
     NSEnumerator *enumerator = [self->drawableObjects objectEnumerator];
     if(enumerator == nil)
-        NSLog(@"[DrawableArray draw]: enumerator was nil!");
+        return self;
     id element;
-    //int x = 0;
-    //NSLog(@"drawableObjecs count == %d", [drawableObjects count]);
-    NSMutableArray *ret = [[NSMutableArray alloc] init];
+    while((element = [enumerator nextObject]) != nil) {
+        if([element respondsToSelector: @selector(glPickDraw:)] == YES)
+            [element glPickDraw:ids];
+    }
+    return self;
+}
+-(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits {
+    if(self->drawableObjects == nil)
+        return nil;
+    NSEnumerator *enumerator = [self->drawableObjects objectEnumerator];
+    if(enumerator == nil)
+        return nil;
+    id element;
+    NSMutableArray *mashedTogether = nil;
     NSMutableArray *tmp;
     while((element = [enumerator nextObject]) != nil) {
-        //NSLog(@"x == %d", x++);
-        if([element respondsToSelector: @selector(pickDrawX:andY:)] == YES) {
-            tmp = [element pickDrawX: x andY: y];
-            if(tmp != nil)
-                [ret addObject: tmp];
+        if([element respondsToSelector: @selector(getPickedObjects:pickDrawIds:)] == YES) {
+            tmp = [element getPickedObjects: pickDrawIds hits: glHits];
+            if(tmp != nil) {
+                if(mashedTogether == nil)
+                    mashedTogether = [[NSMutableArray alloc] init];
+                [mashedTogether addObject: tmp];
+            }
         }
     }
-    //NSLog(@"After the draw loop!");
-    return ret;
+    return mashedTogether;
 }
+
 -(NSEnumerator*)getEnumerator {
     if(self->drawableObjects == nil) {
         NSLog(@"getEnumerator: drawableObjects is nil!!!!!!!");

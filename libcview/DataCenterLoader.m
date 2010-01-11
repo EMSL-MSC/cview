@@ -104,47 +104,69 @@
     NSString *rackComponent = [rack substringWithRange: range];
     //NSLog(@"isleComponent = \"%@\", rackComponent = \"%@\" node = \"%@\"", isleComponent, rackComponent, node);
     
-    Location *l;
+    Vector *l;
     Isle *isleObj;
     Rack *rackObj;
     Node *nodeObj;
     // Find the Isle object if it exists, if not, create it!
-    //NSLog(@"Debug.");
     if(!(isleObj = [self findIsle: isleComponent])) {
         //NSLog(@"Creating Isle: %@ because isleObj = %@", isleComponent, isleObj);
         isleObj = [[Isle alloc] init];
         [isleObj setName: [isleComponent retain]];
         [isleComponent substringFromIndex: 1];
+        ////////////////////////////////////////////////////////////
         // set the x-location to whatever isle number this is...
-        l = [[[[Location alloc] init] setx: [[isleComponent substringFromIndex: 1] intValue]] sety: 0];
+        ////////////////////////////////////////////////////////
+        int scale = 3.5*TILE_WIDTH; // Spacing between isles
+        //float thenum = -[self getWidth]+STANDARD_RACK_WIDTH;
+
+        int isle_x = [[isleComponent substringFromIndex: 1] intValue];
+
+        int additionalstuff = 0;
+        if(isle_x > 6)
+            additionalstuff = 20*TILE_WIDTH;
+        //NSLog(@"x: %f", -STANDARD_RACK_WIDTH*[IsleOffsets getIsleOffset: isle_x]);
+        l = [[[[[Vector alloc] init]
+                        setx: -STANDARD_RACK_WIDTH*[IsleOffsets getIsleOffset: isle_x]]
+                        sety: 0]
+                        setz: scale*(isle_x-1)+0.5*STANDARD_RACK_DEPTH+additionalstuff];
+        [isleObj setLocation: l];
         // Check for even row number
         if([[isleComponent substringFromIndex: 1] intValue] % 2 == 0)
-            [isleObj setface: 180];   // Face the opposite direction for even isles
-
+            [isleObj setRotation: [[[[[Vector alloc] init] setx: 0] sety: 180] setz: 0]];  
         [[[isleObj setHeight: STANDARD_RACK_HEIGHT]
                     setDepth: STANDARD_RACK_DEPTH]
-                    setWidth: 0];
-        [isleObj setLocation: l];
+                    setWidth: 0]; // zero for now, gets calculated as racks are added
+   //     NSLog(@"x: %f", [l x]);
         [self->dcg addIsle: isleObj];   // Add the object to our GLDataCenter object
     }
     // Find the Rack object if it exists, if not, create it!
-    if(!(rackObj = [self findRack: rackComponent andIsle:isleObj])) { 
+    if(!(rackObj = [self findRack: rackComponent andIsle:isleObj])) {
         //NSLog(@"Creating Rack: %@ because rackObj = %@", rackComponent, rackObj);
         rackObj = [[Rack alloc] initWithName: [rackComponent retain]];
-        l = [[[[Location alloc] init] setx: [[rackComponent substringFromIndex: 1] intValue]-1] sety: 0];
+        int rack_x = [[rackComponent substringFromIndex: 1] intValue]-1;
+        [[[rackObj setHeight: STANDARD_RACK_HEIGHT]
+                    setDepth: STANDARD_RACK_DEPTH]
+                    setWidth: STANDARD_RACK_WIDTH];
+        l = [[[[[Vector alloc] init]
+                 setx: [rackObj getWidth] * rack_x + .5*STANDARD_RACK_WIDTH]
+                 sety: 0]//[rackObj getHeight]*-0.5+STANDARD_NODE_HEIGHT*-0.5]
+                 setz: 0];
         [rackObj setLocation: l];
         // Set the height and width of EVERY rack
         // TODO: change this to be variable...
         // got rack dimensions from: http://h18000.www1.hp.com/products/quickspecs/12402_div/12402_div.html#Technical%20Specifications
         // dimensions in cm
         //NSLog(@"%f == ", STANDARD_RACK_WIDTH);
-        [[[rackObj setHeight: STANDARD_RACK_HEIGHT]
-                    setDepth: STANDARD_RACK_DEPTH]
-                    setWidth: STANDARD_RACK_WIDTH];
-        [rackObj setFace: [isleObj getFace]];
+
+        //[rackObj setFace: [isleObj getFace]];
+        //i[rackObj setRotation
+        
         [isleObj addRack: rackObj]; // Add the rack object to the isle object
         // Add the width of this rack to the width of the isle
-        [isleObj setWidth: [isleObj getWidth] + [rackObj getWidth]];
+        //NSLog(@"isle width: %f", [isleObj getWidth]);
+        //NSLog(@"rack width: %f", [rackObj getWidth]);
+        [isleObj setWidth: ([isleObj getWidth] + [rackObj getWidth])];
     }
     // Well, we shouldn't have to test to see if the node has been created
     // because there should only be one occurance of each node in the Chinook
@@ -155,6 +177,16 @@
     [[[nodeObj setWidth: STANDARD_NODE_WIDTH]
                setHeight: STANDARD_NODE_HEIGHT]
                setDepth: STANDARD_NODE_DEPTH];
+    int y = [rackObj nodeCount];
+    if(y > 9)
+        ++y;    // Account for the standard gap in most every rack
+    if(y % 2 != 0)
+        [nodeObj setIsodd: YES];    // make every other node odd...
+    l = [[[[[Vector alloc] init]
+                 setx: 0]
+                 sety: (y+1)*STANDARD_NODE_HEIGHT]
+                 setz: 0];
+    [nodeObj setLocation: l];
     [rackObj addNode: nodeObj]; // Add the node object to the rack object
     //NSLog(@"Debug.");
     return self;
@@ -207,6 +239,26 @@
             }
         }
     }
+    // Loop throught the isles and make sure they are all aligned
+    // i.e. shift them over...
+    enumerator = [self->dcg getEnumerator];
+    if(enumerator == nil)
+        return nil;
+    Vector *l;
+    Vector *l2;
+    NSEnumerator *enumerator2;
+    id element2;
+    while((element = [enumerator nextObject]) != nil) {
+        l = [element location];
+        [l setx: [l x] - 0.5*[element getWidth]+STANDARD_RACK_WIDTH];
+        enumerator2 = [element getEnumerator];
+        while((element2 = [enumerator2 nextObject]) != nil) {
+            l2 = [element2 location];
+            [l2 setx: [l2 x] - .5*[element getWidth]];
+        }
+     //   NSLog(@"[l x] == %f",  [element getWidth]);
+    }
+    
     return self->dcg;
 }
 

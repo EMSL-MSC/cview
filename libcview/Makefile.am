@@ -13,9 +13,10 @@ libcview_la_SOURCES = ColorMap.m GLImage.m DrawableObject.m Eye.m \
 	utils.m GLPointGrid.m GLRibbonGrid.m \
 	GLText.m DefaultGLScreenDelegate.m MultiGrid.m \
     DataCenter/Rack.m DataCenter/Node.m DataCenter/Locatable.m \
-    DataCenter/Isle.m DataCenter/Location.m DataCenter/PMM.m \
+    DataCenter/Isle.m DataCenter/Vector.m DataCenter/PMM.m \
     DataCenter/DrawableArray.m DataCenterLoader.m GLDataCenterGrid.m \
-    DataCenter/IsleOffsets.m
+    DataCenter/IsleOffsets.m \
+    IdArray.m IdDatabase.m Identifiable.m
 
 if HAVE_ATB
 libcview_la_SOURCES += AntTweakBarOverlay.m AntTweakBarManager.m 

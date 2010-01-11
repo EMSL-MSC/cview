@@ -108,24 +108,139 @@ All rights reserved.
         return [super keyPress: key atX: x andY: y inGLWorld: world];
     return handled;
 }
+/**
+    @returns an array of objects that were hit (selected)
+    @param hits
+    @param buffer[]
+    @param pickableObjects
+*/
+/*
+static NSArray* processHits(GLint hits, GLuint buffer[], IdArray *pickableObjects, GLWorld* world)
+{
+    // Instantiate the array with capacity to hold all hits
+    NSMutableArray *pickedIds = [NSMutableArray arrayWithCapacity: hits];
+    //NSMutableArray *pickedObjects;
+    // convert a c-type array into an objective-c array
+    int i;
+    for(i=0;i<hits;++i)
+        [pickedIds addObject: [NSNumber numberWithInt: buffer[i]]];
+
+    if(pickedObjects == nil)
+        return nil;
+
+    NSEnumerator *enumerator =  [pickableObjects objectEnumerator];
+    if(enumerator == nil)
+        return nil;
+
+    id element;
+    SEL getPickedIds = @selector(getPickedIds:hits:);
+    while((element = [enumerator nextObject]) != nil) {
+        if([element respondsToSelector: getPickedIds]) {
+            [world getPickedIds: pickableObjects hits: pickedIds];
+
+        }else{
+            // the object does not respond to that selector, remove it from the array
+            //[pickableObjects 
+        }
+    }
+    NSLog(@"picked object: %@", [element getName]);
+}*/
+-(NSMutableArray*)doPickDraw:(IdArray*) ids andX: (int)x andY: (int)y inWorld: (GLWorld*)world {
+    // set up stuff for gl to do picking
+    float ratio;
+    GLuint selectBuf[512];
+    GLint viewport[4];
+    GLint hits;
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    glSelectBuffer(512, selectBuf);
+    glRenderMode(GL_SELECT);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluPickMatrix(x, viewport[3] - y, 1, 1, viewport);
+    ratio = 1.0f * viewport[2] / viewport[3];
+    gluPerspective(20.0, ratio, 0.1, 9000);
+    glMatrixMode(GL_MODELVIEW);
+    glInitNames();
+    /*
+    // here we loop through pickDrawObjects calling glPickDraw if each object has that selector
+    {
+        NSEnumerator *enumerator;
+        enumerator = [pickDrawObjects objectEnumerator];
+        id element;
+        while ( (element = [enumerator nextObject]) != nil )
+            if ([element respondsToSelector: @selector(glPickDraw:)] == YES)
+                [element glPickDraw: ids];
+    }
+    */
+    [world glPickDraw: ids];
+
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glFlush();
+    hits = glRenderMode(GL_RENDER);
+
+    //////////////////////////////////////////////////
+    /// process the hits/////
+    ///////////////////////////
+
+    // Instantiate the array with capacity to hold all hits
+    IdArray *idHits = [[IdArray alloc] init];
+    // convert a c-type array into an objective-c array
+    int i;
+    for(i=0;i<hits;++i)
+        [idHits addInt: selectBuf[i]];
+    return [world getPickedObjects: ids hits: idHits];
+}
+/** 
+    This selector enumerates through the passed array checking to see what is in the array
+    if only Node objects are in there, then it returns YES, otherwise it returns false
+  */
+-(BOOL) containsNodesOnly: (NSArray*)objects {
+    NSEnumerator *enumerator;
+    enumerator = [objects objectEnumerator];
+    id element;
+    while ( (element = [enumerator nextObject]) != nil )
+        if(![element isKindOfClass:[Node class]])
+            return NO;  // found a Non-Node, return NO
+    return YES;
+}
 
 -(BOOL)mouseButton: (int)button withState: (int)state atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
     if (state == GLUT_DOWN) {
-        NSMutableArray *pickedObjects;
         switch (button) {
             case GLUT_LEFT_BUTTON:
-                glRenderMode(GL_SELECT);    // no rendering, just picking
-                pickedObjects = [[world scene] pickDrawX: x andY: y];
-                if(pickedObjects != nil) {
-                    NSEnumerator *enumerator =  [pickedObjects objectEnumerator];
-                    if(enumerator != nil) {
-                        id element;
-                        while((element = [enumerator nextObject]) != nil) {
-                            if([element respondsToSelector: @selector(getName:)])
-                                NSLog(@"picked object: %@", [element getName]);
-                            else
-                                NSLog(@"picked object: %@", element);
+                {
+                    break;
+                    // for first pass: create an empty IdArray with the world's id as the only element
+                    NSMutableArray *objects = [[NSMutableArray alloc] init];
+                    [objects addObject: world];
+
+                    IdArray *ids = nil;// = [[[IdArray alloc] init] addInt: [world myid]];
+                    int i;
+                    // going to do three passes here
+                    for(i=0;i<3;++i) {
+                        if(objects == nil)
+                            break;
+                        NSEnumerator *enumerator = [objects objectEnumerator];
+                        if(enumerator == nil) {
+                            [objects autorelease];
+                            break;
                         }
+                        id element;
+                        if(ids != nil)
+                            [ids autorelease];
+                        ids = [[IdArray alloc] init];
+                        // convert objects into ids, getting each objects unique id
+                        while((element = [enumerator nextObject]) != nil) {
+                            [ids addInt: [element myid]];
+                        }
+
+                        /////////////////////////////////////////////////////////
+                        // Do the actual pickdraw, returning a list of objects that
+                        // were picked in the picking process
+                        objects = [self doPickDraw: ids andX: x andY: y inWorld: world];
                     }
                 }
                 break;

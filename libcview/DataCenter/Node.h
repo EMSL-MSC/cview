@@ -12,6 +12,7 @@
 */
 @interface Node : Locatable <Drawable, Pickable> {
     float temperature;
+    BOOL isodd;
     BOOL drawname;
     BOOL fading;
     BOOL unfading;
@@ -19,16 +20,18 @@
     double fadetime;
     double fadestart;
     double fadeval;
+    int myId;
 }
-+(void)setNodeArray:(VertArray*)_nodeArray;
 +(void)setWebDataSet: (WebDataSet*)_dataSet;
 +setGLTName:(GLText*) _gltName;
 -draw;
 /// called when picking objects in the scene (does not render)
--(NSMutableArray*)pickDrawX: (int)x andY: (int)y;
+-glPickDraw: (IdArray*)ids;
+-(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits;
 -startFading;   // Used to make this node transparent over time
 -startUnFading; // opposite of above
 -setTemperature: (float) temperature;
 -(float)getTemperature;
+-setIsodd: (BOOL)_isodd;
 @end
 #endif // NODE_H

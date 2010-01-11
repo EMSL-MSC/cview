@@ -5,12 +5,9 @@
 #import "IsleOffsets.h"
 #import "../../libcview-data/WebDataSet.h"
 @implementation Node
-static VertArray *nodeArray;
+//static VertArray *nodeArray;
 static WebDataSet *dataSet;
 static GLText *gltName;
-+(void)setNodeArray:(VertArray*)_nodeArray {
-    nodeArray = _nodeArray;
-}
 +(void)setWebDataSet:(WebDataSet*)_dataSet {
     dataSet = [_dataSet retain];
 }
@@ -61,9 +58,7 @@ static GLText *gltName;
         return -1;
     }
 }
-extern VertArray* createBox(float w, float h, float d);
 -draw {
-
     double thetime = [[NSDate date] timeIntervalSince1970]; // get current time in seconds
     if(fading == YES || unfading == YES) { // check to see if we should fade/unfade
         double scale = 0.0; // must be between 0 and 1, inclusive
@@ -90,57 +85,46 @@ extern VertArray* createBox(float w, float h, float d);
             fadeval = scale+(1-scale)*fadeval;
         }
         glutPostRedisplay();    // Tell glut to draw again - we're still fading
-    //NSLog(@"fadeval = %f",fadeval);
     }
     if(fadeval != 0) {  // only draw this node if we're not completely faded out.
-        if(nodeArray == NULL) {
-            nodeArray = createBox([self getWidth],[self getHeight],[self getDepth]);
-            NSLog(@"width = %f height = %f depth = %f", [self getWidth],[self getHeight],[self getDepth]);
-        }
-        glPushMatrix();
-        glTranslatef(0,STANDARD_NODE_HEIGHT*([[self getLocation] gety]+1),0);
-        [self setTemperature: [self getData: [self getName]]];
-        if(self->temperature != -1)
-            self->temperature /=  100.0;
+        [super setupForDraw];
+            [self setTemperature: [self getData: [self getName]]];
+            if(self->temperature != -1)
+                self->temperature /=  100.0;
 
-        glEnable(GL_BLEND);
-        if(temperature == -1)// No valid data found from the dataSet    
-            glColor4f(1,1,1,fadeval);// color the node white
-        else
-            glColor4f(temperature, 1-temperature, 0, fadeval);
-        glInterleavedArrays(GL_T2F_V3F, 0, nodeArray->verts);
-        glDrawArrays(GL_QUADS, 0, nodeArray->vertCount);    // Draw the node
-        glTranslatef(STANDARD_NODE_DEPTH,0,0);
-        if(drawname == YES) {
-            if(gltName == nil) {
-                gltName = [[GLText alloc] initWithString: [self getName] andFont: @"LinLibertine_Re.ttf"];
-                [gltName setScale: .06];
-                [gltName setRotationOnX: 0 Y: 0 Z: 180];
-                [gltName setColorRed: 0 Green: 0 Blue: 0];
-            }
-            [gltName setString: [[self getName] lowercaseString]];
-            if([[self getLocation] gety] % 2 == 0)  // every other node, change name locations
-                glTranslatef(-20,0,-0.5*STANDARD_NODE_DEPTH-1);
+            glEnable(GL_BLEND);
+            if(temperature == -1)// No valid data found from the dataSet    
+                glColor4f(1,1,1,fadeval);// color the node white
             else
-                glTranslatef(-30,0,-0.5*STANDARD_NODE_DEPTH-1);
-                
-            [gltName glDraw];   // Draw the node name
-        }
-        glPopMatrix();
+                glColor4f(temperature, 1-temperature, 0, fadeval);
+            [super draw];    // draw a box around the node
+
+            if(drawname == YES) {
+                glTranslatef(STANDARD_NODE_DEPTH,0,0);
+                if(gltName == nil) {
+                    gltName = [[GLText alloc] initWithString: [self getName] andFont: @"LinLibertine_Re.ttf"];
+                    [gltName setScale: .06];
+                    [gltName setRotationOnX: 0 Y: 0 Z: 180];
+                    [gltName setColorRed: 0 Green: 0 Blue: 0];
+                }
+                [gltName setString: [[self getName] lowercaseString]];
+                if(isodd == YES)  // every other node, change name locations
+                    glTranslatef(-20,0,-0.5*STANDARD_NODE_DEPTH-1);
+                else
+                    glTranslatef(-30,0,-0.5*STANDARD_NODE_DEPTH-1);
+                    
+                [gltName glDraw];   // Draw the node name
+            }
+        [super cleanUpAfterDraw];
     }
     return self;
 }
--(NSMutableArray*)pickDrawX: (int) x andY: (int) y {
-    NSMutableArray *ret = nil;
-
-
-    //TODO: do the pick
-    if(YES) { //if picked
-        ret = [[NSMutableArray alloc] init];
-        [ret addObject: self];
-    }
-    return ret;
-        
+-glPickDraw: (IdArray*)ids {
+    [super glPickDraw:ids];
+    return self;
+}
+-(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits {
+    return [super getPickedObjects: pickDrawIds hits: glHits];
 }
 -setTemperature: (float) _temperature {
     self->temperature = _temperature;
@@ -148,5 +132,9 @@ extern VertArray* createBox(float w, float h, float d);
 }
 -(float)getTemperature {
     return self->temperature;
+}
+-setIsodd: (BOOL)_isodd {
+    isodd = _isodd;
+    return self;
 }
 @end

@@ -16,8 +16,8 @@
 }
 -addDrawablePickableObject: (id <Drawable, Pickable>) drawableObject;
 -draw;
-/// called when picking objects in the scene (does not render)
--(NSMutableArray*)pickDrawX: (int)x andY: (int)y;
+-glPickDraw: (IdArray*)ids;
+-(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits;
 /// TODO: should remove this selector - just for testing purposes...
 -drawOne;
 /// Returns an enumerator for the drawable objects array it holds

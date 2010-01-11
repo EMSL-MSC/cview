@@ -168,8 +168,8 @@ All rights reserved.
 	[self doDumpImage];
 
 	return self;
-}/*
--glPickDraw {
+}
+-glPickDraw:(IdArray*)ids{
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
@@ -177,13 +177,20 @@ All rights reserved.
 	[eye lookAt];
 
 	if (scene && [scene visible])
-		[scene glPickDraw];
+		[scene glPickDraw: ids];
 	
 	glPopMatrix();
     // We have no need to pick the overlay or
     // do a dump image...
 	return self;
-}*/
+}
+-(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits {
+    if([pickDrawIds isNumberInArray: [self myid]] == NO)
+        return nil;
+    return [scene getPickedObjects: pickDrawIds hits: glHits];
+}
+
+
 -gl2DProlog {
 	GLint viewport[4];
 	int width;

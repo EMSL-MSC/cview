@@ -16,7 +16,6 @@ extern GLuint g_textureID;
     self->jobIds = nil;
     self->jobIdIndex = 0;
     [self doInit];
-    [Node setNodeArray: NULL];
     [Rack setGLTName: nil];
     [Node setGLTName: nil];
     return self;
@@ -185,7 +184,7 @@ extern GLuint g_textureID;
         return self;
     // No textures for now...
     glDisable(GL_TEXTURE_2D);
-    glColor3f(0.5,0.5,0.5);
+    glColor3f(0.5,0.5,0.5);  // grey
     // Draw the rack itself, consisting of 6 sides
     glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
@@ -207,7 +206,7 @@ extern GLuint g_textureID;
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     [self drawOriginAxis];
-//    [self drawFloor];
+    [self drawFloor];
     //[self drawGrid];
     [self->isles draw];
     GLenum err = glGetError();
@@ -215,13 +214,17 @@ extern GLuint g_textureID;
         NSLog(@"There was a glError, error number: %x", err);
     return self;
 }
--(NSMutableArray*)pickDrawX: (int)x andY: (int)y {
-    return [isles pickDrawX: x andY: y];
+-glPickDraw:(IdArray*)ids{
+    [isles glPickDraw:ids];
+    return self;
+}
+-(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits  {
+    return [isles getPickedObjects: pickDrawIds hits: glHits];
 }
 -glDraw {
     [self draw];
     return self;
-
+/*
     float max = [dataSet getScaledMax];
 	
 	if (currentMax != max) {
@@ -238,7 +241,7 @@ extern GLuint g_textureID;
 	//[self drawData];
 	[self drawAxis];
 	//[self drawTitles];
-    return self;
+    return self;*/
 }
 -(NSEnumerator*) getEnumerator {
     NSEnumerator *enumerator = [self->isles getEnumerator];
