@@ -202,10 +202,11 @@ extern GLuint g_textureID;
     return self;
 }
 -draw {
+    
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    [self drawOriginAxis];
+    //[self drawOriginAxis];
     [self drawFloor];
     //[self drawGrid];
     [self->isles draw];
@@ -215,6 +216,7 @@ extern GLuint g_textureID;
     return self;
 }
 -glPickDraw:(IdArray*)ids{
+    NSLog(@"pick drawing in datacenter!");
     [isles glPickDraw:ids];
     return self;
 }

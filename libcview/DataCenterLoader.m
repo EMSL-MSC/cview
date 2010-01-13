@@ -184,7 +184,7 @@
         [nodeObj setIsodd: YES];    // make every other node odd...
     l = [[[[[Vector alloc] init]
                  setx: 0]
-                 sety: (y+1)*STANDARD_NODE_HEIGHT]
+                 sety: (y+1)*STANDARD_NODE_HEIGHT - .5*STANDARD_RACK_HEIGHT]
                  setz: 0];
     [nodeObj setLocation: l];
     [rackObj addNode: nodeObj]; // Add the node object to the rack object

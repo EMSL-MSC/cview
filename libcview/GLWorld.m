@@ -185,8 +185,10 @@ All rights reserved.
 	return self;
 }
 -(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits {
-    if([pickDrawIds isNumberInArray: [self myid]] == NO)
+    if([pickDrawIds isNumberInArray: [self myid]] == NO) {
+        NSLog(@"Could not find the world's number!");
         return nil;
+    }
     return [scene getPickedObjects: pickDrawIds hits: glHits];
 }
 
