@@ -40,10 +40,10 @@
 }
 -draw {
     [super setupForDraw];
-        [super draw];       // Draw bounding box around isle
+        glColor3f(.1,.1,.3);
+        //[super draw];       // Draw bounding box around isle
         //glColor3f(1,1,1);
-        [self->rackArray draw];
-        //glColor3f(.1,.1,.3);
+        //[self->rackArray draw];
     [super cleanUpAfterDraw];
     return self;
 }
@@ -51,12 +51,14 @@
     if([ids isNumberInArray: [self myid]] == YES)
         // Found myid in the ids array, do furthing picking...
         [rackArray glPickDraw:ids];
-    else
+    else {
+    NSLog(@"pick drawing in isles!");
         //////////////////////////////////////////////////////////////////////
         // No, we are doing a pickdraw on just the **basic** isle itself   ///
         //   i.e. don't draw the name, don't draw the nodes, just the rack ///
         //////////////////////////////////////////////////////////////////////
         [super glPickDraw: ids];
+    }
     return self;
 }
 -(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits {

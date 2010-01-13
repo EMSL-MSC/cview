@@ -174,6 +174,7 @@ VertArray* createBox(float w, float h, float d) {
     //NSLog(@"box: width: %f height: %f depth: %f", width, height, depth);
    // NSLog(@"box: loc: x: %f y: %f z: %f", [location x], [location y], [location z]);
     //NSLog(@"box: loc: x: %f", [location x]);
+glColor3f(.1,.1,.3);
 
     glInterleavedArrays(GL_T2F_V3F, 0, boundingBox->verts);
     glDrawArrays(GL_QUADS, 0, boundingBox->vertCount);

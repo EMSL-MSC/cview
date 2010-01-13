@@ -75,9 +75,9 @@ static GLText *gltName;
 -draw {
     [super setupForDraw];
         //[super draw]; // Draw bounding box around rack
+        glColor3f(1,1,1);
         [super drawWireframe]; // Draw wireframe around the rack
-        //glColor3f(1,1,1);
-       // [self->nodes draw]; // Draw the nodes
+        [self->nodes draw]; // Draw the nodes
 
         if(drawname == YES) {   // Draw the rack name
             if(gltName == nil) {
