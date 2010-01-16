@@ -63,6 +63,7 @@ All rights reserved.
 #import "GLWorld.h"
 #import "Scene.h"
 #import "GLDataCenterGrid.h"
+#import "IdDatabase.h"
 
 @implementation DataCenterCViewScreenDelegate 
 /**
@@ -73,6 +74,10 @@ All rights reserved.
 
     Right now, the only thing that this class overrides is the '7' key press.
  */
+-init {
+    lastSelection = nil;
+    return self;
+}
 -(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
 
     BOOL handled = YES;
@@ -108,58 +113,12 @@ All rights reserved.
         return [super keyPress: key atX: x andY: y inGLWorld: world];
     return handled;
 }
-/**
-    @returns an array of objects that were hit (selected)
-    @param hits
-    @param buffer[]
-    @param pickableObjects
-*/
-/*
-static NSArray* processHits(GLint hits, GLuint buffer[], IdArray *pickableObjects, GLWorld* world)
-{
-    // Instantiate the array with capacity to hold all hits
-    NSMutableArray *pickedIds = [NSMutableArray arrayWithCapacity: hits];
-    //NSMutableArray *pickedObjects;
-    // convert a c-type array into an objective-c array
-    int i;
-    for(i=0;i<hits;++i)
-        [pickedIds addObject: [NSNumber numberWithInt: buffer[i]]];
-
-    if(pickedObjects == nil)
-        return nil;
-
-    NSEnumerator *enumerator =  [pickableObjects objectEnumerator];
-    if(enumerator == nil)
-        return nil;
-
-    id element;
-    SEL getPickedIds = @selector(getPickedIds:hits:);
-    while((element = [enumerator nextObject]) != nil) {
-        if([element respondsToSelector: getPickedIds]) {
-            [world getPickedIds: pickableObjects hits: pickedIds];
-
-        }else{
-         :   // the object does not respond to that selector, remove it from the array
-            //[pickableObjects 
-        }
-    }
-    NSLog(@"picked object: %@", [element getName]);
-}*/
-printIds( IdArray* ids ) {
-    int i;
-    printf("ids: ");
-    for(i=0;i<[ids count];++i)
-        printf("%d ", [ids index: i]);
-    printf("\n");
-}
--(NSMutableArray*)doPickDraw:(IdArray*) ids andX: (int)x andY: (int)y inWorld: (GLWorld*)world {
+-(Node*) getSelectedNodeX: (int)x andY: (int)y inGLWorld:(GLWorld*)world {
     // set up stuff for gl to do picking
-    /*
     float ratio;
-    printIds(ids);
     GLuint selectBuf[512];
     GLint viewport[4];
-    GLint hits;
+    GLint hits = 0;
     glGetIntegerv(GL_VIEWPORT, viewport);
     glSelectBuffer(512, selectBuf);
     glRenderMode(GL_SELECT);
@@ -172,10 +131,8 @@ printIds( IdArray* ids ) {
         gluPerspective(20.0, ratio, 0.1, 9000);
         glMatrixMode(GL_MODELVIEW);
         glInitNames();
-       glColor3f(.1,.1,.3);
-*/ 
-            [world glPickDraw: ids];    // do the actual pickdraw (draw only what we have to)
-/*
+       //glColor3f(.1,.1,.3);
+            [world glPickDraw];    // do the actual pickdraw (draw only what we have to)
         glMatrixMode(GL_PROJECTION);
     }
     glPopMatrix();
@@ -183,77 +140,45 @@ printIds( IdArray* ids ) {
     glFlush();
     hits = glRenderMode(GL_RENDER);
 
+     GLenum err = glGetError();
+    if(err != GL_NO_ERROR)
+        NSLog(@"There was a glError, error number: %x", err);
     //////////////////////////////////////////////////
     /// process the hits/////
-    ///////////////////////////
-
-    IdArray *idHits = [[IdArray alloc] init];
-    // convert a c-type array into an objective-c array
-    int i;
-    for(i=0;i<hits;++i)
-        [idHits addInt: selectBuf[i]];
-    return [world getPickedObjects: ids hits: idHits];
-    */return nil;
-}
-/** 
-    This selector enumerates through the passed array checking to see what is in the array
-    if only Node objects are in there, then it returns YES, otherwise it returns false
-  */
--(BOOL) containsNodesOnly: (NSArray*)objects {
-    NSEnumerator *enumerator;
-    enumerator = [objects objectEnumerator];
-    id element;
-    while ( (element = [enumerator nextObject]) != nil )
-        if(![element isKindOfClass:[Node class]])
-            return NO;  // found a Non-Node, return NO
-    return YES;
-}
--(Node*) getSelectedNodeX: (int)x andY: (int)y inGLWorld:(GLWorld*)world {
-    // for first pass: create an empty IdArray with the world's id as the only element
-    NSMutableArray *objects = [[NSMutableArray alloc] init];
-    [objects addObject: world];
-    NSEnumerator *enumerator;
-    IdArray *ids = nil;
-    int i;
-    id element;
-    // going to do three passes here
-    for(i=0;i<3;++i) {
-        if(objects == nil)
-            break;
-        enumerator = [objects objectEnumerator];
-        if(enumerator == nil) {
-            [objects autorelease];
-            break;
-        }
-        if(ids != nil)
-            [ids autorelease];
-        ids = [[IdArray alloc] init];
-        // convert objects into ids, getting each objects unique id
-        while((element = [enumerator nextObject]) != nil)
-            [ids addInt: [element myid]];
-
-        /////////////////////////////////////////////////////////
-        // Do the actual pickdraw, returning a list of objects that
-        // were picked in the picking process
-        objects = [self doPickDraw: ids andX: x andY: y inWorld: world];
-        enumerator = [objects objectEnumerator];
-        if(enumerator == nil) {
-            NSLog(@"enumerator was nil");
-            [objects autorelease];
-            return nil;
-        }
+    // m is a maximum value, starting at the max hex value we can get
+    unsigned int i, m = 0xffffffff;
+    unsigned int theId = 0;
+    GLuint names, *ptr, *rowptr;
+    ptr = (GLuint*)selectBuf;
+    if(hits == 0)
+        return nil;
+    for(i=0;i<hits;++i) {
+        names = *ptr;   // the number of names in current 'cell'
+        rowptr = ptr;   // points to the current 'cell' or row
+        ptr += 3;       // skip past 3 elements in this row (names, closest distance, furthest distance)
+        ptr += names;   // skip past the number of names there are in this row
+        if(rowptr[1] < m)   // look for a new minimum
+        {   
+            m = rowptr[1];
+            theId = rowptr[3];  // get the id because it's closest to the camera
+        }   
     }
-//    NSLog(@"got here");
-    // examine the objects that were returned to us. 
-       while((element = [enumerator nextObject]) != nil) {
-        NSLog(@"object: %@", [element getName]);
+    return [IdDatabase objectForId: theId];
+}
+-selectNode: (Node*) n {
+    //if(lastSelection != nil)
+    //    [lastSelection setSelected: NO];
+    if(n != nil) {
+                [n setSelected: YES];
+        if(n != lastSelection)
+            NSLog(@"selected node: %@", [n getName]);
     }
-    return nil;
+    lastSelection = n;
+    return self;
 }
 -(BOOL)mousePassiveMoveAtX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
-    Node* n;
-    n = [self getSelectedNodeX: x andY: y inGLWorld: world];
-
+    return NO;
+    [self selectNode: [self getSelectedNodeX: x andY: y inGLWorld: world]];
     return YES;
 }
 
@@ -262,11 +187,8 @@ printIds( IdArray* ids ) {
         switch (button) {
             case GLUT_LEFT_BUTTON:
                 {
+                    [self selectNode: [self getSelectedNodeX: x andY: y inGLWorld: world]];
                     break;
-                    Node *n;
-                    n = [self getSelectedNodeX: x andY: y inGLWorld: world];
-                    break;
-                    
                 }
                 break;
             case GLUT_MIDDLE_BUTTON:

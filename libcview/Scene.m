@@ -290,37 +290,20 @@ All rights reserved.
 }
 /// loops through all objects in the scene and IF that object has a selector
 /// pickDrawX: andY: then it will send that message to that object
--glPickDraw:(IdArray*)ids {
+-glPickDraw {
 	SceneObject *o;
 	NSEnumerator *list;
 	list = [objects objectEnumerator];
 	while ( (o = [list nextObject]) ) {
-			if ([o->object respondsToSelector: @selector(glPickDraw:)] == YES &&
+			if ([o->object respondsToSelector: @selector(glPickDraw)] == YES &&
                 [o->object visible]) {
 				glPushMatrix();
 				[self doTranslate: o];
-				[(id)o->object glPickDraw: ids];
+				[(id)o->object glPickDraw];
 				glPopMatrix();
 			}
 	}
 	return self;
-}
-/// Doesn't handle any of the ids itself, simply passes the ids to the scene objects
-/// then it takes all the return values from each scene object and puts then in an array
--(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits {
-	SceneObject *o;
-	NSEnumerator *list;
-	list = [objects objectEnumerator];
-    NSMutableArray *mashedTogether = [[NSMutableArray alloc] init];
-	while ( (o = [list nextObject]) ) {
-			if ([o->object respondsToSelector: @selector(getPickedObjects:hits:)] == YES &&
-                [o->object visible]) {
-                NSMutableArray *retval = [(id)o->object getPickedObjects: pickDrawIds hits: glHits];
-                if(retval != nil)
-				    [mashedTogether addObject: retval];
-			}
-	}
-	return mashedTogether;
 }
 
 - (void) encodeWithCoder: (NSCoder*)aCoder {

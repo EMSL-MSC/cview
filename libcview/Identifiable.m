@@ -1,24 +1,18 @@
 #import "Identifiable.h"
 #import "IdDatabase.h"
+#import <Foundation/Foundation.h>
 @implementation Identifiable
 -init {
     [super init];
-    [self genUniqueId];
+    //NSLog(@"identifiable init");
+    self->myid = [IdDatabase reserveUniqueId: self];
     return self;
 }
-/*
--setMyid: (int) _myid:
-    [[IdDatabase releaseUniqueId: myid];
-    myid = _myid;
-    return self;
-}*/
--(int)myid {
-    return myid;
+-(unsigned int)myid {
+    return self->myid;
 }
--genUniqueId {
-    [[IdDatabase instance] releaseUniqueId: myid];   // first release the old one  
-    // get a unique id from the IdDatabase
-    myid = [[IdDatabase instance] reserveUniqueId];
+-setMyid:(unsigned int)_myid {
+    self->myid = _myid;
     return self;
 }
 @end

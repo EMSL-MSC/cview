@@ -7,7 +7,7 @@ OBJCDEPMODE = depmode=gcc
 INCLUDES = $(all_includes) -I$(top_srcdir)/libcview -I$(top_srcdir)/libcview-data
 
 # the library search path.
-noinst_PROGRAMS = datasettest glgridtest glscreentest webdatasettest calcdatasettest calcdatatest 
+noinst_PROGRAMS = datasettest glgridtest glscreentest webdatasettest calcdatasettest calcdatatest iddatabasetest
 EXTRA_DIST = funcdata
 
 calcdatasettest_SOURCES = calcdatasettest.m
@@ -22,4 +22,4 @@ webdatasettest_SOURCES = webdatasettest.m
 
 glgridtest_SOURCES = glgridtest.m
 
-
+iddatabasetest_SOURCES = iddatabasetest.m

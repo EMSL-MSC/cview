@@ -3,7 +3,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSEnumerator.h> 
 #import <Foundation/NSArray.h>
-#import "DataCenter/IsleOffsets.h"
+#import "DataCenter/AisleOffsets.h"
 #include "Wand.h"
 #import "DictionaryExtra.h"
 #include <gl.h>
@@ -42,22 +42,22 @@
     }
     return arr;
 }
-//  isleName will be like "C1" or "C5"....i know it makes no sense,
+//  aisleName will be like "C1" or "C5"....i know it makes no sense,
 //  but this format was already predetermined in the Chinook Serial Numbers file...
 //  I believe 'C' is actually short for column...
--(Rack*)findRack: (NSString*) rackName andIsle: isle {
-    //NSLog(@"findRack: %@ andIsle: %@", rackName, isle);
-    if(isle == nil)
+-(Rack*)findRack: (NSString*) rackName andAisle: aisle {
+    //NSLog(@"findRack: %@ andAisle: %@", rackName, aisle);
+    if(aisle == nil)
         return nil; // Uh, oh, should never get here!
-    // First check to see if we have created a Isle object yet for this isle
-    NSEnumerator *enumerator = [isle getEnumerator];
+    // First check to see if we have created a Aisle object yet for this aisle
+    NSEnumerator *enumerator = [aisle getEnumerator];
     //NSLog(@"enumerator = %@", enumerator);
     if(enumerator == nil)
         return nil;
     id element;
     while((element = [enumerator nextObject]) != nil) {
         //NSLog(@"element = %@", element);
-        // Compare isle names
+        // Compare aisle names
         if(NSOrderedSame == [rackName compare: [element getName]]) {
             //NSLog(@"They're the same!!!!");
             return element; // Found it, return it!
@@ -65,10 +65,10 @@
     }
     return nil;
 }
-//  isleName will be like "R1" or "R5" or something like that...
--(Isle*)findIsle: (NSString*) isleName {
-    // First check to see if we have created a Isle object yet for this isle
-    //NSLog(@"findIsle: %@", isleName);
+//  aisleName will be like "R1" or "R5" or something like that...
+-(Aisle*)findAisle: (NSString*) aisleName {
+    // First check to see if we have created a Aisle object yet for this aisle
+    //NSLog(@"findAisle: %@", aisleName);
     NSEnumerator *enumerator = [self->dcg getEnumerator];
     //NSLog(@"enumerator: %@", enumerator);
     if(enumerator == nil)
@@ -76,10 +76,10 @@
     id element;
     while((element = [enumerator nextObject]) != nil) {
         //NSLog(@"element = %@", element);
-        //NSLog(@" isleName = %@", isleName);
-        //NSLog(@" [element getName] = %@", [element getName]);//isleName);
-        // Compare isle names
-        if(NSOrderedSame == [isleName compare: [element getName]]) {
+        //NSLog(@" aisleName = %@", aisleName);
+        //NSLog(@" [element getName] = %@", [element getName]);//aisleName);
+        // Compare aisle names
+        if(NSOrderedSame == [aisleName compare: [element getName]]) {
            //NSLog(@"Got here!");
            return element; // Found it, return it!
         }
@@ -95,53 +95,53 @@
         return self;
     }
     //NSLog(@"range = %d", range.location);
-    NSString *isleComponent = [rack substringToIndex: range.location];
-    if(isleComponent == nil)
+    NSString *aisleComponent = [rack substringToIndex: range.location];
+    if(aisleComponent == nil)
         NSLog(@"It was nil!");
     range.length = [rack length] - range.location;
     //NSLog(@"length = %d", range.length);
     //NSLog(@"rack length = %d", [rack length]);
     NSString *rackComponent = [rack substringWithRange: range];
-    //NSLog(@"isleComponent = \"%@\", rackComponent = \"%@\" node = \"%@\"", isleComponent, rackComponent, node);
+    //NSLog(@"aisleComponent = \"%@\", rackComponent = \"%@\" node = \"%@\"", aisleComponent, rackComponent, node);
     
     Vector *l;
-    Isle *isleObj;
+    Aisle *aisleObj;
     Rack *rackObj;
     Node *nodeObj;
-    // Find the Isle object if it exists, if not, create it!
-    if(!(isleObj = [self findIsle: isleComponent])) {
-        //NSLog(@"Creating Isle: %@ because isleObj = %@", isleComponent, isleObj);
-        isleObj = [[Isle alloc] init];
-        [isleObj setName: [isleComponent retain]];
-        [isleComponent substringFromIndex: 1];
+    // Find the Aisle object if it exists, if not, create it!
+    if(!(aisleObj = [self findAisle: aisleComponent])) {
+        //NSLog(@"Creating Aisle: %@ because aisleObj = %@", aisleComponent, aisleObj);
+        aisleObj = [[Aisle alloc] init];
+        [aisleObj setName: [aisleComponent retain]];
+        [aisleComponent substringFromIndex: 1];
         ////////////////////////////////////////////////////////////
-        // set the x-location to whatever isle number this is...
+        // set the x-location to whatever aisle number this is...
         ////////////////////////////////////////////////////////
-        int scale = 3.5*TILE_WIDTH; // Spacing between isles
+        int scale = 3.5*TILE_WIDTH; // Spacing between aisles
         //float thenum = -[self getWidth]+STANDARD_RACK_WIDTH;
 
-        int isle_x = [[isleComponent substringFromIndex: 1] intValue];
+        int aisle_x = [[aisleComponent substringFromIndex: 1] intValue];
 
         int additionalstuff = 0;
-        if(isle_x > 6)
+        if(aisle_x > 6)
             additionalstuff = 20*TILE_WIDTH;
-        //NSLog(@"x: %f", -STANDARD_RACK_WIDTH*[IsleOffsets getIsleOffset: isle_x]);
+        //NSLog(@"x: %f", -STANDARD_RACK_WIDTH*[AisleOffsets getAisleOffset: aisle_x]);
         l = [[[[[Vector alloc] init]
-                        setx: -STANDARD_RACK_WIDTH*[IsleOffsets getIsleOffset: isle_x]]
+                        setx: -STANDARD_RACK_WIDTH*[AisleOffsets getAisleOffset: aisle_x]]
                         sety: 0]
-                        setz: scale*(isle_x-1)+0.5*STANDARD_RACK_DEPTH+additionalstuff];
-        [isleObj setLocation: l];
+                        setz: scale*(aisle_x-1)+0.5*STANDARD_RACK_DEPTH+additionalstuff];
+        [aisleObj setLocation: l];
         // Check for even row number
-        if([[isleComponent substringFromIndex: 1] intValue] % 2 == 0)
-            [isleObj setRotation: [[[[[Vector alloc] init] setx: 0] sety: 180] setz: 0]];  
-        [[[isleObj setHeight: STANDARD_RACK_HEIGHT]
+        if([[aisleComponent substringFromIndex: 1] intValue] % 2 == 0)
+            [aisleObj setRotation: [[[[[Vector alloc] init] setx: 0] sety: 180] setz: 0]];  
+        [[[aisleObj setHeight: STANDARD_RACK_HEIGHT]
                     setDepth: STANDARD_RACK_DEPTH]
                     setWidth: 0]; // zero for now, gets calculated as racks are added
    //     NSLog(@"x: %f", [l x]);
-        [self->dcg addIsle: isleObj];   // Add the object to our GLDataCenter object
+        [self->dcg addAisle: aisleObj];   // Add the object to our GLDataCenter object
     }
     // Find the Rack object if it exists, if not, create it!
-    if(!(rackObj = [self findRack: rackComponent andIsle:isleObj])) {
+    if(!(rackObj = [self findRack: rackComponent andAisle:aisleObj])) {
         //NSLog(@"Creating Rack: %@ because rackObj = %@", rackComponent, rackObj);
         rackObj = [[Rack alloc] initWithName: [rackComponent retain]];
         int rack_x = [[rackComponent substringFromIndex: 1] intValue]-1;
@@ -159,14 +159,14 @@
         // dimensions in cm
         //NSLog(@"%f == ", STANDARD_RACK_WIDTH);
 
-        //[rackObj setFace: [isleObj getFace]];
+        //[rackObj setFace: [aisleObj getFace]];
         //i[rackObj setRotation
         
-        [isleObj addRack: rackObj]; // Add the rack object to the isle object
-        // Add the width of this rack to the width of the isle
-        //NSLog(@"isle width: %f", [isleObj getWidth]);
+        [aisleObj addRack: rackObj]; // Add the rack object to the aisle object
+        // Add the width of this rack to the width of the aisle
+        //NSLog(@"aisle width: %f", [aisleObj getWidth]);
         //NSLog(@"rack width: %f", [rackObj getWidth]);
-        [isleObj setWidth: ([isleObj getWidth] + [rackObj getWidth])];
+        [aisleObj setWidth: ([aisleObj getWidth] + [rackObj getWidth])];
     }
     // Well, we shouldn't have to test to see if the node has been created
     // because there should only be one occurance of each node in the Chinook
@@ -239,7 +239,7 @@
             }
         }
     }
-    // Loop throught the isles and make sure they are all aligned
+    // Loop throught the aisles and make sure they are all aligned
     // i.e. shift them over...
     enumerator = [self->dcg getEnumerator];
     if(enumerator == nil)

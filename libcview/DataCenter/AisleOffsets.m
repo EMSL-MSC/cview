@@ -1,32 +1,32 @@
-#import "IsleOffsets.h"
+#import "AisleOffsets.h"
 #import <Foundation/Foundation.h>
-@implementation IsleOffsets
+@implementation AisleOffsets
 // Created this little function using the data center map....
 // I establised a baseline, and then counted how many tiles each
-// isle was away from the baseline.  Pretty simple, only problem is
+// aisle was away from the baseline.  Pretty simple, only problem is
 // that it's hardcoded in here.....(maybe we don't care)
-+(float)getIsleOffset: (int) isle {
-    if(isle < 0) {
-        NSLog(@"Someone passed a negetive isle number!!! VERY BAD.");
++(float)getAisleOffset: (int) aisle {
+    if(aisle < 0) {
+        NSLog(@"Someone passed a negetive aisle number!!! VERY BAD.");
         return 0;
-    }else if(isle == 1) {
+    }else if(aisle == 1) {
         return 2.5;
-    }else if(isle == 2) {
+    }else if(aisle == 2) {
         return -0.2;
-    }else if(isle == 3) {
+    }else if(aisle == 3) {
         return 1;
-    }else if(isle == 4) {
+    }else if(aisle == 4) {
         return 0;
-    }else if(isle == 5) {
+    }else if(aisle == 5) {
         return 1;
-    }else if(isle == 6) {
+    }else if(aisle == 6) {
         return 3.8;
-    }else if(isle <= 13) {
+    }else if(aisle <= 13) {
         return 11;
-    }else if(isle <= 16) {
+    }else if(aisle <= 16) {
         return 10;
     }else{
-        NSLog(@"Someone passed an isle greater than 16!!! Uh-oh.");
+        NSLog(@"Someone passed an aisle greater than 16!!! Uh-oh.");
         return 0;
     }
 }

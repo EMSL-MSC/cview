@@ -1,8 +1,7 @@
 #ifndef DATACENTERLOADER_H
 #define DATACENTERLOADER_H
 #import "GLDataCenterGrid.h"
-#import "DataCenter/DrawableArray.h"
-#import "DataCenter/Isle.h"
+#import "DataCenter/Aisle.h"
 #import "DataCenter/Rack.h"
 #import "DataCenter/Node.h"
 #import <gl.h>
@@ -14,8 +13,6 @@
     the data center
   */
 @interface DataCenterLoader : NSObject {
-// Holds an array of isles in the data center
-//    DrawableArray *isles;
     GLDataCenterGrid *dcg;
 }
 -init;

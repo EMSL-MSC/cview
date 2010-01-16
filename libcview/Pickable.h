@@ -12,9 +12,8 @@
 /**
     @author Brock Erwin
     @returns self;
-    @param ids unique ids which should be tested 
  */
--glPickDraw: (IdArray*)ids;
+-glPickDraw;
 /**
     @author Brock Erwin
     @returns objects that correspond to a particular unique id.
@@ -22,6 +21,6 @@
            this is used so we don't compare hits with objects we didn't even test
     @param glHits contain the unique ids that got hit and were returned from glRenderMode()
  */
--(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits;
+//-(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits;
 @end
 #endif

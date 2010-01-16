@@ -6,24 +6,22 @@
     for picking purposes when glRenderMode(GL_SELECT) is called
     It implements the singleton design pattern
   */
-@interface IdDatabase : NSObject {
-@private
-#define ID_COUNT 50000
-    NSMutableArray *ids;
-}
-+(IdDatabase*)instance;
-/// resets the whole database with new ids
--initIds;
+@interface IdDatabase : NSObject
+/// resets the whole database - erases old ids
++initIds;
 /**
     @returns a unique id to be used in conjunction with glPushName(*theid*)
-             is -1 if there are no unique ids left
+    @param the object that should be associated with the id
  */
--(int)reserveUniqueId;
++(unsigned int)reserveUniqueId: (id) object;
+/**
+    @returns the object that is associated with the unique id that is passed
+             is nil if no object with that number is found
+    @param   the unique identification number
+  */
++(id) objectForId: (unsigned int) number; 
 /// this probably won't get used, instead just call initIds to reset the whole thing
--releaseUniqueId: (int)number ;
--(id)retain ;
--(void)release ;
--(id)autorelease ;
-
++releaseUniqueId: (unsigned int)number ;
++(unsigned int)count;
 @end
 #endif

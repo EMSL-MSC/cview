@@ -1,54 +1,80 @@
 #import "IdDatabase.h"
 #import <Foundation/NSValue.h>
+#import <Foundation/NSSet.h>
+#import <Foundation/NSEnumerator.h>
+/** 
+    Simple little class to allow us to store a number and an object together
+  */
+@interface NumberObject : NSObject {@private    unsigned int number;    id object;}
+@end
+@implementation NumberObject
+-(NSUInteger)hash {return number;}
+-(BOOL)isEqual: (id) anObject {return number == [anObject hash];}
+-(unsigned int)number{return number;}
+-(id)object{return object;}
+-setNumber:(unsigned int)_number{number=_number;return self;}
+-setObject:(id)_object{object=_object;return self;}
+@end
 
-static IdDatabase *instance = nil;
+
+
+static NSMutableSet *database = nil;
+static NumberObject *tmpNumberObject = nil;
 @implementation IdDatabase
-+(IdDatabase*)instance
-{
-    @synchronized(self)
-    {
-        if (instance == nil) {
-            instance = [[IdDatabase alloc] init];
-            [instance initIds];
-        }
-    }
-    return instance;
-}
--initIds {
-    if(ids != nil)
-        [ids autorelease];
-    ids = [NSMutableArray arrayWithCapacity: ID_COUNT];
-    int i;
-    for(i=0;i<ID_COUNT;++i)
-        [ids addObject: [NSNumber numberWithInt: i]];
++initIds {
+    if(database != nil)
+        [database autorelease];
+    database = [[NSMutableSet alloc] init];
     return self;
 }
-/// return -1 if there are no unique ids left
--(int)reserveUniqueId {
-    if([ids count] > 0) {
-        id obj = [ids objectAtIndex: 0];
-        int num = [obj intValue];
-        [ids removeObjectAtIndex: 0];
-        return num;
-    }else
-        return -1;
++(unsigned int)reserveUniqueId: (id) object {
+    if(object == nil) {NSLog(@"<IdDatabase> tried to reserve a nil object!"); return -1;}
+    if(database == nil) database = [[NSMutableSet alloc] init];
+    [database addObject:
+        [[[[NumberObject alloc] init] setObject: object] setNumber: [database count]]
+            ];
+    //NSLog(@"reserving a unique id, count: %d, object: %@", [database count], [object className]);
+    return [database count]-1;
 }
--releaseUniqueId: (int)number {
-    int i;
-    for(i=0;i<[ids count];++i)
-        if([[ids objectAtIndex: i] intValue] == number) 
-            return self;
-    [ids addObject: [NSNumber numberWithInt: number]];
-    return self;
-}
--(id)retain {
-    return self;
-}
--(void)release {
-    //do nothing
-}
--(id)autorelease {
-    return self;
-}
++(id) objectForId: (unsigned int) number {
+    //NSLog(@"looking for unique id: %d", number);
+    if(database == nil) return nil;
+    if(tmpNumberObject == nil) tmpNumberObject = [[NumberObject alloc] init];
 
+    return [[database member: [tmpNumberObject setNumber: number]] object];
+}
++releaseUniqueId: (unsigned int)number {
+    if(database == nil) database = [[NSMutableSet alloc] init];
+    if(tmpNumberObject == nil) tmpNumberObject = [[NumberObject alloc] init];
+    NumberObject *remove = [database member: [tmpNumberObject setNumber: number]];
+    unsigned int count = [database count];   // how many before we try to remove
+    [database removeObject: remove];
+    [remove autorelease];
+    if([database count] < count) {
+        // count went down, fill in the gap in numbers that we just made
+        NumberObject *no = [database member: [tmpNumberObject setNumber: count-1]];
+//        NSLog(@"filling in a gap: %@", [no object] );
+//        NSLog(@"new number: %d", [no number] );
+        [database removeObject: no];
+        [no setNumber: number];
+        [database addObject: no];
+//        NSLog(@"new number: %d", [no number] );
+//        NSLog(@"filling in a gap: %@", [no object] );
+    }
+//    NSLog(@"count before: %d after %d", count, [database count]);
+    return self;
+}
++print {
+    NSEnumerator *enumerator = [[database allObjects] objectEnumerator];
+    id element;
+    while((element = [enumerator nextObject]) != nil) {
+        NSLog(@"id: %d object: %@", [element number], [element object]);
+    }
+    return self;
+}
++(unsigned int)count {
+    if(database == nil)
+        return 0;
+    return [database count];
+}
 @end

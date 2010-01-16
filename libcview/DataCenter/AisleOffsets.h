@@ -1,5 +1,5 @@
-#ifndef ISLEOFFSETS_H
-#define ISLEOFFSETS_H
+#ifndef AISLEOFFSETS_H
+#define AISLEOFFSETS_H
 // Probably a bad way to do this, but that's my decision ;-D
 // These are in centimeters
 #define TILE_WIDTH              24
@@ -15,9 +15,9 @@
 #define WIDE_RACK_WIDTH         1
 
 #import "Point.h"
-@interface IsleOffsets {
+@interface AisleOffsets {
 }
-+(float)getIsleOffset: (int) isleNum;
++(float)getAisleOffset: (int) aisleNum;
 +(VertArray*)getDataCenterFloorPart1;
 +(VertArray*)getDataCenterFloorPart2;
 +(VertArray*)getDataCenterFloorPart3;

@@ -3,7 +3,6 @@
 #import "Locatable.h"
 #import "Drawable.h"
 #import "Pickable.h"
-#import "DrawableArray.h"
 #import "Node.h"
 #import "Point.h"
 #import "../GLText.h"
@@ -15,7 +14,7 @@
   */
 
 @interface Rack : Locatable <Drawable, Pickable> {
-    DrawableArray *nodes;
+    NSMutableArray *nodes;
 @private
     BOOL wireframe;     // if yes draw the racks as wireframe
     BOOL drawname;
@@ -28,8 +27,7 @@
 -initWithName:(NSString*)_name;
 -draw;
 /// called when picking objects in the scene (does not render)
--glPickDraw: (IdArray*)ids;
--(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits;
+-glPickDraw;
 -addNode: (Node*) node;
 -(int)nodeCount;
 -startFading; // makes this rack start fading (being transparent) over a period of time

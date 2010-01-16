@@ -3,6 +3,7 @@
 #import <glut.h>
 #import <Foundation/Foundation.h>
 
+#import "Node.h"
 @implementation Locatable
 +(void)drawGLQuad: (Point) p1 andP2: (Point) p2
             andP3: (Point) p3 andP4: (Point) p4 {
@@ -14,6 +15,7 @@
     glEnd();
 }
 -init {
+    [super init];
     self->location = [[Vector alloc] initWithZeroes];
     self->rotation = [[Vector alloc] initWithZeroes];
     self->name = nil;
@@ -168,16 +170,20 @@ VertArray* createBox(float w, float h, float d) {
     glPopMatrix();
     return self;
 }
--draw {
+-drawBox {
     if(boundingBox == NULL) 
         boundingBox = createBox([self getWidth],[self getHeight],[self getDepth]);
     //NSLog(@"box: width: %f height: %f depth: %f", width, height, depth);
    // NSLog(@"box: loc: x: %f y: %f z: %f", [location x], [location y], [location z]);
     //NSLog(@"box: loc: x: %f", [location x]);
-glColor3f(.1,.1,.3);
+//glColor3f(.1,.1,.3);
 
     glInterleavedArrays(GL_T2F_V3F, 0, boundingBox->verts);
     glDrawArrays(GL_QUADS, 0, boundingBox->vertCount);
+    return self;
+}
+-draw {
+    [self drawBox];
     return self;
 }
 -drawWireframe {
@@ -188,24 +194,14 @@ glColor3f(.1,.1,.3);
     glDrawArrays(GL_LINES, 0, wireframeBox->vertCount);
     return self;
 }
--glPickDraw: (IdArray*)ids {
-    glPushName([self myid]);    // push my id onto the gl stack
+-glPickDraw {
+    if(![self isKindOfClass:[Node class]])
+        NSLog(@"found a class: %@", self);
+    glPushName([super myid]);    // push my id onto the gl stack
     {
-        [self setupForDraw];
-        [self draw];
-        [self cleanUpAfterDraw];
+        [self drawBox];
     }
     glPopName();
     return self;
-}
-/// Doesn't handle any of the ids itself, simply passes the ids to the scene objects
-/// then it takes all the return values from each scene object and puts then in an array
--(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits {
-    if([pickDrawIds isNumberInArray: [self myid]] == NO)
-        return nil;
-    /// alloc and return an array with just this object in it
-    NSMutableArray *arr = [[NSMutableArray alloc] init];
-    [arr addObject: self];
-    return arr;
 }
 @end

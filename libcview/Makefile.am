@@ -13,9 +13,9 @@ libcview_la_SOURCES = ColorMap.m GLImage.m DrawableObject.m Eye.m \
 	utils.m GLPointGrid.m GLRibbonGrid.m \
 	GLText.m DefaultGLScreenDelegate.m MultiGrid.m \
     DataCenter/Rack.m DataCenter/Node.m DataCenter/Locatable.m \
-    DataCenter/Isle.m DataCenter/Vector.m \
-    DataCenter/DrawableArray.m DataCenterLoader.m GLDataCenterGrid.m \
-    DataCenter/IsleOffsets.m \
+    DataCenter/Aisle.m DataCenter/Vector.m \
+    DataCenterLoader.m GLDataCenterGrid.m \
+    DataCenter/AisleOffsets.m \
     IdArray.m IdDatabase.m Identifiable.m
 
 if HAVE_ATB

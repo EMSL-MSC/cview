@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <time.h>
 #import <Foundation/Foundation.h>
-#import "IsleOffsets.h"
+#import "AisleOffsets.h"
 void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
 @implementation Rack
 static unsigned int texture;
@@ -31,14 +31,14 @@ static GLText *gltName;
     self->wireframe = YES;
     self->drawname = YES;
     //self->gltName = nil;
-    self->nodes = [[DrawableArray alloc] init];
+    self->nodes = [[NSMutableArray alloc] init];
     return self;
 }
 -(Node*)findNodeObjectByName:(NSString*) _name {
     //NSLog(@"name we're tyring to find is: %@", _name);
     if(self->nodes == nil)
         return nil;
-    NSEnumerator *enumerator = [self->nodes getEnumerator];
+    NSEnumerator *enumerator = [self->nodes objectEnumerator];
     if(enumerator == nil)
         return nil;
     id element;
@@ -63,7 +63,7 @@ static GLText *gltName;
 -startFading {
     if(self->nodes == nil)
         return self;
-    NSEnumerator *enumerator = [self->nodes getEnumerator];
+    NSEnumerator *enumerator = [self->nodes objectEnumerator];
     if(enumerator == nil)
         NSLog(@"[DrawableArray draw]: enumerator was nil!");
     id element;
@@ -77,7 +77,7 @@ static GLText *gltName;
         //[super draw]; // Draw bounding box around rack
         glColor3f(1,1,1);
         [super drawWireframe]; // Draw wireframe around the rack
-        [self->nodes draw]; // Draw the nodes
+        [self->nodes makeObjectsPerformSelector:@selector(draw)]; // draw the nodes
 
         if(drawname == YES) {   // Draw the rack name
             if(gltName == nil) {
@@ -95,24 +95,14 @@ static GLText *gltName;
         NSLog(@"There was a glError, error number: %x", err);
     return self;
 }
--glPickDraw: (IdArray*)ids {
-    if([ids isNumberInArray: [self myid]] == YES)
-        // Found myid in the ids array, do furthing picking...
-        [nodes glPickDraw:ids];
-    else
-        [super glPickDraw:ids];
+-glPickDraw {
+    [super setupForDraw];
+        [nodes makeObjectsPerformSelector:@selector(glPickDraw)];
+    [super cleanUpAfterDraw];
     return self;
 }
--(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits {
-    if([pickDrawIds isNumberInArray: [self myid]] == NO)
-        return nil;
-    NSMutableArray *arr = [[NSMutableArray alloc] init];
-    [arr addObject: self];  // Add this rack to the array
-    [arr addObject: [nodes getPickedObjects: pickDrawIds hits: glHits]];
-    return arr;
-}
 -addNode: (Node*) node {
-    [self->nodes addDrawablePickableObject: node];
+    [self->nodes addObject: node];
     return self;
 }
 -(int)nodeCount {

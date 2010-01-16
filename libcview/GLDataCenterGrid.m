@@ -4,7 +4,7 @@
 #import "cview.h"
 #import "DataSet.h"
 #import "GLDataCenterGrid.h"
-#import "DataCenter/IsleOffsets.h"
+#import "DataCenter/AisleOffsets.h"
 #import "DataCenterLoader.h"
 #import "DictionaryExtra.h"
 void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
@@ -24,10 +24,10 @@ extern GLuint g_textureID;
     return self->csvFilePath;
 }
 -doInit {
-    self->isles = [[DrawableArray alloc] init];
-    self->floorArray1 = [IsleOffsets getDataCenterFloorPart1];
-    self->floorArray2 = [IsleOffsets getDataCenterFloorPart2];
-    self->floorArray3 = [IsleOffsets getDataCenterFloorPart3];
+    self->aisles = [[NSMutableArray alloc] init];
+    self->floorArray1 = [AisleOffsets getDataCenterFloorPart1];
+    self->floorArray2 = [AisleOffsets getDataCenterFloorPart2];
+    self->floorArray3 = [AisleOffsets getDataCenterFloorPart3];
     if(self->csvFilePath != nil) {
         DataCenterLoader *dcl = [[DataCenterLoader alloc] init];
         [dcl LoadGLDataCenterGrid: self];
@@ -37,9 +37,9 @@ extern GLuint g_textureID;
 }
 -(Node*)findNodeObjectByName:(NSString*) _name {
     //NSLog(@"name = %@", _name);
-    if(self->isles == nil)
+    if(self->aisles == nil)
         return nil;
-    NSEnumerator *enumerator = [self->isles getEnumerator];
+    NSEnumerator *enumerator = [self->aisles objectEnumerator];
     if(enumerator == nil)
         return nil;
     id element;
@@ -51,17 +51,17 @@ extern GLuint g_textureID;
     }
     return nil;
 }
--(DrawableArray*)getNodesRunningAJobID:(float) jobid {
+-(NSArray*)getNodesRunningAJobID:(float) jobid {
     int i;
     float *dl;
-    DrawableArray *nodeArray = [[DrawableArray alloc] init];
+    NSMutableArray *nodeArray = [[NSMutableArray alloc] init];
     for(i=0;i<[jobIds width];++i) {
         dl = [jobIds dataRow: i];
 //        dl[0] should be all we care about here...
         if(jobid == dl[0]) {
             Node *node =  [self findNodeObjectByName: [jobIds columnTick: i]];
             if(node != nil)
-                [nodeArray addDrawablePickableObject: node];
+                [nodeArray addObject: node];
             //NSLog(@"columtick: %@", [jobIds columnTick: i]);
         }
 
@@ -84,23 +84,23 @@ extern GLuint g_textureID;
     return self;
 }
 -fadeEverythingExceptJobID:(float) jobid {
-    if(self->isles == nil)
+    if(self->aisles == nil)
         return self;
-    NSEnumerator *enumerator = [self->isles getEnumerator];
+    NSEnumerator *enumerator = [self->aisles objectEnumerator];
     if(enumerator == nil)
         return self;
     id element;
-    //loop through all isles, tell them to ---fade--- MUHAHAHA!
+    //loop through all aisles, tell them to ---fade--- MUHAHAHA!
     while((element = [enumerator nextObject]) != nil)
         [element startFading];
     
     //now, tell the nodes with our passed jobid to UNFADE
-    DrawableArray *arr = [self getNodesRunningAJobID: jobid];
+    NSArray *arr = [self getNodesRunningAJobID: jobid];
     NSLog(@"Number of nodes in this job: %d", [arr count]);
     if(arr == nil)
         return self;
     [arr retain];
-    enumerator = [arr getEnumerator];//segfaults
+    enumerator = [arr objectEnumerator];//segfaults
     if(enumerator == nil) {
         [arr autorelease];
         return self;
@@ -173,9 +173,10 @@ extern GLuint g_textureID;
     glEnd();
     return self;
 }
--addIsle: (Isle*) isle {
+-addAisle: (Aisle*) aisle {
     // Add the passed rack to our rackArray
-    self->isles = [self->isles addDrawablePickableObject: isle];
+    if(self->aisles != nil)
+        [self->aisles addObject: aisle];
     return self;
 }
 -drawFloor {
@@ -209,19 +210,17 @@ extern GLuint g_textureID;
     //[self drawOriginAxis];
     [self drawFloor];
     //[self drawGrid];
-    [self->isles draw];
+    [self->aisles makeObjectsPerformSelector:@selector(draw)]; // draw the nodes
+    //NSLog(@"count: %d", [aisles count]);
+
     GLenum err = glGetError();
     if(err != GL_NO_ERROR)
         NSLog(@"There was a glError, error number: %x", err);
     return self;
 }
--glPickDraw:(IdArray*)ids{
-    NSLog(@"pick drawing in datacenter!");
-    [isles glPickDraw:ids];
+-glPickDraw {
+    [aisles makeObjectsPerformSelector:@selector(glPickDraw)];
     return self;
-}
--(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits  {
-    return [isles getPickedObjects: pickDrawIds hits: glHits];
 }
 -glDraw {
     [self draw];
@@ -246,7 +245,7 @@ extern GLuint g_textureID;
     return self;*/
 }
 -(NSEnumerator*) getEnumerator {
-    NSEnumerator *enumerator = [self->isles getEnumerator];
+    NSEnumerator *enumerator = [self->aisles objectEnumerator];
     return enumerator;
 }
 

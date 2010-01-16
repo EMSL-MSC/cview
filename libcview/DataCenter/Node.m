@@ -2,7 +2,7 @@
 #import <Foundation/NSString.h>
 #import <gl.h>
 #import <glut.h>
-#import "IsleOffsets.h"
+#import "AisleOffsets.h"
 #import "../../libcview-data/WebDataSet.h"
 @implementation Node
 //static VertArray *nodeArray;
@@ -20,6 +20,7 @@ static GLText *gltName;
     self->drawname = YES;
     self->fading = NO;
     self->unfading = NO;
+    self->selected = NO;
     self->fadetime = 2.5;    // in seconds
     self->fadestart = 0;
     self->fadeval = 1;  // default to full opacity
@@ -86,14 +87,16 @@ static GLText *gltName;
         }
         glutPostRedisplay();    // Tell glut to draw again - we're still fading
     }
-    if(fadeval != 0) {  // only draw this node if we're not completely faded out.
+    if(selected == YES || fadeval != 0) {  // only draw this node if we're not completely faded out or selected
         [super setupForDraw];
             [self setTemperature: [self getData: [self getName]]];
             if(self->temperature != -1)
                 self->temperature /=  100.0;
 
             glEnable(GL_BLEND);
-            if(temperature == -1)// No valid data found from the dataSet    
+            if(selected == YES)
+                glColor4f(.1,.1,.1,1);
+            else if(temperature == -1)// No valid data found from the dataSet    
                 glColor4f(1,1,1,fadeval);// color the node white
             else
                 glColor4f(temperature, 1-temperature, 0, fadeval);
@@ -119,12 +122,11 @@ static GLText *gltName;
     }
     return self;
 }
--glPickDraw: (IdArray*)ids {
-    [super glPickDraw:ids];
+-glPickDraw {
+    [super setupForDraw];
+        [super glPickDraw];
+    [super cleanUpAfterDraw];
     return self;
-}
--(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits {
-    return [super getPickedObjects: pickDrawIds hits: glHits];
 }
 -setTemperature: (float) _temperature {
     self->temperature = _temperature;
@@ -136,5 +138,10 @@ static GLText *gltName;
 -setIsodd: (BOOL)_isodd {
     isodd = _isodd;
     return self;
+}
+-setSelected:(BOOL)_selected {
+    self->selected = _selected; 
+//    NSLog(@"selection is %d", _selected);
+    glutPostRedisplay();
 }
 @end

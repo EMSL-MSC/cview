@@ -17,21 +17,21 @@
     BOOL fading;
     BOOL unfading;
     BOOL wasfading;
+    BOOL selected;
     double fadetime;
     double fadestart;
     double fadeval;
-    int myId;
 }
 +(void)setWebDataSet: (WebDataSet*)_dataSet;
 +setGLTName:(GLText*) _gltName;
 -draw;
 /// called when picking objects in the scene (does not render)
--glPickDraw: (IdArray*)ids;
--(NSMutableArray*) getPickedObjects: (IdArray*)pickDrawIds hits: (IdArray*)glHits;
+-glPickDraw;
 -startFading;   // Used to make this node transparent over time
 -startUnFading; // opposite of above
 -setTemperature: (float) temperature;
 -(float)getTemperature;
 -setIsodd: (BOOL)_isodd;
+-setSelected:(BOOL)_selected;
 @end
 #endif // NODE_H

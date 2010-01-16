@@ -60,6 +60,7 @@ All rights reserved.
 #define DATACENTERCVIEWSCREENDELEGATE_H
 #import <Foundation/Foundation.h>
 #import "CViewScreenDelegate.h"
+#import "../libcview/DataCenter/Node.h"
 //#import "DefaultGLScreenDelegate.h"
 
 /**
@@ -68,6 +69,8 @@ All rights reserved.
 	@ingroup cviewapp
 */
 @interface DataCenterCViewScreenDelegate : CViewScreenDelegate {
+@private
+    Node* lastSelection;
 }
 -(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world;
 @end
