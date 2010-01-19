@@ -17,7 +17,7 @@ static GLText *gltName;
 }
 -init {
     [super init];
-    self->drawname = YES;
+    self->drawname = NO;
     self->fading = NO;
     self->unfading = NO;
     self->selected = NO;
@@ -143,5 +143,6 @@ static GLText *gltName;
     self->selected = _selected; 
 //    NSLog(@"selection is %d", _selected);
     glutPostRedisplay();
+    return self;
 }
 @end

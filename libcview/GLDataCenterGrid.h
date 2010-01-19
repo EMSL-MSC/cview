@@ -26,6 +26,7 @@
 -(NSString*) get_csvFilePath;
 -init;
 -doInit;
+-(float)getJobIdFromNode:(Node*)n;
 -(NSArray*)getNodesRunningAJobID:(float) jobid;
 /// Makes all nodes fade except for nodes with the passed jobid
 -fadeEverythingExceptJobID:(float) jobid;

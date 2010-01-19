@@ -177,9 +177,14 @@ All rights reserved.
     return self;
 }
 -(BOOL)mousePassiveMoveAtX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
+   // NSLog(@"YICKES!");
+    [[[world setHoverX: x] setHoverY: y] setDoPickDraw: YES];
+  //  glutPostRedisplay();
     return NO;
+    /*
+  // return NO;
     [self selectNode: [self getSelectedNodeX: x andY: y inGLWorld: world]];
-    return YES;
+    */
 }
 
 -(BOOL)mouseButton: (int)button withState: (int)state atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
@@ -187,7 +192,29 @@ All rights reserved.
         switch (button) {
             case GLUT_LEFT_BUTTON:
                 {
-                    [self selectNode: [self getSelectedNodeX: x andY: y inGLWorld: world]];
+                    // set the world to do a pickdraw next time around the merry-go-round.
+                    [[[world setHoverX: x] setHoverY: y] setDoPickDraw: YES];
+                    break;
+                    GLDataCenterGrid *gcd = nil;
+                    NSArray *arr = [[world scene] getAllObjects];
+                    NSEnumerator *enumerator = [arr objectEnumerator];
+                    id element;
+                    // loop through the scene objects and find the DataCenter
+                    while((element = [enumerator nextObject]) != nil) {
+                        if([element isKindOfClass: [GLDataCenterGrid class]]) {
+                            gcd = element;
+                            break;
+                        }
+                    }
+                    if(gcd == nil)
+                        break;
+                    // fade all the other nodes not having a like jobid
+                    Node *n = [self getSelectedNodeX: x andY: y inGLWorld: world];
+                    if(n != nil) {
+                        float jobid = [gcd getJobIdFromNode: n];
+                        if(jobid != 0) 
+                            [gcd fadeEverythingExceptJobID: jobid];
+                    }
                     break;
                 }
                 break;

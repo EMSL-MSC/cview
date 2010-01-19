@@ -83,6 +83,14 @@ extern GLuint g_textureID;
         ;
     return self;
 }
+-(float)getJobIdFromNode:(Node*)n {
+    if(n == nil)
+        return 0;
+    float *row = [jobIds dataRowByString: [[n getName] lowercaseString]];
+    if(row != NULL)
+        return row[0];
+    return 0;
+}
 -fadeEverythingExceptJobID:(float) jobid {
     if(self->aisles == nil)
         return self;

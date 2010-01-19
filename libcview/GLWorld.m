@@ -65,6 +65,8 @@ All rights reserved.
 #import "DictionaryExtra.h"
 #import "config.h"
 
+#import "IdDatabase.h"
+#import "GLDataCenterGrid.h"
 @implementation GLWorld 
 -init {
 	displayList = -1;
@@ -74,6 +76,8 @@ All rights reserved.
 	imageCycleTime = 0;
 	lastImageTime = 0;
 	overlay=nil;
+
+    doPickDraw = NO;
 
 	NSLog(@"%@",[self attributeKeys]);
 	//[NSClassDescription registerClassDescription: self forClass: [self class]];
@@ -149,6 +153,9 @@ All rights reserved.
 }
 
 -glDraw {
+    if(doPickDraw == YES)
+        [self glPickDraw];
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
@@ -169,19 +176,106 @@ All rights reserved.
 
 	return self;
 }
+-selectNode: (Node*) n {
+    if(lastSelection != nil)
+        [lastSelection setSelected: NO];
+    if(n != nil) {
+                [n setSelected: YES];
+        if(n != lastSelection)
+            NSLog(@"selected node: %@", [n getName]);
+    }
+    lastSelection = n;
+    return self;
+}
 -glPickDraw{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
+    doPickDraw = NO;
+ //   NSLog(@"doing the p8ickdraw!!!");
+    // set up stuff for gl to do picking
+    float ratio;
+    GLuint selectBuf[512];
+    GLint viewport[4];
+    GLint hits = 0;
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    glSelectBuffer(512, selectBuf);
+    glRenderMode(GL_SELECT);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    {
+        glLoadIdentity();
+        gluPickMatrix(hoverX, viewport[3] - hoverY, 1, 1, viewport);
+        ratio = 1.0f * viewport[2] / viewport[3];
+        gluPerspective(20.0, ratio, 0.1, 9000);
+        glMatrixMode(GL_MODELVIEW);
+        glInitNames();
 
-	glPushMatrix();
-	[eye lookAt];
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glLoadIdentity();
 
-	if (scene && [scene visible])
-		[scene glPickDraw];
-	
-	glPopMatrix();
-    // We have no need to pick the overlay or
-    // do a dump image...
+        glPushMatrix();
+        [eye lookAt];
+
+        if (scene && [scene visible])
+            [scene glPickDraw];
+        
+        glPopMatrix();
+        glMatrixMode(GL_PROJECTION);
+    }
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glFlush();
+    hits = glRenderMode(GL_RENDER);
+     GLenum err = glGetError();
+    if(err != GL_NO_ERROR)
+        NSLog(@"There was a glError, error number: %x", err);
+    //////////////////////////////////////////////////
+    /// process the hits/////
+    // m is a maximum value, starting at the max hex value we can get
+    unsigned int i, m = 0xffffffff;
+    unsigned int theId = 0;
+    GLuint names, *ptr, *rowptr;
+    ptr = (GLuint*)selectBuf;
+    if(hits == 0)
+        return nil;
+    for(i=0;i<hits;++i) {
+        names = *ptr;   // the number of names in current 'cell'
+        rowptr = ptr;   // points to the current 'cell' or row
+        ptr += 3;       // skip past 3 elements in this row (names, closest distance, furthest distance)
+        ptr += names;   // skip past the number of names there are in this row
+        if(rowptr[1] < m)   // look for a new minimum
+        {   
+            m = rowptr[1];
+            theId = rowptr[3];  // get the id because it's closest to the camera
+        }   
+    }
+
+    //return [IdDatabase objectForId: theId];
+    Node *n = [IdDatabase objectForId: theId];
+    [self selectNode: n];
+    return self;
+
+    {
+        GLDataCenterGrid *gcd = nil;
+        NSArray *arr = [scene getAllObjects];
+        NSEnumerator *enumerator = [arr objectEnumerator];
+        id element;
+        // loop through the scene objects and find the DataCenter
+        while((element = [enumerator nextObject]) != nil) {
+            if([element isKindOfClass: [GLDataCenterGrid class]]) {
+                gcd = element;
+                break;
+            }
+        }
+        if(gcd == nil)
+            return self;
+
+        // fade all the other nodes not having a like jobid
+        //Node *n = [self getSelectedNodeX: x andY: y inGLWorld: world];
+        if(n != nil) {
+            float jobid = [gcd getJobIdFromNode: n];
+            if(jobid != 0) 
+                [gcd fadeEverythingExceptJobID: jobid];
+        }
+    }
 	return self;
 }
 -(NSMutableArray*) getPickedObjects {
@@ -323,6 +417,18 @@ All rights reserved.
 
 	DestroyMagickWand(wand);
 	return self;
+}
+-setHoverX:(int)x {
+    hoverX = x;
+    return self;
+}
+-setHoverY:(int)y {
+    hoverY = y;
+    return self;
+}
+-setDoPickDraw:(BOOL)_doPickDraw {
+    doPickDraw = _doPickDraw;
+    return self;
 }
 
 @end
