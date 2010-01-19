@@ -71,7 +71,10 @@ All rights reserved.
 @interface DataCenterCViewScreenDelegate : CViewScreenDelegate {
 @private
     Node* lastSelection;
+    BOOL leftClicked;
+    BOOL passiveMove;
 }
 -(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world;
+-processHits: (GLint) hitCount buffer: (GLuint*) selectBuf andSize: (GLint) buffSize inWorld: (GLWorld*) world;
 @end
 #endif

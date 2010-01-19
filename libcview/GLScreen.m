@@ -79,6 +79,7 @@ All rights reserved.
 	int row,col,rowp,colp; //layout parameters
 	int x,y,w,h; //calculated by layout
 }
+-setDelegate:(id)_delegate;
 @end
 
 @implementation AScreen
@@ -106,6 +107,10 @@ All rights reserved.
 	world=[GLWorld alloc];
 	[world initWithPList: [list objectForKey: @"world"]];
 	return self;
+}
+-setDelegate:(id)_delegate {
+    [world setDelegate: _delegate];
+    return self;
 }
 @end
 
@@ -507,7 +512,12 @@ double mysecond()
 
 -setDelegate: (id)adelegate {
 	[delegate autorelease];
+    if(adelegate == nil)
+        return self;
 	delegate = [adelegate retain];
+    NSLog(@"makeobjects....");
+    [worlds makeObjectsPerformSelector: @selector(setDelegate:) withObject: delegate];
+    NSLog(@"done");
 	return self;
 }
 

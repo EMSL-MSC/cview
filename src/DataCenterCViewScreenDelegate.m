@@ -76,12 +76,12 @@ All rights reserved.
  */
 -init {
     lastSelection = nil;
+    leftClicked = NO;
+    passiveMove = NO;
     return self;
 }
 -(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
-
     BOOL handled = YES;
-
     NSArray *objects;
     NSEnumerator *enumerator;
     switch (key) {
@@ -105,7 +105,7 @@ All rights reserved.
             }
             break;
         default:
-            NSLog(@"not handling this one....");
+           // NSLog(@"not handling this one....");
             handled=NO;
             break;
     }
@@ -113,108 +113,21 @@ All rights reserved.
         return [super keyPress: key atX: x andY: y inGLWorld: world];
     return handled;
 }
--(Node*) getSelectedNodeX: (int)x andY: (int)y inGLWorld:(GLWorld*)world {
-    // set up stuff for gl to do picking
-    float ratio;
-    GLuint selectBuf[512];
-    GLint viewport[4];
-    GLint hits = 0;
-    glGetIntegerv(GL_VIEWPORT, viewport);
-    glSelectBuffer(512, selectBuf);
-    glRenderMode(GL_SELECT);
-    glMatrixMode(GL_PROJECTION);
-    glPushMatrix();
-    {
-        glLoadIdentity();
-        gluPickMatrix(x, viewport[3] - y, 1, 1, viewport);
-        ratio = 1.0f * viewport[2] / viewport[3];
-        gluPerspective(20.0, ratio, 0.1, 9000);
-        glMatrixMode(GL_MODELVIEW);
-        glInitNames();
-       //glColor3f(.1,.1,.3);
-            [world glPickDraw];    // do the actual pickdraw (draw only what we have to)
-        glMatrixMode(GL_PROJECTION);
-    }
-    glPopMatrix();
-    glMatrixMode(GL_MODELVIEW);
-    glFlush();
-    hits = glRenderMode(GL_RENDER);
-
-     GLenum err = glGetError();
-    if(err != GL_NO_ERROR)
-        NSLog(@"There was a glError, error number: %x", err);
-    //////////////////////////////////////////////////
-    /// process the hits/////
-    // m is a maximum value, starting at the max hex value we can get
-    unsigned int i, m = 0xffffffff;
-    unsigned int theId = 0;
-    GLuint names, *ptr, *rowptr;
-    ptr = (GLuint*)selectBuf;
-    if(hits == 0)
-        return nil;
-    for(i=0;i<hits;++i) {
-        names = *ptr;   // the number of names in current 'cell'
-        rowptr = ptr;   // points to the current 'cell' or row
-        ptr += 3;       // skip past 3 elements in this row (names, closest distance, furthest distance)
-        ptr += names;   // skip past the number of names there are in this row
-        if(rowptr[1] < m)   // look for a new minimum
-        {   
-            m = rowptr[1];
-            theId = rowptr[3];  // get the id because it's closest to the camera
-        }   
-    }
-    return [IdDatabase objectForId: theId];
-}
--selectNode: (Node*) n {
-    //if(lastSelection != nil)
-    //    [lastSelection setSelected: NO];
-    if(n != nil) {
-                [n setSelected: YES];
-        if(n != lastSelection)
-            NSLog(@"selected node: %@", [n getName]);
-    }
-    lastSelection = n;
-    return self;
-}
 -(BOOL)mousePassiveMoveAtX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
-   // NSLog(@"YICKES!");
-    [[[world setHoverX: x] setHoverY: y] setDoPickDraw: YES];
-  //  glutPostRedisplay();
-    return NO;
-    /*
-  // return NO;
-    [self selectNode: [self getSelectedNodeX: x andY: y inGLWorld: world]];
-    */
+    [[[world setHoverX: x] setHoverY: y] setDoPickDraw: YES];// setDelegate: self;
+    passiveMove = YES;
+    leftClicked = NO;
+    return NO;  // return value doesn't matter right now! ask evan about this
 }
-
 -(BOOL)mouseButton: (int)button withState: (int)state atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
     if (state == GLUT_DOWN) {
         switch (button) {
             case GLUT_LEFT_BUTTON:
                 {
                     // set the world to do a pickdraw next time around the merry-go-round.
-                    [[[world setHoverX: x] setHoverY: y] setDoPickDraw: YES];
-                    break;
-                    GLDataCenterGrid *gcd = nil;
-                    NSArray *arr = [[world scene] getAllObjects];
-                    NSEnumerator *enumerator = [arr objectEnumerator];
-                    id element;
-                    // loop through the scene objects and find the DataCenter
-                    while((element = [enumerator nextObject]) != nil) {
-                        if([element isKindOfClass: [GLDataCenterGrid class]]) {
-                            gcd = element;
-                            break;
-                        }
-                    }
-                    if(gcd == nil)
-                        break;
-                    // fade all the other nodes not having a like jobid
-                    Node *n = [self getSelectedNodeX: x andY: y inGLWorld: world];
-                    if(n != nil) {
-                        float jobid = [gcd getJobIdFromNode: n];
-                        if(jobid != 0) 
-                            [gcd fadeEverythingExceptJobID: jobid];
-                    }
+                    [[[world setHoverX: x] setHoverY: y] setDoPickDraw: YES];// setDelegate: self];
+                    passiveMove = NO;
+                    leftClicked = YES;
                     break;
                 }
                 break;
@@ -235,5 +148,73 @@ All rights reserved.
     }
     return [super mouseButton: button withState: state atX: x andY: y inGLWorld: world];
 }
+-selectNode: (Node*) n {
+    if(lastSelection != nil)
+        [lastSelection setSelected: NO];
+    if(n != nil)
+        [n setSelected: YES];
+    lastSelection = n;
+    return self;
+}
+-printNode: (Node*)n withId: (float) _id {
+    NSLog(@"Node: name: %@ jobid: %i", [n getName], _id);
+    return self;
+}
+-processHits: (GLint) hitCount buffer: (GLuint*) selectBuf andSize: (GLint) buffSize inWorld: (GLWorld*) world {
+    //////////////////////////////////////////////////
+    /// process the hits/////
+    // m is a maximum value, starting at the max hex value we can get
+    unsigned int i, m = 0xffffffff;
+    unsigned int theId = 0;
+    GLuint names, *ptr, *rowptr;
+    ptr = (GLuint*)selectBuf;
+    if(hitCount == 0)
+        return nil;
+    for(i=0;i<hitCount;++i) {
+        names = *ptr;   // the number of names in current 'cell'
+        rowptr = ptr;   // points to the current 'cell' or row
+        ptr += 3;       // skip past 3 elements in this row (names, closest distance, furthest distance)
+        ptr += names;   // skip past the number of names there are in this row
+        if(rowptr[1] < m)   // look for a new minimum
+        {   
+            m = rowptr[1];
+            theId = rowptr[3];  // get the id because it's closest to the camera
+        }   
+    }
+    Node *n = [IdDatabase objectForId: theId];
+    ///////////////////////////////////////////////////////////////////
+    //////   Now we parsed the data and found out what node is selected,
+    //////// next decide what to do with that node
+    if(leftClicked == YES) {
+        leftClicked = NO;
+        
 
+        GLDataCenterGrid *gcd = nil;
+        NSArray *arr = [[world scene] getAllObjects];
+        NSEnumerator *enumerator = [arr objectEnumerator];
+        id element;
+        // loop through the scene objects and find the DataCenter
+        while((element = [enumerator nextObject]) != nil) {
+            if([element isKindOfClass: [GLDataCenterGrid class]]) {
+                gcd = element;
+                break;
+            }
+        }
+        if(gcd == nil)
+            return self;
+
+        // fade all the other nodes not having a like jobid
+        if(n != nil) {
+            float jobid = [gcd getJobIdFromNode: n];
+            [self printNode: n withId: jobid];
+
+            if(jobid != 0) 
+                [gcd fadeEverythingExceptJobID: jobid];
+        }
+    }else if(passiveMove == YES){
+        passiveMove = NO;
+        [self selectNode: n];
+    }
+    return self;
+}
 @end

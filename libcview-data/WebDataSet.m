@@ -180,7 +180,7 @@ All rights reserved.
 }
 
 -(BOOL)updateData {
-    NSLog(@"WebDataSet: Updating web data....");
+//    NSLog(@"WebDataSet: Updating web data....");
 	BOOL abort;
 	NSData *Xt;
 	NSData *Yt;

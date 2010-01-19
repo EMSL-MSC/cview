@@ -56,6 +56,8 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
+#ifndef GLWORLD_H
+#define GLWORLD_H
 #import <Foundation/Foundation.h>
 #import <time.h>
 #import "Eye.h"
@@ -63,7 +65,9 @@ All rights reserved.
 #import "PList.h"
 #import "config.h"
 #import "Identifiable.h"
-#import "DataCenter/Node.h"
+//#import "DefaultGLScreenDelegate.h"
+// @class directive used instead of import to prevent circular dependency
+@class DefaultGLScreenDelegate;
 /**
 GLWorld is an encapsulation of a 3d world managed as a Scene of Objects.  It also manages the 'Eye' or camera position for drawing to a Open GL context.  There is a concept of an Overlay, or the two dimensional information shown in front of the 3d scene.
 
@@ -83,7 +87,8 @@ GLWorld is an encapsulation of a 3d world managed as a Scene of Objects.  It als
     BOOL doPickDraw;
     int hoverX;
     int hoverY;
-    Node* lastSelection;
+    //DefaultGLScreenDelegate *delegate;
+    id delegate;
 }
 -init;
 /// called to draw the entire world
@@ -103,7 +108,7 @@ GLWorld is an encapsulation of a 3d world managed as a Scene of Objects.  It als
            this is used so we don't compare hits with objects we didn't even test
     @param glHits contain the unique ids that got hit and were returned from glRenderMode()
  */
--(NSMutableArray*) getPickedObjects;
+//-(NSMutableArray*) getPickedObjects;
 
 ///Internal call to setup the overlay drawing
 -gl2DProlog;
@@ -134,4 +139,8 @@ GLWorld is an encapsulation of a 3d world managed as a Scene of Objects.  It als
 -setHoverX:(int)x;
 -setHoverY:(int)y;
 -setDoPickDraw:(BOOL)_doPickDraw;
+//-setDelegate: (DefaultGLScreenDelegate*)_delegate;
+-setDelegate: (id)_delegate;
+-(id)delegate;
 @end
+#endif

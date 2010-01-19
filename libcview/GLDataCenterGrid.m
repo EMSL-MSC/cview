@@ -86,9 +86,10 @@ extern GLuint g_textureID;
 -(float)getJobIdFromNode:(Node*)n {
     if(n == nil)
         return 0;
-    float *row = [jobIds dataRowByString: [[n getName] lowercaseString]];
+    float *row = [jobIds dataRowByString: [n getName]];
     if(row != NULL)
         return row[0];
+    //NSLog(@"row was NULL-node: %@", [[n getName] lowercaseString]);
     return 0;
 }
 -fadeEverythingExceptJobID:(float) jobid {

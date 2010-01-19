@@ -71,6 +71,8 @@ digraph keymap {
 	@author Evan Felix
 	@ingroup cview3d
 */
+#ifndef DEFAULTGLSCREENDELEGATE_H
+#define DEFAULTGLSCREENDELEGATE_H
 #import <Foundation/Foundation.h>
 #import "GLScreenDelegate.h"
 #import "GLWorld.h"
@@ -100,5 +102,13 @@ digraph keymap {
 -setupTweakers: (GLWorld *)world;
 -cleanTweakers: (GLWorld *)world;
 #endif
+/**
+    This selector is called from [GLWorld glPickDraw] to allow the 
+    screen delegate to decide what to do with the selections that were made
+    @param hitCount the number of selections returned by glRenderMode()
+    @param selectBuf an OpenGL selection buffer (see gl docs for more info)
+    @param buffSize is the size of the selectBuf array
+  */
+-processHits: (GLint) hitCount buffer: (GLuint*) selectBuf andSize: (GLint) buffSize inWorld: (GLWorld*) world;
 @end
-
+#endif
