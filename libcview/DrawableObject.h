@@ -66,13 +66,15 @@ All rights reserved.
 */
 #import <Foundation/Foundation.h>
 #import "PList.h"
+#import "Pickable.h"
 
-@interface DrawableObject : NSObject <PList> {
+@interface DrawableObject : NSObject <PList, Pickable> {
 	BOOL isVisible;
 	NSString *name;
 }
 -init;
 -(id) glDraw;
+-glPickDraw;
 -show;
 -hide;
 -(BOOL)visible;

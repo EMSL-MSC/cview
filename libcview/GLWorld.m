@@ -181,7 +181,7 @@ All rights reserved.
 -glPickDraw{
     doPickDraw = NO;
     float ratio; // set up stuff for gl to do picking
-    GLuint selectBuf[512]; GLint viewport[4]; GLint hits = 0;
+    GLuint selectBuf[512]; GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport); glSelectBuffer(512, selectBuf); glRenderMode(GL_SELECT);
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();

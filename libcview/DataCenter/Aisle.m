@@ -30,13 +30,7 @@
 -startFading {
     if(self->racks == nil)
         return self;
-    NSEnumerator *enumerator = [self->racks objectEnumerator];
-    if(enumerator == nil)
-        return self;
-    id element;
-    while((element = [enumerator nextObject]) != nil)
-        [element startFading];
-    return self;
+    [self->racks makeObjectsPerformSelector:@selector(startFading)];
 }
 -draw {
     [super setupForDraw];

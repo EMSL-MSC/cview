@@ -92,42 +92,41 @@ extern GLuint g_textureID;
     //NSLog(@"row was NULL-node: %@", [[n getName] lowercaseString]);
     return 0;
 }
+-unfadeEverything {
+    if(self->aisles == nil)
+        return self;
+//    [self->aisles makeObjectsPerformSelector: @selector(startUnFading)];
+    return self;
+
+}
 -fadeEverythingExceptJobID:(float) jobid {
     if(self->aisles == nil)
         return self;
-    NSEnumerator *enumerator = [self->aisles objectEnumerator];
-    if(enumerator == nil)
-        return self;
-    id element;
-    //loop through all aisles, tell them to ---fade--- MUHAHAHA!
-    while((element = [enumerator nextObject]) != nil)
-        [element startFading];
-    
-    //now, tell the nodes with our passed jobid to UNFADE
+    // first fade everything
+    [self->aisles makeObjectsPerformSelector: @selector(startFading)];
+
     NSArray *arr = [self getNodesRunningAJobID: jobid];
-    NSLog(@"Number of nodes in this job: %d", [arr count]);
     if(arr == nil)
         return self;
-    [arr retain];
-    enumerator = [arr objectEnumerator];//segfaults
-    if(enumerator == nil) {
-        [arr autorelease];
-        return self;
-    }
-    while((element = [enumerator nextObject]) != nil)
-        [element startUnFading];
-    [arr autorelease];
+    // then unfade the ones we want
+    [arr makeObjectsPerformSelector: @selector(startUnFading)];
     return self;
 }
 -initWithPList: (id)list {
-    NSLog(@"initWithPList: %@", [self class]);
-    [super initWithPList: list];
-
+	NSLog(@"initWithPList: %@",[self class]);
+	[super initWithPList: list];
+	/// @todo error checking or exception handling.
+	Class c;
+	DataSet *ds;
+	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
+	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
+		ds=[c alloc];
+		[ds initWithPList: [list objectForKey: @"dataSet"]];
+        self->dataSet = ds;
+	}
     self->csvFilePath = [[list objectForKey: @"csvFilePath"
             missing: @"data/Chinook Serial numbers.csv"] retain];
     NSLog(@"csvFilePath = %@", self->csvFilePath);
-    DataSet *ds;
-	Class c;
 	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
 	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
 		ds=[c alloc];

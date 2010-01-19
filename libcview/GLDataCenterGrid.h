@@ -13,7 +13,12 @@
 #import "DataCenter/Aisle.h"
 #import "DataCenter/Point.h"
 #import "IdArray.h"
-@interface GLDataCenterGrid: GLGrid <Drawable, Pickable> {
+
+#import "DataSet.h"
+#import "ColorMap.h"
+#import "DrawableObject.h"
+#import "GLText.h"
+@interface GLDataCenterGrid: DrawableObject <Drawable, Pickable> {
     NSMutableArray *aisles;
 @private
     WebDataSet *jobIds;
@@ -22,6 +27,8 @@
     VertArray *floorArray3;
     NSString *csvFilePath;
     int jobIdIndex;
+
+    DataSet *dataSet;
 }
 -(NSString*) get_csvFilePath;
 -init;

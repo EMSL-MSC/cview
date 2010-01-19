@@ -63,10 +63,7 @@
 				};
 				dataSetClass = WebDataSet;
                 csvFilePath = "data/Chinook Serial numbers.csv";
-				fontScale = 1;
 				isVisible = YES;
-				xTicks = 50;
-				yTicks = 32;
 			    };
 			    objectclass = GLDataCenterGrid;
 			    valign = 0;

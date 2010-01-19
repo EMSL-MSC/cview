@@ -63,13 +63,7 @@ static GLText *gltName;
 -startFading {
     if(self->nodes == nil)
         return self;
-    NSEnumerator *enumerator = [self->nodes objectEnumerator];
-    if(enumerator == nil)
-        NSLog(@"[DrawableArray draw]: enumerator was nil!");
-    id element;
-    while((element = [enumerator nextObject]) != nil) {
-        [element startFading];
-    }
+    [self->nodes makeObjectsPerformSelector: @selector(startFading)];
     return self;
 }
 -draw {

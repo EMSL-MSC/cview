@@ -288,18 +288,16 @@ All rights reserved.
 
 	return self;
 }
-/// loops through all objects in the scene and IF that object has a selector
-/// pickDrawX: andY: then it will send that message to that object
+/// identical to glDraw except that it calls glPickDraw on all scene objects
 -glPickDraw {
 	SceneObject *o;
 	NSEnumerator *list;
 	list = [objects objectEnumerator];
 	while ( (o = [list nextObject]) ) {
-			if ([o->object respondsToSelector: @selector(glPickDraw)] == YES &&
-                [o->object visible]) {
+			if ([o->object visible]) {
 				glPushMatrix();
 				[self doTranslate: o];
-				[(id)o->object glPickDraw];
+				[o->object glPickDraw];
 				glPopMatrix();
 			}
 	}

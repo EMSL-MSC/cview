@@ -151,13 +151,16 @@ All rights reserved.
 -selectNode: (Node*) n {
     if(lastSelection != nil)
         [lastSelection setSelected: NO];
-    if(n != nil)
+    if(n != nil) {
+     //   NSLog(@"n = %@", n);
         [n setSelected: YES];
+    }else
+        NSLog(@"n is nil!");
     lastSelection = n;
     return self;
 }
 -printNode: (Node*)n withId: (float) _id {
-    NSLog(@"Node: name: %@ jobid: %i", [n getName], _id);
+    NSLog(@"Node: name: %@ jobid: %f", [n getName], _id);
     return self;
 }
 -processHits: (GLint) hitCount buffer: (GLuint*) selectBuf andSize: (GLint) buffSize inWorld: (GLWorld*) world {
@@ -168,8 +171,8 @@ All rights reserved.
     unsigned int theId = 0;
     GLuint names, *ptr, *rowptr;
     ptr = (GLuint*)selectBuf;
-    if(hitCount == 0)
-        return nil;
+//    if(hitCount == 0)
+//        return nil;
     for(i=0;i<hitCount;++i) {
         names = *ptr;   // the number of names in current 'cell'
         rowptr = ptr;   // points to the current 'cell' or row
@@ -181,14 +184,17 @@ All rights reserved.
             theId = rowptr[3];  // get the id because it's closest to the camera
         }   
     }
-    Node *n = [IdDatabase objectForId: theId];
+    id thing = [IdDatabase objectForId: theId];
+    Node *n;
+    if(thing != nil && [thing isKindOfClass: [Node class]])
+        n = thing;
+    else
+        return self;
     ///////////////////////////////////////////////////////////////////
     //////   Now we parsed the data and found out what node is selected,
     //////// next decide what to do with that node
     if(leftClicked == YES) {
         leftClicked = NO;
-        
-
         GLDataCenterGrid *gcd = nil;
         NSArray *arr = [[world scene] getAllObjects];
         NSEnumerator *enumerator = [arr objectEnumerator];
