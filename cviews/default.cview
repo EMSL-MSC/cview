@@ -65,7 +65,7 @@
                 csvFilePath = "data/Chinook Serial numbers.csv";
 				isVisible = YES;
 			    };
-			    objectclass = GLDataCenterGrid;
+			    objectclass = GLDataCenter;
 			    valign = 0;
 			    x = 0;
 			    y = 0;

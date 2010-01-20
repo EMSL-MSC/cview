@@ -1,5 +1,5 @@
-#ifndef GLDATACENTERGRID_H
-#define GLDATACENTERGRID_H
+#ifndef GLDATACENTER_H
+#define GLDATACENTER_H
 /**
 	Draw a 3 dimensional view of the data center showing each rack
     in it's corresponding location
@@ -18,7 +18,7 @@
 #import "ColorMap.h"
 #import "DrawableObject.h"
 #import "GLText.h"
-@interface GLDataCenterGrid: DrawableObject <Drawable, Pickable> {
+@interface GLDataCenter: DrawableObject <Drawable, Pickable> {
     NSMutableArray *aisles;
 @private
     WebDataSet *jobIds;

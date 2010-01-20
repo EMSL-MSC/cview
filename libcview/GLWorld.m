@@ -66,7 +66,7 @@ All rights reserved.
 #import "config.h"
 
 #import "IdDatabase.h"
-#import "GLDataCenterGrid.h"
+#import "GLDataCenter.h"
 @implementation GLWorld 
 -init {
     [super init];

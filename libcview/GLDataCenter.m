@@ -3,13 +3,13 @@
 #import <glut.h>
 #import "cview.h"
 #import "DataSet.h"
-#import "GLDataCenterGrid.h"
+#import "GLDataCenter.h"
 #import "DataCenter/AisleOffsets.h"
 #import "DataCenterLoader.h"
 #import "DictionaryExtra.h"
 void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
 extern GLuint g_textureID;
-@implementation  GLDataCenterGrid
+@implementation  GLDataCenter
 -init {
     [super init];
     self->csvFilePath = nil;
@@ -30,7 +30,7 @@ extern GLuint g_textureID;
     self->floorArray3 = [AisleOffsets getDataCenterFloorPart3];
     if(self->csvFilePath != nil) {
         DataCenterLoader *dcl = [[DataCenterLoader alloc] init];
-        [dcl LoadGLDataCenterGrid: self];
+        [dcl LoadGLDataCenter: self];
         [dcl autorelease];
     }
     return self;

@@ -62,7 +62,7 @@ All rights reserved.
 #import "MultiGrid.h"
 #import "GLWorld.h"
 #import "Scene.h"
-#import "GLDataCenterGrid.h"
+#import "GLDataCenter.h"
 #import "IdDatabase.h"
 
 @implementation DataCenterCViewScreenDelegate 
@@ -99,8 +99,8 @@ All rights reserved.
             // loop through scene objects while looking for a datacenter
             id element;
             while((element = [enumerator nextObject]) != nil) {
-                if([element isKindOfClass: [GLDataCenterGrid class]]) {
-                    [(GLDataCenterGrid*)element doStuff];  // yes, send it our message
+                if([element isKindOfClass: [GLDataCenter class]]) {
+                    [(GLDataCenter*)element doStuff];  // yes, send it our message
                 }
             }
             break;
@@ -195,13 +195,13 @@ All rights reserved.
     //////// next decide what to do with that node
     if(leftClicked == YES) {
         leftClicked = NO;
-        GLDataCenterGrid *gcd = nil;
+        GLDataCenter *gcd = nil;
         NSArray *arr = [[world scene] getAllObjects];
         NSEnumerator *enumerator = [arr objectEnumerator];
         id element;
         // loop through the scene objects and find the DataCenter
         while((element = [enumerator nextObject]) != nil) {
-            if([element isKindOfClass: [GLDataCenterGrid class]]) {
+            if([element isKindOfClass: [GLDataCenter class]]) {
                 gcd = element;
                 break;
             }

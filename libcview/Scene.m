@@ -315,6 +315,8 @@ All rights reserved.
 	return self;
 }
 -getPList {
+    if(objects == nil)
+        return self;
 	NSArray *os = [objects arrayObjectsFromPerformedSelector: @selector(getPList)];
 	return [NSDictionary dictionaryWithObjectsAndKeys: os, @"objects", nil];
 }

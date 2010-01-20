@@ -191,17 +191,17 @@
     //NSLog(@"Debug.");
     return self;
 } // insertNode: andRack
--(GLDataCenterGrid*) LoadGLDataCenterGrid: (GLDataCenterGrid*) _dcg {
+-(GLDataCenter*) LoadGLDataCenter: (GLDataCenter*) _dcg {
     //NSLog(@"[DataCenterLoader init]");
     if(_dcg == nil) {
-        NSLog(@"LoadGLDataCenterGrid was passed a nil parameter!");
+        NSLog(@"LoadGLDataCenter was passed a nil parameter!");
         return nil;
     }
     self->dcg = _dcg;
     // reads file into memory as an NSString
     NSString *fileString = [NSString stringWithContentsOfFile: [self->dcg get_csvFilePath]];
     if(fileString == nil) {
-        NSLog(@"Could not open \"%@\"! Please look in [DataCenterLoader LoadGLDataCenterGrid]",[self->dcg get_csvFilePath]);
+        NSLog(@"Could not open \"%@\"! Please look in [DataCenterLoader LoadGLDataCenter]",[self->dcg get_csvFilePath]);
         return nil;
     }
     NSArray *arr = [self parseIt: fileString];

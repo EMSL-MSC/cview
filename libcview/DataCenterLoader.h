@@ -1,6 +1,6 @@
 #ifndef DATACENTERLOADER_H
 #define DATACENTERLOADER_H
-#import "GLDataCenterGrid.h"
+#import "GLDataCenter.h"
 #import "DataCenter/Aisle.h"
 #import "DataCenter/Rack.h"
 #import "DataCenter/Node.h"
@@ -13,10 +13,10 @@
     the data center
   */
 @interface DataCenterLoader : NSObject {
-    GLDataCenterGrid *dcg;
+    GLDataCenter *dcg;
 }
 -init;
-// Loads a GLDataCenterGrid
+// Loads a GLDataCenter
 /** You must pass this message a file that is
     comma separated and the format looks like this:
 "Rack","Device","Component Description","Part#","Serial Number","Start Date","Phase"
@@ -29,6 +29,6 @@ https://cvs.pnl.gov/chinook   (scroll to the bottom of the page)
 FYI, only the first two fields really matter (at this point).  The rest I don't use
 -Brock
 */
--(GLDataCenterGrid*) LoadGLDataCenterGrid: (GLDataCenterGrid*) _dcg;
+-(GLDataCenter*) LoadGLDataCenter: (GLDataCenter*) _dcg;
 @end
 #endif // DATACENTERLOADER_H
