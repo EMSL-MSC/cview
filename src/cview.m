@@ -223,7 +223,7 @@ int main(int argc,char *argv[], char *env[]) {
     }
     DefaultGLScreenDelegate *delegate = [[c alloc] initWithScreen: g];
 
-    NSLog(@"stuff = %@", delegate);
+//  NSLog(@"stuff = %@", delegate);
 //	CViewScreenDelegate *cvsd = [[CViewScreenDelegate alloc] initWithScreen:g];
 	[g setDelegate: delegate];
 
@@ -234,7 +234,6 @@ int main(int argc,char *argv[], char *env[]) {
 
 	plist = [g getPList];
 	//NSLog([NSPropertyListSerialization stringFromPropertyList: plist]);
-	
 
 	DUMPALLOCLIST(YES);
 

@@ -65,8 +65,6 @@ All rights reserved.
 #import "DictionaryExtra.h"
 #import "config.h"
 
-#import "IdDatabase.h"
-#import "GLDataCenter.h"
 @implementation GLWorld 
 -init {
     [super init];
@@ -217,10 +215,6 @@ All rights reserved.
     if(delegate != nil)
         [(DefaultGLScreenDelegate*)delegate processHits: glRenderMode(GL_RENDER) buffer: selectBuf andSize: 512 inWorld: self];
 	return self;
-}
--(NSMutableArray*) getPickedObjects {
-    // TODO implement this
-    return nil;
 }
 -gl2DProlog {
 	GLint viewport[4];

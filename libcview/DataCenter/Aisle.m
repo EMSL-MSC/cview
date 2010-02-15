@@ -31,6 +31,7 @@
     if(self->racks == nil)
         return self;
     [self->racks makeObjectsPerformSelector:@selector(startFading)];
+    return self;
 }
 -draw {
     [super setupForDraw];

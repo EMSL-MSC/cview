@@ -137,6 +137,14 @@ extern GLuint g_textureID;
     [Node setWebDataSet: (WebDataSet*)self->dataSet];
     return self;
 }
+-getPList {
+	NSLog(@"getPList: %@",self);
+	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary: [super getPList]];
+	[dict setObject: [dataSet getPList] forKey: @"dataSet"];
+	[dict setObject: [jobIds getPList] forKey: @"jobIDDataSet"];
+	[dict setObject: [dataSet class] forKey: @"dataSetClass"];
+	return dict;
+}
 -(void)dealloc {
     [csvFilePath release];
     [super dealloc];
