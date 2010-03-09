@@ -1,7 +1,7 @@
 
 Name: @PACKAGE_NAME@
 Version: @VERSION@
-Release: 7%{?dist}
+Release: 1%{?dist}
 Summary: PNL Waterfall Visualization Tool
 Group: System Environment/Base
 License: Private
