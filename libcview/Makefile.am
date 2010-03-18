@@ -14,7 +14,7 @@ libcview_la_SOURCES = ColorMap.m GLImage.m DrawableObject.m Eye.m \
 	GLText.m DefaultGLScreenDelegate.m MultiGrid.m \
     DataCenter/Rack.m DataCenter/Node.m DataCenter/Locatable.m \
     DataCenter/Aisle.m DataCenter/Vector.m \
-    DataCenterLoader.m GLDataCenter.m \
+    GLDataCenter.m \
     DataCenter/AisleOffsets.m \
     IdArray.m IdDatabase.m Identifiable.m
 
@@ -23,5 +23,6 @@ libcview_la_SOURCES += AntTweakBarOverlay.m AntTweakBarManager.m
 endif
 
 libcview_la_OBJCFLAGS = $(WAND_CFLAGS) $(AM_OBJCFLAGS) $(FTGL_CFLAGS)
-libcview_la_LDFLAGS = $(FOUNDATION_LDFLAGS) $(OPENGL_LDFLAGS) $(WAND_LIBS) $(FTGL_LIBS)
+# need to change this ask evan about adding a lib - genders check in the configure.in file
+libcview_la_LDFLAGS = $(FOUNDATION_LDFLAGS) $(OPENGL_LDFLAGS) $(WAND_LIBS) $(FTGL_LIBS) -lgenders
 

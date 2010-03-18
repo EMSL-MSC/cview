@@ -176,6 +176,7 @@ All rights reserved.
 	[rateSuffix autorelease];
 	[baseURL autorelease];
 	[[thread terminate] autorelease];
+    [indexByString autorelease];
 	[super dealloc];
 }
 
@@ -239,9 +240,13 @@ All rights reserved.
 -(NSString *)getDataKey {
 	return dataKey;
 }
+/* @author: Brock Erwin
+   @description: Returns an array of data (a row) by searching the dictionary 
+                 for the column name (xTick).
+ */
 -(float*)dataRowByString:(NSString*)xTick {
     if(indexByString != nil) {
-        //NSLog(@"index is: %d, xTick = %@", [[indexByString objectForKey: xTick] intValue], xTick);
+//        NSLog(@"index is: %d, xTick = %@", [[indexByString objectForKey: xTick] intValue], xTick);
         id obj = [indexByString objectForKey: xTick];
         if(obj != nil)
             return [self dataRow: [obj intValue]]; 

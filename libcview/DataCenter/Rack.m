@@ -23,6 +23,23 @@ static GLText *gltName;
     texture = _texture;
     return self;
 }
+-cleanUp{
+    NSEnumerator *enumerator = [nodes objectEnumerator];
+    if(enumerator != nil) {
+        id element;
+        while((element = [enumerator nextObject]) != nil)
+            [element cleanUp];
+    }
+    [self autorelease];
+    return self;
+}
+-(NSString*)color {
+    return color;
+}
+-setColor:(NSString*)_color {
+    self->color = _color;
+    return self;
+}
 -init {
     [super init];
     r = (float)rand() / (float)RAND_MAX;
@@ -67,6 +84,7 @@ static GLText *gltName;
     return self;
 }
 -draw {
+//    NSLog(@"rack=%@ width=%f height=%f depth=%f",[self name],[self width],[self height],[self depth]);
     [super setupForDraw];
         //[super draw]; // Draw bounding box around rack
         glColor3f(1,1,1);
@@ -75,11 +93,11 @@ static GLText *gltName;
 
         if(drawname == YES) {   // Draw the rack name
             if(gltName == nil) {
-                gltName = [[GLText alloc] initWithString: [self getName] andFont: @"LinLibertine_Re.ttf"];
+                gltName = [[GLText alloc] initWithString: [self name] andFont: @"LinLibertine_Re.ttf"];
                 [gltName setScale: .4];
                 [gltName setRotationOnX: 90 Y: 180 Z: 0];
             }
-            [gltName setString: [self getName]];
+            [gltName setString: [self name]];
             glTranslatef(11.2,.5001*STANDARD_RACK_HEIGHT,6);
             [gltName glDraw];
         }

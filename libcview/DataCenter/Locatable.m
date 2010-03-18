@@ -30,7 +30,7 @@
     self->name = _name;
     return self;
 }
--(NSString*) getName{
+-(NSString*) name{
     return self->name;
 }
 -setLocation: (Vector*) _location {
@@ -51,21 +51,21 @@
     self->width = _width;
     return self;
 }
--(float) getWidth; {
+-(float) width; {
     return self->width;
 }
 -setHeight: (float) _height {
     self->height = _height;
     return self;
 }
--(float) getHeight; {
+-(float) height; {
     return self->height;
 }
 -setDepth: (float) _depth {
     self->depth = _depth;
     return self;
 }
--(float) getDepth; {
+-(float) depth; {
     return self->depth;
 }
 void initQuad(Vertex* v, Point *p1, Point *p2, Point *p3, Point *p4) {
@@ -172,7 +172,7 @@ VertArray* createBox(float w, float h, float d) {
 }
 -drawBox {
     if(boundingBox == NULL) 
-        boundingBox = createBox([self getWidth],[self getHeight],[self getDepth]);
+        boundingBox = createBox([self width],[self height],[self depth]);
     //NSLog(@"box: width: %f height: %f depth: %f", width, height, depth);
    // NSLog(@"box: loc: x: %f y: %f z: %f", [location x], [location y], [location z]);
     //NSLog(@"box: loc: x: %f", [location x]);
@@ -188,7 +188,7 @@ VertArray* createBox(float w, float h, float d) {
 }
 -drawWireframe {
     if(wireframeBox == NULL) 
-        wireframeBox = createWireframeBox([self getWidth],[self getHeight],[self getDepth]);
+        wireframeBox = createWireframeBox([self width],[self height],[self depth]);
     // TODO: change this to draw the wireframe correctly
     glInterleavedArrays(GL_T2F_V3F, 0, wireframeBox->verts);
     glDrawArrays(GL_LINES, 0, wireframeBox->vertCount);

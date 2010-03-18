@@ -5,17 +5,18 @@
 #import "DataSet.h"
 #import "GLDataCenter.h"
 #import "DataCenter/AisleOffsets.h"
-#import "DataCenterLoader.h"
+//#import "DataCenterLoader.h"
 #import "DictionaryExtra.h"
+#include <genders.h>
 void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
 extern GLuint g_textureID;
 @implementation  GLDataCenter
 -init {
     [super init];
     self->csvFilePath = nil;
+    self->gendersFilePath = nil;
     self->jobIds = nil;
     self->jobIdIndex = 0;
-    [self doInit];
     [Rack setGLTName: nil];
     [Node setGLTName: nil];
     return self;
@@ -24,22 +25,26 @@ extern GLuint g_textureID;
     return self->csvFilePath;
 }
 -doInit {
-    self->aisles = [[NSMutableArray alloc] init];
+//    self->aisles = [[NSMutableArray alloc] init];
+    self->racks = [[NSMutableDictionary alloc] init];
     self->floorArray1 = [AisleOffsets getDataCenterFloorPart1];
     self->floorArray2 = [AisleOffsets getDataCenterFloorPart2];
     self->floorArray3 = [AisleOffsets getDataCenterFloorPart3];
+    /*
     if(self->csvFilePath != nil) {
         DataCenterLoader *dcl = [[DataCenterLoader alloc] init];
         [dcl LoadGLDataCenter: self];
         [dcl autorelease];
     }
+    */
+    [self initWithGenders]; // use the genders file to initialize the data center
     return self;
 }
 -(Node*)findNodeObjectByName:(NSString*) _name {
     //NSLog(@"name = %@", _name);
-    if(self->aisles == nil)
+    if(self->racks == nil)
         return nil;
-    NSEnumerator *enumerator = [self->aisles objectEnumerator];
+    NSEnumerator *enumerator = [self->racks objectEnumerator];
     if(enumerator == nil)
         return nil;
     id element;
@@ -86,30 +91,252 @@ extern GLuint g_textureID;
 -(float)getJobIdFromNode:(Node*)n {
     if(n == nil)
         return 0;
-    float *row = [jobIds dataRowByString: [n getName]];
+    float *row = [jobIds dataRowByString: [n name]];
     if(row != NULL)
         return row[0];
     //NSLog(@"row was NULL-node: %@", [[n getName] lowercaseString]);
     return 0;
 }
 -unfadeEverything {
-    if(self->aisles == nil)
+    if(self->racks == nil)
         return self;
 //    [self->aisles makeObjectsPerformSelector: @selector(startUnFading)];
     return self;
 
 }
 -fadeEverythingExceptJobID:(float) jobid {
-    if(self->aisles == nil)
+    if(self->racks == nil)
         return self;
     // first fade everything
-    [self->aisles makeObjectsPerformSelector: @selector(startFading)];
+    [[self->racks allValues] makeObjectsPerformSelector: @selector(startFading)];
 
     NSArray *arr = [self getNodesRunningAJobID: jobid];
     if(arr == nil)
         return self;
     // then unfade the ones we want
     [arr makeObjectsPerformSelector: @selector(startUnFading)];
+    return self;
+}
+-(Rack*)findRack: (NSString*) rackName {
+    NSEnumerator *enumerator = [racks objectEnumerator];
+    if(enumerator == nil)
+        return nil;
+    id element;
+    while((element = [enumerator nextObject]) != nil) {
+        // Compare aisle names
+        if(NSOrderedSame == [rackName compare: [element getName]])
+            return element; // Found it, return it!
+    }
+    return nil;
+}
+// Compares each string in the attrList to attr.  If the same, returns the index that it was found at. otherwise returns -1
+-(int)indexOfAttr: (char**) attrList andLen: (int) len withAttr:(NSString*) attr {
+    int i;
+    for(i = 0; i < len; ++i) {
+        NSString *s1 = [NSString stringWithUTF8String: attrList[i]];
+        if([s1 compare: attr] == NSOrderedSame)
+            return i;
+    }
+    return -1;
+}
+-cleanUp {
+    NSEnumerator *enumerator = [racks objectEnumerator];
+    if(enumerator != nil) {
+        id element;
+        while((element = [enumerator nextObject]) != nil)
+            [element cleanUp];
+    }
+    [racks removeAllObjects];
+    return self;
+}
+/* This method simply makes a bunch of **genders** calls to get information about the nodes
+   specific information is as follows:
+   -name
+   -rack
+   -position (x,y)
+   -facing direction [NESW] (north, east, south, or west) TODO: in the future should this be changed to degrees???
+   -color
+   Once it has that information it is put into the data stuctures 'aisles' which is a list of aisles in the data center
+   */
+-initWithGenders {
+    if(self->gendersFilePath == nil) {
+        NSLog(@"No genders file found (check your .cview file), cannot load the DataCenter");
+        return self;
+    }
+    genders_t handle = genders_handle_create();
+    if(handle == NULL) {
+        NSLog(@"genders_handle_create() failed miserably!");
+        return self;
+    }
+    if(genders_load_data(handle, [self->gendersFilePath UTF8String]) != 0) {
+        NSLog(@"Error returned from 'genders_load_data' with file (%s)%@",genders_errormsg(handle),self->gendersFilePath);
+        return self;
+    }
+    char **nodelist;
+    char **attrlist;
+    char **vallist;
+    int count;
+    int attrlen;
+    int vallen;
+    count = genders_nodelist_create(handle, &nodelist);
+    if(count <= 0) {
+        NSLog(@"There was an error getting the nodelist from genders.");
+        return self;
+    }
+    attrlen = genders_attrlist_create(handle, &attrlist);
+//    NSLog(@"genders returned an attrlen of %d",attrlen);
+    if(attrlen <= 0) {
+        NSLog(@"There was an error creating an attribute list by genders.");
+        return self;
+    }
+    vallen = genders_vallist_create(handle, &vallist);
+    if(vallen <= 0) {
+        NSLog(@"There was an error creating an value list by genders.");
+        return self;
+    }
+    int i,setcount;
+    // queries the genders library to return all nodes that have the attribute "racktype=XXX" 
+    // this means we want the set of all racks
+    genders_nodelist_clear(handle,nodelist);
+    if(( setcount = genders_query(handle,nodelist,count,"racktype")  ) < 1) {
+        NSLog(@"Error calling 'genders_getnodes()', or couldn't find any nodes with attribute \"racktype\": errmsg: %s",genders_errormsg(handle));
+        return self;
+    }
+    for(i = 0; i < setcount; ++i) {
+        // intanstiate a new rack    //   printf("rack: %s \n",nodelist[i]);
+        Rack *rack = [[Rack alloc] initWithName: [[NSString stringWithUTF8String: nodelist[i]] retain]]; //        printf("created that rack\n");
+        genders_attrlist_clear(handle,attrlist); genders_vallist_clear(handle,vallist);
+        genders_getattr(handle,attrlist,vallist,attrlen,nodelist[i]); // get the rack's attributes
+
+        // Don't need to check this one: we know "racktype" is an attribute in this nodelist because genders_guery(...) guarantees this
+        NSString *racktype = [NSString stringWithUTF8String: vallist[[self indexOfAttr:attrlist andLen:attrlen withAttr:@"racktype"]]];
+
+        int indexOf; 
+        Vector *l = [[Vector alloc] init];
+        if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"gridx"]) == -1) {
+            NSLog(@"Expected a \"gridx\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
+            return [self cleanUp];
+        }
+        [l setx: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
+        if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"gridy"]) == -1) {
+            NSLog(@"Expected a \"gridy\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
+            return [self cleanUp];
+        }
+        [l sety: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
+        if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"gridz"]) == -1) {
+            NSLog(@"Expected a \"gridz\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
+            return [self cleanUp];
+        }
+        [l setz: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
+        [rack setLocation: l];
+
+
+        racktype = [[NSString stringWithString: @"rack-"] stringByAppendingString: racktype];
+        // racktype will now look something like: "rack-HP"
+        genders_getattr(handle,attrlist,vallist,attrlen,[racktype UTF8String]);
+        // this is ugly and cryptic (but that's my evil plan...)
+        if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"width"]) == -1) {
+            NSLog(@"Expected a \"width\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
+            return [self cleanUp];
+        }
+        [rack setWidth: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
+        if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"height"]) == -1) {
+            NSLog(@"Expected a \"height\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
+            return [self cleanUp];
+        }
+        [rack setHeight: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
+        if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"depth"]) == -1) {
+            NSLog(@"Expected a \"depth\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
+            return [self cleanUp];
+        }
+        [rack setDepth: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
+/*        if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"color"]) == -1) {
+            NSLog(@"Expected a \"color\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
+            return [self cleanUp];
+        }
+        [rack setColor: [[NSString stringWithUTF8String: vallist[indexOf]] retain]];*/
+        [self addRack: rack];
+    } // at this point we should have all the racks created that we need....
+    NSLog(@"Finished creating the racks (loaded from genders file).");
+    // Now, query the genders library to return all nodes that have the attribute "rack=XXX" 
+    // for us, this means that this set of nodes is a list of nodes
+    genders_nodelist_clear(handle,nodelist); setcount = genders_query(handle,nodelist,count,"rack");
+    for(i = 0; i < setcount; i++) {
+        Node *node; int indexOf;
+//        printf("node: %s ",nodelist[i]);
+        // Try to get the nodetype attribute list
+        genders_attrlist_clear(handle,attrlist); genders_vallist_clear(handle,vallist);
+        if(genders_getattr(handle,attrlist,vallist,attrlen,nodelist[i]) != -1) {
+            // Instantiate the node
+            node = [[Node alloc] initWithName: [[NSString stringWithUTF8String: nodelist[i]] retain]];
+            [node setTemperature: 0];
+
+            if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"nodetype"]) == -1) {
+                NSLog(@"Expected a \"nodetype\" attribute in the genders file for node=%s but found none! Cannot continue loading the GLDataCenter!",nodelist[i]);
+                return [self cleanUp];
+            }
+            NSString *nodetype = [NSString stringWithUTF8String: vallist[indexOf]]; // save the nodetype name
+            nodetype = [[NSString stringWithString: @"node-"] stringByAppendingString: nodetype];
+
+            genders_attrlist_clear(handle,attrlist); genders_vallist_clear(handle,vallist);
+            if(genders_getattr(handle,attrlist,vallist,attrlen,[nodetype UTF8String]) == -1) {
+                NSLog(@"Error finding nodetype name %@ in the genders file! Cannot continue loading the GLDataCenter!\n",nodetype);
+                return [self cleanUp];
+            }
+            if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"width"]) == -1) {
+                NSLog(@"Expected a \"width\" attribute in the genders file for nodetype=%@ but found none! Cannot continue loading the GLDataCenter!",nodetype);
+                return [self cleanUp];
+            }
+            [node setWidth: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
+            if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"height"]) == -1) {
+                NSLog(@"Expected a \"height\" attribute in the genders file for nodetype=%@ but found none! Cannot continue loading the GLDataCenter!",nodetype);
+                return [self cleanUp];
+            }
+            [node setHeight: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
+            if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"depth"]) == -1) {
+                NSLog(@"Expected a \"depth\" attribute in the genders file for nodetype=%@ but found none! Cannot continue loading the GLDataCenter!",nodetype);
+                return [self cleanUp];
+            }
+            [node setDepth: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
+//            NSLog(@"node=%@ width=%f height=%f depth=%f",[node name],[node width],[node height],[node depth]);
+            // Now, get the node's attribute list
+            genders_attrlist_clear(handle,attrlist); genders_vallist_clear(handle,vallist);
+            if(genders_getattr(handle,attrlist,vallist,attrlen,nodelist[i]) != -1) {
+                int indexOf;
+                if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"rack"]) == -1) {
+                    NSLog(@"Expected a \"rack\" attribute in the genders file for node=%s but found none! Cannot continue loading the GLDataCenter!",nodelist[i]);
+                    return [self cleanUp];
+                }
+                NSString *rackName = [[NSString stringWithUTF8String: vallist[indexOf]] retain];
+                Rack *actualRack = [racks objectForKey: rackName];
+                if(actualRack == nil) { 
+                    NSLog(@"Error finding rack name %@ in the genders file! Cannot continue loading the GLDataCenter!\n",rackName);
+                    return [self cleanUp];
+                }//else NSLog(@"Found the rack!");
+                int y = [actualRack nodeCount];
+                // the reason we do this is because we want the node names to be displayed differently
+                // for even nodes (left aligned), odd nodes (right aligned) or something like that
+                if(y % 2 != 0) [node setIsodd: YES];    // make every other node odd...
+                Vector *l = [[Vector alloc] init];
+                if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"vposition"]) == -1) {
+                    NSLog(@"Expected a \"vposition\" attribute in the genders file for node=%s but found none! Cannot continue loading the GLDataCenter!",nodelist[i]);
+                    return [self cleanUp];
+                }
+                [[[l setx: 0] sety: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]] setz: 0];
+                [node setLocation: l];
+                [actualRack addNode: node]; // Add the node object to the rack object
+    /*****************************************************/
+            }else{
+                NSLog(@"genders_getattr(handle,attrlist,vallist,attrlen,\"%s\") failed with msg: \"%s\" attrlen=%d\n",nodelist[i],genders_errormsg(handle),attrlen);
+                [self cleanUp];
+            }
+        }
+    }
+    NSLog(@"Finished creating the nodes (loaded from genders file).");
+    // destroy the nodelist,attrlist,and vallist
+    if(genders_nodelist_destroy(handle, nodelist) == -1) NSLog(@"There was an error when calling 'genders_nodelist_destroy(handle,nodelist)'");
+    if(genders_attrlist_destroy(handle, attrlist) == -1) NSLog(@"There was an error when calling 'genders_attrlist_destroy(handle,attrlist)'");
+    if(genders_vallist_destroy(handle, vallist) == -1) NSLog(@"There was an error when calling 'genders_vallist_destroy(handle,vallist)'");
     return self;
 }
 -initWithPList: (id)list {
@@ -124,9 +351,12 @@ extern GLuint g_textureID;
 		[ds initWithPList: [list objectForKey: @"dataSet"]];
         self->dataSet = ds;
 	}
-    self->csvFilePath = [[list objectForKey: @"csvFilePath"
-            missing: @"data/Chinook Serial numbers.csv"] retain];
+    // this is going away....
+    self->csvFilePath = [[list objectForKey: @"csvFilePath" missing: @"data/Chinook Serial numbers.csv"] retain];
+    // replaced with gendersFilePath
+    self->gendersFilePath = [[list objectForKey: @"gendersFilePath" missing: @"data/genders"] retain];
     NSLog(@"csvFilePath = %@", self->csvFilePath);
+    NSLog(@"gendersFilePath = %@", self->gendersFilePath);
 	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
 	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
 		ds=[c alloc];
@@ -149,6 +379,7 @@ extern GLuint g_textureID;
     [csvFilePath release];
     [super dealloc];
 }
+// Used for debugging purposes only
 -drawOriginAxis {
     glPushMatrix();
     //glLoadIdentity();
@@ -162,7 +393,6 @@ extern GLuint g_textureID;
     glVertex3f(0,0,-10000);
     glVertex3f(0,0,10000);
     glEnd();
-   
     int x = 1000;
     glColor3f(0,0,1);
     drawString3D( x,0,0,GLUT_BITMAP_HELVETICA_12,@"  +X-Axis", 0);
@@ -171,7 +401,6 @@ extern GLuint g_textureID;
     drawString3D(0,-x,0,GLUT_BITMAP_HELVETICA_12,@"  -Y-Axis", 0);
     drawString3D(0,0, x,GLUT_BITMAP_HELVETICA_12,@"  +Z-Axis", 0);
     drawString3D(0,0,-x,GLUT_BITMAP_HELVETICA_12,@"  -Z-Axis", 0);
-
     glPopMatrix();
     return self;
 }
@@ -189,10 +418,13 @@ extern GLuint g_textureID;
     glEnd();
     return self;
 }
--addAisle: (Aisle*) aisle {
+-addRack: (Rack*) rack {
     // Add the passed rack to our rackArray
-    if(self->aisles != nil)
-        [self->aisles addObject: aisle];
+    if(self->racks != nil) {
+ //       NSLog(@"about to add a rack...(%@)",[rack name]);
+        [self->racks setObject: rack forKey: [rack name]];
+ //       NSLog(@"Done.");
+    }
     return self;
 }
 -drawFloor {
@@ -219,14 +451,13 @@ extern GLuint g_textureID;
     return self;
 }
 -draw {
-    
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     //[self drawOriginAxis];
     [self drawFloor];
     //[self drawGrid];
-    [self->aisles makeObjectsPerformSelector:@selector(draw)]; // draw the nodes
+    [[self->racks allValues] makeObjectsPerformSelector:@selector(draw)]; // draw the nodes
     //NSLog(@"count: %d", [aisles count]);
 
     GLenum err = glGetError();
@@ -235,7 +466,7 @@ extern GLuint g_textureID;
     return self;
 }
 -glPickDraw {
-    [aisles makeObjectsPerformSelector:@selector(glPickDraw)];
+    [[self->racks allValues] makeObjectsPerformSelector:@selector(glPickDraw)];
     return self;
 }
 -glDraw {
@@ -261,7 +492,7 @@ extern GLuint g_textureID;
     return self;*/
 }
 -(NSEnumerator*) getEnumerator {
-    NSEnumerator *enumerator = [self->aisles objectEnumerator];
+    NSEnumerator *enumerator = [self->racks objectEnumerator];
     return enumerator;
 }
 

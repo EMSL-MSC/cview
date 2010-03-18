@@ -1,5 +1,6 @@
 #ifndef NODE_H
 #define NODE_H
+#import "ColorMap.h"
 #import "Locatable.h"
 #import "Drawable.h"
 #import "Pickable.h"
@@ -33,5 +34,7 @@
 -(float)getTemperature;
 -setIsodd: (BOOL)_isodd;
 -setSelected:(BOOL)_selected;
+-cleanUp;
+-initWithName:(NSString*)_name;
 @end
 #endif // NODE_H

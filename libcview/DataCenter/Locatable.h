@@ -27,7 +27,7 @@
 +(void)drawGLQuad: (Point) p1 andP2: (Point) p2
             andP3: (Point) p3 andP4: (Point) p4;
 -setName: (NSString *) name;
--(NSString*) getName;
+-(NSString*) name;
 -setLocation: (Vector*) _location;
 -(Vector*) location;
 -setRotation: (Vector*) _rotation;
@@ -35,9 +35,9 @@
 -setWidth: (float) _width;
 -setHeight: (float) _height;
 -setDepth: (float) _depth;
--(float)getWidth;
--(float)getHeight;
--(float)getDepth;
+-(float)width;
+-(float)height;
+-(float)depth;
 /**
     Draws a opengl box (6 sided) at given location, rotation, width, depth, height
   */

@@ -19,13 +19,14 @@
 #import "DrawableObject.h"
 #import "GLText.h"
 @interface GLDataCenter: DrawableObject <Drawable, Pickable> {
-    NSMutableArray *aisles;
+    NSMutableDictionary *racks;
 @private
     WebDataSet *jobIds;
     VertArray *floorArray1;
     VertArray *floorArray2;
     VertArray *floorArray3;
     NSString *csvFilePath;
+    NSString *gendersFilePath;
     int jobIdIndex;
 
     DataSet *dataSet;
@@ -33,6 +34,7 @@
 -(NSString*) get_csvFilePath;
 -init;
 -doInit;
+-initWithGenders;
 -(float)getJobIdFromNode:(Node*)n;
 -(NSArray*)getNodesRunningAJobID:(float) jobid;
 /// Makes all nodes fade except for nodes with the passed jobid
@@ -48,6 +50,6 @@
 /// Draws the floor tiles
 -drawFloor;
 -(NSEnumerator*)getEnumerator;
--addAisle: (Aisle*) aisle;
+-addRack: (Rack*) Rack;
 @end
 #endif

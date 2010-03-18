@@ -1,5 +1,6 @@
 #ifndef RACK_H
 #define RACK_H
+#import <Foundation/NSString.h>
 #import "Locatable.h"
 #import "Drawable.h"
 #import "Pickable.h"
@@ -16,6 +17,7 @@
 @interface Rack : Locatable <Drawable, Pickable> {
     NSMutableArray *nodes;
 @private
+    NSString *color;
     BOOL wireframe;     // if yes draw the racks as wireframe
     BOOL drawname;
     float r,g,b; // color stuff...
@@ -31,6 +33,9 @@
 -addNode: (Node*) node;
 -(int)nodeCount;
 -startFading; // makes this rack start fading (being transparent) over a period of time
+-(NSString*)color;
+-setColor:(NSString*)_color;
+-cleanUp;
 @end
 
 #endif // RACK_H

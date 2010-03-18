@@ -160,7 +160,7 @@ All rights reserved.
     return self;
 }
 -printNode: (Node*)n withId: (float) _id {
-    NSLog(@"Node: name: %@ jobid: %f", [n getName], _id);
+    NSLog(@"Node: name: %@ jobid: %f", [n name], _id);
     return self;
 }
 -processHits: (GLint) hitCount buffer: (GLuint*) selectBuf andSize: (GLint) buffSize inWorld: (GLWorld*) world {

@@ -55,7 +55,7 @@
 			    object = {
 				dataSet = {
 				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
-				    key = cputotals.user;
+				    key = env.ATemp;
 				};
                 jobIDDataSet =  {
 				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
@@ -63,6 +63,7 @@
 				};
 				dataSetClass = WebDataSet;
                 csvFilePath = "data/Chinook Serial numbers.csv";
+                gendersFilePath = "data/genders";
 				isVisible = YES;
 			    };
 			    objectclass = GLDataCenter;

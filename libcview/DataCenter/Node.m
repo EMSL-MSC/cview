@@ -8,6 +8,9 @@
 //static VertArray *nodeArray;
 static WebDataSet *dataSet;
 static GLText *gltName;
+static ColorMap *colorMap;
+static double currentMax = 0.0;
+
 +(void)setWebDataSet:(WebDataSet*)_dataSet {
     dataSet = [_dataSet retain];
 }
@@ -15,9 +18,15 @@ static GLText *gltName;
     gltName = _gltName;
     return self;
 }
+-cleanUp {
+    // maybe add stuff here later
+
+    [self autorelease];
+    return self;
+}
 -init {
     [super init];
-    self->drawname = NO;
+    self->drawname = YES;
     self->fading = NO;
     self->unfading = NO;
     self->selected = NO;
@@ -29,7 +38,7 @@ static GLText *gltName;
 -initWithName:(NSString*)_name {
     [self init];
     [self setName: _name];
-        return self;
+    return self;
 }
 -(void)dealloc {
     if(dataSet != nil)
@@ -50,7 +59,7 @@ static GLText *gltName;
 -(float)getData: (NSString*)nodeName {
     // First find the nodename in the xticks array
     //DataSet *ds = [myDCG getDataSet];
-    float *row = [dataSet dataRowByString: nodeName];
+    float *row = [dataSet dataRowByString: [nodeName uppercaseString]];
     if(row != NULL) {
         //NSLog(@"row[0] = %f", row[0]);
         return row[0];
@@ -60,6 +69,7 @@ static GLText *gltName;
     }
 }
 -draw {
+//    NSLog(@"node=%@ width=%f height=%f depth=%f",[self name],[self width],[self height],[self depth]);
     double thetime = [[NSDate date] timeIntervalSince1970]; // get current time in seconds
     if(fading == YES || unfading == YES) { // check to see if we should fade/unfade
         double scale = 0.0; // must be between 0 and 1, inclusive
@@ -79,7 +89,7 @@ static GLText *gltName;
             unfading = NO;
             wasfading = NO;
             //NSLog(@"ENDED FADING!!!!");
-        }else{  // we're still fading baby!!!
+        }else{  // we're still fading
             fadeval = (1/fadetime)*(thetime-fadestart); // calculate the fade
             if(fading == YES) 
                 fadeval = 1-fadeval;    // fading out, not in
@@ -89,32 +99,45 @@ static GLText *gltName;
     }
     if(selected == YES || fadeval != 0) {  // only draw this node if we're not completely faded out or selected
         [super setupForDraw];
-            [self setTemperature: [self getData: [self getName]]];
+            [self setTemperature: [self getData: [self name]]];
             if(self->temperature != -1)
                 self->temperature /=  100.0;
 
             glEnable(GL_BLEND);
+
+
+            float max = [dataSet getScaledMax];
+
+            if (currentMax != max) {
+//                NSLog(@"New Max: %.2f %.2f",max,currentMax);
+                currentMax = max;
+                [colorMap autorelease];
+                colorMap = [ColorMap mapWithMax: currentMax];
+                [colorMap retain];
+            }
+
             if(selected == YES)
                 glColor4f(.1,.1,.1,1);
-            else if(temperature == -1)// No valid data found from the dataSet    
+            else if(temperature == -1) { // No valid data found from the dataSet    
                 glColor4f(1,1,1,fadeval);// color the node white
-            else
-                glColor4f(temperature, 1-temperature, 0, fadeval);
+        //        NSLog(@"bad data from %@", [self name]);
+            }else
+                glColor4f([colorMap r: temperature],[colorMap g: temperature], [colorMap b: temperature], fadeval);
             [super draw];    // draw a box around the node
 
             if(drawname == YES) {
                 glTranslatef(STANDARD_NODE_DEPTH,0,0);
                 if(gltName == nil) {
-                    gltName = [[GLText alloc] initWithString: [self getName] andFont: @"LinLibertine_Re.ttf"];
+                    gltName = [[GLText alloc] initWithString: [self name] andFont: @"LinLibertine_Re.ttf"];
                     [gltName setScale: .06];
                     [gltName setRotationOnX: 0 Y: 0 Z: 180];
                     [gltName setColorRed: 0 Green: 0 Blue: 0];
                 }
-                [gltName setString: [[self getName] lowercaseString]];
+                [gltName setString: [[self name] lowercaseString]];
                 if(isodd == YES)  // every other node, change name locations
-                    glTranslatef(-20,0,-0.5*STANDARD_NODE_DEPTH-1);
+                    glTranslatef(-20,0,-0.5*[self depth]-1);
                 else
-                    glTranslatef(-30,0,-0.5*STANDARD_NODE_DEPTH-1);
+                    glTranslatef(-30,0,-0.5*[self depth]-1);
                     
                 [gltName glDraw];   // Draw the node name
             }
