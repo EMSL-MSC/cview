@@ -1,0 +1,20 @@
+# Author Brock Erwin
+# Simple genders file demonstration for use in CVIEW
+
+
+# CVIEW takes a genders file in a very specific format for this to work
+
+# Rack definitions must start with "rack-"
+# Rack definitions must have attributes width/height/depth
+
+rack-HP width=
+
+myrack1
+
+
+# node names can be anything you like, as long as they follow genders specs.
+# I have found that genders does not like parentheses, or any other special characters really (including dashes)
+# underscores seem to work though.
+# No spaces either, because spaces are the delimeter between node name and attributes
+
+mynode racktype=H
