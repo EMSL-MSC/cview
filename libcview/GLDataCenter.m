@@ -1,11 +1,10 @@
+#include <string.h>
 #import <Foundation/Foundation.h>
 #import <gl.h>
 #import <glut.h>
 #import "cview.h"
 #import "DataSet.h"
 #import "GLDataCenter.h"
-#import "DataCenter/AisleOffsets.h"
-//#import "DataCenterLoader.h"
 #import "DictionaryExtra.h"
 #include <genders.h>
 void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
@@ -13,7 +12,9 @@ extern GLuint g_textureID;
 @implementation  GLDataCenter
 -init {
     [super init];
-    self->csvFilePath = nil;
+    self->floor = nil;
+    self->floorVertCount = 0;
+//    self->csvFilePath = nil;
     self->gendersFilePath = nil;
     self->jobIds = nil;
     self->jobIdIndex = 0;
@@ -21,22 +22,8 @@ extern GLuint g_textureID;
     [Node setGLTName: nil];
     return self;
 }
--(NSString*) get_csvFilePath {
-    return self->csvFilePath;
-}
 -doInit {
-//    self->aisles = [[NSMutableArray alloc] init];
     self->racks = [[NSMutableDictionary alloc] init];
-    self->floorArray1 = [AisleOffsets getDataCenterFloorPart1];
-    self->floorArray2 = [AisleOffsets getDataCenterFloorPart2];
-    self->floorArray3 = [AisleOffsets getDataCenterFloorPart3];
-    /*
-    if(self->csvFilePath != nil) {
-        DataCenterLoader *dcl = [[DataCenterLoader alloc] init];
-        [dcl LoadGLDataCenter: self];
-        [dcl autorelease];
-    }
-    */
     [self initWithGenders]; // use the genders file to initialize the data center
     return self;
 }
@@ -140,6 +127,12 @@ extern GLuint g_textureID;
     return -1;
 }
 -cleanUp {
+    NSLog(@"Cleaning up the GLDataCenter.");
+    floorVertCount = 0;
+    if(floor != nil)
+        [floor autorelease];
+    if(racks == nil)
+        return self;
     NSEnumerator *enumerator = [racks objectEnumerator];
     if(enumerator != nil) {
         id element;
@@ -194,13 +187,71 @@ extern GLuint g_textureID;
         NSLog(@"There was an error creating an value list by genders.");
         return self;
     }
-    int i,setcount;
+    int i,setcount,indexOf;
+
+    // queries the genders library to return all nodes that have the attribute "floor" 
+    // this means we want the set of all floor verticies
+    genders_nodelist_clear(handle,nodelist);
+    if(( setcount = genders_query(handle,nodelist,count,"floor")  ) < 1) {
+        NSLog(@"Error calling 'genders_getnodes()', or couldn't find any nodes with attribute \"floor\": errmsg: %s",genders_errormsg(handle));
+        return self;
+    }
+    if(floor != nil) {
+        NSLog(@"Uh-oh, expected 'nil' in 'floor'.  Can't continue.");
+        return [self cleanUp];
+    }
+    if(setcount > 0) // need to alloc the floor if we found any definitions in the genders file
+    //    self->floor = [NSData dataWithBytes: NULL length: 0];
+        self->floor = [[NSMutableData alloc] init];//dataWithBytes: NULL length: 0];
+    self->floorVertCount = 0;
+    for(i = 0; i < setcount; ++i) {
+        genders_attrlist_clear(handle,attrlist); genders_vallist_clear(handle,vallist);
+        genders_getattr(handle,attrlist,vallist,attrlen,nodelist[i]); // get the floor vertex attributes
+
+        char zeroes[8];
+        [floor appendBytes: zeroes length: 8];
+        int j;
+        V3F v[3];
+        float *val;
+        for(j=0;j<9;++j) {
+            NSString *search;
+            switch(j) {
+                case 0: search = @"x1"; val=&v[0].x; break;
+                case 1: search = @"y1"; val=&v[0].y; break;
+                case 2: search = @"z1"; val=&v[0].z; break;
+                case 3: search = @"x2"; val=&v[1].x; break;
+                case 4: search = @"y2"; val=&v[1].y; break;
+                case 5: search = @"z2"; val=&v[1].z; break;
+                case 6: search = @"x3"; val=&v[2].x; break;
+                case 7: search = @"y3"; val=&v[2].y; break;
+                case 8: search = @"z3"; val=&v[2].z; break;
+            }
+            if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:search]) == -1) {
+                NSLog(@"Expected a \"%@\" attribute in the genders file for floor triangle: %s but found none! Cannot continue loading the GLDataCenter!",search,nodelist[i]);
+                return [self cleanUp];
+            }
+            (*val) = [[NSString stringWithUTF8String: vallist[indexOf]] floatValue];
+            NSLog(@"%@ = %f",search,*val);
+/*
+            typedef struct
+            {
+                float x,y,z;
+            }V3F;
+*/
+        }
+        [floor appendBytes: (const void*) v length: sizeof(V3F)*3];
+//        self->floor = [[NSData dataWithBytes: (const void*) v length: sizeof(V3F)*3];
+    }
+
+    self->floorVertCount = setcount * 3;
+    NSLog(@"Finished loading %d triangles in the floor (from genders file)",setcount);
+    
     // queries the genders library to return all nodes that have the attribute "racktype=XXX" 
     // this means we want the set of all racks
     genders_nodelist_clear(handle,nodelist);
     if(( setcount = genders_query(handle,nodelist,count,"racktype")  ) < 1) {
         NSLog(@"Error calling 'genders_getnodes()', or couldn't find any nodes with attribute \"racktype\": errmsg: %s",genders_errormsg(handle));
-        return self;
+        return [self cleanUp];
     }
     for(i = 0; i < setcount; ++i) {
         // intanstiate a new rack    //   printf("rack: %s \n",nodelist[i]);
@@ -211,7 +262,6 @@ extern GLuint g_textureID;
         // Don't need to check this one: we know "racktype" is an attribute in this nodelist because genders_guery(...) guarantees this
         NSString *racktype = [NSString stringWithUTF8String: vallist[[self indexOfAttr:attrlist andLen:attrlen withAttr:@"racktype"]]];
 
-        int indexOf; 
         Vector *l = [[Vector alloc] init];
         if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"gridx"]) == -1) {
             NSLog(@"Expected a \"gridx\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
@@ -256,6 +306,7 @@ extern GLuint g_textureID;
         }
         [rack setColor: [[NSString stringWithUTF8String: vallist[indexOf]] retain]];*/
         [self addRack: rack];
+        [rack autorelease];
     } // at this point we should have all the racks created that we need....
     NSLog(@"Finished creating the racks (loaded from genders file).");
     // Now, query the genders library to return all nodes that have the attribute "rack=XXX" 
@@ -351,11 +402,7 @@ extern GLuint g_textureID;
 		[ds initWithPList: [list objectForKey: @"dataSet"]];
         self->dataSet = ds;
 	}
-    // this is going away....
-    self->csvFilePath = [[list objectForKey: @"csvFilePath" missing: @"data/Chinook Serial numbers.csv"] retain];
-    // replaced with gendersFilePath
     self->gendersFilePath = [[list objectForKey: @"gendersFilePath" missing: @"data/genders"] retain];
-    NSLog(@"csvFilePath = %@", self->csvFilePath);
     NSLog(@"gendersFilePath = %@", self->gendersFilePath);
 	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
 	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
@@ -376,7 +423,8 @@ extern GLuint g_textureID;
 	return dict;
 }
 -(void)dealloc {
-    [csvFilePath release];
+    [self->gendersFilePath autorelease];
+    [self->floor autorelease];
     [super dealloc];
 }
 // Used for debugging purposes only
@@ -405,6 +453,8 @@ extern GLuint g_textureID;
     return self;
 }
 -drawGrid {
+#define TILE_WIDTH              24
+#define TILE_LENGTH             24
     glBegin(GL_LINES);
     glColor3f(0,0,0);
     int nx = -10, ny = 100;
@@ -428,23 +478,36 @@ extern GLuint g_textureID;
     return self;
 }
 -drawFloor {
-    //TODO: add stuff here to draw floor tiles
-    if(self->floorArray1 == NULL || self->floorArray2 == NULL || self->floorArray3 == NULL)
-        return self;
     // No textures for now...
     glDisable(GL_TEXTURE_2D);
     glColor3f(0.5,0.5,0.5);  // grey
     // Draw the rack itself, consisting of 6 sides
-    glEnable(GL_CULL_FACE);
+
+
+    V3F v[3];
+    v[0].x = 0; v[0].y = 0; v[0].z = 0;
+    v[1].x = 0; v[1].y = 0; v[1].z = 1000;
+    v[2].x = -300; v[2].y = 0; v[2].z = 1000;
+
+//    glInterleavedArrays(GL_V3F, 0, &v);
+//    glDrawArrays(GL_TRIANGLES, 0, 3);
+
+
+//    glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-    glInterleavedArrays(GL_T2F_V3F, 0, self->floorArray1->verts);
-    glDrawArrays(GL_POLYGON, 0, self->floorArray1->vertCount);
 
-    glInterleavedArrays(GL_T2F_V3F, 0, self->floorArray2->verts);
-    glDrawArrays(GL_POLYGON, 0, self->floorArray2->vertCount);
-
-    glInterleavedArrays(GL_T2F_V3F, 0, self->floorArray3->verts);
-    glDrawArrays(GL_POLYGON, 0, self->floorArray3->vertCount);
+//    glInterleavedArrays(GL_T2F_V3F, 0, [self->floor bytes]);
+    glInterleavedArrays(GL_V3F, 0, [self->floor mutableBytes]);
+    glDrawArrays(GL_TRIANGLES, 0, self->floorVertCount);
+    NSLog(@"floorVertCount = %d", floorVertCount);
+    
+    V3F t[1000];
+    memcpy(t,[self->floor mutableBytes],sizeof(V3F)*floorVertCount);
+    int y;
+    for(y=0;y<floorVertCount;++y) {
+        NSLog(@"t[%d].x = %f t[%d].y = %f t[%d].z = %f",y,t[y].x,y,t[y].y,y,t[y].z);
+    }
+    NSLog(@"floorVertCount = %d", floorVertCount);
 
     //glCullFace(GL_FRONT);
 
@@ -454,10 +517,10 @@ extern GLuint g_textureID;
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    //[self drawOriginAxis];
+    [self drawOriginAxis];
     [self drawFloor];
     //[self drawGrid];
-    [[self->racks allValues] makeObjectsPerformSelector:@selector(draw)]; // draw the nodes
+//    [[self->racks allValues] makeObjectsPerformSelector:@selector(draw)]; // draw the racks
     //NSLog(@"count: %d", [aisles count]);
 
     GLenum err = glGetError();

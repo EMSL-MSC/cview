@@ -21,17 +21,13 @@
 @interface GLDataCenter: DrawableObject <Drawable, Pickable> {
     NSMutableDictionary *racks;
 @private
-    WebDataSet *jobIds;
-    VertArray *floorArray1;
-    VertArray *floorArray2;
-    VertArray *floorArray3;
-    NSString *csvFilePath;
+    WebDataSet *jobIds; // job id data set
+    NSMutableData *floor; // Stores floor vertices
+    int floorVertCount;
     NSString *gendersFilePath;
     int jobIdIndex;
-
     DataSet *dataSet;
 }
--(NSString*) get_csvFilePath;
 -init;
 -doInit;
 -initWithGenders;
