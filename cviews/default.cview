@@ -1,7 +1,7 @@
 {
-    height = 1172;
-    name = "Chinook Graphs";
-    width = 1592;
+    height = 949;
+    name = "MSCF Data Center";
+    width = 2550;
     worlds = (
 	{
 	    col = 0;
@@ -10,18 +10,21 @@
 	    row = 0;
 	    rowp = 50;
 	    world = {
+		eye = {
+		    hangle = "-6.308335";
+		    move_speed = 10;
+		    rotate_speed = 0.025;
+		    strafe_speed = 10;
+		    vangle = "-2.400005";
+		    x = 1203.364;
+		    y = 1546.208;
+		    z = 1599.859;
+		};
 		imageCycleTime = 0;
 		imageDailyDir = YES;
-		imageDir = /tmp;
+		imageDir = "/tmp";
 		imagePrefix = chinook;
-		eye = {
-		    hangle = "-7.15";
-		    vangle = "-2.041667";
-		    x = 1159.549;
-		    y = 1227.716;
-		    z = -362.726;
-		};
-        overlay = {
+		overlay = {
 		    objects = (
 			{
 			    align = YES;
@@ -30,14 +33,15 @@
 				colorB = 1;
 				colorG = 1;
 				colorR = 1;
-				fontfile = LinLibertine_Re.ttf;
+				fontfile = ./data/LinLibertine_Re.ttf;
 				isVisible = YES;
 				rotX = 0;
 				rotY = 0;
 				rotZ = 0;
 				scaleX = 1;
+				scaleY = 1;
 				scaleZ = 1;
-				string = "CPU Usage at the User Lever - Chinook";
+				string = "Ambient Temperature Data - Chinook";
 			    };
 			    objectclass = GLText;
 			    valign = 1;
@@ -57,14 +61,12 @@
 				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
 				    key = env.ATemp;
 				};
-                jobIDDataSet =  {
+				dataSetClass = WebDataSet;
+				isVisible = YES;
+				jobIDDataSet = {
 				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
 				    key = job_id;
 				};
-				dataSetClass = WebDataSet;
-                csvFilePath = "data/Chinook Serial numbers.csv";
-                gendersFilePath = "data/genders";
-				isVisible = YES;
 			    };
 			    objectclass = GLDataCenter;
 			    valign = 0;
