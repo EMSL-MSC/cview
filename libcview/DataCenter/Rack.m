@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <time.h>
 #import <Foundation/Foundation.h>
-#import "AisleOffsets.h"
+// #import "AisleOffsets.h"
 void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
 @implementation Rack
 static unsigned int texture;
@@ -98,7 +98,7 @@ static GLText *gltName;
                 [gltName setRotationOnX: 90 Y: 180 Z: 0];
             }
             [gltName setString: [self name]];
-            glTranslatef(11.2,.5001*STANDARD_RACK_HEIGHT,6);
+            glTranslatef(11.2,.5001*[self height],6);
             [gltName glDraw];
         }
     [super cleanUpAfterDraw]; 

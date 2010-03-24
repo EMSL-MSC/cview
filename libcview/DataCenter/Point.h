@@ -14,5 +14,8 @@ typedef struct {
     Vertex *verts;
     int vertCount;
 } VertArray;
-
+typedef struct
+{
+    float x,y,z;
+}V3F;
 #endif

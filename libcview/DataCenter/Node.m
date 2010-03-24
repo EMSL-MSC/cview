@@ -2,7 +2,7 @@
 #import <Foundation/NSString.h>
 #import <gl.h>
 #import <glut.h>
-#import "AisleOffsets.h"
+//#import "AisleOffsets.h"
 #import "../../libcview-data/WebDataSet.h"
 @implementation Node
 //static VertArray *nodeArray;
@@ -126,7 +126,7 @@ static double currentMax = 0.0;
             [super draw];    // draw a box around the node
 
             if(drawname == YES) {
-                glTranslatef(STANDARD_NODE_DEPTH,0,0);
+                glTranslatef([self depth],0,0);
                 if(gltName == nil) {
                     gltName = [[GLText alloc] initWithString: [self name] andFont: @"LinLibertine_Re.ttf"];
                     [gltName setScale: .06];
