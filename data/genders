@@ -1,3 +1,8 @@
+# Need this so CVIEW knows these are "floor" thingyies
+tri[0-1] floor,y1=0,y2=0,y3=0
+
+tri0 x1=0,z1=0,x2=0,z2=1000,x3=-300,z3=1000
+tri1 x1=0,z1=0,x2=-300,z2=1000,x3=-300,z3=0
 # racktype definitions
 
 # HP 10642 G2 Rack (42U) http://h18000.www1.hp.com/products/quickspecs/12402_div/12402_div.html#Technical%20Specifications
