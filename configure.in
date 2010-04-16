@@ -82,11 +82,15 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <GL/osmesa.h>]], [[OSMesaCreateCon
 				],[AC_DEFINE([HAVE_OSMESA], [0],[Have OSMesa library]) AC_MSG_RESULT(no) ])
 
 AC_MSG_CHECKING(for AntTweakBar)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <AntTweakBar.h>]], [[TwDraw()]])],[AC_DEFINE([HAVE_ANTTWEAKBAR], [1], [Have AntTweakBar]) 
+AC_COMPILE_IFELSE(
+	[AC_LANG_PROGRAM([[#include <AntTweakBar.h>]], [[TwDraw()]])],
+	[AC_DEFINE([HAVE_ANTTWEAKBAR], [1], [Have AntTweakBar]) 
 		AC_MSG_RESULT(yes) 
 		LIBCVIEW_COND_FILES="AntTweakBarOverlay.m $LIBCVIEW_COND_FILES"
 		ATB_LDFLAGS+=" -lAntTweakBar "
-	],[AC_DEFINE([HAVE_ANTTWEAKBAR], [0], [Have AntTweakBar]) AC_MSG_RESULT(no)])
+	],
+	[AC_DEFINE([HAVE_ANTTWEAKBAR], [0], [Have AntTweakBar]) AC_MSG_RESULT(no)]
+	)
 AM_CONDITIONAL([HAVE_ATB],[test "x$LIBCVIEW_COND_FILES" != "x"])
 
 AC_CHECK_PROG([DOXYGEN],[doxygen],[doxygen]) 
