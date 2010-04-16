@@ -146,6 +146,10 @@ int main(int argc,char *argv[], char *env[]) {
 		- c The PList formatted config file to load 
 	*/
 	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
+	[args registerDefaults:
+		[args persistentDomainForName: @"cview"]
+	];
+
 	[args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
 			@"chinook.cview", @"c",
 			@"30.0",@"dataUpdateInterval",

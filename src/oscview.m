@@ -57,6 +57,12 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
+#include <GL/gl.h>
+//Hack to work with nvidia GL
+#ifndef GLAPIENTRY
+#define GLAPIENTRY
+#endif
+
 #import <GL/osmesa.h>
 #import <glut.h>
 #import "Wand.h"
@@ -74,6 +80,7 @@ int main(int argc,char *argv[], char *env[]) {
 	NSString *filename;
 	NSString *config;
 	NSString *err;
+	MagickBooleanType status;
 
 #ifndef __APPLE__
 	//needed for NSLog
@@ -132,7 +139,7 @@ int main(int argc,char *argv[], char *env[]) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();	
 	
-	gluPerspective(20.0,ratio,0.1,5000);
+	gluPerspective(20.0,ratio,100.0,10000);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	//Gl init stuffage
@@ -159,7 +166,8 @@ int main(int argc,char *argv[], char *env[]) {
 	MagickSetSize(wand,width,height);
 
 	//glReadPixels(0,0,width,height,GL_RGBA,GL_UNSIGNED_BYTE,[pixels mutableBytes]);
-	MagickConstituteImage(wand,width,height,"RGBA",CharPixel,[buffer mutableBytes]);
+	status = MagickConstituteImage(wand,width,height,"RGBA",CharPixel,[buffer mutableBytes]);
+	if (status) NSLog(@"bad Status from MagickConstituteImage: %d",status);
 
 	MagickFlipImage(wand);
 	MagickWriteImage(wand,[filename UTF8String]);

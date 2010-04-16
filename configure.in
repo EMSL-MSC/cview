@@ -77,7 +77,7 @@ SRC_COND_COMPILES=""
 LIBCVIEW_COND_FILES=""
 
 AC_MSG_CHECKING(for OSMesa Usability)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <GL/osmesa.h>]], [[OSMesaCreateContext(0,0)]])],[AC_DEFINE([HAVE_OSMESA], [1],[Have OSMesa library]) AC_MSG_RESULT(yes)
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#define GLAPIENTRY\n  #include <GL/osmesa.h>]], [[OSMesaCreateContext(0,0)]])],[AC_DEFINE([HAVE_OSMESA], [1],[Have OSMesa library]) AC_MSG_RESULT(yes)
 					SRC_COND_COMPILES="$SRC_COND_COMPILES oscview"  
 				],[AC_DEFINE([HAVE_OSMESA], [0],[Have OSMesa library]) AC_MSG_RESULT(no) ])
 

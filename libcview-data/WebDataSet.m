@@ -106,7 +106,7 @@ All rights reserved.
 		else {
 			w = [Xticks length]/32;
 			h = [Yticks length]/32;
-			NSLog(@"Sizes: %d,%d",w,h);
+			NSLog(@"Sizes<%@>: %d,%d",dataKey,w,h);
 		}
 		if (w==0 || h==0) {
 			d=[NSDate dateWithTimeIntervalSinceNow: 2];
@@ -193,15 +193,15 @@ All rights reserved.
 
 	abort = NO;
 	if ([Data length] != width*height*sizeof(float)) {
-		NSLog(@"Data Size Invalid: %d*%d*%d != %d",width,height,sizeof(float),[Data length]);
+		NSLog(@"Data Size Invalid<%@>: %d*%d*%d != %d",dataKey,width,height,sizeof(float),[Data length]);
 		abort = YES;
 	}
 	if ([Xt length] != width*TICK_LEN) {
-		NSLog(@"Xt Size Invalid: %d*%d != %d",width,TICK_LEN,[Xt length]);
+		NSLog(@"Xt Size Invalid<%@>: %d*%d != %d",dataKey,width,TICK_LEN,[Xt length]);
 		abort = YES;
 	}
 	if ([Yt length] != height*TICK_LEN) {
-		NSLog(@"Yt Size Invalid: %d*%d != %d",height,TICK_LEN,[Yt length]);
+		NSLog(@"Yt Size Invalid<%@>: %d*%d != %d",dataKey,height,TICK_LEN,[Yt length]);
 		abort = YES;
 	}
 
