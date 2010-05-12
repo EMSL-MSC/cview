@@ -22,6 +22,7 @@ extern GLuint g_textureID;
     [Node setGLTName: nil];
     return self;
 }
+
 -doInit {
     self->racks = [[NSMutableDictionary alloc] init];
     [self initWithGenders]; // use the genders file to initialize the data center
@@ -165,12 +166,8 @@ extern GLuint g_textureID;
         NSLog(@"Error returned from 'genders_load_data' with file (%s)%@",genders_errormsg(handle),self->gendersFilePath);
         return self;
     }
-    char **nodelist;
-    char **attrlist;
-    char **vallist;
-    int count;
-    int attrlen;
-    int vallen;
+    char **nodelist, **attrlist, **vallist;
+    int count, attrlen, vallen;
     count = genders_nodelist_create(handle, &nodelist);
     if(count <= 0) {
         NSLog(@"There was an error getting the nodelist from genders.");
@@ -202,14 +199,14 @@ extern GLuint g_textureID;
     }
     if(setcount > 0) // need to alloc the floor if we found any definitions in the genders file
     //    self->floor = [NSData dataWithBytes: NULL length: 0];
-        self->floor = [[NSMutableData alloc] init];//dataWithBytes: NULL length: 0];
+    self->floor = [[NSMutableData dataWithLength:0] retain];//dataWithBytes: NULL length: 0];
     self->floorVertCount = 0;
     for(i = 0; i < setcount; ++i) {
         genders_attrlist_clear(handle,attrlist); genders_vallist_clear(handle,vallist);
         genders_getattr(handle,attrlist,vallist,attrlen,nodelist[i]); // get the floor vertex attributes
 
-        char zeroes[8];
-        [floor appendBytes: zeroes length: 8];
+        //char zeroes[8];
+        //[floor appendBytes: zeroes length: 8];
         int j;
         V3F v[3];
         float *val;
@@ -232,15 +229,10 @@ extern GLuint g_textureID;
             }
             (*val) = [[NSString stringWithUTF8String: vallist[indexOf]] floatValue];
             NSLog(@"%@ = %f",search,*val);
-/*
-            typedef struct
-            {
-                float x,y,z;
-            }V3F;
-*/
         }
+        NSLog(@"x1 = %f y1 = %f z1 = %f x2 = %f y2 = %f z2 = %f x3 = %f y3 = %f z3 = %f",v[0].x,v[0].y,v[0].z,v[1].x,v[1].y,v[1].z,v[2].x,v[2].y,v[2].z);
+
         [floor appendBytes: (const void*) v length: sizeof(V3F)*3];
-//        self->floor = [[NSData dataWithBytes: (const void*) v length: sizeof(V3F)*3];
     }
 
     self->floorVertCount = setcount * 3;
@@ -482,25 +474,22 @@ extern GLuint g_textureID;
     glDisable(GL_TEXTURE_2D);
     glColor3f(0.5,0.5,0.5);  // grey
     // Draw the rack itself, consisting of 6 sides
-
-
+    /*
     V3F v[3];
     v[0].x = 0; v[0].y = 0; v[0].z = 0;
     v[1].x = 0; v[1].y = 0; v[1].z = 1000;
     v[2].x = -300; v[2].y = 0; v[2].z = 1000;
-
+    */
 //    glInterleavedArrays(GL_V3F, 0, &v);
 //    glDrawArrays(GL_TRIANGLES, 0, 3);
-
-
 //    glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
 
 //    glInterleavedArrays(GL_T2F_V3F, 0, [self->floor bytes]);
     glInterleavedArrays(GL_V3F, 0, [self->floor mutableBytes]);
     glDrawArrays(GL_TRIANGLES, 0, self->floorVertCount);
+/*    
     NSLog(@"floorVertCount = %d", floorVertCount);
-    
     V3F t[1000];
     memcpy(t,[self->floor mutableBytes],sizeof(V3F)*floorVertCount);
     int y;
@@ -508,19 +497,17 @@ extern GLuint g_textureID;
         NSLog(@"t[%d].x = %f t[%d].y = %f t[%d].z = %f",y,t[y].x,y,t[y].y,y,t[y].z);
     }
     NSLog(@"floorVertCount = %d", floorVertCount);
-
-    //glCullFace(GL_FRONT);
-
+    //glCullFace(GL_FRONT);*/
     return self;
 }
 -draw {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    [self drawOriginAxis];
+//    [self drawOriginAxis];
     [self drawFloor];
     //[self drawGrid];
-//    [[self->racks allValues] makeObjectsPerformSelector:@selector(draw)]; // draw the racks
+    [[self->racks allValues] makeObjectsPerformSelector:@selector(draw)]; // draw the racks
     //NSLog(@"count: %d", [aisles count]);
 
     GLenum err = glGetError();

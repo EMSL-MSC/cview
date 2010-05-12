@@ -85,7 +85,6 @@ All rights reserved.
 	[pfile autorelease];
 	return [super dealloc];
 }
-
 -keyPress: (NSNotification *)notification {
 	NSString *err;
 	NSLog(@"Toggle: %@",notification);
