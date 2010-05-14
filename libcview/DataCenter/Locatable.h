@@ -41,6 +41,7 @@
 /**
     Draws a opengl box (6 sided) at given location, rotation, width, depth, height
   */
+-drawBox;
 -draw;
 -drawWireframe;
 /**

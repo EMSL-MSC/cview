@@ -1,7 +1,7 @@
 {
     height = 949;
     name = "MSCF Data Center";
-    width = 2550;
+    width = 1278;
     worlds = (
 	{
 	    col = 0;
@@ -11,14 +11,14 @@
 	    rowp = 50;
 	    world = {
 		eye = {
-		    hangle = "-6.308335";
+		    hangle = "-7.058319";
 		    move_speed = 10;
 		    rotate_speed = 0.025;
 		    strafe_speed = 10;
-		    vangle = "-2.400005";
-		    x = 1203.364;
-		    y = 1546.208;
-		    z = 1599.859;
+		    vangle = "-2.158336";
+		    x = 1159.947;
+		    y = 1356.332;
+		    z = "-173.7875";
 		};
 		imageCycleTime = 0;
 		imageDailyDir = YES;

@@ -254,6 +254,7 @@ extern GLuint g_textureID;
         // Don't need to check this one: we know "racktype" is an attribute in this nodelist because genders_guery(...) guarantees this
         NSString *racktype = [NSString stringWithUTF8String: vallist[[self indexOfAttr:attrlist andLen:attrlen withAttr:@"racktype"]]];
 
+        // The location of the rack
         Vector *l = [[Vector alloc] init];
         if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"gridx"]) == -1) {
             NSLog(@"Expected a \"gridx\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
@@ -272,6 +273,24 @@ extern GLuint g_textureID;
         [l setz: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
         [rack setLocation: l];
 
+        // Set the rotation of the rack
+        if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"face"]) == -1) {
+            NSLog(@"Expected a \"face\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
+            return [self cleanUp];
+        }
+        Vector *r = [[Vector alloc] init];
+        NSString *face = [NSString stringWithUTF8String: vallist[indexOf]];
+        if([face compare: @"N"] == NSOrderedSame)
+            [r sety: -90];
+        else if([face compare: @"E"] == NSOrderedSame)
+            [r sety: 0];
+        else if([face compare: @"S"] == NSOrderedSame)
+            [r sety: 90];
+        else if([face compare: @"W"] == NSOrderedSame)
+            [r sety: 180];
+        else
+            NSLog(@"Expected face=[N|E|S|W] but found \"%@\", defaulting to \"E\"",face);
+        [rack setRotation: r];
 
         racktype = [[NSString stringWithString: @"rack-"] stringByAppendingString: racktype];
         // racktype will now look something like: "rack-HP"
@@ -508,6 +527,7 @@ extern GLuint g_textureID;
     [self drawFloor];
     //[self drawGrid];
     [[self->racks allValues] makeObjectsPerformSelector:@selector(draw)]; // draw the racks
+//    [[[racks objectEnumerator] nextObject] draw];
     //NSLog(@"count: %d", [aisles count]);
 
     GLenum err = glGetError();

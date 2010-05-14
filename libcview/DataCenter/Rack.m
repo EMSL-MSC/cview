@@ -90,15 +90,24 @@ static GLText *gltName;
         glColor3f(1,1,1);
         [super drawWireframe]; // Draw wireframe around the rack
         [self->nodes makeObjectsPerformSelector:@selector(draw)]; // draw the nodes
+//        [[[nodes objectEnumerator] nextObject] draw];
 
         if(drawname == YES) {   // Draw the rack name
             if(gltName == nil) {
                 gltName = [[GLText alloc] initWithString: [self name] andFont: @"LinLibertine_Re.ttf"];
-                [gltName setScale: .4];
-                [gltName setRotationOnX: 90 Y: 180 Z: 0];
+      //          [gltName setRotationOnX: 90 Y: 180 Z: 0];
             }
             [gltName setString: [self name]];
-            glTranslatef(11.2,.5001*[self height],6);
+            // Scale the font so that it fits within the rack width
+
+
+            float heightRatio = [self height] / [gltName height];
+            float widthRatio = [self width] / [gltName width];
+            [gltName setScale: heightRatio < widthRatio ? .8 * heightRatio: .8 * widthRatio];
+
+            glTranslatef(11.2,.5001*[self height],.75*[self depth]);
+            glRotatef(-90,1,0,0);
+            glRotatef(180,0,1,0);
             [gltName glDraw];
         }
     [super cleanUpAfterDraw]; 

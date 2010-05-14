@@ -5,6 +5,11 @@
     x = 0; y = 0; z = 0;
     return self;
 }
+-init {
+    [super init];
+    [self initWithZeroes];
+    return self;
+}
 -(float)x {
     return x;
 }

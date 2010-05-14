@@ -130,15 +130,28 @@ DESCRIPTION\n\
     most of the configuration is stored in the .cview file rather than\n\
     passed on the command line.\n\
 \n\
+HOTKEYS\n\
+    t  Brings up the AntTweakBar display which allows you to adjust certain\n\
+       things about camera angle and position as well as position of scene objects\n\
+    ~  Saves Eye attributes (camera angle and position) as well as the position of\n\
+       scene objects to the current *.cview file\n\
+    q  Quits\n\
+\n\
 OPTIONS\n\
     -c FILE.cview\n\
-       TODO: add info about creating a cview file\n\
-       Defaults to cviews/default.cview\n\
+       Start cview with a cview file (usually ends with .cview, but doesn't have to)\n\
+       cview cannot be started without this file, and if '-c' is not specified, cview\n\
+       tries to load cviews/default.cview\n\
+       Your .cview file will specify how many viewports to have in the window, what scene\n\
+       objects to load into each viewport, the position of each scene object and many other\n\
+       options.  For more information see cviews/help.cview\n\
     -dataUpdateInterval NUM\n\
        Where NUM is the number of seconds to wait before updating the dataset.\n\
        Defaults to 30.0 seconds if this option is not given.\n\
     -dumpClasses <?>\n\
-       Don't know what this does right now.  Ask Evan.\n\
+       If this option is specified cview will print debugging information to <?> every\n\
+       <?> seconds.  Most users will never have to use this option as it's mainly for\n\
+       debugging cview.\n\
     -ScreenDelegate DELEGATE\n\
        Start cview with the screen delegate DELEGATE. DELEGATE must be a\n\
        subclass of DefaultScreenDelegate.  The delegate's job is\n\
@@ -208,9 +221,10 @@ int main(int argc,char *argv[], char *env[]) {
 		printf("Error loading PList: %s. Exiting\n",[config UTF8String]);
 		exit(4);
 	}
-	GLScreen * g = [[GLScreen alloc] initWithPList:plist];
-
     Class c;
+    /*  The following code has been added to allow the Screen Delegate type to be passed on the command line
+     *  if not specified on the command line, defaults to DataCenterCViewScreenDelegate
+     */
 	c = NSClassFromString([args stringForKey: @"ScreenDelegate"]);
 	if (c == nil) { // if nil then the class wasn't found
         NSLog(@"\"%@\" is not a valid class known to cview: Exiting",[args stringForKey: @"ScreenDelegate"]);
@@ -220,6 +234,7 @@ int main(int argc,char *argv[], char *env[]) {
         NSLog(@"\"%@\" is not a subclass of DefaultGLScreenDelegate: Exiting",[args stringForKey: @"ScreenDelegate"]);
         usage();    // print usage and exit
     }
+	GLScreen * g = [[GLScreen alloc] initWithPList:plist];
     DefaultGLScreenDelegate *delegate = [[c alloc] initWithScreen: g];
 
 //  NSLog(@"stuff = %@", delegate);

@@ -102,12 +102,8 @@ static double currentMax = 0.0;
             [self setTemperature: [self getData: [self name]]];
             if(self->temperature != -1)
                 self->temperature /=  100.0;
-
             glEnable(GL_BLEND);
-
-
             float max = [dataSet getScaledMax];
-
             if (currentMax != max) {
 //                NSLog(@"New Max: %.2f %.2f",max,currentMax);
                 currentMax = max;
@@ -115,7 +111,6 @@ static double currentMax = 0.0;
                 colorMap = [ColorMap mapWithMax: currentMax];
                 [colorMap retain];
             }
-
             if(selected == YES)
                 glColor4f(.1,.1,.1,1);
             else if(temperature == -1) { // No valid data found from the dataSet    
@@ -123,23 +118,28 @@ static double currentMax = 0.0;
         //        NSLog(@"bad data from %@", [self name]);
             }else
                 glColor4f([colorMap r: temperature],[colorMap g: temperature], [colorMap b: temperature], fadeval);
-            [super draw];    // draw a box around the node
+            [super drawBox];    // draw a box around the node
 
             if(drawname == YES) {
-                glTranslatef([self depth],0,0);
                 if(gltName == nil) {
                     gltName = [[GLText alloc] initWithString: [self name] andFont: @"LinLibertine_Re.ttf"];
-                    [gltName setScale: .06];
-                    [gltName setRotationOnX: 0 Y: 0 Z: 180];
                     [gltName setColorRed: 0 Green: 0 Blue: 0];
                 }
                 [gltName setString: [[self name] lowercaseString]];
-                if(isodd == YES)  // every other node, change name locations
-                    glTranslatef(-20,0,-0.5*[self depth]-1);
-                else
-                    glTranslatef(-30,0,-0.5*[self depth]-1);
-                    
-                [gltName glDraw];   // Draw the node name
+                if([gltName width] != 0 && [gltName height] != 0) { // test for divide by zero
+                    // Here we want to scale the font such that it fits inside the area on the front of the node
+                    float heightRatio = [self height] / [gltName height];
+                    float widthRatio = [self width] / [gltName width];
+                    float scale = heightRatio < widthRatio ? .9*heightRatio : .9*widthRatio;
+                    if(isodd == YES)  // every other node, change name locations (left or right aligned)
+                        glTranslatef(.48*[self width],.5*[self height],-.51*[self depth]);
+                    else
+                        glTranslatef(-.48*[self width]+scale*[gltName width],.5*[self height],-.51*[self depth]);
+                    glScalef(scale,-scale,scale);
+                    glRotatef(180,0,0,1);
+                    glRotatef(180,1,0,0);
+                    [gltName glDraw];   // Draw the node name
+                }
             }
         [super cleanUpAfterDraw];
     }
