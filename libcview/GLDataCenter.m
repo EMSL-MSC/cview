@@ -230,7 +230,7 @@ extern GLuint g_textureID;
             (*val) = [[NSString stringWithUTF8String: vallist[indexOf]] floatValue];
             NSLog(@"%@ = %f",search,*val);
         }
-        NSLog(@"x1 = %f y1 = %f z1 = %f x2 = %f y2 = %f z2 = %f x3 = %f y3 = %f z3 = %f",v[0].x,v[0].y,v[0].z,v[1].x,v[1].y,v[1].z,v[2].x,v[2].y,v[2].z);
+//        NSLog(@"x1 = %f y1 = %f z1 = %f x2 = %f y2 = %f z2 = %f x3 = %f y3 = %f z3 = %f",v[0].x,v[0].y,v[0].z,v[1].x,v[1].y,v[1].z,v[2].x,v[2].y,v[2].z);
 
         [floor appendBytes: (const void*) v length: sizeof(V3F)*3];
     }
@@ -493,29 +493,11 @@ extern GLuint g_textureID;
     glDisable(GL_TEXTURE_2D);
     glColor3f(0.5,0.5,0.5);  // grey
     // Draw the rack itself, consisting of 6 sides
-    /*
-    V3F v[3];
-    v[0].x = 0; v[0].y = 0; v[0].z = 0;
-    v[1].x = 0; v[1].y = 0; v[1].z = 1000;
-    v[2].x = -300; v[2].y = 0; v[2].z = 1000;
-    */
-//    glInterleavedArrays(GL_V3F, 0, &v);
-//    glDrawArrays(GL_TRIANGLES, 0, 3);
 //    glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-
 //    glInterleavedArrays(GL_T2F_V3F, 0, [self->floor bytes]);
     glInterleavedArrays(GL_V3F, 0, [self->floor mutableBytes]);
     glDrawArrays(GL_TRIANGLES, 0, self->floorVertCount);
-/*    
-    NSLog(@"floorVertCount = %d", floorVertCount);
-    V3F t[1000];
-    memcpy(t,[self->floor mutableBytes],sizeof(V3F)*floorVertCount);
-    int y;
-    for(y=0;y<floorVertCount;++y) {
-        NSLog(@"t[%d].x = %f t[%d].y = %f t[%d].z = %f",y,t[y].x,y,t[y].y,y,t[y].z);
-    }
-    NSLog(@"floorVertCount = %d", floorVertCount);
     //glCullFace(GL_FRONT);*/
     return self;
 }
