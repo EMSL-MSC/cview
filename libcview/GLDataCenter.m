@@ -204,7 +204,6 @@ extern GLuint g_textureID;
     for(i = 0; i < setcount; ++i) {
         genders_attrlist_clear(handle,attrlist); genders_vallist_clear(handle,vallist);
         genders_getattr(handle,attrlist,vallist,attrlen,nodelist[i]); // get the floor vertex attributes
-
         //char zeroes[8];
         //[floor appendBytes: zeroes length: 8];
         int j;
@@ -228,7 +227,7 @@ extern GLuint g_textureID;
                 return [self cleanUp];
             }
             (*val) = [[NSString stringWithUTF8String: vallist[indexOf]] floatValue];
-            NSLog(@"%@ = %f",search,*val);
+ //           NSLog(@"%@ = %f",search,*val);
         }
 //        NSLog(@"x1 = %f y1 = %f z1 = %f x2 = %f y2 = %f z2 = %f x3 = %f y3 = %f z3 = %f",v[0].x,v[0].y,v[0].z,v[1].x,v[1].y,v[1].z,v[2].x,v[2].y,v[2].z);
 

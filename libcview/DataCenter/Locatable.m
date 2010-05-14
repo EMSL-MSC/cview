@@ -102,7 +102,7 @@ void initLine(Vertex* v, Point* p1, Point* p2) {
     v[1].y = p2->y;
     v[1].z = p2->z;
 }
-VertArray* createWireframeBox(float w, float h, float d) {
+NSData* createWireframeBox(float w, float h, float d) {
     Point p1,p2,p3,p4,p5,p6,p7,p8;
     p1.x = -0.5*w; p1.y = -0.5*h; p1.z = -0.5*d;
     p2.x = -0.5*w; p2.y =  0.5*h; p2.z = -0.5*d;
@@ -114,27 +114,26 @@ VertArray* createWireframeBox(float w, float h, float d) {
     p7.x = p3.x; p7.y = p3.y; p7.z = 0.5*d;
     p8.x = p4.x; p8.y = p4.y; p8.z = 0.5*d;
     // 6 quads, 4 verts per quad, 24 verts total
-    VertArray *va = malloc(sizeof(VertArray));
-    va->vertCount = 24;
-    va->verts = malloc(sizeof(Vertex)*va->vertCount);  // Don't forget to free this...
+    Vertex verts[24];
     
-    initLine(&va->verts[0], &p1, &p2);
-    initLine(&va->verts[2], &p2, &p3);
-    initLine(&va->verts[4], &p3, &p4);
-    initLine(&va->verts[6], &p4, &p1);
-    initLine(&va->verts[8], &p5, &p6);
-    initLine(&va->verts[10], &p6, &p7);
-    initLine(&va->verts[12], &p7, &p8);
-    initLine(&va->verts[14], &p8, &p5);
-    initLine(&va->verts[16], &p1, &p5);
-    initLine(&va->verts[18], &p2, &p6);
-    initLine(&va->verts[20], &p3, &p7);
-    initLine(&va->verts[22], &p4, &p8);
-    return va;
+    initLine(&verts[0], &p1, &p2);
+    initLine(&verts[2], &p2, &p3);
+    initLine(&verts[4], &p3, &p4);
+    initLine(&verts[6], &p4, &p1);
+    initLine(&verts[8], &p5, &p6);
+    initLine(&verts[10], &p6, &p7);
+    initLine(&verts[12], &p7, &p8);
+    initLine(&verts[14], &p8, &p5);
+    initLine(&verts[16], &p1, &p5);
+    initLine(&verts[18], &p2, &p6);
+    initLine(&verts[20], &p3, &p7);
+    initLine(&verts[22], &p4, &p8);
+    // this method has "create" in the name, so we need to retain this object (it's the receiver's job to release it)
+    return [[NSData dataWithBytes: verts length: sizeof(Vertex)*24] retain];
 }
-// Will malloc and initialize an array of verteces needed
+// Will create and initialize an array of verteces needed
 // to draw a BOX in openGL...this will be very handy! (width, height, depth)
-VertArray* createBox(float w, float h, float d) {
+NSData* createBox(float w, float h, float d) {
     Point p1,p2,p3,p4,p5,p6,p7,p8;
     p1.x = -0.5*w; p1.y = -0.5*h; p1.z = -0.5*d;
     p2.x = -0.5*w; p2.y =  0.5*h; p2.z = -0.5*d;
@@ -146,16 +145,14 @@ VertArray* createBox(float w, float h, float d) {
     p7.x = p3.x; p7.y = p3.y; p7.z = 0.5*d;
     p8.x = p4.x; p8.y = p4.y; p8.z = 0.5*d;
     // 6 quads, 4 verts per quad, 24 verts total
-    VertArray *va = malloc(sizeof(VertArray));
-    va->vertCount = 24;
-    va->verts = malloc(sizeof(Vertex)*va->vertCount);  // Don't forget to free this...
-    initQuad(&va->verts[0],  &p1, &p2, &p3, &p4);  // Front
-    initQuad(&va->verts[4],  &p1, &p5, &p6, &p2);  // Left side
-    initQuad(&va->verts[8],  &p2, &p6, &p7, &p3);  // Top side
-    initQuad(&va->verts[12], &p4, &p3, &p7, &p8);  // Right side
-    initQuad(&va->verts[16], &p1, &p4, &p8, &p5);  // Bottom side
-    initQuad(&va->verts[20], &p5, &p8, &p7, &p6);  // Back side
-    return va;
+    Vertex verts[24];
+    initQuad(&verts[0],  &p1, &p2, &p3, &p4);  // Front
+    initQuad(&verts[4],  &p1, &p5, &p6, &p2);  // Left side
+    initQuad(&verts[8],  &p2, &p6, &p7, &p3);  // Top side
+    initQuad(&verts[12], &p4, &p3, &p7, &p8);  // Right side
+    initQuad(&verts[16], &p1, &p4, &p8, &p5);  // Bottom side
+    initQuad(&verts[20], &p5, &p8, &p7, &p6);  // Back side
+    return [[NSData dataWithBytes: verts length: sizeof(Vertex)*24] retain];
 }
 -setupForDraw {
     glPushMatrix(); // Save matrix state
@@ -178,8 +175,8 @@ VertArray* createBox(float w, float h, float d) {
     //NSLog(@"box: loc: x: %f", [location x]);
 //glColor3f(.1,.1,.3);
 
-    glInterleavedArrays(GL_T2F_V3F, 0, boundingBox->verts);
-    glDrawArrays(GL_QUADS, 0, boundingBox->vertCount);
+    glInterleavedArrays(GL_T2F_V3F, 0, [boundingBox bytes]);
+    glDrawArrays(GL_QUADS, 0, [boundingBox length] / sizeof(Vertex));
     return self;
 }
 -draw {
@@ -190,8 +187,8 @@ VertArray* createBox(float w, float h, float d) {
     if(wireframeBox == NULL) 
         wireframeBox = createWireframeBox([self width],[self height],[self depth]);
     // TODO: change this to draw the wireframe correctly
-    glInterleavedArrays(GL_T2F_V3F, 0, wireframeBox->verts);
-    glDrawArrays(GL_LINES, 0, wireframeBox->vertCount);
+    glInterleavedArrays(GL_T2F_V3F, 0, [wireframeBox bytes]);
+    glDrawArrays(GL_LINES, 0, [wireframeBox length] / sizeof(Vertex));
     return self;
 }
 -glPickDraw {

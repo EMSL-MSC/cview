@@ -87,7 +87,7 @@ static GLText *gltName;
 //    NSLog(@"rack=%@ width=%f height=%f depth=%f",[self name],[self width],[self height],[self depth]);
     [super setupForDraw];
         //[super draw]; // Draw bounding box around rack
-        glColor3f(1,1,1);
+        glColor3f(.184,.431,.502);
         [super drawWireframe]; // Draw wireframe around the rack
         [self->nodes makeObjectsPerformSelector:@selector(draw)]; // draw the nodes
 //        [[[nodes objectEnumerator] nextObject] draw];

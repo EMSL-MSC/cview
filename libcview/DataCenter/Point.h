@@ -10,10 +10,7 @@ typedef struct
     float tu, tv;
     float x, y, z;
 } Vertex;
-typedef struct {
-    Vertex *verts;
-    int vertCount;
-} VertArray;
+
 typedef struct
 {
     float x,y,z;

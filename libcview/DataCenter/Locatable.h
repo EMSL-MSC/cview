@@ -21,8 +21,8 @@
     float depth;
     // Used if you want to draw a box at a given location and rotation with a given width, height, and depth
     // in this case call -draw; or you can call -glPickDraw to use that box for picking purposes
-    VertArray *boundingBox;
-    VertArray *wireframeBox;
+    NSData *boundingBox;
+    NSData *wireframeBox;
 }
 +(void)drawGLQuad: (Point) p1 andP2: (Point) p2
             andP3: (Point) p3 andP4: (Point) p4;
