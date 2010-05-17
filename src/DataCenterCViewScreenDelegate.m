@@ -56,6 +56,8 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
+#import <gl.h>
+#import <glut.h>
 #import <Foundation/Foundation.h>
 #import "DataCenterCViewScreenDelegate.h"
 #import "WebDataSet.h"
