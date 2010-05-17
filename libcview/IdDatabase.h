@@ -8,7 +8,7 @@
   */
 @interface IdDatabase : NSObject
 /// resets the whole database - erases old ids
-+initIds;
++initialize;
 /**
     @returns a unique id to be used in conjunction with glPushName(*theid*)
     @param the object that should be associated with the id

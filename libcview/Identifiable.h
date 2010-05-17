@@ -17,7 +17,7 @@
     guarantees that myid will be unique.  If you must call this,
     make sure you get an id from [IdDatabase reserveUniqueId: id]
     
-    @param sets a new id number
+    @param _myid is used to set the new id number
   */
 -setMyid:(unsigned int)_myid;
 @end

@@ -60,7 +60,6 @@ All rights reserved.
 #import "DrawableObject.h"
 #import "PList.h"
 #import "Pickable.h"
-#import "IdArray.h"
 
 /**
 	A Container for storing a set of DrawableObject instances with associated 3d positions.

@@ -131,33 +131,43 @@ DESCRIPTION\n\
     passed on the command line.\n\
 \n\
 HOTKEYS\n\
-    t  Brings up the AntTweakBar display which allows you to adjust certain\n\
-       things about camera angle and position as well as position of scene objects\n\
-    ~  Saves Eye attributes (camera angle and position) as well as the position of\n\
-       scene objects to the current *.cview file\n\
-    q  Quits\n\
+    MOVEMENT\n\
+       w/a/s/d           Strafe Up/Down/Left/Right\n\
+       PageUp/Down       Pitch Up/Down\n\
+       Up/Down Arrow     Move Forward/Backward\n\
+       Left/Right Arrow  Turn Left/Right\n\
+       Left Click-Drag   Strafe In the direction you are moving the mouse\n\
+       Right Click-Drag  Tilt the camera angle in the direction you are moving the mouse\n\
+       Mouse Wheel-Drag  Move the mouse while holding down the mouse wheel to adjust the zoom\n\
+    AUXILARY\n\
+       t  Brings up the AntTweakBar display which allows you to adjust certain things about\n\
+          camera angle and position as well as position of scene objects\n\
+       ~  Saves Eye attributes (camera angle and position) as well as the position of scene\n\
+          objects to the current *.cview file (this is very useful)\n\
+       f  Toggle fullscreen\n\
+       p  Print current eye coordinates\n\
+       z  Dump Screen to file\n\
+       q  Quits\n\
 \n\
 OPTIONS\n\
     -c FILE.cview\n\
-       Start cview with a cview file (usually ends with .cview, but doesn't have to)\n\
-       cview cannot be started without this file, and if '-c' is not specified, cview\n\
-       tries to load cviews/default.cview\n\
-       Your .cview file will specify how many viewports to have in the window, what scene\n\
-       objects to load into each viewport, the position of each scene object and many other\n\
-       options.  For more information see cviews/help.cview\n\
+       Start cview with a cview file (usually ends with .cview, but doesn't have to) cview\n\
+       cannot be started without this file, and if '-c' is not specified, cview tries to load\n\
+       cviews/default.cview.  Your .cview file will specify how many viewports to have in the\n\
+       window, what scene objects to load into each viewport, the position of each scene\n\
+       object and many other options.  For more information see cviews/help.cview\n\
     -dataUpdateInterval NUM\n\
-       Where NUM is the number of seconds to wait before updating the dataset.\n\
-       Defaults to 30.0 seconds if this option is not given.\n\
+       Where NUM is the number of seconds to wait before updating the dataset.  Defaults to\n\
+       30.0 seconds if this option is not given.\n\
     -dumpClasses <?>\n\
-       If this option is specified cview will print debugging information to <?> every\n\
-       <?> seconds.  Most users will never have to use this option as it's mainly for\n\
-       debugging cview.\n\
+       If this option is specified cview will print debugging information to <?> every <?>\n\
+       seconds.  Most users will never have to use this option as it's mainly for debugging\n\
+       cview.\n\
     -ScreenDelegate DELEGATE\n\
-       Start cview with the screen delegate DELEGATE. DELEGATE must be a\n\
-       subclass of DefaultScreenDelegate.  The delegate's job is\n\
-       to handle key and mouse presses and decide what to do with them.\n\
-       This probably shouldn't be changed by the standard user and \n\
-       defaults to DataCenterCViewScreenDelegate\n\
+       Start cview with the screen delegate DELEGATE. DELEGATE must be a subclass of\n\
+       DefaultScreenDelegate.  The delegate's job is to handle key and mouse presses and\n\
+       decide what to do with them. This probably shouldn't be changed by the standard user\n\
+       and defaults to DataCenterCViewScreenDelegate\n\
     -h\n\
     -help\n\
     -?\n\

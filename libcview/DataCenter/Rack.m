@@ -99,8 +99,6 @@ static GLText *gltName;
             }
             [gltName setString: [self name]];
             // Scale the font so that it fits within the rack width
-
-
             float heightRatio = [self height] / [gltName height];
             float widthRatio = [self width] / [gltName width];
             [gltName setScale: heightRatio < widthRatio ? .8 * heightRatio: .8 * widthRatio];
