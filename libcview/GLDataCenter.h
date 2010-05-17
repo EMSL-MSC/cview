@@ -69,7 +69,6 @@ All rights reserved.
 #import "DataCenter/Drawable.h"
 #import "Foundation/NSEnumerator.h"
 #import "DataCenter/Point.h"
-#import "IdArray.h"
 
 #import "DataSet.h"
 #import "WebDataSet.h"
