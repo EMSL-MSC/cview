@@ -169,8 +169,17 @@ All rights reserved.
 - glDraw {
 ///@todo store the bounding box infos
 	float bounds[6];
+    if(string == nil) {
+        NSLog(@"in GLText::glDraw() string is nill! cannot draw this....");
+        return self;
+    }
+    if(theFont == NULL) {
+        NSLog(@"in GLText::glDraw() theFont is nill! please initialize before attempting to draw....");
+        return self;
+    }
 	ftglGetFontBBox(theFont,[string UTF8String],[string length],bounds);
 	glPushMatrix();
+    //printf("bounds[4] = %f\n", bounds[4]);
 
 	glTranslatef(0,bounds[4],0);
 	glScalef(scale[0],-scale[1],scale[2]);	
@@ -196,15 +205,15 @@ All rights reserved.
 	return self;
 }
 
--(int)width {
+-(float)width {
 ///@todo store the bounding box infos
 	float bounds[6];
 	ftglGetFontBBox(theFont,[string UTF8String],[string length],bounds);
 	//This really should deal with any rotations that may have happened
-	return bounds[3]-bounds[0];
+	return abs(bounds[3]-bounds[0]);
 }
 
--(int)height {
+-(float)height {
 ///@todo store the bounding box infos
 	float bounds[6];
 	ftglGetFontBBox(theFont,[string UTF8String],[string length],bounds);
