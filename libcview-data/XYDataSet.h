@@ -57,54 +57,54 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
-#import <gl.h>
-#import <glut.h>
-#import "cview.h"
 #import "DataSet.h"
+#import "PList.h"
 
-@implementation  GLPointGrid
+/**
+Extension of the data class to retrieve the data from a URL, 
 
--drawData {
-	int i,j;
-	float *dl;
-	float *verts;
-	float glparm[3];
-	verts = [dataRow mutableBytes];
+The File Should consist of a delimeter separated set of lines with data in them.
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glPushMatrix();	
-	glScalef(xscale,yscale,zscale);
+There can be one header line at the top of the file. An optional line of white space can exist between the header and the actual data.
 
-	glVertexPointer(3, GL_FLOAT, 0, verts);
-	glColorPointer(3, GL_FLOAT, 0, [colorRow mutableBytes]);
+Two of the columns should be X and Y values for the location of the data point. The data column can be any of the other columns, selected by either the column number(0 based), or a header key.  Initializers for X,Y, and column select line
 
-	//Bigger points up close stuff
-	glPointSize(150);
-	glparm[0]=0;
-	glPointParameterfv(GL_POINT_SIZE_MIN,glparm);
-	glparm[0]=20.0;
-	glPointParameterfv(GL_POINT_SIZE_MAX,glparm);
-	glparm[0]=0.0;
-	glparm[1]=-0.01;
-	glparm[2]=0.025;
-	glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, glparm);
-	//end bigger stuff..
+If no headerline is found or if the headers for X and Y are not found, X and Y will be taken from columns 0 and 1 respectively.
 
-	for (i=0;i<[dataSet width];i++) {
-		dl=[dataSet dataRow: i];
+Column Scans are done case-insensitive
 
+@verbatim
+X Y Bandwidth Latency Iter
 
-		[colorMap doMapWithData: dl thatHasLength: [dataSet height] toColors: [colorRow mutableBytes]];
-		//is there a gooder way? FIXME
-		for (j=0;j<[dataSet height];j++) {
-			verts[j*3+1] = dl[j];
-			verts[j*3+0] = (float)i;
-		}	
-		glDrawArrays(GL_POINTS,0,[dataSet height]);
-	}
+0 0 3869.08 0.22 0
+0 1 2407.43 0.96 1
+0 2 2729.94 0.95 2
+0 3 2733.35 0.94 3
+0 4 2741.82 0.96 4
+0 5 2741.40 0.97 5
+0 6 2739.89 0.96 6
+0 7 2747.43 1.11 7
+@endverbatim
 
-	glPopMatrix();
-	return self;
+@author Evan Felix
+@ingroup cviewdata
+*/
+@interface XYDataSet: DataSet <PList> {
+	NSURL *dataURL;
+	NSData *rawData;
+	long dataStart;
+	id theCol,theX,theY;
+	int colIndex,xIndex,yIndex;
+	NSArray *headers;
+	int columnCount;
+	BOOL headersRead;
 }
+-initWithURL: (NSURL *)url columnNum: (int)col columnXNum: (int)x columnYNum: (int)y;
+-initWithURL: (NSURL *)url columnName: (NSString *)col columnXName: (NSString *)x columnYName:(NSString*)y;
+-initWithURL: (NSURL *)url columnNum: (int)col;
+-initWithURL: (NSURL *)url columnName: (NSString *)col;
+/**internal function*/
+-initWithData;
+-(float *)expandDataSetWidth: (int)w andHeight: (int)h;
+-(float *)contractDataSetWidth: (int)w andHeight: (int)h;
 @end

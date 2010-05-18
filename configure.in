@@ -1,5 +1,5 @@
 define([svnversion], esyscmd([sh -c "svnversion|tr -d '\n'"]))dnl
-AC_INIT([cview],[0.1.svnversion],[evan.felix@pnl.gov])
+AC_INIT([cview],[0.2.svnversion],[evan.felix@pnl.gov])
 AC_CONFIG_SRCDIR([configure.in])
 
 AC_CANONICAL_TARGET
@@ -18,10 +18,12 @@ AC_PROG_OBJC
 AC_PROG_LIBTOOL
 
 OPTBUILD=""
+OBJCFLAGS="-g"
 
 AC_ARG_ENABLE([tests],
 	AS_HELP_STRING([--enable-tests],[Compile Test Code]),
-	[OPTBUILD+=' tests '],
+	[OPTBUILD+=' tests ' AC_DEFINE([CVIEW_TEST_BUILD],[1],[Test programs are being built])],
+	[AC_DEFINE([CVIEW_TEST_BUILD],[0],[Test programs are being built])],
 	)
 
 AC_ARG_ENABLE([gcallocdebug],
@@ -80,11 +82,15 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <GL/osmesa.h>]], [[OSMesaCreateCon
 				],[AC_DEFINE([HAVE_OSMESA], [0],[Have OSMesa library]) AC_MSG_RESULT(no) ])
 
 AC_MSG_CHECKING(for AntTweakBar)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <AntTweakBar.h>]], [[TwDraw()]])],[AC_DEFINE([HAVE_ANTTWEAKBAR], [1], [Have AntTweakBar]) 
+AC_COMPILE_IFELSE(
+	[AC_LANG_PROGRAM([[#include <AntTweakBar.h>]], [[TwDraw()]])],
+	[AC_DEFINE([HAVE_ANTTWEAKBAR], [1], [Have AntTweakBar]) 
 		AC_MSG_RESULT(yes) 
 		LIBCVIEW_COND_FILES="AntTweakBarOverlay.m $LIBCVIEW_COND_FILES"
 		ATB_LDFLAGS+=" -lAntTweakBar "
-	],[AC_DEFINE([HAVE_ANTTWEAKBAR], [0], [Have AntTweakBar]) AC_MSG_RESULT(no)])
+	],
+	[AC_DEFINE([HAVE_ANTTWEAKBAR], [0], [Have AntTweakBar]) AC_MSG_RESULT(no)]
+	)
 AM_CONDITIONAL([HAVE_ATB],[test "x$LIBCVIEW_COND_FILES" != "x"])
 
 AC_CHECK_PROG([DOXYGEN],[doxygen],[doxygen]) 

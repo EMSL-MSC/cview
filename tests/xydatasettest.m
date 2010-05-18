@@ -57,54 +57,67 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
-#import <gl.h>
-#import <glut.h>
+#import "XYDataSet.h"
 #import "cview.h"
-#import "DataSet.h"
 
-@implementation  GLPointGrid
+int main(int argc,char *argv[], char *env[]) {
+	DrawableObject *o;
 
--drawData {
-	int i,j;
-	float *dl;
-	float *verts;
-	float glparm[3];
-	verts = [dataRow mutableBytes];
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+#ifndef __APPLE__
+	//needed for NSLog
+	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
+#endif
 
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glPushMatrix();	
-	glScalef(xscale,yscale,zscale);
-
-	glVertexPointer(3, GL_FLOAT, 0, verts);
-	glColorPointer(3, GL_FLOAT, 0, [colorRow mutableBytes]);
-
-	//Bigger points up close stuff
-	glPointSize(150);
-	glparm[0]=0;
-	glPointParameterfv(GL_POINT_SIZE_MIN,glparm);
-	glparm[0]=20.0;
-	glPointParameterfv(GL_POINT_SIZE_MAX,glparm);
-	glparm[0]=0.0;
-	glparm[1]=-0.01;
-	glparm[2]=0.025;
-	glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, glparm);
-	//end bigger stuff..
-
-	for (i=0;i<[dataSet width];i++) {
-		dl=[dataSet dataRow: i];
-
-
-		[colorMap doMapWithData: dl thatHasLength: [dataSet height] toColors: [colorRow mutableBytes]];
-		//is there a gooder way? FIXME
-		for (j=0;j<[dataSet height];j++) {
-			verts[j*3+1] = dl[j];
-			verts[j*3+0] = (float)i;
-		}	
-		glDrawArrays(GL_POINTS,0,[dataSet height]);
+	NSString *testdata = find_resource_path(@"testdata.xy");
+	if (testdata == nil) {
+		NSLog(@"Error Loading Test Data");
+		exit(1);
 	}
+		
 
-	glPopMatrix();
-	return self;
+	XYDataSet *f = [[XYDataSet alloc] initWithURL: [NSURL fileURLWithPath: testdata] columnName: @"Mandelbrot" columnXName: @"X" columnYName: @"Y"];
+	XYDataSet *h = [[XYDataSet alloc] initWithURL: [NSURL fileURLWithPath: testdata] columnNum: 4];
+	[h contractDataSetWidth: 400 andHeight: 500];
+	[f lockMax: 4];
+	[h lockMax: 4];
+	[f autoScale:200];
+	
+	XYDataSet *f1 = [[XYDataSet alloc] initWithURL: [NSURL fileURLWithPath: testdata] columnName: @"BinaryOpFun"];
+	XYDataSet *h1 = [[XYDataSet alloc] initWithURL: [NSURL fileURLWithPath: testdata] columnNum: 2 columnXNum: 0 columnYNum: 1];
+	[h1 contractDataSetWidth: 400 andHeight: 500];
+	[f1 lockMax: 256];
+	[h1 lockMax: 256];
+	
+	GLScreen * g = [[GLScreen alloc] initName: @"XYDataSet Test" withWidth: 1000 andHeight: 800];
+
+	Scene * scene1 = [[Scene alloc] init];
+	o=[[[[GLGrid alloc] initWithDataSet: f] setXTicks: 50] setYTicks: 50];
+	[scene1 addObject: o atX: 0 Y: 0 Z: 0];
+	o=[[[[GLGrid alloc] initWithDataSet: h] setXTicks: 50] setYTicks: 50];
+	[scene1 addObject: o atX: 1300 Y: 0 Z: 0];
+	
+	GLWorld * gw1 = [[[g addWorld: @"Top" row: 0 col: 0 rowPercent: 50 colPercent:50] 
+		setScene: scene1] 
+		setEye: [[[Eye alloc] init] setX: 1050.0 Y: 2700.0 Z: 2700.0 Hangle:-4.72 Vangle: -2.45]
+	];
+
+	Scene * scene2 = [[Scene alloc] init];
+	o=[[[[GLGrid alloc] initWithDataSet: f1] setXTicks: 50] setYTicks: 50];
+	[scene2 addObject: o atX: 0 Y: 0 Z: 0];
+	o=[[[[GLGrid alloc] initWithDataSet: h1] setXTicks: 50] setYTicks: 50];
+	[scene2 addObject: o atX: 1300 Y: 0 Z: 0];
+	
+	GLWorld * gw2 = [[[g addWorld: @"Botom" row: 1 col: 0 rowPercent: 50 colPercent:50] 
+		setScene: scene2] 
+		setEye: [[[Eye alloc] init] setX: 1050.0 Y: 2700.0 Z: 2700.0 Hangle:-4.72 Vangle: -2.45]
+	];
+	
+	NSLog(@"%@",[gw1 getPList]);
+	
+	[g run];
+
+	[pool release];
+
+	return 0;
 }
-@end

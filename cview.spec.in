@@ -1,7 +1,7 @@
 
 Name: @PACKAGE_NAME@
 Version: @VERSION@
-Release: 7%{?dist}
+Release: 1%{?dist}
 Summary: PNL Waterfall Visualization Tool
 Group: System Environment/Base
 License: Private
@@ -57,6 +57,11 @@ DESTDIR="$RPM_BUILD_ROOT" make install
 # install tests to sharedir
 mkdir -p "$RPM_BUILD_ROOT/%{_datadir}/%{name}/tests"
 cp tests/* "$RPM_BUILD_ROOT/%{_datadir}/%{name}/tests"
+for name in cview libcview libcview-devel libcview-data libcview-data-devel
+do
+mkdir -p "$RPM_BUILD_ROOT/%{_datadir}/$name"
+cp data/LICENSE.txt "$RPM_BUILD_ROOT/%{_datadir}/$name"
+done
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -68,21 +73,25 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/cview
 %{_bindir}/oscview
 %{_datadir}/%{name}/tests
+%{_datadir}/%{name}/LICENSE.txt
 
 %files -n libcview
 %defattr(-,root,root)
 %{_libdir}/libcview.so.0*
-%{_datadir}/%{name}/*.txf
+%{_datadir}/%{name}/*.ttf*
+%{_datadir}/libcview/LICENSE.txt
 
 %files -n libcview-devel
 %defattr(-,root,root)
 %{_libdir}/libcview.a
 %{_libdir}/libcview.so
 %{_libdir}/libcview.la
+%{_datadir}/libcview-devel/LICENSE.txt
 
 %files -n libcview-data
 %defattr(-,root,root)
 %{_libdir}/libcview-data.so.0*
+%{_datadir}/libcview-data/LICENSE.txt
 
 %files -n libcview-data-devel
 %defattr(-,root,root)
@@ -90,3 +99,4 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libcview-data.la
 %{_libdir}/libcview-data.a
 %{_includedir}/%{name}/*
+%{_datadir}/libcview-data-devel/LICENSE.txt
