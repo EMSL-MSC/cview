@@ -72,9 +72,9 @@ All rights reserved.
 -(float)x;
 -(float)y;
 -(float)z;
--setx:(float)_x;
--sety:(float)_x;
--setz:(float)_z;
+-setX:(float)_x;
+-setY:(float)_x;
+-setZ:(float)_z;
 -initWithZeroes;
 @end
 

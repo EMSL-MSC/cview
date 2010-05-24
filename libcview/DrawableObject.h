@@ -72,16 +72,16 @@ All rights reserved.
 	BOOL isVisible;
 	NSString *name;
 }
--init;
+-(id) init;
 -(id) glDraw;
--glPickDraw;
--show;
--hide;
--(BOOL)visible;
+-(id) glPickDraw;
+-(id) show;
+-(id) hide;
+-(BOOL) visible;
 /// a 2d object should provide its witdh
--(int)width;
+-(int) width;
 /// a 2d object should provide its height
--(int)height;
+-(int) height;
 -(NSString*)getName;
--setName: (NSString*)n;
+-(id) setName: (NSString*)n;
 @end

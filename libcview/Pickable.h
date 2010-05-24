@@ -59,7 +59,7 @@ All rights reserved.
 #ifndef PICKABLE_H
 #define PICKABLE_H
 /**
-    protocol Drawable
+    protocol Pickable
     The sole purpose of this protocol is to make sure all inherited objects have a glPickDraw selector defined
   */
 @protocol Pickable

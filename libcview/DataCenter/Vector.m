@@ -77,15 +77,15 @@ All rights reserved.
 -(float)z {
     return z;
 }
--setx: (float)_x {
+-setX: (float)_x {
     self->x = _x;
     return self;
 }
--sety: (float)_y {
+-setY: (float)_y {
     self->y = _y;
     return self;
 }
--setz: (float)_z {
+-setZ: (float)_z {
     self->z = _z;
     return self;
 }

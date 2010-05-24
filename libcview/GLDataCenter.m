@@ -317,17 +317,17 @@ extern GLuint g_textureID;
             NSLog(@"Expected a \"gridx\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
             return [self cleanUp];
         }
-        [l setx: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
+        [l setX: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
         if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"gridy"]) == -1) {
             NSLog(@"Expected a \"gridy\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
             return [self cleanUp];
         }
-        [l sety: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
+        [l setY: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
         if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"gridz"]) == -1) {
             NSLog(@"Expected a \"gridz\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
             return [self cleanUp];
         }
-        [l setz: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
+        [l setZ: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
         [rack setLocation: l];
 
         // Set the rotation of the rack
@@ -338,13 +338,13 @@ extern GLuint g_textureID;
         Vector *r = [[Vector alloc] init];
         NSString *face = [NSString stringWithUTF8String: vallist[indexOf]];
         if([face compare: @"N"] == NSOrderedSame)
-            [r sety: -90];
+            [r setY: -90];
         else if([face compare: @"E"] == NSOrderedSame)
-            [r sety: 0];
+            [r setY: 0];
         else if([face compare: @"S"] == NSOrderedSame)
-            [r sety: 90];
+            [r setY: 90];
         else if([face compare: @"W"] == NSOrderedSame)
-            [r sety: 180];
+            [r setY: 180];
         else
             NSLog(@"Expected face=[N|E|S|W] but found \"%@\", defaulting to \"E\"",face);
         [rack setRotation: r];
@@ -441,7 +441,7 @@ extern GLuint g_textureID;
                     NSLog(@"Expected a \"vposition\" attribute in the genders file for node=%s but found none! Cannot continue loading the GLDataCenter!",nodelist[i]);
                     return [self cleanUp];
                 }
-                [[[l setx: 0] sety: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]] setz: 0];
+                [[[l setX: 0] setY: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]] setZ: 0];
                 [node setLocation: l];
                 [actualRack addNode: node]; // Add the node object to the rack object
     /*****************************************************/
