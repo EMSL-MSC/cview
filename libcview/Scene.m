@@ -288,6 +288,21 @@ All rights reserved.
 
 	return self;
 }
+/// identical to glDraw except that it calls glPickDraw on all scene objects
+-glPickDraw {
+	SceneObject *o;
+	NSEnumerator *list;
+	list = [objects objectEnumerator];
+	while ( (o = [list nextObject]) ) {
+			if ([o->object visible]) {
+				glPushMatrix();
+				[self doTranslate: o];
+				[o->object glPickDraw];
+				glPopMatrix();
+			}
+	}
+	return self;
+}
 
 - (void) encodeWithCoder: (NSCoder*)aCoder {
 	[aCoder encodeObject: objects forKey: @"objects"];
@@ -299,8 +314,9 @@ All rights reserved.
 	[objects retain];
 	return self;
 }
-
 -getPList {
+    if(objects == nil)
+        return self;
 	NSArray *os = [objects arrayObjectsFromPerformedSelector: @selector(getPList)];
 	return [NSDictionary dictionaryWithObjectsAndKeys: os, @"objects", nil];
 }

@@ -59,6 +59,7 @@ All rights reserved.
 #import <Foundation/Foundation.h>
 #import "DrawableObject.h"
 #import "PList.h"
+#import "Pickable.h"
 
 /**
 	A Container for storing a set of DrawableObject instances with associated 3d positions.
@@ -78,7 +79,7 @@ All rights reserved.
 	@author Evan Felix
 	@ingroup cview3d
 */
-@interface Scene: DrawableObject <PList> {
+@interface Scene: DrawableObject <PList, Pickable> {
 	NSMutableArray *objects;
 }
 -init;
@@ -90,4 +91,6 @@ All rights reserved.
 -(NSArray *)getAllObjects;
 -(int)objectCount;
 -glDraw;
+/// called when picking objects in the scene (does not render)
+-glPickDraw;
 @end

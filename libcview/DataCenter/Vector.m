@@ -1,6 +1,6 @@
 /*
 
-This file is port of the CVIEW graphics system, which is goverened by the following License
+This file is part of the CVIEW graphics system, which is goverened by the following License
 
 Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
@@ -56,32 +56,38 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-/**
-	Base object of any Object that can be added to the GLWorld's Scene or Overlay.  The base call that is overridden is the glDraw call.  
+#import "Vector.h"
 
-	Provides basic advisory visibilty functionality, such that containers can decide if an object wants to be visible.
-
-	@author Evan Felix
-	@ingroup cview3d
-*/
-#import <Foundation/Foundation.h>
-#import "PList.h"
-#import "Pickable.h"
-
-@interface DrawableObject : NSObject <PList, Pickable> {
-	BOOL isVisible;
-	NSString *name;
+@implementation Vector
+-initWithZeroes {
+    x = 0; y = 0; z = 0;
+    return self;
 }
--(id) init;
--(id) glDraw;
--(id) glPickDraw;
--(id) show;
--(id) hide;
--(BOOL) visible;
-/// a 2d object should provide its witdh
--(int) width;
-/// a 2d object should provide its height
--(int) height;
--(NSString*)getName;
--(id) setName: (NSString*)n;
+-init {
+    [super init];
+    [self initWithZeroes];
+    return self;
+}
+-(float)x {
+    return x;
+}
+-(float)y {
+    return y;
+}
+-(float)z {
+    return z;
+}
+-setX: (float)_x {
+    self->x = _x;
+    return self;
+}
+-setY: (float)_y {
+    self->y = _y;
+    return self;
+}
+-setZ: (float)_z {
+    self->z = _z;
+    return self;
+}
 @end
+

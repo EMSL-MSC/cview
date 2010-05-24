@@ -1,6 +1,6 @@
 /*
 
-This file is port of the CVIEW graphics system, which is goverened by the following License
+This file is part of the CVIEW graphics system, which is goverened by the following License
 
 Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
@@ -57,31 +57,10 @@ All rights reserved.
 
 */
 /**
-	Base object of any Object that can be added to the GLWorld's Scene or Overlay.  The base call that is overridden is the glDraw call.  
-
-	Provides basic advisory visibilty functionality, such that containers can decide if an object wants to be visible.
-
-	@author Evan Felix
-	@ingroup cview3d
-*/
-#import <Foundation/Foundation.h>
-#import "PList.h"
-#import "Pickable.h"
-
-@interface DrawableObject : NSObject <PList, Pickable> {
-	BOOL isVisible;
-	NSString *name;
-}
--(id) init;
--(id) glDraw;
--(id) glPickDraw;
--(id) show;
--(id) hide;
--(BOOL) visible;
-/// a 2d object should provide its witdh
--(int) width;
-/// a 2d object should provide its height
--(int) height;
--(NSString*)getName;
--(id) setName: (NSString*)n;
+    protocol Drawable
+    The sole purpose of this protocol is to make sure
+    all inherited objects have a draw selector defined
+  */
+@protocol Drawable
+-(id) draw;
 @end

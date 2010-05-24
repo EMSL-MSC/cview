@@ -56,32 +56,21 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-/**
-	Base object of any Object that can be added to the GLWorld's Scene or Overlay.  The base call that is overridden is the glDraw call.  
+#ifndef POINT_H
+#define POINT_H
 
-	Provides basic advisory visibilty functionality, such that containers can decide if an object wants to be visible.
+typedef struct {
+    float x,y,z;
+} Point;
 
-	@author Evan Felix
-	@ingroup cview3d
-*/
-#import <Foundation/Foundation.h>
-#import "PList.h"
-#import "Pickable.h"
+typedef struct
+{
+    float tu, tv;
+    float x, y, z;
+} Vertex;
 
-@interface DrawableObject : NSObject <PList, Pickable> {
-	BOOL isVisible;
-	NSString *name;
-}
--(id) init;
--(id) glDraw;
--(id) glPickDraw;
--(id) show;
--(id) hide;
--(BOOL) visible;
-/// a 2d object should provide its witdh
--(int) width;
-/// a 2d object should provide its height
--(int) height;
--(NSString*)getName;
--(id) setName: (NSString*)n;
-@end
+typedef struct
+{
+    float x,y,z;
+}V3F;
+#endif

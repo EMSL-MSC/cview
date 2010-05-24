@@ -1,6 +1,6 @@
 /*
 
-This file is port of the CVIEW graphics system, which is goverened by the following License
+This file is part of the CVIEW graphics system, which is goverened by the following License
 
 Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
@@ -56,32 +56,44 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-/**
-	Base object of any Object that can be added to the GLWorld's Scene or Overlay.  The base call that is overridden is the glDraw call.  
-
-	Provides basic advisory visibilty functionality, such that containers can decide if an object wants to be visible.
-
-	@author Evan Felix
-	@ingroup cview3d
-*/
-#import <Foundation/Foundation.h>
-#import "PList.h"
+#ifndef RACK_H
+#define RACK_H
+#import <Foundation/NSString.h>
+#import "Locatable.h"
+#import "Drawable.h"
 #import "Pickable.h"
+#import "Node.h"
+#import "Point.h"
+#import "../GLText.h"
 
-@interface DrawableObject : NSObject <PList, Pickable> {
-	BOOL isVisible;
-	NSString *name;
+/**
+    interface Rack
+    @author Brock Erwin
+
+  */
+
+@interface Rack : Locatable <Drawable, Pickable> {
+    NSMutableArray *nodes;
+@private
+    NSString *color;
+    BOOL wireframe;     // if yes draw the racks as wireframe
+    BOOL drawname;
+    float r,g,b; // color stuff...
 }
--(id) init;
--(id) glDraw;
--(id) glPickDraw;
--(id) show;
--(id) hide;
--(BOOL) visible;
-/// a 2d object should provide its witdh
--(int) width;
-/// a 2d object should provide its height
--(int) height;
--(NSString*)getName;
--(id) setName: (NSString*)n;
+//+(void) setRackArray: (VertArray*) _rackArray;
++(unsigned int) texture;
++setTexture:(unsigned int)_texture;
++setGLTName:(GLText*) _gltName; // kind of 3d text we'll use to draw the rack name
+-initWithName:(NSString*)_name;
+-draw;
+/// called when picking objects in the scene (does not render)
+-glPickDraw;
+-addNode: (Node*) node;
+-(int)nodeCount;
+-startFading; // makes this rack start fading (being transparent) over a period of time
+-(NSString*)color;
+-setColor:(NSString*)_color;
+-cleanUp;
 @end
+
+#endif // RACK_H
