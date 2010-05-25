@@ -148,6 +148,8 @@ All rights reserved.
 	[scene autorelease];
 	[eye autorelease];
 	[overlay autorelease];
+    if(delegate != nil)
+        [delegate autorelease];
 	[super dealloc];
 	return;
 }
@@ -367,7 +369,7 @@ All rights reserved.
     return self;
 }
 -setDelegate: (id)_delegate {
-    self->delegate = _delegate;
+    self->delegate = [_delegate retain];
     return self;
 }
 -(id)delegate {
