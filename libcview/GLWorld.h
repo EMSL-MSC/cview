@@ -56,19 +56,22 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
+#ifndef GLWORLD_H
+#define GLWORLD_H
 #import <Foundation/Foundation.h>
 #import <time.h>
 #import "Eye.h"
 #import "Scene.h"
 #import "PList.h"
 #import "config.h"
+#import "Identifiable.h"
 /**
 GLWorld is an encapsulation of a 3d world managed as a Scene of Objects.  It also manages the 'Eye' or camera position for drawing to a Open GL context.  There is a concept of an Overlay, or the two dimensional information shown in front of the 3d scene.
 
 \author Evan Felix
 @ingroup cview3d
 */
-@interface GLWorld:NSObject <PList>  {
+@interface GLWorld : Identifiable <PList, Pickable>  {
 	Eye *eye;
 	Scene *scene;
 	Scene *overlay;
@@ -78,10 +81,31 @@ GLWorld is an encapsulation of a 3d world managed as a Scene of Objects.  It als
 	BOOL imageDailyDir;
 	int imageCycleTime;
 	time_t lastImageTime;
+    BOOL doPickDraw;
+    int hoverX;
+    int hoverY;
+    id delegate;
 }
 -init;
 /// called to draw the entire world
 -glDraw;
+/// called when picking objects in the scene (does not render)
+/**
+    @author Brock Erwin
+    @returns self;
+    @param ids unique ids which should be tested 
+  */
+-glPickDraw; 
+/**
+    @author Brock Erwin
+    @returns objects that correspond to a particular unique id.
+             nil if no id in glHits corresponds to an object in the scene
+    @param pickDrawIds are the ids which which we originally caled glPickDraw with
+           this is used so we don't compare hits with objects we didn't even test
+    @param glHits contain the unique ids that got hit and were returned from glRenderMode()
+ */
+//-(NSMutableArray*) getPickedObjects;
+
 ///Internal call to setup the overlay drawing
 -gl2DProlog;
 ///Internal call to cleanup the overlay drawing
@@ -108,4 +132,10 @@ GLWorld is an encapsulation of a 3d world managed as a Scene of Objects.  It als
 -setEye: (Eye *)e;
 /// return the current Eye
 -eye;
+-setHoverX:(int)x;
+-setHoverY:(int)y;
+-setDoPickDraw:(BOOL)_doPickDraw;
+-setDelegate: (id)_delegate;
+-(id)delegate;
 @end
+#endif

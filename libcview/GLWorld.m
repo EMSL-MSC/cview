@@ -67,6 +67,8 @@ All rights reserved.
 
 @implementation GLWorld 
 -init {
+    [super init];
+    delegate = nil;
 	displayList = -1;
 	imagePrefix=[NSMutableString stringWithString: @"glworld"];
 	imageDir=[NSMutableString stringWithString: @"."];
@@ -74,6 +76,8 @@ All rights reserved.
 	imageCycleTime = 0;
 	lastImageTime = 0;
 	overlay=nil;
+
+    doPickDraw = NO;
 
 	NSLog(@"%@",[self attributeKeys]);
 	//[NSClassDescription registerClassDescription: self forClass: [self class]];
@@ -144,11 +148,16 @@ All rights reserved.
 	[scene autorelease];
 	[eye autorelease];
 	[overlay autorelease];
+    if(delegate != nil)
+        [delegate autorelease];
 	[super dealloc];
 	return;
 }
 
 -glDraw {
+    if(doPickDraw == YES)
+        [self glPickDraw];
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
@@ -169,7 +178,48 @@ All rights reserved.
 
 	return self;
 }
+-glPickDraw{
+    doPickDraw = NO;
+    float ratio; // set up stuff for gl to do picking
+    GLuint selectBuf[512]; GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    glSelectBuffer(512, selectBuf);
+    glRenderMode(GL_SELECT);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    {
+        glLoadIdentity();
+        gluPickMatrix(hoverX, viewport[3] - hoverY, 1, 1, viewport);
+        ratio = 1.0f * viewport[2] / viewport[3];
+        gluPerspective(20.0, ratio, 0.1, 9000);
+        glMatrixMode(GL_MODELVIEW);
+        glInitNames();
 
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glLoadIdentity();
+
+        glPushMatrix();
+        [eye lookAt];
+
+        if (scene && [scene visible])
+            [scene glPickDraw];
+        
+        glPopMatrix();
+        glMatrixMode(GL_PROJECTION);
+    }
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glFlush();
+
+    GLenum err = glGetError(); // Test for GL errors
+    if(err != GL_NO_ERROR)
+        NSLog(@"There was a glError, error number: %x", err);
+   
+    // Now let the delegate handle process the hits.
+    if(delegate != nil)
+        [(DefaultGLScreenDelegate*)delegate processHits: glRenderMode(GL_RENDER) buffer: selectBuf andSize: 512 inWorld: self];
+	return self;
+}
 -gl2DProlog {
 	GLint viewport[4];
 	int width;
@@ -306,5 +356,23 @@ All rights reserved.
 	DestroyMagickWand(wand);
 	return self;
 }
-
+-setHoverX:(int)x {
+    hoverX = x;
+    return self;
+}
+-setHoverY:(int)y {
+    hoverY = y;
+    return self;
+}
+-setDoPickDraw:(BOOL)_doPickDraw {
+    doPickDraw = _doPickDraw;
+    return self;
+}
+-setDelegate: (id)_delegate {
+    self->delegate = [_delegate retain];
+    return self;
+}
+-(id)delegate {
+    return self->delegate;
+}
 @end
