@@ -56,8 +56,11 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
+#ifndef GLSCREENDELEGATE_H
+#define GLSCREENDELEGATE_H
 #import <Foundation/Foundation.h>
 #import "GLWorld.h"
+#import <gl.h>
 /**
 	Protocol for the Event handling GLScreen Delegate
 
@@ -70,4 +73,6 @@ All rights reserved.
 -(BOOL)mouseButton: (int)button withState: (int)state atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world;
 -(BOOL)mouseActiveMoveAtX: (int)x andY: (int)y inGLWorld: (GLWorld *)world;
 -(BOOL)mousePassiveMoveAtX: (int)x andY: (int)y inGLWorld: (GLWorld *)world;
+-processHits: (GLint) hitCount buffer: (GLuint) selectBuf andSize: (GLint) buffSize inWorld: (GLWorld*) world;
 @end
+#endif
