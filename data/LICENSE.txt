@@ -3,3 +3,5 @@ File in this directory are covererd by other licenses.  Please see the appropria
 LinLibertine_Re.ttf is covered by the OFL and GPL license. Available from http://linuxlibertine.sourceforge.net/Libertine-EN.html
 
 
+chinook image was taken from http://commons.wikimedia.org/wiki/File:Lake_Washington_Ship_Canal_Fish_Ladder_pamphlet_-_ocean_phase_Chinook.jpg and is in the public domain
+

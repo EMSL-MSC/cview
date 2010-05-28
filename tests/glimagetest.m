@@ -56,31 +56,35 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-#import <Foundation/Foundation.h>
-#import <memcache.h>
-
-
-
-
-
+#import "cview.h"
 
 
 int main(int argc,char *argv[], char *env[]) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+#ifndef __APPLE__
 	//needed for NSLog
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
-	struct memcache *mc;
-	void *data;
-	
-	mc = mc_new();
+#endif
+	GLImage *image = [[[GLImage alloc] initWithFilename:@"chinook.png"] setVflip: YES];
+	//GLImage *image = [[GLImage alloc] initWithFilename:@"/home/efelix/mscf/branches/kfox/cview/data/chinook.png"];
 
-	mc_server_add4(mc,"127.0.0.1:11211");
 
-	//mc_add(mc,"hello",5,"This is a sample String",24,1000,0);
+	GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test"];
+	Scene * scene = [[Scene alloc] initWithObject:
+		image
+		atX: 0 Y: 0 Z: 0];
 
-	data=mc_aget(mc,"hello",5);
-	NSLog(@"Data returned: %s",(char *)data);
-	free(data);
+	[scene addObject: [[GLText alloc] initWithString: @"Test Text" andFont: @"LinLibertine_Re.ttf"]
+			atX: 150 Y: 300 Z: 250];
+	[scene addObject: image atX: 0 Y: 0 Z: 200];
+
+	[[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50]
+		setScene: scene] 
+		setEye: [[[Eye alloc] init] setX: 150.0 Y: 1500.0 Z: 2200.0 Hangle:-4.6 Vangle: -2.0]
+	];
+	[g dumpScreens];
+	[g run];
+	[pool release];
 	return 0;
 }
 

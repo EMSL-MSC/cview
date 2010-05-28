@@ -71,6 +71,7 @@ All rights reserved.
 	unsigned int texture;
 	int tw,th;
 	int w,h;
+	BOOL vflip,hflip;
 	BOOL bound;
 }
 -initWithFilename: (NSString *)file;
@@ -78,5 +79,9 @@ All rights reserved.
 -setHeight: (int) height;
 -(int)width;
 -(int)height;
+-setVflip: (BOOL)flip;
+-setHflip: (BOOL)flip;
+-(BOOL)Vflip;
+-(BOOL)Hflip;
 -glDraw;
 @end
