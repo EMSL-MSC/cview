@@ -62,14 +62,13 @@ All rights reserved.
 #import "Locatable.h"
 #import "Drawable.h"
 #import "Pickable.h"
-#import "Point.h"
 #import "../../libcview-data/WebDataSet.h"
 #import "../GLText.h"
 /**
     @author Brock Erwin
 	@ingroup cview3d
 */
-@interface Node : Locatable <Drawable, Pickable> {
+@interface Node : Locatable <Pickable> {
     float temperature;
     BOOL isodd;
     BOOL drawname;
@@ -83,7 +82,7 @@ All rights reserved.
 }
 +(void)setWebDataSet: (WebDataSet*)_dataSet;
 +setGLTName:(GLText*) _gltName;
--draw;
+-glDraw;
 /// called when picking objects in the scene (does not render)
 -glPickDraw;
 -startFading;   // Used to make this node transparent over time

@@ -66,11 +66,20 @@ All rights reserved.
   * simple class that holds a Location object
   */
 #import <Foundation/NSObject.h>
-#import "Point.h"
 #import "Identifiable.h"
-#import "Drawable.h"
 #import "Pickable.h"
-@interface Locatable : Identifiable <Drawable, Pickable> {
+
+typedef struct {
+    float x,y,z;
+} Point;
+
+typedef struct
+{
+    float tu, tv;
+    float x, y, z;
+} Vertex;
+
+@interface Locatable : Identifiable <Pickable> {
     Vector *location;
     Vector *rotation;
     NSString *name;
@@ -100,7 +109,7 @@ All rights reserved.
     Draws a opengl box (6 sided) at given location, rotation, width, depth, height
   */
 -drawBox;
--draw;
+-glDraw;
 -drawWireframe;
 /**
     Easy way to do rotations and translations if you inherit this class.

@@ -63,7 +63,6 @@ All rights reserved.
 #import "Drawable.h"
 #import "Pickable.h"
 #import "Node.h"
-#import "Point.h"
 #import "../GLText.h"
 
 /**
@@ -71,8 +70,7 @@ All rights reserved.
     @author Brock Erwin
 
   */
-
-@interface Rack : Locatable <Drawable, Pickable> {
+@interface Rack : Locatable <Pickable> {
     NSMutableArray *nodes;
 @private
     NSString *color;
@@ -80,12 +78,11 @@ All rights reserved.
     BOOL drawname;
     float r,g,b; // color stuff...
 }
-//+(void) setRackArray: (VertArray*) _rackArray;
 +(unsigned int) texture;
 +setTexture:(unsigned int)_texture;
 +setGLTName:(GLText*) _gltName; // kind of 3d text we'll use to draw the rack name
 -initWithName:(NSString*)_name;
--draw;
+-glDraw;
 /// called when picking objects in the scene (does not render)
 -glPickDraw;
 -addNode: (Node*) node;

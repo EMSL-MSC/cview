@@ -237,7 +237,7 @@ NSData* createBox(float w, float h, float d) {
     glDrawArrays(GL_QUADS, 0, [boundingBox length] / sizeof(Vertex));
     return self;
 }
--draw {
+-glDraw {
     [self drawBox];
     return self;
 }

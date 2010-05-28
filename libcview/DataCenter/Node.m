@@ -79,7 +79,6 @@ static double currentMax = 0.0;
 }
 -cleanUp {
     // maybe add stuff here later
-
     [self autorelease];
     return self;
 }
@@ -110,25 +109,19 @@ static double currentMax = 0.0;
     return self;
 }
 -startUnFading {
-    //NSLog(@"called UNFADING, node: %@", [self getName]);
     unfading = YES;
     fading = NO;
     return self;
 }
 -(float)getData: (NSString*)nodeName {
     // First find the nodename in the xticks array
-    //DataSet *ds = [myDCG getDataSet];
     float *row = [dataSet dataRowByString: [nodeName uppercaseString]];
-    if(row != NULL) {
-        //NSLog(@"row[0] = %f", row[0]);
+    if(row != NULL)
         return row[0];
-    }else {
-        //NSLog(@"[Node getData] called [dataSet dataRowByString] and got a zero pointer!");
+    else
         return -1;
-    }
 }
--draw {
-//    NSLog(@"node=%@ width=%f height=%f depth=%f",[self name],[self width],[self height],[self depth]);
+-glDraw {
     double thetime = [[NSDate date] timeIntervalSince1970]; // get current time in seconds
     if(fading == YES || unfading == YES) { // check to see if we should fade/unfade
         double scale = 0.0; // must be between 0 and 1, inclusive
@@ -147,7 +140,6 @@ static double currentMax = 0.0;
             fading = NO;
             unfading = NO;
             wasfading = NO;
-            //NSLog(@"ENDED FADING!!!!");
         }else{  // we're still fading
             fadeval = (1/fadetime)*(thetime-fadestart); // calculate the fade
             if(fading == YES) 
@@ -164,7 +156,6 @@ static double currentMax = 0.0;
             glEnable(GL_BLEND);
             float max = [dataSet getScaledMax];
             if (currentMax != max) {
-//                NSLog(@"New Max: %.2f %.2f",max,currentMax);
                 currentMax = max;
                 [colorMap autorelease];
                 colorMap = [ColorMap mapWithMax: currentMax];
@@ -174,7 +165,6 @@ static double currentMax = 0.0;
                 glColor4f(.1,.1,.1,1);
             else if(temperature == -1) { // No valid data found from the dataSet    
                 glColor4f(1,1,1,fadeval);// color the node white
-        //        NSLog(@"bad data from %@", [self name]);
             }else
                 glColor4f([colorMap r: temperature],[colorMap g: temperature], [colorMap b: temperature], fadeval);
             [super drawBox];    // draw a box around the node
@@ -223,7 +213,6 @@ static double currentMax = 0.0;
 }
 -setSelected:(BOOL)_selected {
     self->selected = _selected; 
-//    NSLog(@"selection is %d", _selected);
     glutPostRedisplay();
     return self;
 }
