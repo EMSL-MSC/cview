@@ -220,4 +220,15 @@ All rights reserved.
 	//This really should deal with any rotations that may have happened
 	return abs(bounds[4]-bounds[1]);
 }
+- bestFitForWidth: (float)w andHeight: (float)h {
+    // Scale the font so that it fits within width and height passed
+    float s_h = [self height];
+    float s_w = [self width];
+    if(s_h == 0 || s_w == 0)
+        return self;
+    float heightRatio = h / s_h;
+    float widthRatio = w / s_w;
+    [self setScale: heightRatio < widthRatio ? .8 * heightRatio: .8 * widthRatio];
+    return self;
+}
 @end

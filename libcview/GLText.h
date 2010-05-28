@@ -83,4 +83,7 @@ All rights reserved.
 - setRotationOnX: (float)x Y: (float)y Z: (float)z;
 - setFont: (NSString *)font_res;
 - glDraw;
+- bestFitForWidth: (float)w andHeight: (float)h;
+-(float)width;
+-(float)height;
 @end

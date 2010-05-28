@@ -59,7 +59,8 @@ All rights reserved.
 #ifndef IDENTIFIABLE_H
 #define IDENTIFIABLE_H
 #import <Foundation/NSObject.h>
-@interface Identifiable : NSObject {
+#import "DrawableObject.h"
+@interface Identifiable : DrawableObject {
 @private
     unsigned int myid;
 }

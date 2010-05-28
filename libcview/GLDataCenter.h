@@ -68,7 +68,6 @@ All rights reserved.
 #import "GLGrid.h"
 #import "DataCenter/Drawable.h"
 #import "Foundation/NSEnumerator.h"
-#import "DataCenter/Point.h"
 
 #import "DataSet.h"
 #import "WebDataSet.h"
@@ -77,7 +76,12 @@ All rights reserved.
 #import "GLText.h"
 #import "DataCenter/Node.h"
 #import "DataCenter/Rack.h"
-@interface GLDataCenter: DrawableObject <Drawable, Pickable> {
+typedef struct
+{
+    float x,y,z;
+}V3F;
+
+@interface GLDataCenter: DrawableObject <Pickable> {
     NSMutableDictionary *racks;
 @private
     WebDataSet *jobIds; // job id data set
@@ -95,7 +99,7 @@ All rights reserved.
 /// Makes all nodes fade except for nodes with the passed jobid
 -fadeEverythingExceptJobID:(float) jobid;
 -doStuff;
--draw;
+-glDraw;
 /**
     @author Brock Erwin
     called when picking objects in the scene (does not render)

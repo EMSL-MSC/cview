@@ -72,7 +72,6 @@ extern GLuint g_textureID;
     [super init];
     self->floor = nil;
     self->floorVertCount = 0;
-//    self->csvFilePath = nil;
     self->gendersFilePath = nil;
     self->jobIds = nil;
     self->jobIdIndex = 0;
@@ -87,7 +86,6 @@ extern GLuint g_textureID;
     return self;
 }
 -(Node*)findNodeObjectByName:(NSString*) _name {
-    //NSLog(@"name = %@", _name);
     if(self->racks == nil)
         return nil;
     NSEnumerator *enumerator = [self->racks objectEnumerator];
@@ -113,7 +111,6 @@ extern GLuint g_textureID;
             Node *node =  [self findNodeObjectByName: [jobIds columnTick: i]];
             if(node != nil)
                 [nodeArray addObject: node];
-            //NSLog(@"columtick: %@", [jobIds columnTick: i]);
         }
 
     }
@@ -140,7 +137,6 @@ extern GLuint g_textureID;
     float *row = [jobIds dataRowByString: [n name]];
     if(row != NULL)
         return row[0];
-    //NSLog(@"row was NULL-node: %@", [[n getName] lowercaseString]);
     return 0;
 }
 -unfadeEverything {
@@ -232,7 +228,6 @@ extern GLuint g_textureID;
         return self;
     }
     attrlen = genders_attrlist_create(handle, &attrlist);
-//    NSLog(@"genders returned an attrlen of %d",attrlen);
     if(attrlen <= 0) {
         NSLog(@"There was an error creating an attribute list by genders.");
         return self;
@@ -285,10 +280,7 @@ extern GLuint g_textureID;
                 return [self cleanUp];
             }
             (*val) = [[NSString stringWithUTF8String: vallist[indexOf]] floatValue];
- //           NSLog(@"%@ = %f",search,*val);
         }
-//        NSLog(@"x1 = %f y1 = %f z1 = %f x2 = %f y2 = %f z2 = %f x3 = %f y3 = %f z3 = %f",v[0].x,v[0].y,v[0].z,v[1].x,v[1].y,v[1].z,v[2].x,v[2].y,v[2].z);
-
         [floor appendBytes: (const void*) v length: sizeof(V3F)*3];
     }
 
@@ -382,7 +374,6 @@ extern GLuint g_textureID;
     genders_nodelist_clear(handle,nodelist); setcount = genders_query(handle,nodelist,count,"rack");
     for(i = 0; i < setcount; i++) {
         Node *node; int indexOf;
-//        printf("node: %s ",nodelist[i]);
         // Try to get the nodetype attribute list
         genders_attrlist_clear(handle,attrlist); genders_vallist_clear(handle,vallist);
         if(genders_getattr(handle,attrlist,vallist,attrlen,nodelist[i]) != -1) {
@@ -417,7 +408,6 @@ extern GLuint g_textureID;
                 return [self cleanUp];
             }
             [node setDepth: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
-//            NSLog(@"node=%@ width=%f height=%f depth=%f",[node name],[node width],[node height],[node depth]);
             // Now, get the node's attribute list
             genders_attrlist_clear(handle,attrlist); genders_vallist_clear(handle,vallist);
             if(genders_getattr(handle,attrlist,vallist,attrlen,nodelist[i]) != -1) {
@@ -431,7 +421,7 @@ extern GLuint g_textureID;
                 if(actualRack == nil) { 
                     NSLog(@"Error finding rack name %@ in the genders file! Cannot continue loading the GLDataCenter!\n",rackName);
                     return [self cleanUp];
-                }//else NSLog(@"Found the rack!");
+                }
                 int y = [actualRack nodeCount];
                 // the reason we do this is because we want the node names to be displayed differently
                 // for even nodes (left aligned), odd nodes (right aligned) or something like that
@@ -444,7 +434,6 @@ extern GLuint g_textureID;
                 [[[l setX: 0] setY: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]] setZ: 0];
                 [node setLocation: l];
                 [actualRack addNode: node]; // Add the node object to the rack object
-    /*****************************************************/
             }else{
                 NSLog(@"genders_getattr(handle,attrlist,vallist,attrlen,\"%s\") failed with msg: \"%s\" attrlen=%d\n",nodelist[i],genders_errormsg(handle),attrlen);
                 [self cleanUp];
@@ -539,9 +528,7 @@ extern GLuint g_textureID;
 -addRack: (Rack*) rack {
     // Add the passed rack to our rackArray
     if(self->racks != nil) {
- //       NSLog(@"about to add a rack...(%@)",[rack name]);
         [self->racks setObject: rack forKey: [rack name]];
- //       NSLog(@"Done.");
     }
     return self;
 }
@@ -552,26 +539,9 @@ extern GLuint g_textureID;
     // Draw the rack itself, consisting of 6 sides
 //    glEnable(GL_CULL_FACE);
     glCullFace(GL_BACK);
-//    glInterleavedArrays(GL_T2F_V3F, 0, [self->floor bytes]);
     glInterleavedArrays(GL_V3F, 0, [self->floor mutableBytes]);
     glDrawArrays(GL_TRIANGLES, 0, self->floorVertCount);
     //glCullFace(GL_FRONT);*/
-    return self;
-}
--draw {
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_NEAREST);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
-    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-//    [self drawOriginAxis];
-    [self drawFloor];
-    //[self drawGrid];
-    [[self->racks allValues] makeObjectsPerformSelector:@selector(draw)]; // draw the racks
-//    [[[racks objectEnumerator] nextObject] draw];
-    //NSLog(@"count: %d", [aisles count]);
-
-    GLenum err = glGetError();
-    if(err != GL_NO_ERROR)
-        NSLog(@"There was a glError, error number: %x", err);
     return self;
 }
 -glPickDraw {
@@ -579,26 +549,16 @@ extern GLuint g_textureID;
     return self;
 }
 -glDraw {
-    [self draw];
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_NEAREST);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
+    glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    [self drawFloor];
+    [[self->racks allValues] makeObjectsPerformSelector:@selector(glDraw)]; // draw the racks
+
+    GLenum err = glGetError();
+    if(err != GL_NO_ERROR)
+        NSLog(@"There was a glError, error number: %x", err);
     return self;
-/*
-    float max = [dataSet getScaledMax];
-	
-	if (currentMax != max) {
-		NSLog(@"New Max: %.2f %.2f",max,currentMax);
-		currentMax = max;
-		[colorMap autorelease];
-		colorMap = [ColorMap mapWithMax: currentMax];
-		[colorMap retain];
-	}
-	glScalef(1.0,1.0,1.0); 
-    [self draw];
-    //[self drawFloor];
-	//[self drawPlane];
-	//[self drawData];
-	[self drawAxis];
-	//[self drawTitles];
-    return self;*/
 }
 -(NSEnumerator*) getEnumerator {
     NSEnumerator *enumerator = [self->racks objectEnumerator];

@@ -57,14 +57,12 @@ All rights reserved.
 
 */
 #import "Rack.h"
-#import "Point.h"
 #import <gl.h>
 #import <glut.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 #import <Foundation/Foundation.h>
-// #import "AisleOffsets.h"
 void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
 @implementation Rack
 static unsigned int texture;
@@ -105,12 +103,10 @@ static GLText *gltName;
     b = 0.0;
     self->wireframe = YES;
     self->drawname = YES;
-    //self->gltName = nil;
     self->nodes = [[NSMutableArray alloc] init];
     return self;
 }
 -(Node*)findNodeObjectByName:(NSString*) _name {
-    //NSLog(@"name we're tyring to find is: %@", _name);
     if(self->nodes == nil)
         return nil;
     NSEnumerator *enumerator = [self->nodes objectEnumerator];
@@ -118,16 +114,11 @@ static GLText *gltName;
         return nil;
     id element;
     while((element = [enumerator nextObject]) != nil) {
-        //NSLog(@"got here!");
-  //      NSLog(@"node name: %@", [element getName]);
         if([element getName] != nil &&
            [[element getName] caseInsensitiveCompare: _name] == NSOrderedSame) {
-     //       NSLog(@"found it!!!");
-            //NSLog(@"node name: %@", [element getName]);
             return element;
         }
     }
- //   NSLog(@"returning nil");
     return nil;
 }
 -initWithName: (NSString*)_name {
@@ -141,14 +132,12 @@ static GLText *gltName;
     [self->nodes makeObjectsPerformSelector: @selector(startFading)];
     return self;
 }
--draw {
-//    NSLog(@"rack=%@ width=%f height=%f depth=%f",[self name],[self width],[self height],[self depth]);
+-glDraw {
     [super setupForDraw];
-        //[super draw]; // Draw bounding box around rack
+        //[super glDraw]; // Draw bounding box around rack
         glColor3f(.184,.431,.502);
         [super drawWireframe]; // Draw wireframe around the rack
-        [self->nodes makeObjectsPerformSelector:@selector(draw)]; // draw the nodes
-//        [[[nodes objectEnumerator] nextObject] draw];
+        [self->nodes makeObjectsPerformSelector:@selector(glDraw)]; // draw the nodes
 
         if(drawname == YES) {   // Draw the rack name
             if(gltName == nil) {
@@ -156,10 +145,7 @@ static GLText *gltName;
       //          [gltName setRotationOnX: 90 Y: 180 Z: 0];
             }
             [gltName setString: [self name]];
-            // Scale the font so that it fits within the rack width
-            float heightRatio = [self height] / [gltName height];
-            float widthRatio = [self width] / [gltName width];
-            [gltName setScale: heightRatio < widthRatio ? .8 * heightRatio: .8 * widthRatio];
+            [gltName bestFitForWidth: [self width] andHeight: [self height]];
 
             glTranslatef(11.2,.5001*[self height],.75*[self depth]);
             glRotatef(-90,1,0,0);
