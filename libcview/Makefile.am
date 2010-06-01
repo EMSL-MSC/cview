@@ -20,7 +20,7 @@ endif
 
 if COMPILE_GLDATACENTER
 libcview_la_SOURCES += GLDataCenter.m DataCenter/Rack.m DataCenter/Node.m \
-    DataCenter/Locatable.m DataCenter/Vector.m src/DataCenterCViewScreenDelegate.m
+    DataCenter/Locatable.m DataCenter/Vector.m
 endif
 
 

@@ -169,7 +169,7 @@ OPTIONS\n\
        and defaults to ");
 #ifdef HAVE_GENDERS
        printf("DataCenterCViewScreenDelegate");
-#elif
+#else
        printf("CViewScreenDelegate");
 #endif
        printf("\n\
@@ -210,7 +210,7 @@ int main(int argc,char *argv[], char *env[]) {
 			@"0",@"dumpclasses",
             @"DataCenterCViewScreenDelegate",@"ScreenDelegate", // use DataCenter since we have genders
 			nil]];
-#elif
+#else
     [args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
 			@"cviews/default.cview", @"c",
 			@"30.0",@"dataUpdateInterval",

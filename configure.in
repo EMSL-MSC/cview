@@ -35,6 +35,10 @@ AC_ARG_ENABLE([gcallocdebug],
 AC_ARG_WITH([AntTweakBar],AS_HELP_STRING([--with-AntTweakBar=PATH],[Compile With AntTweakBar]),
 	[OBJCFLAGS+=" -I$withval/include " ATB_LDFLAGS=" -L$withval/lib "])
 
+AC_ARG_WITH([genders],AS_HELP_STRING([--with-genders=PATH],[Compile With genders]),
+	[OBJCFLAGS+=" -I$withval/include " GENDERS_LDFLAGS+=" -L$withval/lib "])
+
+
 if [[ $target_vendor = "apple" ]]; then
 	FOUNDATION_LDFLAGS="-framework Foundation"
 	FOUNDATION_OBJCFLAGS=""
@@ -94,6 +98,7 @@ AC_COMPILE_IFELSE(
 AM_CONDITIONAL([HAVE_ATB],[test "x$LIBCVIEW_COND_FILES" != "x"])
 
 GENDERS_FOUND_TRIGGER=""
+AC_MSG_CHECKING(for genders)
 AC_COMPILE_IFELSE(
 	[AC_LANG_PROGRAM([[#include <genders.h>]], [[genders_t handle = genders_handle_create();]])],
 	[AC_DEFINE([HAVE_GENDERS], [1], [Have genders]) 
