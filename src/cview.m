@@ -155,7 +155,7 @@ OPTIONS\n\
        cannot be started without this file, and if '-c' is not specified, cview tries to load\n\
        cviews/default.cview.  Your .cview file will specify how many viewports to have in the\n\
        window, what scene objects to load into each viewport, the position of each scene\n\
-       object and many other options.  For more information see cviews/help.cview\n\
+       object and many other options.  For more information see cviews/help.cview.\n\
     -dataUpdateInterval NUM\n\
        Where NUM is the number of seconds to wait before updating the dataset.  Defaults to\n\
        30.0 seconds if this option is not given.\n\
@@ -167,12 +167,12 @@ OPTIONS\n\
        DefaultScreenDelegate.  The delegate's job is to handle key and mouse presses and\n\
        decide what to do with them. This probably shouldn't be changed by the standard user\n\
        and defaults to ");
-#ifdef HAVE_GENDERS
+#if HAVE_GENDERS
        printf("DataCenterCViewScreenDelegate");
 #else
        printf("CViewScreenDelegate");
 #endif
-       printf("\n\
+       printf(".\n\
     -h\n\
     -help\n\
     -?\n\
@@ -203,7 +203,7 @@ int main(int argc,char *argv[], char *env[]) {
 		- c The PList formatted config file to load 
 	*/
 	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
-#ifdef HAVE_GENDERS
+#if HAVE_GENDERS
     [args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
 			@"cviews/default.cview", @"c",
 			@"30.0",@"dataUpdateInterval",

@@ -21,7 +21,10 @@ cview_SOURCES += DataCenterCViewScreenDelegate.m
 endif
 
 cview_LDFLAGS = $(OPENGL_LDFLAGS) $(BASELDFLAGS)
-cviewall_SOURCES = cviewall.m CViewScreenDelegate.m DataCenterCViewScreenDelegate.m
+cviewall_SOURCES = cviewall.m CViewScreenDelegate.m
+if COMPILE_GLDATACENTER
+cviewall_SOURCES += DataCenterCViewScreenDelegate.m
+endif
 cviewall_LDFLAGS = $(OPENGL_LDFLAGS) $(BASELDFLAGS)
 oscview_SOURCES =  oscview.m glutstub.c
 oscview_LDFLAGS = -lOSMesa -lGL -lGLU $(BASELDFLAGS)
