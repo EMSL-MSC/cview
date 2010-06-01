@@ -1,0 +1,767 @@
+{
+    height = 1162;
+    name = "Chinook NWperf";
+    width = 1598;
+    worlds = (
+	{
+	    col = 0;
+	    colp = 50;
+	    name = MAIN;
+	    row = 1;
+	    rowp = 50;
+	    world = {
+		eye = {
+		    hangle = "-4.71167";
+		    move_speed = 10;
+		    rotate_speed = 0.025;
+		    strafe_speed = 10;
+		    vangle = "-2.608334";
+		    x = 1209.958;
+		    y = 5092.09;
+		    z = 2137.243;
+		};
+		imageCycleTime = 0;
+		imageDailyDir = NO;
+		imageDir = .;
+		imagePrefix = glworld;
+		scene = {
+		    objects = (
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = cputotals.user;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 110;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = cputotals.sys;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 110;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = "-228";
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (
+					WebDataSet,
+					WebDataSet
+				    );
+				    formula = "$0:$1:-:1024:/:1024:/";
+                                    name = "Mem Used - Mem Cached";
+                                    rateSuffix = "GB";
+				    planes = (
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+					    key = meminfo.used;
+					},
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+					    key = meminfo.cached;
+					}
+				    );
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 110;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = "-446";
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (
+					WebDataSet,
+					WebDataSet
+				    );
+				    formula = "$0:$1:+:1024:/:1024:/";
+				    name = "Interconnect GB/s";
+                                    rateSuffix = "GB/s";
+				    planes = (
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+					    key = iconnect.kbout;
+					},
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+					    key = iconnect.kbin;
+					}
+				    );
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 110;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = "-664";
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (
+					WebDataSet,
+					WebDataSet
+				    );
+				    formula = "$0:$1:+";
+				    name = "Interconnect Packets/s";
+                                    rateSuffix = "Packets/s";
+				    planes = (
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+					    key = iconnect.pktin;
+					},
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+					    key = iconnect.pktout;
+					}
+				    );
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 110;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = "-892";
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (
+					WebDataSet,
+					WebDataSet
+				    );
+				    formula = "$0:$1:/:";
+				    name = "Flops/cycle";
+                                    rateSuffix = "Flops/Cycle";
+				    planes = (
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+					    key = cpctot.cpc0;
+					},
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+					    key = cpctot.cpc1;
+					}
+				    );
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 110;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = "-1130";
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (
+					WebDataSet,
+					WebDataSet
+				    );
+				    formula = "$0:$1:/";
+				    name = "cpctot.cpc2/cpctot.cpc3";
+                                    rateSuffix = "";
+				    planes = (
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+					    key = cpctot.cpc2;
+					},
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+					    key = cpctot.cpc3;
+					}
+				    );
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 110;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = "-1365";
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (
+					WebDataSet,
+					WebDataSet
+				    );
+				    formula = "$0:$1:+";
+				    name = "Number of Disk Reads and Writes Ops/s";
+                                    rateSuffix = "Ops/s";
+				    planes = (
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+					    key = disktotals.reads;
+					},
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+					    key = disktotals.writes;
+					}
+				    );
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 110;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = "-1606";
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (
+					WebDataSet,
+					WebDataSet
+				    );
+				    formula = "$0:$1:+:1024:/";
+				    name = "Disk Throughput MB/s";
+                                    rateSuffix = "MB/s";
+				    planes = (
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+					    key = disktotals.readkbs;
+					},
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+					    key = disktotals.writekbs;
+					}
+				    );
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 110;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = "-1864";
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (
+					WebDataSet,
+					WebDataSet
+				    );
+				    formula = "$0:$1:+";
+				    name = "Luster Throughput";
+                                    rateSuffix = "kB/s";
+				    planes = (
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+					    key = lusclt.readkbs;
+					},
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+					    key = lusclt.writekbs;
+					}
+				    );
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 110;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = "-2138";
+			}
+		    );
+		};
+	    };
+	},
+	{
+	    col = 0;
+	    colp = 50;
+	    name = TL;
+	    row = 0;
+	    rowp = 15;
+	    world = {
+		eye = {
+		    hangle = "-4.714001";
+		    move_speed = 10;
+		    rotate_speed = 0.025;
+		    strafe_speed = 10;
+		    vangle = "-2.43667";
+		    x = 2319.62;
+		    y = 1883.16;
+		    z = 1293.30;
+		};
+		imageCycleTime = 0;
+		imageDailyDir = NO;
+		imageDir = .;
+		imagePrefix = glworld;
+		scene = {
+		    objects = (
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (WebDataSet);
+				    planes = (
+						{	
+						    name = "OutOctets/s";
+						    baseURL = "http://chumbucket/cluster/ibswitches/";
+						    key = OutOctets;
+						}	
+				    );
+				    formula = "1:$0:@0:-:&ABS:120:/:@0:$0:&GT:&IFZ:1000:1000:1000:*:*:/:0:&SWAP:@0:&IFZ:0:&SWAP:$0:&IFZ";
+			            name="OutOctets/s";
+				    rateSuffix="GB/s";
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 300;
+				xscale = 1;
+				yTicks = 16;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			},
+		        {
+		            align = NO;
+		            halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (WebDataSet);
+				    planes = (
+						{	
+						    name = "InOctets/s";
+						    baseURL = "http://chumbucket/cluster/ibswitches/";
+						    key = InOctets;
+						}	
+				    );
+				    //           Rate              Always Increase Convert to GB/s      0 if Prev Reset 0 If reset
+				    formula = "0:$0:@0:-:&ABS:120:/:@0:$0:&GT:&IFZ:1000:1000:1000:*:*:/:0:&SWAP:@0:&IFZ:0:&SWAP:$0:&IFZ";
+				    name="InOctets/s";
+				    rateSuffix="GB/s";
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 300;
+				xscale = 1;
+				yTicks = 16;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = -250;
+			},
+		        {
+		            align = NO;
+		            halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (WebDataSet);
+				    planes = (
+						{	
+						    name = "InUnicastPkts/s";
+						    baseURL = "http://chumbucket/cluster/ibswitches/";
+						    key = InUcastPkts;
+						}	
+				    );
+				    //           Rate              Always Increase  0 if Prev Reset 0 If reset
+				    formula = "0:$0:@0:-:&ABS:120:/:@0:$0:&GT:&IFZ::0:&SWAP:@0:&IFZ:0:&SWAP:$0:&IFZ";
+				    name="Inbound Unicast Packets";
+				    rateSuffix="Packets/s";
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 300;
+				xscale = 1;
+				yTicks = 16;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = -500;
+			},
+			{
+		            align = NO;
+		            halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (WebDataSet);
+				    planes = (
+						{	
+						    name = "OutUnicastPkts/s";
+						    baseURL = "http://chumbucket/cluster/ibswitches/";
+						    key = OutUcastPkts;
+						}	
+				    );
+				    //           Rate              Always Increase  0 if Prev Reset 0 If reset
+				    formula = "0:$0:@0:-:&ABS:120:/:@0:$0:&GT:&IFZ::0:&SWAP:@0:&IFZ:0:&SWAP:$0:&IFZ";
+				    name="Outbound Unicast Packets";
+				    rateSuffix="Packets/s";
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 300;
+				xscale = 1;
+				yTicks = 16;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = -750;
+			},
+		    );
+		};
+	    };
+	},
+	{
+	    col = 1;
+	    colp = 15;
+	    name = TL;
+	    row = 1;
+	    rowp = 50;
+	    world = {
+		eye = {
+		    hangle = "-4.70567";
+		    move_speed = 10;
+		    rotate_speed = 0.025;
+		    strafe_speed = 10;
+		    vangle = "-2.89501";
+		    x = -27.8938;
+		    y = 2272.03;
+		    z = 377.68;
+		};
+		imageCycleTime = 0;
+		imageDailyDir = NO;
+		imageDir = .;
+		imagePrefix = glworld;
+		scene = {
+		    objects = (
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/vader/";
+				    key = cputotals.user;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (
+					WebDataSet,
+					WebDataSet
+				    );
+				    formula = "$0:$1:+:1024:/:1024:/";
+			            name = "Vader Interconnect In + Out GB/s";
+                                    rateSuffix = "GB/s";
+				    planes = (
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/vader/";
+					    key = iconnect.kbout;
+					},
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/vader/";
+					    key = iconnect.kbin;
+					}
+				    );
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = "-225";
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (
+					WebDataSet,
+					WebDataSet
+				    );
+				    formula = "$0:$1:+:1024:/";
+				    name = "Vader Disk Read+Write MB/s";
+                                    rateSuffix = "MB/s";
+				    planes = (
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/vader/";
+					    key = disktotals.readkbs;
+					},
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/vader/";
+					    key = disktotals.writekbs;
+					}
+				    );
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = "-475";
+			},		    
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/io/";
+				    key = cputotals.user;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = -150;
+			    y = 0;
+			    z = 25;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (
+					WebDataSet,
+					WebDataSet
+				    );
+				    formula = "$0:$1:+:1024:/:1024:/";
+			            name = "dtemp Interconnect In + Out GB/s";
+				    rateSuffix="GB/s";
+				    planes = (
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/io/";
+					    key = iconnect.kbout;
+					},
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/io/";
+					    key = iconnect.kbin;
+					}
+				    );
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = -150;
+			    y = 0;
+			    z = "-200";
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (
+					WebDataSet,
+					WebDataSet
+				    );
+				    formula = "$0:$1:+:1024:/";
+				    name = "dtemp Disk Read+Write MB/s";
+				    rateSuffix="MB/s";
+				    planes = (
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/io/";
+					    key = disktotals.readkbs;
+					},
+					{
+					    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/io/";
+					    key = disktotals.writekbs;
+					}
+				    );
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = -150;
+			    y = 0;
+			    z = "-450";
+			}		    
+		    );
+		};
+	    };
+	}
+    );
+}

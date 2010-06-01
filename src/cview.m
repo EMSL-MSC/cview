@@ -159,15 +159,20 @@ OPTIONS\n\
     -dataUpdateInterval NUM\n\
        Where NUM is the number of seconds to wait before updating the dataset.  Defaults to\n\
        30.0 seconds if this option is not given.\n\
-    -dumpClasses <?>\n\
-       If this option is specified cview will print debugging information to <?> every <?>\n\
-       seconds.  Most users will never have to use this option as it's mainly for debugging\n\
-       cview.\n\
+    -dumpclasses t\n\
+       Startup a ObjectTracker thread if t > 0, the number how often in seconds to dump the\n\
+       class counts: file is cview.classes.  For debugging cview only.\n\
     -ScreenDelegate DELEGATE\n\
        Start cview with the screen delegate DELEGATE. DELEGATE must be a subclass of\n\
        DefaultScreenDelegate.  The delegate's job is to handle key and mouse presses and\n\
        decide what to do with them. This probably shouldn't be changed by the standard user\n\
-       and defaults to DataCenterCViewScreenDelegate\n\
+       and defaults to ");
+#ifdef HAVE_GENDERS
+       printf("DataCenterCViewScreenDelegate");
+#elif
+       printf("CViewScreenDelegate");
+#endif
+       printf("\n\
     -h\n\
     -help\n\
     -?\n\
@@ -198,12 +203,22 @@ int main(int argc,char *argv[], char *env[]) {
 		- c The PList formatted config file to load 
 	*/
 	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
-	[args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
+#ifdef HAVE_GENDERS
+    [args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
 			@"cviews/default.cview", @"c",
 			@"30.0",@"dataUpdateInterval",
 			@"0",@"dumpclasses",
-            @"DataCenterCViewScreenDelegate",@"ScreenDelegate",
+            @"DataCenterCViewScreenDelegate",@"ScreenDelegate", // use DataCenter since we have genders
 			nil]];
+#elif
+    [args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
+			@"cviews/default.cview", @"c",
+			@"30.0",@"dataUpdateInterval",
+			@"0",@"dumpclasses",
+            @"CViewScreenDelegate",@"ScreenDelegate",
+			nil]];
+#endif
+
 
     // Print usage and exit if user passed -h, -?, or -help
     if([args stringForKey: @"h"] != nil ||
@@ -233,7 +248,8 @@ int main(int argc,char *argv[], char *env[]) {
 	}
     Class c;
     /*  The following code has been added to allow the Screen Delegate type to be passed on the command line
-     *  if not specified on the command line, defaults to DataCenterCViewScreenDelegate
+     *  if not specified on the command line, defaults to DataCenterCViewScreenDelegate if the genders library
+     *  is present
      */
 	c = NSClassFromString([args stringForKey: @"ScreenDelegate"]);
 	if (c == nil) { // if nil then the class wasn't found
@@ -247,8 +263,6 @@ int main(int argc,char *argv[], char *env[]) {
 	GLScreen * g = [[GLScreen alloc] initWithPList:plist];
     DefaultGLScreenDelegate *delegate = [[c alloc] initWithScreen: g];
 
-//  NSLog(@"stuff = %@", delegate);
-//	CViewScreenDelegate *cvsd = [[CViewScreenDelegate alloc] initWithScreen:g];
 	[g setDelegate: delegate];
 
 	//FIXME get rid of this soon, put it in delegate

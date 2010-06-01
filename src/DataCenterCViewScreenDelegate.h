@@ -61,7 +61,6 @@ All rights reserved.
 #import <Foundation/Foundation.h>
 #import "CViewScreenDelegate.h"
 #import "../libcview/DataCenter/Node.h"
-//#import "DefaultGLScreenDelegate.h"
 
 /**
     Application implementation of the delegate for selecting node functionality

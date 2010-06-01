@@ -107,7 +107,6 @@ All rights reserved.
             }
             break;
         default:
-           // NSLog(@"not handling this one....");
             handled=NO;
             break;
     }
@@ -116,7 +115,7 @@ All rights reserved.
     return handled;
 }
 -(BOOL)mousePassiveMoveAtX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
-    [[[world setHoverX: x] setHoverY: y] setDoPickDraw: YES];// setDelegate: self;
+    [[[world setHoverX: x] setHoverY: y] setDoPickDraw: YES];
     passiveMove = YES;
     leftClicked = NO;
     return NO;  // return value doesn't matter right now! ask evan about this
@@ -146,7 +145,7 @@ All rights reserved.
         }
     }
     else {
-       // NSLog(@"mouse was released!");
+       // mouse released in this block
     }
     return [super mouseButton: button withState: state atX: x andY: y inGLWorld: world];
 }
@@ -154,7 +153,6 @@ All rights reserved.
     if(lastSelection != nil)
         [lastSelection setSelected: NO];
     if(n != nil) {
-     //   NSLog(@"n = %@", n);
         [n setSelected: YES];
     }else
         NSLog(@"n is nil!");
@@ -173,8 +171,7 @@ All rights reserved.
     unsigned int theId = 0;
     GLuint names, *ptr, *rowptr;
     ptr = (GLuint*)selectBuf;
-//    if(hitCount == 0)
-//        return nil;
+
     for(i=0;i<hitCount;++i) {
         names = *ptr;   // the number of names in current 'cell'
         rowptr = ptr;   // points to the current 'cell' or row

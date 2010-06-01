@@ -93,6 +93,18 @@ AC_COMPILE_IFELSE(
 	)
 AM_CONDITIONAL([HAVE_ATB],[test "x$LIBCVIEW_COND_FILES" != "x"])
 
+GENDERS_FOUND_TRIGGER=""
+AC_COMPILE_IFELSE(
+	[AC_LANG_PROGRAM([[#include <genders.h>]], [[genders_t handle = genders_handle_create();]])],
+	[AC_DEFINE([HAVE_GENDERS], [1], [Have genders]) 
+		AC_MSG_RESULT(yes) 
+		GENDERS_FOUND_TRIGGER="foundit"
+		ATB_LDFLAGS+=" -lgenders "
+	],
+	[AC_DEFINE([HAVE_GENDERS], [0], [Have genders]) AC_MSG_RESULT(no)]
+	)
+AM_CONDITIONAL([COMPILE_GLDATACENTER],[test "x$GENDERS_FOUND_TRIGGER" != "x"])
+
 AC_CHECK_PROG([DOXYGEN],[doxygen],[doxygen]) 
 
 CPPFLAGS+=" $FOUNDATION_OBJCFLAGS "
