@@ -66,8 +66,11 @@ int main(int argc,char *argv[], char *env[]) {
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
 	GLImage *image = [[[GLImage alloc] initWithFilename:@"chinook.png"] setVflip: YES];
+	GLImage *hud = [[[GLImage alloc] initWithFilename:@"/home/efelix/EMSL_Header.png"] setVflip: NO] ;
 	//GLImage *image = [[GLImage alloc] initWithFilename:@"/home/efelix/mscf/branches/kfox/cview/data/chinook.png"];
 
+	Scene *over = [[Scene alloc] init];
+	[over addObject: hud alignHoriz: -1 Vert: -1];
 
 	GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test"];
 	Scene * scene = [[Scene alloc] initWithObject:
@@ -78,8 +81,9 @@ int main(int argc,char *argv[], char *env[]) {
 			atX: 150 Y: 300 Z: 250];
 	[scene addObject: image atX: 0 Y: 0 Z: 200];
 
-	[[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50]
-		setScene: scene] 
+	[[[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50]
+		setScene: scene]
+		setOverlay: over]
 		setEye: [[[Eye alloc] init] setX: 150.0 Y: 1500.0 Z: 2200.0 Hangle:-4.6 Vangle: -2.0]
 	];
 	[g dumpScreens];

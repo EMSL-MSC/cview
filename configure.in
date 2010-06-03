@@ -85,13 +85,13 @@ AC_MSG_CHECKING(for AntTweakBar)
 AC_COMPILE_IFELSE(
 	[AC_LANG_PROGRAM([[#include <AntTweakBar.h>]], [[TwDraw()]])],
 	[AC_DEFINE([HAVE_ANTTWEAKBAR], [1], [Have AntTweakBar]) 
-		AC_MSG_RESULT(yes) 
-		LIBCVIEW_COND_FILES="AntTweakBarOverlay.m $LIBCVIEW_COND_FILES"
+		AC_MSG_RESULT(yes)
+		TRIGGER_ATB="y"
 		ATB_LDFLAGS+=" -lAntTweakBar "
 	],
 	[AC_DEFINE([HAVE_ANTTWEAKBAR], [0], [Have AntTweakBar]) AC_MSG_RESULT(no)]
 	)
-AM_CONDITIONAL([HAVE_ATB],[test "x$LIBCVIEW_COND_FILES" != "x"])
+AM_CONDITIONAL([HAVE_ATB],[test "x$TRIGGER_ATB" != "x"])
 
 AC_CHECK_PROG([DOXYGEN],[doxygen],[doxygen]) 
 
@@ -99,7 +99,6 @@ CPPFLAGS+=" $FOUNDATION_OBJCFLAGS "
 OBJCFLAGS+=" $FOUNDATION_OBJCFLAGS "
 
 AC_SUBST(SRC_COND_COMPILES)
-AC_SUBST(LIBCVIEW_COND_FILES)
 AC_SUBST(ATB_LDFLAGS)
 
 AC_CONFIG_FILES([Makefile src/Makefile libcview/Makefile libcview-data/Makefile tests/Makefile data/Makefile cview.spec Doxyfile])

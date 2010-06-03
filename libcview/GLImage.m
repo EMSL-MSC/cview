@@ -67,14 +67,18 @@ All rights reserved.
 
 @implementation GLImage
 -initWithFilename: (NSString *)file {
+	MagickBooleanType status;
 	[super init];
 	filename = [find_resource_path(file) retain];
 
 	MagickWand *wand = NewMagickWand();
+	PixelWand *pw = NewPixelWand();
 
+	PixelSetColor(pw,"none");
+	status = MagickSetBackgroundColor(wand,pw);
 
 	///@todo optionaly pull from a resource instead of the full filename
-	MagickBooleanType status = MagickReadImage (wand, [filename UTF8String]);
+	status = MagickReadImage (wand, [filename UTF8String]);
 	if ( status == MagickFalse )
 	{
 		NSLog(@"Error reading image: %@",filename);
