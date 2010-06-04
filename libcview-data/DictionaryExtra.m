@@ -59,7 +59,7 @@ All rights reserved.
 
 #import <Foundation/Foundation.h>
 #import "DictionaryExtra.h"
-
+int aninteger = 5;
 @implementation NSDictionary (DictionaryExtra) 
 - (id) objectForKey: (id)aKey missing: (id)miss {
 	id o = [self objectForKey: aKey];
