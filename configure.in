@@ -61,13 +61,15 @@ AC_SUBST(OPENGL_LDFLAGS)
 AC_SUBST(OPENGL_CFLAGS)
 
 PKG_CHECK_MODULES([WAND],[Wand])
+AC_CHECK_LIB(MagickWand,NewMagickWand,,,[-lMagickCore])
 PKG_CHECK_MODULES([FTGL],[ftgl > 2.1.2])
+AC_CHECK_LIB(ftgl,ftglCreateExtrudeFont)
 AC_SUBST(OPTBUILD)
 
-
 AC_CHECK_HEADERS("gl.h",,[AC_MSG_ERROR([cannot find gl.h])])
-AC_CHECK_HEADERS("glu.h",,[AC_MSG_ERROR([cannot find glu.h])])
+AC_CHECK_LIB(GL,glColor4f,,[AC_MSG_ERROR([cannot link with libGL])])
 AC_CHECK_HEADERS("glut.h",,[AC_MSG_ERROR([cannot find glut.h])])
+AC_CHECK_LIB(glut,glutGet,,[AC_MSG_ERROR([cannot link with libglut])])
 AC_CHECK_HEADERS([limits.h stdlib.h string.h unistd.h])
 
 AC_FUNC_MALLOC
@@ -77,17 +79,26 @@ SRC_COND_COMPILES=""
 LIBCVIEW_COND_FILES=""
 
 AC_MSG_CHECKING(for OSMesa Usability)
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#include <GL/osmesa.h>]], [[OSMesaCreateContext(0,0)]])],[AC_DEFINE([HAVE_OSMESA], [1],[Have OSMesa library]) AC_MSG_RESULT(yes)
-					SRC_COND_COMPILES="$SRC_COND_COMPILES oscview"  
-				],[AC_DEFINE([HAVE_OSMESA], [0],[Have OSMesa library]) AC_MSG_RESULT(no) ])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#define GLAPIENTRY\n #include <GL/osmesa.h>]], [[OSMesaCreateContext(0,0)]])],
+                [
+                 AC_MSG_RESULT(yes)
+				 AC_CHECK_LIB(OSMesa,OSMesaCreateContext,
+                    [AC_DEFINE([HAVE_OSMESA], [1],[Have OSMesa library]) SRC_COND_COMPILES="$SRC_COND_COMPILES oscview"],  
+                    [AC_DEFINE([HAVE_OSMESA], [0],[Have OSMesa library]) ],
+                 )
+				],
+				[AC_DEFINE([HAVE_OSMESA], [0],[Have OSMesa library]) AC_MSG_RESULT(no) ]
+				)
 
 AC_MSG_CHECKING(for AntTweakBar)
 AC_COMPILE_IFELSE(
 	[AC_LANG_PROGRAM([[#include <AntTweakBar.h>]], [[TwDraw()]])],
-	[AC_DEFINE([HAVE_ANTTWEAKBAR], [1], [Have AntTweakBar]) 
-		AC_MSG_RESULT(yes)
-		TRIGGER_ATB="y"
-		ATB_LDFLAGS+=" -lAntTweakBar "
+	[AC_MSG_RESULT(yes)
+	   AC_CHECK_LIB(AntTweakBar,TwDraw,
+	       [AC_DEFINE([HAVE_ANTTWEAKBAR], [1], [Have AntTweakBar]) TRIGGER_ATB="y" ATB_LDFLAGS+=" -lAntTweakBar " ],
+	       [AC_DEFINE([HAVE_ANTTWEAKBAR], [0], [Have AntTweakBar])],
+	       [-lstdc++]
+	   )
 	],
 	[AC_DEFINE([HAVE_ANTTWEAKBAR], [0], [Have AntTweakBar]) AC_MSG_RESULT(no)]
 	)

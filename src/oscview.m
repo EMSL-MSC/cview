@@ -57,6 +57,9 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
+#ifndef GLAPIENTRY
+#define GLAPIENTRY
+#endif
 #import <GL/osmesa.h>
 #import <glut.h>
 #import "Wand.h"
