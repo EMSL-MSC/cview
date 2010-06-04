@@ -57,6 +57,7 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
+#define GL_GLEXT_PROTOTYPES
 #import <gl.h>
 #import <glut.h>
 #import "cview.h"
@@ -81,6 +82,7 @@ All rights reserved.
 
 	//Bigger points up close stuff
 	glPointSize(150);
+#if HAVE_OPENGL_1_4
 	glparm[0]=0;
 	glPointParameterfv(GL_POINT_SIZE_MIN,glparm);
 	glparm[0]=20.0;
@@ -89,6 +91,7 @@ All rights reserved.
 	glparm[1]=-0.01;
 	glparm[2]=0.025;
 	glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, glparm);
+#endif
 	//end bigger stuff..
 
 	for (i=0;i<[dataSet width];i++) {

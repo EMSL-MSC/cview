@@ -139,9 +139,13 @@ HOTKEYS\n\
        Left Click-Drag   Strafe In the direction you are moving the mouse\n\
        Right Click-Drag  Tilt the camera angle in the direction you are moving the mouse\n\
        Mouse Wheel-Drag  Move the mouse while holding down the mouse wheel to adjust the zoom\n\
-    AUXILARY\n\
+    AUXILARY\n");
+#if HAVE_ANTTWEAKBAR
+    printf("\
        t  Brings up the AntTweakBar display which allows you to adjust certain things about\n\
-          camera angle and position as well as position of scene objects\n\
+          camera angle and position as well as position of scene objects\n");
+#endif
+    printf("\
        ~  Saves Eye attributes (camera angle and position) as well as the position of scene\n\
           objects to the current *.cview file (this is very useful)\n\
        f  Toggle fullscreen\n\

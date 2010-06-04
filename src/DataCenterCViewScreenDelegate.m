@@ -118,7 +118,8 @@ All rights reserved.
     [[[world setHoverX: x] setHoverY: y] setDoPickDraw: YES];
     passiveMove = YES;
     leftClicked = NO;
-    return NO;  // return value doesn't matter right now! ask evan about this
+//    return NO;  // return value doesn't matter right now! ask evan about this
+    return [super mousePassiveMoveAtX: x andY: y inGLWorld: world];
 }
 -(BOOL)mouseButton: (int)button withState: (int)state atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
     if (state == GLUT_DOWN) {
@@ -126,7 +127,7 @@ All rights reserved.
             case GLUT_LEFT_BUTTON:
                 {
                     // set the world to do a pickdraw next time around the merry-go-round.
-                    [[[world setHoverX: x] setHoverY: y] setDoPickDraw: YES];// setDelegate: self];
+                    [[[world setHoverX: x] setHoverY: y] setDoPickDraw: YES];
                     passiveMove = NO;
                     leftClicked = YES;
                     break;

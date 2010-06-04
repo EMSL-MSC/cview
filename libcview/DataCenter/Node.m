@@ -131,11 +131,13 @@ static double currentMax = 0.0;
             if( (fading == YES && fadeval == scale) ||
                 (unfading == YES && fadeval == 1.0) )
                 thetime = fadetime + fadestart + 1.0; // push it over the top
+            [self show];
         }
         if(thetime - fadestart > fadetime) {    // time to stop fading
-            if(fading == YES)
+            if(fading == YES) {
                 fadeval = scale;
-            else if(unfading == YES)
+                [self hide];
+            } else if(unfading == YES)
                 fadeval = 1.0;
             fading = NO;
             unfading = NO;
@@ -148,7 +150,7 @@ static double currentMax = 0.0;
         }
         glutPostRedisplay();    // Tell glut to draw again - we're still fading
     }
-    if(selected == YES || fadeval != 0) {  // only draw this node if we're not completely faded out or selected
+    if(isVisible) {
         [super setupForDraw];
             [self setTemperature: [self getData: [self name]]];
             if(self->temperature != -1)
@@ -195,9 +197,11 @@ static double currentMax = 0.0;
     return self;
 }
 -glPickDraw {
-    [super setupForDraw];
-        [super glPickDraw];
-    [super cleanUpAfterDraw];
+    if(isVisible) {
+        [super setupForDraw];
+            [super glPickDraw];
+        [super cleanUpAfterDraw];
+    }
     return self;
 }
 -setTemperature: (float) _temperature {

@@ -39,7 +39,7 @@ AC_ARG_WITH([genders],AS_HELP_STRING([--with-genders=PATH],[Compile With genders
 	[OBJCFLAGS+=" -I$withval/include " GENDERS_LDFLAGS+=" -L$withval/lib "])
 
 
-if [[ $target_vendor = "apple" ]]; then
+if [[ "x$target_vendor" = "xapple" ]]; then
 	FOUNDATION_LDFLAGS="-framework Foundation"
 	FOUNDATION_OBJCFLAGS=""
 	OPENGL_LDFLAGS="-framework OpenGL -framework GLUT"
@@ -53,8 +53,18 @@ else
 	AC_PATH_PROG(GNUSTEP_CONFIG,gnustep-config)
 	FOUNDATION_LDFLAGS=" `$GNUSTEP_CONFIG --base-libs` "
 	FOUNDATION_OBJCFLAGS=" `$GNUSTEP_CONFIG --objc-flags` "
-	OPENGL_LDFLAGS="-lGL -lglut"
-	OPENGL_OBJCFLAGS="-I/usr/include/GL "
+    dnl Test to see if we're on mingw (windows ... yuck!)
+    case "$host" in
+    *mingw*)
+        dnl Maybe shouldn't default to freeglut....
+        AC_MSG_NOTICE("host is $host therefore linking against opengl32 and freeglut instead of GL and GLUT")
+        OPENGL_LDFLAGS="-lopengl32 -lglu32 -lfreeglut"
+        ;;
+    *)
+        OPENGL_LDFLAGS="-lGL -lglut"
+        ;;
+    esac
+    OPENGL_OBJCFLAGS="-I/usr/include/GL "
 fi
 CPPFLAGS+=" $OPENGL_OBJCFLAGS "
 OBJCFLAGS+=" $OPENGL_OBJCFLAGS "
@@ -73,6 +83,16 @@ AC_CHECK_HEADERS("gl.h",,[AC_MSG_ERROR([cannot find gl.h])])
 AC_CHECK_HEADERS("glu.h",,[AC_MSG_ERROR([cannot find glu.h])])
 AC_CHECK_HEADERS("glut.h",,[AC_MSG_ERROR([cannot find glut.h])])
 AC_CHECK_HEADERS([limits.h stdlib.h string.h unistd.h])
+
+AC_MSG_CHECKING(for OpenGL version 1.4 or greater)
+AC_COMPILE_IFELSE(
+	[AC_LANG_PROGRAM([[#include <gl.h>]], [[float glparm[3]; glPointParameterfv(GL_POINT_SIZE_MIN,glparm);glPointParameterfv(GL_POINT_SIZE_MAX,glparm);]])],
+	[AC_DEFINE([HAVE_OPENGL_1_4], [1], [Have OpenGL Version 1.4 or greater]) 
+		AC_MSG_RESULT(yes) 
+	],
+	[AC_DEFINE([HAVE_OPENGL_1_4], [0], [Have OpenGL Version 1.4 or greater]) AC_MSG_RESULT(no)]
+	)
+
 
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([memmove memset strdup strtol])
