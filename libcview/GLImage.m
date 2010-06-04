@@ -69,7 +69,7 @@ All rights reserved.
 -initWithFilename: (NSString *)file {
 	MagickBooleanType status;
 	[super init];
-	filename = [find_resource_path(file) retain];
+	filename = find_resource_path(file);
 
 	MagickWand *wand = NewMagickWand();
 	PixelWand *pw = NewPixelWand();
@@ -77,24 +77,28 @@ All rights reserved.
 	PixelSetColor(pw,"none");
 	status = MagickSetBackgroundColor(wand,pw);
 
-	///@todo optionaly pull from a resource instead of the full filename
-	status = MagickReadImage (wand, [filename UTF8String]);
-	if ( status == MagickFalse )
-	{
-		NSLog(@"Error reading image: %@",filename);
-		image = nil;
+	if (filename != nil) {
+		status = MagickReadImage (wand, [filename UTF8String]);
+		if ( status == MagickFalse )
+		{
+			NSLog(@"Error reading image: %@",filename);
+			image = nil;
+		}
+		else {
+			tw = MagickGetImageWidth( wand );
+			th = MagickGetImageHeight( wand );
+			w=tw;
+			h=th;
+	
+			image = [[NSMutableData dataWithCapacity: tw*th*4] retain]; //FIXME only deal with RGBA images
+
+			MagickExportImagePixels(wand, 0,0, tw, th, "RGBA", CharPixel, [image mutableBytes]);
+		}
 	}
 	else {
-		tw = MagickGetImageWidth( wand );
-		th = MagickGetImageHeight( wand );
-		w=tw;
-		h=th;
-
-		image = [[NSMutableData dataWithCapacity: tw*th*4] retain]; //FIXME only deal with RGBA images
-	
-		MagickExportImagePixels(wand, 0,0, tw, th, "RGBA", CharPixel, [image mutableBytes]);
+		NSLog(@"File for resource '%@' not found",file);
 	}
-
+	filename=[file retain];
 	bound = NO;	
 	wand = DestroyMagickWand(wand);
 	return self;
@@ -112,8 +116,10 @@ All rights reserved.
 	NSLog(@"initWithPList: %@",[self class]);
 	[super initWithPList: list];
 	[self initWithFilename: [list objectForKey: @"filename" missing: @"thefileisnotehere"]];
-	[self setWidth: [[list objectForKey: @"w" missing: @"64"] intValue]];
-	[self setHeight: [[list objectForKey: @"h" missing: @"64"] intValue]];
+	if ([list objectForKey: @"w"] != nil)
+		[self setWidth: [[list objectForKey: @"w"] intValue]];
+	if ([list objectForKey: @"h"] != nil)
+		[self setHeight: [[list objectForKey: @"h"] intValue]];
 	[self setVflip: [[list objectForKey: @"vflip" missing: @"0"] intValue]];
 	[self setHflip: [[list objectForKey: @"hflip" missing: @"0"] intValue]];
 	return self;
