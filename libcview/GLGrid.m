@@ -146,6 +146,7 @@ Data layout for reference:
 
 	Class c;
 	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
+    NSLog(@"dataSetClass is: %@", c);
 	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
 		ds=[c alloc];
 		[ds initWithPList: [list objectForKey: @"dataSet"]];
