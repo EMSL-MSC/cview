@@ -121,10 +121,11 @@ GENDERS_FOUND_TRIGGER=""
 AC_MSG_CHECKING(for genders)
 AC_COMPILE_IFELSE(
 	[AC_LANG_PROGRAM([[#include <genders.h>]], [[genders_t handle = genders_handle_create();]])],
-	[AC_DEFINE([HAVE_GENDERS], [1], [Have genders]) 
-		AC_MSG_RESULT(yes) 
-		GENDERS_FOUND_TRIGGER="foundit"
-		ATB_LDFLAGS+=" -lgenders "
+	[AC_MSG_RESULT(yes) 
+      AC_CHECK_LIB(genders,genders_handle_create,
+        [AC_DEFINE([HAVE_GENDERS], [1], [Have genders]) GENDERS_FOUND_TRIGGER="foundit" GENDERS_LDFLAGS+=" -lgenders "],
+	    [AC_DEFINE([HAVE_GENDERS], [0], [Have genders])],
+      )
 	],
 	[AC_DEFINE([HAVE_GENDERS], [0], [Have genders]) AC_MSG_RESULT(no)]
 	)
@@ -138,6 +139,7 @@ OBJCFLAGS+=" $FOUNDATION_OBJCFLAGS "
 AC_SUBST(SRC_COND_COMPILES)
 AC_SUBST(LIBCVIEW_COND_FILES)
 AC_SUBST(ATB_LDFLAGS)
+AC_SUBST(GENDERS_LDFLAGS)
 
 AC_CONFIG_FILES([Makefile src/Makefile libcview/Makefile libcview-data/Makefile tests/Makefile data/Makefile cview.spec Doxyfile])
 AC_OUTPUT
