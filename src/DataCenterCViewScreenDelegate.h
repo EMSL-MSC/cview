@@ -56,58 +56,27 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
+#ifndef DATACENTERCVIEWSCREENDELEGATE_H
+#define DATACENTERCVIEWSCREENDELEGATE_H
 #import <Foundation/Foundation.h>
-#define GL_GLEXT_PROTOTYPES
-#import <gl.h>
-#import <glut.h>
-#import "cview.h"
-#import "DataSet.h"
+#import "CViewScreenDelegate.h"
+#import "../libcview/DataCenter/Node.h"
 
-@implementation  GLPointGrid
-
--drawData {
-	int i,j;
-	float *dl;
-	float *verts;
-	float glparm[3];
-	verts = [dataRow mutableBytes];
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glPushMatrix();	
-	glScalef(xscale,yscale,zscale);
-
-	glVertexPointer(3, GL_FLOAT, 0, verts);
-	glColorPointer(3, GL_FLOAT, 0, [colorRow mutableBytes]);
-
-	//Bigger points up close stuff
-	glPointSize(150);
-#if HAVE_OPENGL_1_4
-	glparm[0]=0;
-	glPointParameterfv(GL_POINT_SIZE_MIN,glparm);
-	glparm[0]=20.0;
-	glPointParameterfv(GL_POINT_SIZE_MAX,glparm);
-	glparm[0]=0.0;
-	glparm[1]=-0.01;
-	glparm[2]=0.025;
-	glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, glparm);
-#endif
-	//end bigger stuff..
-
-	for (i=0;i<[dataSet width];i++) {
-		dl=[dataSet dataRow: i];
-
-
-		[colorMap doMapWithData: dl thatHasLength: [dataSet height] toColors: [colorRow mutableBytes]];
-		//is there a gooder way? FIXME
-		for (j=0;j<[dataSet height];j++) {
-			verts[j*3+1] = dl[j];
-			verts[j*3+0] = (float)i;
-		}	
-		glDrawArrays(GL_POINTS,0,[dataSet height]);
-	}
-
-	glPopMatrix();
-	return self;
+/**
+    Application implementation of the delegate for selecting node functionality
+    Also handles clicks to the screen and calls glPickDraw for each scene object
+    If there is a GLDataCenter present in the scene, nodes can be selected by clicking on them
+    The 7 button cycles through each job in the datacenter only showing you nodes that have that job id
+	@author Brock Erwin
+	@ingroup cviewapp
+*/
+@interface DataCenterCViewScreenDelegate : CViewScreenDelegate {
+@private
+    Node* lastSelection;
+    BOOL leftClicked;
+    BOOL passiveMove;
 }
+-(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world;
+-processHits: (GLint) hitCount buffer: (GLuint*) selectBuf andSize: (GLint) buffSize inWorld: (GLWorld*) world;
 @end
+#endif

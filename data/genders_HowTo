@@ -1,0 +1,45 @@
+# Author Brock Erwin
+# Simple genders file demonstration for use in CVIEW
+
+
+# CVIEW takes a genders file in a very specific format for this to work
+
+# Racktype definitions must start with "rack-"
+# Racktype definitions must have attributes width/height/depth
+
+rack-HP width=10,height=50,depth=10
+
+# Nodetype definitions must start with "node-"
+# Nodetype definitions must have attributes width/height/depth
+
+node-REG width=9,height=1,depth=7
+
+# Rack definitinos can be named anything as long as they follow genders naming specs
+# Rack definitions must have attributes racktype/face/gridx/gridy/gridz
+# racktype should be defined in the racktype definitions, and should have the name XXX
+# where XXX is stated in racktype definitions as "rack-XXX"
+# face can be N/E/S/W (short for north east south or west)
+# North is the direction of the negetive-X axis
+# South is the direction of the positive-X axis
+# West is the direction of the positive-Z axis
+# East is the direction of the negetive-Z axis
+myrack1 racktype=HP,face=N,gridx=0,gridy=0,gridz=0
+myrack2 racktype=HP,face=W,gridx=13.5,gridy=0,gridz=-20
+
+myrack[3-5] racktype=HP,face=W,gridx=20.5,gridy=0
+myrack3 gridz=30
+myrack4 gridz=40
+myrack5 gridz=50
+
+# node names can be anything you like, as long as they follow genders specs.
+# I have found that genders does not like parentheses, or any other special characters really (including dashes)
+# underscores seem to work though.
+# No spaces either, because spaces are the delimeter between node name and attributes
+
+# Node definitions must have attributes nodetype/rack/vposition
+# nodetype should be defined in the nodetype definitions, and should have the name XXX
+# where XXX is stated in nodetype definitions as "node-XXX"
+# The vertical position is along the Y-axis, with 0 being the very middle of the rack
+# thus, bottom of rack = -(1/2)*rackheight and, top of rack = (1/2)*rackheight
+mynode nodetype=REG,rack=myrack5,vposition=0
+anothernode nodetype=REG,rack=myrack1,vposition=4

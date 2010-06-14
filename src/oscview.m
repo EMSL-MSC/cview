@@ -68,6 +68,8 @@ All rights reserved.
 #import "PList.h"
 #import "cview.h"
 
+#import "ObjectTracker.h"
+
 int main(int argc,char *argv[], char *env[]) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	ENABLEDEBUGALLOC;
@@ -113,7 +115,7 @@ int main(int argc,char *argv[], char *env[]) {
 	NSLog(@"Setup done");
 
 	plist = [g getPList];
-	NSLog([NSPropertyListSerialization stringFromPropertyList: plist]);
+//	NSLog([NSPropertyListSerialization stringFromPropertyList: plist]);
 	
 
 	DUMPALLOCLIST(YES);

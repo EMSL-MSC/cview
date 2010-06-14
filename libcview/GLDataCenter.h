@@ -1,6 +1,6 @@
 /*
 
-This file is port of the CVIEW graphics system, which is goverened by the following License
+This file is part of the CVIEW graphics system, which is goverened by the following License
 
 Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
@@ -56,58 +56,59 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-#import <Foundation/Foundation.h>
-#define GL_GLEXT_PROTOTYPES
-#import <gl.h>
-#import <glut.h>
-#import "cview.h"
+#ifndef GLDATACENTER_H
+#define GLDATACENTER_H
+/**
+	Draw a 3 dimensional view of the data center showing each rack
+    in it's corresponding location
+
+	@author Brock Erwin
+	@ingroup cview3d
+*/
+#import "GLGrid.h"
+#import "DataCenter/Drawable.h"
+#import "Foundation/NSEnumerator.h"
+
 #import "DataSet.h"
+#import "WebDataSet.h"
+#import "ColorMap.h"
+#import "DrawableObject.h"
+#import "GLText.h"
+#import "DataCenter/Node.h"
+#import "DataCenter/Rack.h"
+typedef struct
+{
+    float x,y,z;
+}V3F;
 
-@implementation  GLPointGrid
-
--drawData {
-	int i,j;
-	float *dl;
-	float *verts;
-	float glparm[3];
-	verts = [dataRow mutableBytes];
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glPushMatrix();	
-	glScalef(xscale,yscale,zscale);
-
-	glVertexPointer(3, GL_FLOAT, 0, verts);
-	glColorPointer(3, GL_FLOAT, 0, [colorRow mutableBytes]);
-
-	//Bigger points up close stuff
-	glPointSize(150);
-#if HAVE_OPENGL_1_4
-	glparm[0]=0;
-	glPointParameterfv(GL_POINT_SIZE_MIN,glparm);
-	glparm[0]=20.0;
-	glPointParameterfv(GL_POINT_SIZE_MAX,glparm);
-	glparm[0]=0.0;
-	glparm[1]=-0.01;
-	glparm[2]=0.025;
-	glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, glparm);
-#endif
-	//end bigger stuff..
-
-	for (i=0;i<[dataSet width];i++) {
-		dl=[dataSet dataRow: i];
-
-
-		[colorMap doMapWithData: dl thatHasLength: [dataSet height] toColors: [colorRow mutableBytes]];
-		//is there a gooder way? FIXME
-		for (j=0;j<[dataSet height];j++) {
-			verts[j*3+1] = dl[j];
-			verts[j*3+0] = (float)i;
-		}	
-		glDrawArrays(GL_POINTS,0,[dataSet height]);
-	}
-
-	glPopMatrix();
-	return self;
+@interface GLDataCenter: DrawableObject <Pickable> {
+    NSMutableDictionary *racks;
+@private
+    WebDataSet *jobIds; // job id data set
+    NSMutableData *floor; // Stores floor vertices
+    int floorVertCount;
+    NSString *gendersFilePath;
+    int jobIdIndex;
+    DataSet *dataSet;
 }
+-init;
+-doInit;
+-initWithGenders;
+-(float)getJobIdFromNode:(Node*)n;
+-(NSArray*)getNodesRunningAJobID:(float) jobid;
+/// Makes all nodes fade except for nodes with the passed jobid
+-fadeEverythingExceptJobID:(float) jobid;
+-seeNextJobId;
+-glDraw;
+/**
+    @author Brock Erwin
+    called when picking objects in the scene (does not render)
+    @return An array of objects that were picked
+ */
+-glPickDraw;
+/// Draws the floor tiles
+-drawFloor;
+-(NSEnumerator*)getEnumerator;
+-addRack: (Rack*) Rack;
 @end
+#endif
