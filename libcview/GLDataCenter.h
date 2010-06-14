@@ -98,7 +98,7 @@ typedef struct
 -(NSArray*)getNodesRunningAJobID:(float) jobid;
 /// Makes all nodes fade except for nodes with the passed jobid
 -fadeEverythingExceptJobID:(float) jobid;
--doStuff;
+-seeNextJobId;
 -glDraw;
 /**
     @author Brock Erwin

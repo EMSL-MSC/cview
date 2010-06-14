@@ -66,8 +66,6 @@ All rights reserved.
 #import "Scene.h"
 #import "GLDataCenter.h"
 #import "IdDatabase.h"
-
-@implementation DataCenterCViewScreenDelegate 
 /**
     Overrides the super implementation of keyPress in order to check
     for our own special key-presses.  After we've checked, we can pass
@@ -76,6 +74,7 @@ All rights reserved.
 
     Right now, the only thing that this class overrides is the '7' key press.
  */
+@implementation DataCenterCViewScreenDelegate 
 -init {
     lastSelection = nil;
     leftClicked = NO;
@@ -102,7 +101,7 @@ All rights reserved.
             id element;
             while((element = [enumerator nextObject]) != nil) {
                 if([element isKindOfClass: [GLDataCenter class]]) {
-                    [(GLDataCenter*)element doStuff];  // yes, send it our message
+                    [(GLDataCenter*)element seeNextJobId];  // yes, send it our message
                 }
             }
             break;

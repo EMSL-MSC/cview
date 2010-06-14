@@ -64,6 +64,9 @@ All rights reserved.
 
 /**
     Application implementation of the delegate for selecting node functionality
+    Also handles clicks to the screen and calls glPickDraw for each scene object
+    If there is a GLDataCenter present in the scene, nodes can be selected by clicking on them
+    The 7 button cycles through each job in the datacenter only showing you nodes that have that job id
 	@author Brock Erwin
 	@ingroup cviewapp
 */

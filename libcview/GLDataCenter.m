@@ -117,7 +117,7 @@ extern GLuint g_textureID;
     [nodeArray autorelease];//auto or regular, not really sure which to use....
     return nodeArray;
 }
--doStuff {
+-seeNextJobId {
     if(jobIds == nil) {
         NSLog(@"jobIds was nil!!!");
         return self;
