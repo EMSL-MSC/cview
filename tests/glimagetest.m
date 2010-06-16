@@ -1,6 +1,6 @@
 /*
 
-This file is part of the CVIEW graphics system, which is goverened by the following License
+This file is port of the CVIEW graphics system, which is goverened by the following License
 
 Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
@@ -57,7 +57,7 @@ All rights reserved.
 
 */
 #import "cview.h"
-#import "IdDatabase.h"
+
 
 int main(int argc,char *argv[], char *env[]) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -65,53 +65,29 @@ int main(int argc,char *argv[], char *env[]) {
 	//needed for NSLog
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
+	GLImage *image = [[[GLImage alloc] initWithFilename:@"chinook.png"] setVflip: YES];
+	GLImage *hud = [[[GLImage alloc] initWithFilename:@"/home/efelix/EMSL_Header.png"] setVflip: NO] ;
+	//GLImage *image = [[GLImage alloc] initWithFilename:@"/home/efelix/mscf/branches/kfox/cview/data/chinook.png"];
 
+	Scene *over = [[Scene alloc] init];
+	[over addObject: hud alignHoriz: -1 Vert: -1];
 
-    NSMutableArray *arr = [[NSMutableArray alloc] init];
-    // add some random strings
-    [arr addObject: @"joey"];
-    [arr addObject: @"brock"];
-    [arr addObject: @"evan"];
-    [arr addObject: @"stinky"];
-    [arr addObject: @"ranson"];
-    [arr addObject: @"jay"];
+	GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test"];
+	Scene * scene = [[Scene alloc] initWithObject:
+		image
+		atX: 0 Y: 0 Z: 0];
 
-    NSMutableArray *numbers = [[NSMutableArray alloc] init];
+	[scene addObject: [[GLText alloc] initWithString: @"Test Text" andFont: @"LinLibertine_Re.ttf"]
+			atX: 150 Y: 300 Z: 250];
+	[scene addObject: image atX: 0 Y: 0 Z: 200];
 
-    NSEnumerator *enumerator = [arr objectEnumerator];
-    id element;
-    while((element = [enumerator nextObject]) != nil) {
-        // make ids for the string objects
-        [numbers addObject: [NSNumber numberWithInt: [IdDatabase reserveUniqueId: element]]];
-    }
-
-    enumerator = [numbers objectEnumerator];
-    while((element = [enumerator nextObject]) != nil) {
-        printf("unique id: %d - string name: %s\n",
-            [element intValue],
-            [[IdDatabase objectForId: [element intValue]] UTF8String]
-            );
-    }
-    
-    printf("removing id 3 (stinky) -- he's too stinky!\n");
-NSLog(@"database count: %u", [IdDatabase count]);
-
-    [IdDatabase print];
-    [IdDatabase releaseUniqueId: 3];
-    [IdDatabase print];
-
-
-    // print it again
-    enumerator = [numbers objectEnumerator];
-    while((element = [enumerator nextObject]) != nil) {
-        printf("unique id: %d - string name: %s\n",
-            [element intValue],
-            [[IdDatabase objectForId: [element intValue]] UTF8String]
-            );
-    }
- 
-NSLog(@"database count: %u", [IdDatabase count]);
-
+	[[[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50]
+		setScene: scene]
+		setOverlay: over]
+		setEye: [[[Eye alloc] init] setX: 150.0 Y: 1500.0 Z: 2200.0 Hangle:-4.6 Vangle: -2.0]
+	];
+	[g dumpScreens];
+	[g run];
 	[pool release];
 	return 0;
 }

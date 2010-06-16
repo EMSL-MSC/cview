@@ -220,8 +220,8 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 			//NSLog(@"name: %@, class: %@ keypath: %@ settings: %s",key,[o class],keypath, data);
 			
 			if ([o isKindOfClass: [NSNumber class]]) {
-				//NSLog(@"is number");
 				NSNumber *n = (NSNumber *)o;
+				//NSLog(@"is number:%c",*[n objCType]);
 				switch (*[n objCType]) {
 					case 'f':
 						TwAddVarCB(myBar, [keypath UTF8String], TW_TYPE_FLOAT, floatSetCallback, floatGetCallback, atb, data);
@@ -272,12 +272,11 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 					NSString *newpath=[NSString stringWithFormat:@"%@.%@.%d",name,keypath,i];
 					NSString *newkey=[NSString stringWithFormat:@"%@[%d]",key,i];
 					NSLog(@"Array Member: %@  keypath: %@",newpath,newkey);
-					if ([self parseTree: [a objectAtIndex: i] withGroup: newpath]) {
+					if ([self parseTree: [a objectAtIndex: i] withGroup: newpath])
 						if (grp)
 							TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@ label=%@-%@ close",name,newpath,grp,newkey,[[a objectAtIndex: i] description]] UTF8String]);
 						else
 							TwDefine([[NSString stringWithFormat:@"%@/%@ label=%@-%@ close",name,newpath,newkey,[[a objectAtIndex: i] description]] UTF8String]);
-                    }
  				}
  			}
 			else {

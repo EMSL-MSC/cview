@@ -67,27 +67,38 @@ All rights reserved.
 
 @implementation GLImage
 -initWithFilename: (NSString *)file {
-	filename = [file retain];
+	MagickBooleanType status;
+	[super init];
+	filename = find_resource_path(file);
 
 	MagickWand *wand = NewMagickWand();
+	PixelWand *pw = NewPixelWand();
 
+	PixelSetColor(pw,"none");
+	status = MagickSetBackgroundColor(wand,pw);
 
-	///@todo optionaly pull from a resource instead of the full filename
-	MagickBooleanType status = MagickReadImage (wand, [filename UTF8String]);
-	if ( status == MagickFalse )
-	{
-		NSLog(@"Error reading image: %@",filename);
-		image = nil;
+	if (filename != nil) {
+		status = MagickReadImage (wand, [filename UTF8String]);
+		if ( status == MagickFalse )
+		{
+			NSLog(@"Error reading image: %@",filename);
+			image = nil;
+		}
+		else {
+			tw = MagickGetImageWidth( wand );
+			th = MagickGetImageHeight( wand );
+			w=tw;
+			h=th;
+	
+			image = [[NSMutableData dataWithCapacity: tw*th*4] retain]; //FIXME only deal with RGBA images
+
+			MagickExportImagePixels(wand, 0,0, tw, th, "RGBA", CharPixel, [image mutableBytes]);
+		}
 	}
 	else {
-		tw = MagickGetImageWidth( wand );
-		th = MagickGetImageHeight( wand );
-
-		image = [[NSMutableData dataWithCapacity: tw*th*4] retain]; //FIXME only deal with RGBA images
-	
-		MagickGetImagePixels(wand, 0,0, tw, th, "RGBA", CharPixel, [image mutableBytes]);
+		NSLog(@"File for resource '%@' not found",file);
 	}
-
+	filename=[file retain];
 	bound = NO;	
 	wand = DestroyMagickWand(wand);
 	return self;
@@ -105,8 +116,12 @@ All rights reserved.
 	NSLog(@"initWithPList: %@",[self class]);
 	[super initWithPList: list];
 	[self initWithFilename: [list objectForKey: @"filename" missing: @"thefileisnotehere"]];
-	[self setWidth: [[list objectForKey: @"w" missing: @"64"] intValue]];
-	[self setHeight: [[list objectForKey: @"h" missing: @"64"] intValue]];
+	if ([list objectForKey: @"w"] != nil)
+		[self setWidth: [[list objectForKey: @"w"] intValue]];
+	if ([list objectForKey: @"h"] != nil)
+		[self setHeight: [[list objectForKey: @"h"] intValue]];
+	[self setVflip: [[list objectForKey: @"vflip" missing: @"0"] intValue]];
+	[self setHflip: [[list objectForKey: @"hflip" missing: @"0"] intValue]];
 	return self;
 }
  
@@ -116,7 +131,14 @@ All rights reserved.
 	[dict setObject: filename forKey: @"filename"];
 	[dict setObject: [NSNumber numberWithInt: w] forKey: @"w"];
 	[dict setObject: [NSNumber numberWithInt: h] forKey: @"h"];
+	[dict setObject: [NSNumber numberWithInt: vflip] forKey: @"vflip"];
+	[dict setObject: [NSNumber numberWithInt: hflip] forKey: @"hflip"];
+
 	return dict;
+}
+
+-(NSArray *)attributeKeys {
+	return [NSArray arrayWithObjects: @"width",@"height",@"hflip",@"vflip",nil];
 }
 
 -setWidth: (int) width {
@@ -134,7 +156,25 @@ All rights reserved.
 	return h;
 }
 
+-setVflip: (BOOL)flip {
+	vflip = flip;
+	return self;
+}
+
+-setHflip: (BOOL)flip {
+	hflip = flip;
+	return self;
+}
+
+-(BOOL)Vflip {
+	return vflip;
+}
+-(BOOL)Hflip {
+	return hflip;
+}
+
 -glDraw {
+	int bot,top,left,right;
 	if (image) {
 		if (!bound) {
 			glGenTextures(1, &texture);
@@ -143,31 +183,55 @@ All rights reserved.
 			bound = YES;
 		}
 
-		GLboolean wasit;
+		GLboolean wasit,wasblend;
 
 		wasit = glIsEnabled(GL_TEXTURE_2D);
+		wasblend=glIsEnabled(GL_BLEND);
 		glEnable(GL_TEXTURE_2D);
+		glEnable(GL_BLEND);
 
 		glBindTexture(GL_TEXTURE_2D, texture);
-		        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_NEAREST);
-        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
-        glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+		left=0;
+		right=w;
+		top=0;
+		bot=h;
+
+		if (vflip) {
+			bot=0;
+			top=h;
+		}
+		if (hflip) {
+			right=0;
+			left=w;
+		}
 
 		glColor4f(1.0,1.0,1.0,1.0);
 		glBegin(GL_QUADS);
 		glTexCoord2f(0.0,0.0);
-		glVertex2i(0,0);
+		glVertex2i(left,top);
 		glTexCoord2f(0.0,1.0);
-		glVertex2i(0,h);
+		glVertex2i(left,bot);
 		glTexCoord2f(1.0,1.0);
-		glVertex2i(w,h);
+		glVertex2i(right,bot);
 		glTexCoord2f(1.0,0.0);
-		glVertex2i(w,0);
+		glVertex2i(right,top);
 		glEnd();
 	
 		if (!wasit)
 			glDisable(GL_TEXTURE_2D);
+		if (!wasblend)
+			glDisable(GL_BLEND);
 	}
 	return self;
 }
+
+
+-description {
+	return [[self class] description];
+}
+
 @end
