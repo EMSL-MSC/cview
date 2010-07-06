@@ -146,6 +146,29 @@ All rights reserved.
 	return self;
 }
 
+-do4DMapWithData: (float *)data thatHasLength: (int)len toColors: (float *)colors {
+	float *cm;
+	int i;
+	int d;
+	cm = (float *)[colormap mutableBytes];
+	//cm = (float *)[[[NSMutableData alloc] initWithLength: (theMax+2)*sizeof(float)*4] mutableBytes];
+	for (i=0;i<len;i++) {
+		d=(int)data[i];
+		if (d >= theMax)
+			d = theMax;
+		if (d < 0)
+			d = 0;
+
+		colors[i*4+0] = cm[d*3+0];
+		colors[i*4+1] = cm[d*3+1];
+		colors[i*4+2] = cm[d*3+2];
+		colors[i*4+3] = d == 0 ? 0.0 : 1.0;
+//		colors[i*4+3] = .1;//d == 0 ? 0.0 : 1.0;
+		//memcpy(colors+i*3,cm+((int)data[i]),3*sizeof(float));
+	}
+	return self;
+}
+
 -glMap: (int)val {
 	float *cm;
 	cm = (float *)[colormap mutableBytes];

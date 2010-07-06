@@ -96,7 +96,7 @@ All rights reserved.
 	unsigned int stripLength = [surfaceIndices length]/sizeof(GLuint)/([dataSet width]-1);
 	NSMutableData *vertsObj = [[NSMutableData alloc] initWithLength: (3*[dataSet height] * [dataSet width])*sizeof(float)];
 	float *verts = (float *)[vertsObj mutableBytes];
-	NSMutableData *colorObj = [[NSMutableData alloc] initWithLength: (3 * [dataSet height] * [dataSet width]) * sizeof(float)];
+	NSMutableData *colorObj = [[NSMutableData alloc] initWithLength: (4 * [dataSet height] * [dataSet width]) * sizeof(float)];
 	float *color = (float *)[colorObj mutableBytes];
 	float *data = [dataSet data];
 
@@ -105,7 +105,10 @@ All rights reserved.
 	glPushMatrix();	
 	glScalef(xscale,yscale,zscale);
 
-	[colorMap doMapWithData: data thatHasLength: [dataSet height] * [dataSet width] toColors: color];
+	[colorMap do4DMapWithData: data thatHasLength: [dataSet height] * [dataSet width] toColors: color];
+
+    glEnable(GL_BLEND);
+
 	for(i=0;i<[dataSet width];i++) {
 		for(j=0;j<[dataSet height];j++) {
 			verts[vertIndex++] = (float)i;
@@ -114,11 +117,13 @@ All rights reserved.
 		}
 	}
 	glVertexPointer(3, GL_FLOAT, 0, verts);
-	glColorPointer(3, GL_FLOAT, 0, color);
+	glColorPointer(4, GL_FLOAT, 0, color);
 	
 	for(i=0; i < ([dataSet width]-1); i++) {
 		glDrawElements(GL_TRIANGLE_STRIP, stripLength, GL_UNSIGNED_INT, [surfaceIndices mutableBytes] + (i * stripLength) * sizeof(int));
 	}
+
+    glDisable(GL_BLEND);
 
 	glPopMatrix();
 	[vertsObj autorelease];

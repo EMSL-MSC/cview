@@ -79,6 +79,14 @@ static GLText *gltName;
     texture = _texture;
     return self;
 }
+-(NSString*)getNodeNames {
+    NSEnumerator *e = [nodes objectEnumerator];
+    Node *n;
+    NSString *rtval = [NSString string];
+    while( (n = [e nextObject]) )
+        rtval = [[rtval stringByAppendingString: @" "] stringByAppendingString: [n name]];
+    return rtval;
+}
 -cleanUp{
     NSEnumerator *enumerator = [nodes objectEnumerator];
     if(enumerator != nil) {

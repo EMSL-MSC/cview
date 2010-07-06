@@ -445,6 +445,15 @@ extern GLuint g_textureID;
     if(genders_nodelist_destroy(handle, nodelist) == -1) NSLog(@"There was an error when calling 'genders_nodelist_destroy(handle,nodelist)'");
     if(genders_attrlist_destroy(handle, attrlist) == -1) NSLog(@"There was an error when calling 'genders_attrlist_destroy(handle,attrlist)'");
     if(genders_vallist_destroy(handle, vallist) == -1) NSLog(@"There was an error when calling 'genders_vallist_destroy(handle,vallist)'");
+    
+    /* print to std out */
+
+    NSEnumerator *e = [racks objectEnumerator];
+
+    Rack *r;
+    while( (r = [e nextObject]) ) {
+        printf("%s %s\n",[[r name] UTF8String], [[r getNodeNames] UTF8String]);
+    }
     return self;
 }
 -initWithPList: (id)list {

@@ -82,6 +82,8 @@ All rights reserved.
 +setTexture:(unsigned int)_texture;
 +setGLTName:(GLText*) _gltName; // kind of 3d text we'll use to draw the rack name
 -initWithName:(NSString*)_name;
+/* Returns a string of node names contained in this rack separated by spaces */
+-(NSString*)getNodeNames;
 -glDraw;
 /// called when picking objects in the scene (does not render)
 -glPickDraw;

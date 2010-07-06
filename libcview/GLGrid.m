@@ -211,7 +211,7 @@ Data layout for reference:
 	glScalef(1.0,1.0,1.0); 
 	
 	[self drawPlane];
-	[self drawData];
+	[self drawData];//NoZeroes];
 	[self drawAxis];
 	[self drawTitles];
 	
@@ -320,6 +320,10 @@ Data layout for reference:
 }
 
 -drawData {
+if(NO) {
+    [self drawDataNoZeroes];
+    return self;
+}
 	int i,j;
 	float *dl;
 	float *verts;
@@ -346,6 +350,7 @@ Data layout for reference:
 		countPoints = 1;
 		prevPoint=0;
 		for (j=1;j<[dataSet height];j++) {
+            // This saves us from draw multiple lines if they are all at the same height
 			if(prevValue != dl[j]) {
 				if(j-1 != prevPoint) {
 					verts[countPoints*3+2] = (float)j-1;
@@ -377,6 +382,114 @@ Data layout for reference:
 	return self;
 }
 
+-drawDataNoZeroes {
+    NSMutableArray *zeroIndices;
+	int i,j;
+	float *dl;
+	float *verts;
+	int prevPoint=0;
+	float prevValue;
+	int countPoints;
+	verts = [dataRow mutableBytes];
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glPushMatrix();	
+	glScalef(xscale,yscale,zscale);
+
+	for (i=0;i<[dataSet width];i++) {
+        //zeroIndices = [[NSMutableArray alloc] init];
+        zeroIndices = [NSMutableArray array];
+		dl=[dataSet dataRow: i];
+
+		/// @todo is there a gooder way to draw all the lines?
+		verts[2] = 0;
+		verts[1] = prevValue = dl[0];
+
+        if(dl[0] == 0)
+            [zeroIndices addObject: [NSNumber numberWithInt: 0]];
+
+		verts[0] = (float)i;
+		countPoints = 1;
+		prevPoint=0;
+		for (j=1;j<[dataSet height];j++) {
+            // This saves us from draw multiple lines if they are all at the same height
+			if(prevValue != dl[j]) {
+				if(j-1 != prevPoint) {
+					verts[countPoints*3+2] = (float)j-1;
+					verts[countPoints*3+1] = prevValue;
+					verts[countPoints*3+0] = (float)i;
+                    if(dl[j-1] == 0)
+                        [zeroIndices addObject: [NSNumber numberWithInt: countPoints]];
+					countPoints++;
+				}
+				verts[countPoints*3+2] = (float)j;
+				verts[countPoints*3+1] = dl[j];
+				verts[countPoints*3+0] = (float)i;
+                if(dl[j] == 0)
+                    [zeroIndices addObject: [NSNumber numberWithInt: countPoints]];
+				countPoints++;
+				prevValue = dl[j];
+				prevPoint = j;
+                // don't render zero values (TODO: switch this to not rendering NaNs)
+			}
+		}
+		if(j-1 != prevPoint) {
+			verts[countPoints*3+2] = (float)j-1;
+			verts[countPoints*3+1] = dl[j-1];
+			verts[countPoints*3+0] = (float)i;
+            if(dl[j-1] == 0)
+                [zeroIndices addObject: [NSNumber numberWithInt: countPoints]];
+			countPoints++;
+		}
+
+		[colorMap doMapWithPoints: verts thatHasLength: countPoints toColors: [colorRow mutableBytes]];
+		
+ //       NSLog(@"*****[zeroIndices count] =  %d; countPoints = %d",[zeroIndices count],countPoints);
+        int j = 0, k = 0, l;
+        if([zeroIndices count] > 0 && [[zeroIndices objectAtIndex: 0] intValue] == 0) {
+            if([zeroIndices count] > 1 && [[zeroIndices objectAtIndex: 1] intValue] == 1) {
+                j = 2;
+                k = 2;
+            } else {
+                j = 2;
+                k = 1;
+            }
+        }
+        for(; j < [zeroIndices count]; ++j) {
+            l = [[zeroIndices objectAtIndex: j] intValue];
+//            NSLog(@"indice = %d",l);
+
+            glVertexPointer(3, GL_FLOAT, 0, verts+k*3);
+            glColorPointer(3, GL_FLOAT, 0, ((float*)[colorRow mutableBytes]+k*3));
+            
+		    glDrawArrays(GL_LINE_STRIP,0,l-k);
+            k = l;
+        }
+        /*
+        NSLog(@"now showing the things.");
+        for(j=0; j < countPoints; ++j) {
+//            NSLog(@"point: (%f,%f,%f)",verts[0+j*3],verts[1+j*3],verts[2+j*3]);
+            if(verts[1+j*3] == 0)
+                NSLog(@"middle coordinate is zero!");
+            else
+                NSLog(@"all good here :-)");
+        }
+        */
+
+ //       glVertexPointer(3, GL_FLOAT, 0, verts+k*3);
+ //       glColorPointer(3, GL_FLOAT, 0, ((float*)[colorRow mutableBytes]+k*3));
+
+//		glDrawArrays(GL_LINE_STRIP,0,countPoints-k);
+		
+	//	glDrawArrays(GL_LINE_STRIP,0,countPoints);
+
+//        [zeroIndices release];
+	}
+
+	glPopMatrix();
+	return self;
+}
 -setXTicks: (int) delta {
 	xTicks = delta;
 	return self;

@@ -73,6 +73,8 @@ All rights reserved.
 +mapWithMax: (int)max;
 -initWithMax: (int)max;
 -doMapWithData: (float *)data thatHasLength: (int)len toColors: (float *)colors;
+-do4DMapWithData: (float *)data thatHasLength: (int)len toColors: (float *)colors;
+
 -doMapWithPoints: (float *)Points thatHasLength: (int)len toColors: (float *)colors;
 -glMap: (int)val;
 -(float)r: (float)i;

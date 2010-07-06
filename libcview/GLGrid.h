@@ -99,6 +99,8 @@ This class implements the gl drawing code to show a graph of lines above a lower
 -drawPlane;
 /** draw the data lines*/
 -drawData;
+
+-drawDataNoZeroes;
 /** set the delta between each tick drawing on the X axis*/
 -setXTicks: (int) delta;
 /** set the delta between each tick drawing on the Y axis*/
