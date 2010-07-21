@@ -72,7 +72,6 @@ All rights reserved.
 typedef struct {
     float x,y,z;
 } Point;
-
 typedef struct
 {
     float tu, tv;

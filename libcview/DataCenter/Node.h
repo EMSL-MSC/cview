@@ -68,7 +68,10 @@ All rights reserved.
     @author Brock Erwin
 	@ingroup cview3d
 */
+@class GLDataCenter;  // forward declaration of class GLDataCenter
 @interface Node : Locatable <Pickable> {
+	// This is the datacenter that this node is apart of
+	GLDataCenter* datacenter;
     float temperature;
     BOOL isodd;
     BOOL drawname;
@@ -80,8 +83,8 @@ All rights reserved.
     double fadestart;
     double fadeval;
 }
-+(void)setWebDataSet: (WebDataSet*)_dataSet;
-+setGLTName:(GLText*) _gltName;
+//+(void)setWebDataSet: (WebDataSet*)_dataSet;
+//+setGLTName:(GLText*) _gltName;
 -glDraw;
 /// called when picking objects in the scene (does not render)
 -glPickDraw;
@@ -92,6 +95,6 @@ All rights reserved.
 -setIsodd: (BOOL)_isodd;
 -setSelected:(BOOL)_selected;
 -cleanUp;
--initWithName:(NSString*)_name;
+-initWithName:(NSString*)_name andDataCenter:(GLDataCenter*) _datacenter;
 @end
 #endif // NODE_H

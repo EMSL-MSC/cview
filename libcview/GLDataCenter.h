@@ -74,7 +74,6 @@ All rights reserved.
 #import "ColorMap.h"
 #import "DrawableObject.h"
 #import "GLText.h"
-#import "DataCenter/Node.h"
 #import "DataCenter/Rack.h"
 typedef struct
 {
@@ -90,10 +89,27 @@ typedef struct
     NSString *gendersFilePath;
     int jobIdIndex;
     DataSet *dataSet;
+	GLText *gltName;
+	ColorMap *colorMap;
+	double currentMax;
+	float red,green,blue;	// colors for the legend background
+	BOOL drawPopUp;
+	int popUpX,popUpY;
+	Node* selectedNode;
 }
 -init;
+-drawPopUpAtX:(int)x andY:(int)y;
+-(DataSet*)dataSet;
+-(GLText*)gltName;
+-setGltName:(GLText*)_gltName;
+-(ColorMap*)colorMap;
+-setColorMap:(ColorMap*)_colorMap;
+-(double)currentMax;
+-setCurrentMax:(double)_currentMax;
 -doInit;
 -initWithGenders;
+-setSelectedNode:(Node*)_selectedNode;
+-(Node*)selectedNode;
 -(float)getJobIdFromNode:(Node*)n;
 -(NSArray*)getNodesRunningAJobID:(float) jobid;
 /// Makes all nodes fade except for nodes with the passed jobid
@@ -110,5 +126,6 @@ typedef struct
 -drawFloor;
 -(NSEnumerator*)getEnumerator;
 -addRack: (Rack*) Rack;
+-(NSArray *)attributeKeys;
 @end
 #endif

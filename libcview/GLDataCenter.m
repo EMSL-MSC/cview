@@ -65,18 +65,29 @@ All rights reserved.
 #import "GLDataCenter.h"
 #import "DictionaryExtra.h"
 #include <genders.h>
+#import "DataCenter/Node.h"
 void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
 extern GLuint g_textureID;
 @implementation  GLDataCenter
 -init {
     [super init];
+	self->selectedNode = nil;
+	self->drawPopUp = NO;
+	self->red = 0.475;
+	self->green = 0.314;
+	self->blue = 0.363;
     self->floor = nil;
     self->floorVertCount = 0;
     self->gendersFilePath = nil;
     self->jobIds = nil;
     self->jobIdIndex = 0;
+	self->dataSet = nil;
+	self->gltName = nil;
+	self->colorMap = nil;
+	self->currentMax = 0;
+
     [Rack setGLTName: nil];
-    [Node setGLTName: nil];
+    //[Node setGLTName: nil];
     return self;
 }
 
@@ -84,6 +95,14 @@ extern GLuint g_textureID;
     self->racks = [[NSMutableDictionary alloc] init];
     [self initWithGenders]; // use the genders file to initialize the data center
     return self;
+}
+
+-drawPopUpAtX:(int)x andY:(int)y {
+	// schedule the popup for later drawing (in glDraw)
+	self->drawPopUp = YES;
+	self->popUpX = x;
+	self->popUpY = y;
+	return self;
 }
 -(Node*)findNodeObjectByName:(NSString*) _name {
     if(self->racks == nil)
@@ -378,7 +397,7 @@ extern GLuint g_textureID;
         genders_attrlist_clear(handle,attrlist); genders_vallist_clear(handle,vallist);
         if(genders_getattr(handle,attrlist,vallist,attrlen,nodelist[i]) != -1) {
             // Instantiate the node
-            node = [[Node alloc] initWithName: [[NSString stringWithUTF8String: nodelist[i]] retain]];
+            node = [[Node alloc] initWithName: [[NSString stringWithUTF8String: nodelist[i]] retain] andDataCenter: self];
             [node setTemperature: 0];
 
             if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"nodetype"]) == -1) {
@@ -477,7 +496,7 @@ extern GLuint g_textureID;
         jobIds = [ds retain];
 	}
     [self doInit];
-    [Node setWebDataSet: (WebDataSet*)self->dataSet];
+    //[Node setWebDataSet: (WebDataSet*)self->dataSet];
     return self;
 }
 -getPList {
@@ -493,6 +512,31 @@ extern GLuint g_textureID;
     [self->floor autorelease];
     [super dealloc];
 }
+-(DataSet*)dataSet {
+	return dataSet;
+}
+-(GLText*)gltName {
+	return gltName;
+}
+-setGltName:(GLText*)_gltName{
+	self->gltName = _gltName;
+	return self;
+}
+-(ColorMap*)colorMap {
+	return colorMap;
+}
+-setColorMap:(ColorMap*) _colorMap{
+	self->colorMap = _colorMap;
+	return self;
+}
+-(double)currentMax {
+	return currentMax;
+}
+-setCurrentMax:(double) _currentMax {
+	self->currentMax = _currentMax;
+	return self;
+}
+
 // Used for debugging purposes only
 -drawOriginAxis {
     glPushMatrix();
@@ -557,12 +601,137 @@ extern GLuint g_textureID;
     [[self->racks allValues] makeObjectsPerformSelector:@selector(glPickDraw)];
     return self;
 }
+-drawLegend {
+	int i;
+	float bsize=0.25/1.0;//xscale;
+	float x,y;
+
+	x=0.0;//[dataSet width];
+//	NSLog(@"width = %f, height = %f", [dataSet width], [dataSet height]);
+	y=0.0;
+	glPushMatrix();
+	glClear(GL_DEPTH_BUFFER_BIT);
+	//glScalef(xscale,yscale,zscale); 	
+//	glClear (GL_COLOR_BUFFER_BIT);
+	glLoadIdentity();
+	glTranslatef(18.0f, 10.0f, -100.0f);
+	glScalef(0.05,0.05,0.05);
+	float s = 50;
+	glPushMatrix();
+		glTranslatef(s/4, 0.0, 0.0);
+		glBegin(GL_POLYGON);
+			glColor3f(red,green,blue);
+			glVertex3f(-s, -s, 0.0f); // The bottom left corner  
+			glVertex3f(-s, 2*s, 0.0f); // The top left corner  
+			glVertex3f(s, 2*s, 0.0f); // The top right corner  
+			glVertex3f(s, -s, 0.0f); // The bottom right corner
+		glEnd( );
+		glFlush( );
+	glPopMatrix();
+	glTranslatef(0.0,-0.5*s, 0.0);
+
+	glBegin(GL_LINES);
+	for (i=1;i<currentMax+1;i++) {
+		[colorMap glMap: i];
+		//glColor3f(1.0,1.0,1.0);
+		glVertex3f(x,i-1.0,y);
+		glVertex3f(x,i,y);
+	}
+	glEnd();
+	
+	glColor3f(1.0,1.0,1.0);
+	glBegin(GL_QUADS);
+	for (i=0;i<currentMax+1;i+=(int)MAX(4,currentMax/5)) {
+		glVertex3f(x-bsize,i,y-bsize);
+		glVertex3f(x-bsize,i,y+bsize);
+		glVertex3f(x+bsize,i,y+bsize);
+		glVertex3f(x+bsize,i,y-bsize);
+	}
+	glEnd();
+
+	float xscale = 1.0;
+	for (i=0;i<currentMax+1;i+=(int)MAX(4,currentMax/5)) {
+		//NSLog(@"drawing a string *** i = %d, currentMax = %f",i,currentMax);
+		drawString3D(x+4.0/xscale,i,y,GLUT_BITMAP_HELVETICA_12,[dataSet getLabel: i],1.0);
+	}
+
+	glPopMatrix();
+	return self;
+}
+-(NSArray *)attributeKeys {
+	//isVisible comes from the DrawableObject
+	return [NSArray arrayWithObjects: @"red",@"green",@"blue",nil];
+}
+
+-(NSDictionary *)tweaksettings {
+	return [NSDictionary dictionaryWithObjectsAndKeys:
+		@"min=0.0 max=1.0 step=0.001",@"red",
+		@"min=0.0 max=1.0 step=0.001",@"green",
+		@"min=0.0 max=1.0 step=0.001",@"blue",
+		nil];
+}
+-(Node*)selectedNode {
+	return self->selectedNode;
+}
+-setSelectedNode:(Node*)_selectedNode {
+	self->selectedNode = _selectedNode;
+	return self;
+}
+-glDrawPopUp {
+	NSLog(@"drawing the popup");
+	NSLog(@"glut: width: %f height: %f", glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+	GLdouble popx,popy,popz;
+	GLint viewport[4];
+	GLdouble modelview[16],projection[16];
+//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glGetIntegerv(GL_VIEWPORT,viewport);
+	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
+	glGetDoublev(GL_PROJECTION_MATRIX,projection);
+	//gluUnProject(self->popUpX, viewport[3] - self->popUpY, 1.0, modelview, projection, viewport, &x, &y, &z);
+//	NSLog(@"node location: x: %f", [[self->selectedNode location] x]);
+	//gluUnProject(self->popUpX, viewport[3] - self->popUpY, 1.0, modelview, projection, viewport, &x, &y, &z);
+	//Vector* loc = [self->selectedNode location];
+	//gluProject([loc x], [loc y], [loc z], modelview, projection, viewport, &popx, &popy, &popz);
+//	popy = viewport[3] - popy;
+	//NSLog(@"%@: popUpX = %f; popUpY = %f; x = %f; y = %f; z = %f", [selectedNode name], self->popUpX, self->popUpY, popx, popy, popz);
+	//NSLog(@"%@: x = %f; y = %f; z = %f; popx = %f; popy = %f; popz = %f", [selectedNode name], [loc x], [loc y], [loc z], popx, popy, popz);
+	
+
+	NSLog(@"%@: popUpX = %d; popUpY = %d", [selectedNode name], self->popUpX, self->popUpY);
+
+	float x,y;
+
+	x=0.0;//[dataSet width];
+//	NSLog(@"width = %f, height = %f", [dataSet width], [dataSet height]);
+	y=0.0;
+	glPushMatrix();
+//	glClear(GL_DEPTH_BUFFER_BIT);
+	//glScalef(xscale,yscale,zscale); 	
+//	glClear (GL_COLOR_BUFFER_BIT);
+// glLoadIdentity();
+	glLoadIdentity();
+	glTranslatef(0.0, 0.0, -100.0f);
+	float scale = 0.01;
+	glTranslatef(self->popUpX*scale,-self->popUpY*scale,0.0);//popz);
+	glBegin(GL_TRIANGLES);
+	glColor3f(0.5,.1,1.0);
+	glVertex2f(-5.0,0);
+	glVertex2f(0.0,5);
+	glVertex2f(5.0,0);
+	glEnd();
+	glPopMatrix();
+	return self;
+}
 -glDraw {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     [self drawFloor];
     [[self->racks allValues] makeObjectsPerformSelector:@selector(glDraw)]; // draw the racks
+//	[self drawLegend];
+
+	if(YES) //self->drawPopUp) 
+		[self glDrawPopUp];
 
     GLenum err = glGetError();
     if(err != GL_NO_ERROR)

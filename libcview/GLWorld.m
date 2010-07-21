@@ -356,9 +356,15 @@ All rights reserved.
 	DestroyMagickWand(wand);
 	return self;
 }
+-(int)hoverX {
+	return hoverX;
+}
 -setHoverX:(int)x {
     hoverX = x;
     return self;
+}
+-(int)hoverY {
+	return hoverY;
 }
 -setHoverY:(int)y {
     hoverY = y;

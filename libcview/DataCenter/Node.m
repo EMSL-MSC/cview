@@ -63,13 +63,16 @@ All rights reserved.
 #import <glut.h>
 //#import "AisleOffsets.h"
 #import "../../libcview-data/WebDataSet.h"
+#import "../GLDataCenter.h"
+
 @implementation Node
 //static VertArray *nodeArray;
-static WebDataSet *dataSet;
-static GLText *gltName;
-static ColorMap *colorMap;
-static double currentMax = 0.0;
+//static WebDataSet *dataSet;
+//static GLText *gltName;
+//static ColorMap *colorMap;
+//static double currentMax = 0.0;
 
+/*
 +(void)setWebDataSet:(WebDataSet*)_dataSet {
     dataSet = [_dataSet retain];
 }
@@ -77,6 +80,7 @@ static double currentMax = 0.0;
     gltName = _gltName;
     return self;
 }
+*/
 -cleanUp {
     // maybe add stuff here later
     [self autorelease];
@@ -93,14 +97,18 @@ static double currentMax = 0.0;
     self->fadeval = 1;  // default to full opacity
     return self;
  }
--initWithName:(NSString*)_name {
+-initWithName:(NSString*)_name andDataCenter:(GLDataCenter*) _datacenter {
     [self init];
-    [self setName: _name];
+    [self setName: [_name retain]];
+
+	self->datacenter = [_datacenter retain];
     return self;
 }
 -(void)dealloc {
-    if(dataSet != nil)
-        [dataSet release];
+	if(name != nil)
+		[name autorelease];
+	if(datacenter != nil)
+		[datacenter autorelease];
     return [super dealloc];
 }
 -startFading {
@@ -115,7 +123,7 @@ static double currentMax = 0.0;
 }
 -(float)getData: (NSString*)nodeName {
     // First find the nodename in the xticks array
-    float *row = [dataSet dataRowByString: [nodeName uppercaseString]];
+    float *row = [((WebDataSet*)[datacenter dataSet]) dataRowByString: [nodeName uppercaseString]];
     if(row != NULL)
         return row[0];
     else
@@ -156,40 +164,43 @@ static double currentMax = 0.0;
             if(self->temperature != -1)
                 self->temperature /=  100.0;
             glEnable(GL_BLEND);
-            float max = [dataSet getScaledMax];
-            if (currentMax != max) {
-                currentMax = max;
-                [colorMap autorelease];
-                colorMap = [ColorMap mapWithMax: currentMax];
-                [colorMap retain];
+            float max = [[datacenter dataSet] getScaledMax];
+            if ([datacenter  currentMax] != max) {
+                [datacenter setCurrentMax:  max];
+                [[datacenter colorMap] autorelease];
+                [datacenter setColorMap: [[ColorMap mapWithMax: [datacenter currentMax]] retain]];
             }
             if(selected == YES)
                 glColor4f(.1,.1,.1,1);
             else if(temperature == -1) { // No valid data found from the dataSet    
                 glColor4f(1,1,1,fadeval);// color the node white
             }else
-                glColor4f([colorMap r: temperature],[colorMap g: temperature], [colorMap b: temperature], fadeval);
+                glColor4f([[datacenter colorMap] r: temperature],
+						  [[datacenter colorMap] g: temperature],
+						  [[datacenter colorMap] b: temperature], fadeval);
             [super drawBox];    // draw a box around the node
 
             if(drawname == YES) {
-                if(gltName == nil) {
-                    gltName = [[GLText alloc] initWithString: [self name] andFont: @"LinLibertine_Re.ttf"];
-                    [gltName setColorRed: 0 Green: 0 Blue: 0];
+				GLText* glT = [datacenter gltName];
+                if(glT == nil) {
+					glT = [[GLText alloc] initWithString: [self name] andFont: @"LinLibertine_Re.ttf"];
+                    [datacenter setGltName: glT];
+                    [glT setColorRed: 0 Green: 0 Blue: 0];
                 }
-                [gltName setString: [[self name] lowercaseString]];
-                if([gltName width] != 0 && [gltName height] != 0) { // test for divide by zero
+                [glT setString: [[self name] lowercaseString]];
+                if([glT width] != 0 && [glT height] != 0) { // test for divide by zero
                     // Here we want to scale the font such that it fits inside the area on the front of the node
-                    float heightRatio = [self height] / [gltName height];
-                    float widthRatio = [self width] / [gltName width];
+                    float heightRatio = [self height] / [glT height];
+                    float widthRatio = [self width] / [glT width];
                     float scale = heightRatio < widthRatio ? .9*heightRatio : .9*widthRatio;
                     if(isodd == YES)  // every other node, change name locations (left or right aligned)
                         glTranslatef(.48*[self width],.5*[self height],-.51*[self depth]);
                     else
-                        glTranslatef(-.48*[self width]+scale*[gltName width],.5*[self height],-.51*[self depth]);
+                        glTranslatef(-.48*[self width]+scale*[glT width],.5*[self height],-.51*[self depth]);
                     glScalef(scale,-scale,scale);
                     glRotatef(180,0,0,1);
                     glRotatef(180,1,0,0);
-                    [gltName glDraw];   // Draw the node name
+                    [glT glDraw];   // Draw the node name
                 }
             }
         [super cleanUpAfterDraw];
@@ -217,7 +228,11 @@ static double currentMax = 0.0;
 }
 -setSelected:(BOOL)_selected {
     self->selected = _selected; 
-    glutPostRedisplay();
+	if(_selected == YES) {
+	    glutPostRedisplay();
+		if(datacenter != nil)
+			[datacenter setSelectedNode: self];
+	}
     return self;
 }
 @end
