@@ -80,7 +80,7 @@ typedef struct
     float x,y,z;
 }V3F;
 
-@interface GLDataCenter: DrawableObject <Pickable> {
+@interface GLDataCenter: DrawableObject <PList, Pickable> {
     NSMutableDictionary *racks;
 @private
     WebDataSet *jobIds; // job id data set

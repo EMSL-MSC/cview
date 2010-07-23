@@ -278,7 +278,9 @@ All rights reserved.
 	NSEnumerator *list;
 	list = [objects objectEnumerator];
 	while ( (o = [list nextObject]) ) {
+//			NSLog(@"object: %@", [o->object class]);
 			if ([o->object visible]) {
+//			NSLog(@"object: %@", [o->object class]);
 				glPushMatrix();
 				[self doTranslate: o];
 				[o->object glDraw];

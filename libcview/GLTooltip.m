@@ -56,16 +56,32 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
+#import <gl.h>
+#import <glut.h>
 #import "GLTooltip.h"
-void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
-extern GLuint g_textureID;
 @implementation  GLTooltip
 -init {
     [super init];
+	self->x = 0.5;
+	self->y = 0.5;
+	self->width = 0.2;
+	self->height = 0.2;
     return self;
 }
-
+-(float)x {return self->x;}
+-setX:(float)_x {self->x = _x; return self;}
+-(float)y {return self->y;}
+-setY:(float)_y {self->y = _y; return self;}
 -glDraw {
+	//NSLog(@"drawing the tooltip!");
+	glTranslatef(self->x,self->y,0);
+//	glScalef(100,100,100);
+	glBegin(GL_TRIANGLES);
+	glColor3f(.5,.5,.1);
+	glVertex2f(-50,0);
+	glVertex2f(0,50);
+	glVertex2f(50,0);
+	glEnd();
     return self;
 }
 

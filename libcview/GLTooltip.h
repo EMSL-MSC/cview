@@ -59,16 +59,22 @@ All rights reserved.
 #ifndef GLTOOLTIP_H
 #define GLTOOLTIP_H
 /**
-	Draw a general tooltip that can receive message from the NSNotificationCenter
+	Draw a general tooltip that can receive messages from the NSNotificationCenter
 
 	@author Brock Erwin
 	@ingroup cview3d
 */
+#import "DrawableObject.h"
 
 @interface GLTooltip: DrawableObject {
 @private
+	float x,y,width,height;
 }
 -init;
+-(float)x;
+-setX:(float)_x;
+-(float)y;
+-setY:(float)_y;
 -glDraw;
 @end
 #endif

@@ -61,6 +61,7 @@ All rights reserved.
 #import <Foundation/Foundation.h>
 #import "CViewScreenDelegate.h"
 #import "../libcview/DataCenter/Node.h"
+#import "../libcview/GLTooltip.h"
 
 /**
     Application implementation of the delegate for selecting node functionality
@@ -75,7 +76,9 @@ All rights reserved.
     Node* lastSelection;
     BOOL leftClicked;
     BOOL passiveMove;
+	GLTooltip* tip;
 }
+-initWithScreen: (GLScreen *)screen;
 -(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world;
 -processHits: (GLint) hitCount buffer: (GLuint*) selectBuf andSize: (GLint) buffSize inWorld: (GLWorld*) world;
 @end

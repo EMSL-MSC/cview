@@ -1,24 +1,24 @@
 {
-    height = 1125;
+    height = 1600;
     name = "Chinook Graphs";
-    width = 1920;
+    width = 10240;
     worlds = (
 	{
 	    col = 0;
-	    colp = 200;
+	    colp = 50;
 	    name = Chinook;
 	    row = 0;
 	    rowp = 50;
 	    world = {
 		eye = {
-		    hangle = "-3.203331";
+		    hangle = "-4.72";
 		    move_speed = 10;
 		    rotate_speed = 0.025;
 		    strafe_speed = 10;
-		    vangle = "-1.60833";
-		    x = "-997.2211";
-		    y = 127.8512;
-		    z = 798.9223;
+		    vangle = "-2.441667";
+		    x = 1173.848;
+		    y = 1874.553;
+		    z = 2032.575;
 		};
 		imageCycleTime = 60;
 		imageDailyDir = YES;
@@ -47,7 +47,7 @@
 				yscale = 1;
 				zscale = 1;
 			    };
-			    objectclass = GLGridSurface;
+			    objectclass = GLGrid;
 			    valign = 0;
 			    x = 0;
 			    y = 0;
@@ -70,7 +70,7 @@
 				yscale = 1;
 				zscale = 1;
 			    };
-			    objectclass = GLGridSurface;
+			    objectclass = GLGrid;
 			    valign = 0;
 			    x = 0;
 			    y = 0;
@@ -128,20 +128,20 @@
 	},
 	{
 	    col = 1;
-	    colp = 200;
+	    colp = 25;
 	    name = Chinook;
 	    row = 0;
 	    rowp = 50;
 	    world = {
 		eye = {
-		    hangle = "-3.15333";
+		    hangle = "-4.72";
 		    move_speed = 10;
 		    rotate_speed = 0.025;
 		    strafe_speed = 10;
-		    vangle = "-1.691665";
-		    x = "-429.2581";
-		    y = 64.63627;
-		    z = 815.0461;
+		    vangle = "-2.441667";
+		    x = 1230.276;
+		    y = 2155.408;
+		    z = 2438.649;
 		};
 		imageCycleTime = 0;
 		imageDailyDir = NO;
@@ -244,10 +244,113 @@
 			    x = 0;
 			    y = 0;
 			    z = 0;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				grid = {
+				    dataSet = {
+					baseURL = "http://chumbucket/cluster/pdu/";
+					key = total_current;
+				    };
+				    dataSetClass = WebDataSet;
+				    fontScale = 1.0;
+				    isVisible = YES;
+				    xTicks = 1;
+				    xscale = 38.1;
+				    yTicks = 8;
+				    yscale = 1;
+				    zscale = 1;
+				};
+				gridclass = GLGridSurface;
+				isVisible = YES;
+			    };
+			    objectclass = MultiGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 1000;
+			}
+		    );
+		};
+	    };
+	},
+    {
+	    col = 2;
+	    colp = 25;
+	    name = Chinook;
+	    row = 0;
+	    rowp = 50;
+	    world = {
+		eye = {
+		    hangle = "-7.058319";
+		    move_speed = 10;
+		    rotate_speed = 0.025;
+		    strafe_speed = 10;
+		    vangle = "-2.158336";
+		    x = 1159.947;
+		    y = 1356.332;
+		    z = "-173.7875";
+		};
+		imageCycleTime = 0;
+		imageDailyDir = YES;
+		imageDir = "/tmp";
+		imagePrefix = chinook;
+		overlay = {
+		    objects = (
+			{
+			    align = YES;
+			    halign = "-1";
+			    object = {
+				colorB = 1;
+				colorG = 1;
+				colorR = 1;
+				fontfile = ./data/LinLibertine_Re.ttf;
+				isVisible = YES;
+				rotX = 0;
+				rotY = 0;
+				rotZ = 0;
+				scaleX = 1;
+				scaleY = 1;
+				scaleZ = 1;
+				string = "Ambient Temperature Data - Chinook";
+			    };
+			    objectclass = GLText;
+			    valign = 1;
+			    x = 0;
+			    y = 100;
+			    z = 0;
+			}
+		    );
+		};
+		scene = {
+		    objects = (
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = env.ATemp;
+				};
+				dataSetClass = WebDataSet;
+				isVisible = YES;
+				jobIDDataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = job_id;
+				};
+			    };
+			    objectclass = GLDataCenter;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 750;
 			}
 		    );
 		};
 	    };
 	}
+
     );
 }

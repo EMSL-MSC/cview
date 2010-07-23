@@ -466,13 +466,13 @@ extern GLuint g_textureID;
     if(genders_vallist_destroy(handle, vallist) == -1) NSLog(@"There was an error when calling 'genders_vallist_destroy(handle,vallist)'");
     
     /* print to std out */
-
+	/*
     NSEnumerator *e = [racks objectEnumerator];
 
     Rack *r;
     while( (r = [e nextObject]) ) {
         printf("%s %s\n",[[r name] UTF8String], [[r getNodeNames] UTF8String]);
-    }
+    }*/
     return self;
 }
 -initWithPList: (id)list {
@@ -678,8 +678,8 @@ extern GLuint g_textureID;
 	return self;
 }
 -glDrawPopUp {
-	NSLog(@"drawing the popup");
-	NSLog(@"glut: width: %f height: %f", glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+//	NSLog(@"drawing the popup");
+//	NSLog(@"glut: width: %f height: %f", glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
 	GLdouble popx,popy,popz;
 	GLint viewport[4];
 	GLdouble modelview[16],projection[16];
@@ -697,7 +697,7 @@ extern GLuint g_textureID;
 	//NSLog(@"%@: x = %f; y = %f; z = %f; popx = %f; popy = %f; popz = %f", [selectedNode name], [loc x], [loc y], [loc z], popx, popy, popz);
 	
 
-	NSLog(@"%@: popUpX = %d; popUpY = %d", [selectedNode name], self->popUpX, self->popUpY);
+//	NSLog(@"%@: popUpX = %d; popUpY = %d", [selectedNode name], self->popUpX, self->popUpY);
 
 	float x,y;
 

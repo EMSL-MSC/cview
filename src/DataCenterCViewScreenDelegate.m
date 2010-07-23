@@ -76,10 +76,16 @@ All rights reserved.
  */
 @implementation DataCenterCViewScreenDelegate 
 -init {
+	self->tip = [[GLTooltip alloc] init];
     lastSelection = nil;
     leftClicked = NO;
     passiveMove = NO;
     return self;
+}
+-initWithScreen: (GLScreen *)screen {
+	[super initWithScreen: screen];
+	[self init];
+	return self;
 }
 -(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
     BOOL handled = YES;
@@ -115,6 +121,10 @@ All rights reserved.
 }
 -(BOOL)mousePassiveMoveAtX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
     [[[world setHoverX: x] setHoverY: y] setDoPickDraw: YES];
+	[[self->tip setX: x] setY: y]; 
+	
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"setGLTooltip" object: self
+		userInfo: [NSDictionary dictionaryWithObject: tip forKey: @"GLTooltip"]];
     passiveMove = YES;
     leftClicked = NO;
 //    return NO;  // return value doesn't matter right now! ask evan about this
@@ -152,10 +162,8 @@ All rights reserved.
 -selectNode: (Node*) n {
     if(lastSelection != nil)
         [lastSelection setSelected: NO];
-    if(n != nil) {
+    if(n != nil)
         [n setSelected: YES];
-    }else
-        NSLog(@"n is nil!");
     lastSelection = n;
     return self;
 }
@@ -172,6 +180,20 @@ All rights reserved.
     GLuint names, *ptr, *rowptr;
     ptr = (GLuint*)selectBuf;
 
+/* temporary code */
+    NSEnumerator *enume = [[[world scene] getAllObjects] objectEnumerator];
+    GLDataCenter *gcdT = nil;
+    id elemen;
+	// loop through the scene objects and find the DataCenter
+	while((elemen = [enume nextObject]) != nil) {
+		if([elemen isKindOfClass: [GLDataCenter class]]) {
+			gcdT = elemen;
+			[gcdT drawPopUpAtX: [world hoverX] andY: [world hoverY]];
+			break;
+		}
+	}
+/* end temporary code */
+
     for(i=0;i<hitCount;++i) {
         names = *ptr;   // the number of names in current 'cell'
         rowptr = ptr;   // points to the current 'cell' or row
@@ -187,8 +209,10 @@ All rights reserved.
     Node *n;
     if(thing != nil && [thing isKindOfClass: [Node class]])
         n = thing;
-    else
+    else {
+		[self selectNode: nil];
         return self;
+	}
     ///////////////////////////////////////////////////////////////////
     //////   Now we parsed the data and found out what node is selected,
     //////// next decide what to do with that node
@@ -215,6 +239,9 @@ All rights reserved.
 
             if(jobid != 0) 
                 [gcd fadeEverythingExceptJobID: jobid];
+
+			// Draw a popup window at this location
+			[gcd drawPopUpAtX: [world hoverX] andY: [world hoverY]];
         }
     }else if(passiveMove == YES){
         passiveMove = NO;
