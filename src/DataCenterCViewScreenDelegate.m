@@ -77,6 +77,11 @@ All rights reserved.
 @implementation DataCenterCViewScreenDelegate 
 -init {
 	self->tip = [[GLTooltip alloc] init];
+
+[[NSNotificationCenter defaultCenter] postNotificationName: @"setGLTooltip" object: self
+		userInfo: [NSDictionary dictionaryWithObject: tip forKey: @"GLTooltip"]];
+
+
     lastSelection = nil;
     leftClicked = NO;
     passiveMove = NO;
@@ -123,8 +128,8 @@ All rights reserved.
     [[[world setHoverX: x] setHoverY: y] setDoPickDraw: YES];
 	[[self->tip setX: x] setY: y]; 
 	
-	[[NSNotificationCenter defaultCenter] postNotificationName: @"setGLTooltip" object: self
-		userInfo: [NSDictionary dictionaryWithObject: tip forKey: @"GLTooltip"]];
+//	[[NSNotificationCenter defaultCenter] postNotificationName: @"setGLTooltip" object: self
+//		userInfo: [NSDictionary dictionaryWithObject: tip forKey: @"GLTooltip"]];
     passiveMove = YES;
     leftClicked = NO;
 //    return NO;  // return value doesn't matter right now! ask evan about this
