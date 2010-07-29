@@ -66,21 +66,6 @@ All rights reserved.
 #import "../GLDataCenter.h"
 
 @implementation Node
-//static VertArray *nodeArray;
-//static WebDataSet *dataSet;
-//static GLText *gltName;
-//static ColorMap *colorMap;
-//static double currentMax = 0.0;
-
-/*
-+(void)setWebDataSet:(WebDataSet*)_dataSet {
-    dataSet = [_dataSet retain];
-}
-+setGLTName:(GLText*) _gltName {
-    gltName = _gltName;
-    return self;
-}
-*/
 -cleanUp {
     // maybe add stuff here later
     [self autorelease];

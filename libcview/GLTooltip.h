@@ -68,13 +68,30 @@ All rights reserved.
 
 @interface GLTooltip: DrawableObject {
 @private
-	float x,y,width,height;
+	float x,y,width,height,title_height;
+	int title_halign,max_text_size;
+	NSString* title;
+	NSString* text;
+	float red,green,blue;	// colors for the background
+	float borderred,bordergreen,borderblue;	// colors for the border
 }
 -init;
 -(float)x;
 -setX:(float)_x;
 -(float)y;
 -setY:(float)_y;
+-(NSString*)text;
+-setText:(NSString*)_text;
+/*
+-(int)title_halign;
+-setTitle_halign:(int)_title_halign;
+-(float)width;
+-setWidth:(float)_width;
+-(float)height;
+-setHeight:(float)_height;
+-(NSArray *)attributeKeys;
+-(NSDictionary *)tweaksettings;
+*/
 -glDraw;
 @end
 #endif

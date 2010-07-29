@@ -59,29 +59,119 @@ All rights reserved.
 #import <gl.h>
 #import <glut.h>
 #import "GLTooltip.h"
+#import <FTGL/ftgl.h>
+//Implemented in utils.m
+//void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
+static FTGLfont *theFont=NULL;
+NSFileHandle *find_resource(NSString *filename);
+NSString *find_resource_path(NSString *filename);
 @implementation  GLTooltip
 -init {
     [super init];
+	self->title = [@"GLTooltip" retain];
+	self->text = [@"Hello World!\nHow are you today?" retain];
+	self->title_halign = 0;
 	self->x = 0.5;
 	self->y = 0.5;
-	self->width = 0.2;
-	self->height = 0.2;
+	self->width = 50;
+	self->height = 100;
+	self->borderred = 233.0/255.0;
+	self->bordergreen = 149.0/255.0;
+	self->borderblue = 25.0/255.0;
+	self->red = 120.0/255.0;
+	self->green = 162.0/255.0;
+	self->blue = 46.0/255.0;
+
     return self;
+}
+-(void)dealloc {
+	NSLog(@"%@ dealloc",[self class]);
+	[title autorelease];
+	[text autorelease];
+	ftglDestroyFont(theFont);
+	[super dealloc];
+	return;
+}
+-(NSArray *)attributeKeys {
+	//isVisible comes from the DrawableObject
+	return [NSArray arrayWithObjects: @"width",
+									@"height",
+									@"title_height",
+									@"title_halign",
+									@"max_text_size",
+									@"red",
+									@"green",
+									@"blue",
+									nil];
+}
+-(NSDictionary *)tweaksettings {
+	return [NSDictionary dictionaryWithObjectsAndKeys:
+		@"step=1 min=1 max=500",@"width",
+		@"step=1 min=1 max=500",@"height",
+		@"step=1 min=1 max=500",@"title_height",
+		@"help='Title Horizontal Alignment' min=-1 max=1 step=1",@"title_halign",
+		@"help='Maximum text size' min=8 max=20 step=1",@"max_text_size",
+		@"min=0.0 max=1.0 step=0.001",@"red",
+		@"min=0.0 max=1.0 step=0.001",@"green",
+		@"min=0.0 max=1.0 step=0.001",@"blue",
+		nil];
 }
 -(float)x {return self->x;}
 -setX:(float)_x {self->x = _x; return self;}
 -(float)y {return self->y;}
 -setY:(float)_y {self->y = _y; return self;}
+-(NSString*)text {return text;}
+-setText:(NSString*)_text {self->text = _text; return self;}
+
+/*
+-(int)title_halign {return self->title_halign;}
+-setTitle_halign:(int)_title_halign {self->title_halign = _title_halign; return self;}
+-(float)width {return self->width;}
+-setWidth:(float)_width {self->width = _width; return self;}
+-(float)height {return self->height;}
+-setHeight:(float)_height {self->height = _height; return self;}
+*/
+
 -glDraw {
 	//NSLog(@"drawing the tooltip!");
 	glTranslatef(self->x,self->y,0);
 //	glScalef(100,100,100);
-	glBegin(GL_TRIANGLES);
-	glColor3f(.5,.5,.1);
-	glVertex2f(-50,0);
-	glVertex2f(0,50);
-	glVertex2f(50,0);
+	float bordersize = 10.0;
+	// Draw the boarder
+	glBegin(GL_POLYGON);
+		glColor3f(borderred,bordergreen,borderblue);
+		glVertex2f(-.5*self->width-bordersize,-.5*self->height-bordersize);
+		glVertex2f(-.5*self->width-bordersize, .5*self->height+bordersize);
+		glVertex2f( .5*self->width+bordersize, .5*self->height+bordersize);
+		glVertex2f( .5*self->width+bordersize,-.5*self->height-bordersize);
 	glEnd();
+	// Draw the background
+	glBegin(GL_POLYGON);
+		glColor3f(red,green,blue);
+		glVertex2f(-.5*self->width,-.5*self->height);
+		glVertex2f(-.5*self->width, .5*self->height);
+		glVertex2f( .5*self->width, .5*self->height);
+		glVertex2f( .5*self->width,-.5*self->height);
+	glEnd();
+	glColor3f(1,1,1);
+	if(self->text != nil) {
+		float bounds[6];
+		// Start drawing  the text at the upper left part of the box
+		glTranslatef(-.5*self->width,-.5*self->height,0);
+		//glScalef(10,10,10);
+		ftglGetFontBBox(theFont,[text UTF8String],[text length],bounds);
+		//printf("bounds[4] = %f\n", bounds[4]);
+		glTranslatef(0,bounds[4],0);
+//		drawString3D(0,0,0,GLUT_BITMAP_HELVETICA_12,self->text,1.0);
+
+		if (theFont==NULL) {
+			theFont = ftglCreateBitmapFont([find_resource_path(@"LinLibertine_Re.ttf") UTF8String]);
+			ftglSetFontFaceSize(theFont,14,72);
+			ftglSetFontCharMap(theFont,ft_encoding_unicode);
+		}
+		ftglRenderFont(theFont,[text UTF8String], FTGL_RENDER_ALL);
+	}
+
     return self;
 }
 

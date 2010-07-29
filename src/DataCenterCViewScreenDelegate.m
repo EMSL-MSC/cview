@@ -77,11 +77,8 @@ All rights reserved.
 @implementation DataCenterCViewScreenDelegate 
 -init {
 	self->tip = [[GLTooltip alloc] init];
-
-[[NSNotificationCenter defaultCenter] postNotificationName: @"setGLTooltip" object: self
-		userInfo: [NSDictionary dictionaryWithObject: tip forKey: @"GLTooltip"]];
-
-
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"setGLTooltip" object: self
+			userInfo: [NSDictionary dictionaryWithObject: tip forKey: @"GLTooltip"]];
     lastSelection = nil;
     leftClicked = NO;
     passiveMove = NO;
@@ -193,7 +190,6 @@ All rights reserved.
 	while((elemen = [enume nextObject]) != nil) {
 		if([elemen isKindOfClass: [GLDataCenter class]]) {
 			gcdT = elemen;
-			[gcdT drawPopUpAtX: [world hoverX] andY: [world hoverY]];
 			break;
 		}
 	}
@@ -212,9 +208,10 @@ All rights reserved.
     }
     id thing = [IdDatabase objectForId: theId];
     Node *n;
-    if(thing != nil && [thing isKindOfClass: [Node class]])
+    if(thing != nil && [thing isKindOfClass: [Node class]]) {
         n = thing;
-    else {
+		[tip setText: [n name]];
+    } else {
 		[self selectNode: nil];
         return self;
 	}
@@ -244,9 +241,6 @@ All rights reserved.
 
             if(jobid != 0) 
                 [gcd fadeEverythingExceptJobID: jobid];
-
-			// Draw a popup window at this location
-			[gcd drawPopUpAtX: [world hoverX] andY: [world hoverY]];
         }
     }else if(passiveMove == YES){
         passiveMove = NO;

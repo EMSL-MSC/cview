@@ -72,7 +72,6 @@ extern GLuint g_textureID;
 -init {
     [super init];
 	self->selectedNode = nil;
-	self->drawPopUp = NO;
 	self->red = 0.475;
 	self->green = 0.314;
 	self->blue = 0.363;
@@ -97,13 +96,6 @@ extern GLuint g_textureID;
     return self;
 }
 
--drawPopUpAtX:(int)x andY:(int)y {
-	// schedule the popup for later drawing (in glDraw)
-	self->drawPopUp = YES;
-	self->popUpX = x;
-	self->popUpY = y;
-	return self;
-}
 -(Node*)findNodeObjectByName:(NSString*) _name {
     if(self->racks == nil)
         return nil;
@@ -677,51 +669,6 @@ extern GLuint g_textureID;
 	self->selectedNode = _selectedNode;
 	return self;
 }
--glDrawPopUp {
-//	NSLog(@"drawing the popup");
-//	NSLog(@"glut: width: %f height: %f", glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
-	GLdouble popx,popy,popz;
-	GLint viewport[4];
-	GLdouble modelview[16],projection[16];
-//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glGetIntegerv(GL_VIEWPORT,viewport);
-	glGetDoublev(GL_MODELVIEW_MATRIX,modelview);
-	glGetDoublev(GL_PROJECTION_MATRIX,projection);
-	//gluUnProject(self->popUpX, viewport[3] - self->popUpY, 1.0, modelview, projection, viewport, &x, &y, &z);
-//	NSLog(@"node location: x: %f", [[self->selectedNode location] x]);
-	//gluUnProject(self->popUpX, viewport[3] - self->popUpY, 1.0, modelview, projection, viewport, &x, &y, &z);
-	//Vector* loc = [self->selectedNode location];
-	//gluProject([loc x], [loc y], [loc z], modelview, projection, viewport, &popx, &popy, &popz);
-//	popy = viewport[3] - popy;
-	//NSLog(@"%@: popUpX = %f; popUpY = %f; x = %f; y = %f; z = %f", [selectedNode name], self->popUpX, self->popUpY, popx, popy, popz);
-	//NSLog(@"%@: x = %f; y = %f; z = %f; popx = %f; popy = %f; popz = %f", [selectedNode name], [loc x], [loc y], [loc z], popx, popy, popz);
-	
-
-//	NSLog(@"%@: popUpX = %d; popUpY = %d", [selectedNode name], self->popUpX, self->popUpY);
-
-	float x,y;
-
-	x=0.0;//[dataSet width];
-//	NSLog(@"width = %f, height = %f", [dataSet width], [dataSet height]);
-	y=0.0;
-	glPushMatrix();
-//	glClear(GL_DEPTH_BUFFER_BIT);
-	//glScalef(xscale,yscale,zscale); 	
-//	glClear (GL_COLOR_BUFFER_BIT);
-// glLoadIdentity();
-	glLoadIdentity();
-	glTranslatef(0.0, 0.0, -100.0f);
-	float scale = 0.01;
-	glTranslatef(self->popUpX*scale,-self->popUpY*scale,0.0);//popz);
-	glBegin(GL_TRIANGLES);
-	glColor3f(0.5,.1,1.0);
-	glVertex2f(-5.0,0);
-	glVertex2f(0.0,5);
-	glVertex2f(5.0,0);
-	glEnd();
-	glPopMatrix();
-	return self;
-}
 -glDraw {
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
@@ -729,9 +676,6 @@ extern GLuint g_textureID;
     [self drawFloor];
     [[self->racks allValues] makeObjectsPerformSelector:@selector(glDraw)]; // draw the racks
 //	[self drawLegend];
-
-	if(YES) //self->drawPopUp) 
-		[self glDrawPopUp];
 
     GLenum err = glGetError();
     if(err != GL_NO_ERROR)

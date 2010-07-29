@@ -65,6 +65,7 @@ All rights reserved.
 #import "PList.h"
 #import "config.h"
 #import "Identifiable.h"
+#import "GLTooltip.h"
 /**
 GLWorld is an encapsulation of a 3d world managed as a Scene of Objects.  It also manages the 'Eye' or camera position for drawing to a Open GL context.  There is a concept of an Overlay, or the two dimensional information shown in front of the 3d scene.
 
@@ -85,6 +86,7 @@ GLWorld is an encapsulation of a 3d world managed as a Scene of Objects.  It als
     int hoverX;
     int hoverY;
     id delegate;
+	GLTooltip *tooltip;
 }
 -init;
 /// called to draw the entire world
@@ -139,5 +141,7 @@ GLWorld is an encapsulation of a 3d world managed as a Scene of Objects.  It als
 -setDoPickDraw:(BOOL)_doPickDraw;
 -setDelegate: (id)_delegate;
 -(id)delegate;
+-(GLTooltip*)tooltip;
+-setTooltip:(GLTooltip*)_tooltip;
 @end
 #endif

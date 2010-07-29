@@ -68,6 +68,7 @@ All rights reserved.
 @implementation GLWorld 
 -init {
     [super init];
+	self->tooltip = nil;
     delegate = nil;
 	displayList = -1;
 	imagePrefix=[NSMutableString stringWithString: @"glworld"];
@@ -171,6 +172,8 @@ All rights reserved.
 	if (overlay) {
 		[self gl2DProlog];
 		[overlay glDraw];
+		if(self->tooltip != nil)
+			[self->tooltip glDraw];
 		[self gl2DEpilog];
 	}
 
@@ -270,6 +273,14 @@ All rights reserved.
 
 -overlay {
 	return overlay;
+}
+
+-(GLTooltip*)tooltip {
+	return tooltip;
+}
+-setTooltip:(GLTooltip*)_tooltip {
+	tooltip = _tooltip;
+	return self;
 }
 
 -setEye: ( Eye * ) e {

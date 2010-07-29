@@ -93,12 +93,9 @@ typedef struct
 	ColorMap *colorMap;
 	double currentMax;
 	float red,green,blue;	// colors for the legend background
-	BOOL drawPopUp;
-	int popUpX,popUpY;
-	Node* selectedNode;
+	Node* selectedNode;		// nil if no node is selected, non-nil if mouse is hovering over a node
 }
 -init;
--drawPopUpAtX:(int)x andY:(int)y;
 -(DataSet*)dataSet;
 -(GLText*)gltName;
 -setGltName:(GLText*)_gltName;
