@@ -94,6 +94,14 @@ All rights reserved.
 	///\todo error checking or exception handling.
 	scene = [[[Scene alloc] initWithPList: [list objectForKey: @"scene"]] retain];
 	eye = [[[Eye alloc] initWithPList: [list objectForKey: @"eye"]] retain];
+
+	// Initialize the tooltip with its plist if specified
+	id tooltip_plist = [list objectForKey: @"tooltip" missing: nil];
+	if(tooltip_plist != nil)
+		tooltip = [[GLTooltip alloc] initWithPList: tooltip_plist];
+	else
+		tooltip = nil;
+
 	id ov = [list objectForKey: @"overlay" missing: nil];
 	
 	if (ov != nil) {
@@ -119,6 +127,10 @@ All rights reserved.
 		[plist setObject: [overlay getPList] forKey: @"overlay"];
 	}
 
+	if(tooltip != nil) {
+		[plist setObject: [tooltip getPList] forKey: @"tooltip"];
+	}
+
 	[plist setObject: imagePrefix forKey: @"imagePrefix"];
 	[plist setObject: imageDir forKey: @"imageDir"];
 	[plist setObject: [NSNumber numberWithBool: imageDailyDir] forKey: @"imageDailyDir"];
@@ -129,7 +141,7 @@ All rights reserved.
 
 -(NSArray *)attributeKeys {
 	//return [NSArray arrayWithObjects: @"eye",@"scene",@"imageDir",@"imagePrefix",@"imageDailyDir",@"imageCycleTime",@"overlay",nil];
-	return [NSArray arrayWithObjects: @"eye",@"scene",@"overlay",nil];
+	return [NSArray arrayWithObjects: @"eye",@"scene",@"overlay",@"tooltip",nil];
 }
 
 -(NSDictionary *)tweaksettings {

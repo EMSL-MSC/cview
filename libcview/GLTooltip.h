@@ -66,14 +66,15 @@ All rights reserved.
 */
 #import "DrawableObject.h"
 
-@interface GLTooltip: DrawableObject {
-@private
-	float x,y,width,height,title_height;
-	int title_halign,max_text_size;
+@interface GLTooltip: DrawableObject <PList> {
+	float x,y,title_height;
+	int width,height;
+	int title_halign,max_text_height;
 	NSString* title;
 	NSString* text;
 	float red,green,blue;	// colors for the background
 	float borderred,bordergreen,borderblue;	// colors for the border
+	float fontred,fontgreen,fontblue;
 }
 -init;
 -(float)x;

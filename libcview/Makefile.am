@@ -12,7 +12,7 @@ libcview_la_SOURCES = ColorMap.m GLImage.m DrawableObject.m Eye.m \
 	GLGrid.m GLGridSurface.m GLScreen.m GLWorld.m Scene.m \
 	utils.m GLPointGrid.m GLRibbonGrid.m \
 	GLText.m DefaultGLScreenDelegate.m MultiGrid.m \
-    	IdDatabase.m Identifiable.m GLTooltip.m GLTooltipManager.m
+    	IdDatabase.m Identifiable.m GLTooltip.m
 if HAVE_ATB
 libcview_la_SOURCES += AntTweakBarOverlay.m AntTweakBarManager.m 
 endif

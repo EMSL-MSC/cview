@@ -480,6 +480,7 @@ extern GLuint g_textureID;
         self->dataSet = ds;
 	}
     self->gendersFilePath = [[list objectForKey: @"gendersFilePath" missing: @"data/genders"] retain];
+
     NSLog(@"gendersFilePath = %@", self->gendersFilePath);
 	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
 	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
@@ -497,6 +498,8 @@ extern GLuint g_textureID;
 	[dict setObject: [dataSet getPList] forKey: @"dataSet"];
 	[dict setObject: [jobIds getPList] forKey: @"jobIDDataSet"];
 	[dict setObject: [dataSet class] forKey: @"dataSetClass"];
+	[dict setObject: self->gendersFilePath forKey: @"gendersFilePath"];
+
 	return dict;
 }
 -(void)dealloc {
@@ -650,6 +653,7 @@ extern GLuint g_textureID;
 	glPopMatrix();
 	return self;
 }
+/*
 -(NSArray *)attributeKeys {
 	//isVisible comes from the DrawableObject
 	return [NSArray arrayWithObjects: @"red",@"green",@"blue",nil];
@@ -662,6 +666,7 @@ extern GLuint g_textureID;
 		@"min=0.0 max=1.0 step=0.001",@"blue",
 		nil];
 }
+*/
 -(Node*)selectedNode {
 	return self->selectedNode;
 }

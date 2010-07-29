@@ -60,18 +60,21 @@ All rights reserved.
 #import <glut.h>
 #import "GLTooltip.h"
 #import <FTGL/ftgl.h>
+#import "DictionaryExtra.h"
+#import "GLText.h"
 //Implemented in utils.m
 //void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
 static FTGLfont *theFont=NULL;
+static GLText* glText=nil;
 NSFileHandle *find_resource(NSString *filename);
 NSString *find_resource_path(NSString *filename);
 @implementation  GLTooltip
 -init {
     [super init];
-	self->title = [@"GLTooltip" retain];
-	self->text = [@"Hello World!\nHow are you today?" retain];
+	self->title = [@"GLTooltip" retain]; // should i retain this?
+	self->text = [@"Hello World!\nHow are you today?" retain]; //ditto
 	self->title_halign = 0;
-	self->x = 0.5;
+	self->x = 100;
 	self->y = 0.5;
 	self->width = 50;
 	self->height = 100;
@@ -94,11 +97,12 @@ NSString *find_resource_path(NSString *filename);
 }
 -(NSArray *)attributeKeys {
 	//isVisible comes from the DrawableObject
-	return [NSArray arrayWithObjects: @"width",
+	return [NSArray arrayWithObjects: @"isVisible",
+									@"width",
 									@"height",
 									@"title_height",
 									@"title_halign",
-									@"max_text_size",
+									@"max_text_height",
 									@"red",
 									@"green",
 									@"blue",
@@ -106,31 +110,89 @@ NSString *find_resource_path(NSString *filename);
 }
 -(NSDictionary *)tweaksettings {
 	return [NSDictionary dictionaryWithObjectsAndKeys:
+		@"min=0 max=1",@"isVisible",
 		@"step=1 min=1 max=500",@"width",
 		@"step=1 min=1 max=500",@"height",
 		@"step=1 min=1 max=500",@"title_height",
 		@"help='Title Horizontal Alignment' min=-1 max=1 step=1",@"title_halign",
-		@"help='Maximum text size' min=8 max=20 step=1",@"max_text_size",
+		@"help='Maximum text size' min=8 max=20 step=1",@"max_text_height",
 		@"min=0.0 max=1.0 step=0.001",@"red",
 		@"min=0.0 max=1.0 step=0.001",@"green",
 		@"min=0.0 max=1.0 step=0.001",@"blue",
 		nil];
+}
+-description {
+	return @"Tooltip";
 }
 -(float)x {return self->x;}
 -setX:(float)_x {self->x = _x; return self;}
 -(float)y {return self->y;}
 -setY:(float)_y {self->y = _y; return self;}
 -(NSString*)text {return text;}
--setText:(NSString*)_text {self->text = _text; return self;}
+-setText:(NSString*)_text {
+	[self->text autorelease];
+	[_text retain];
+	self->text = _text;
+	return self;
+}
+-(NSString*)title {return self->title;}
+-setTitle:(NSString*)_title {
+	[self->title autorelease];
+	[_title retain];
+	self->title = _title;
+	return self;
+}
+
 
 /*
 -(int)title_halign {return self->title_halign;}
 -setTitle_halign:(int)_title_halign {self->title_halign = _title_halign; return self;}
+*/
 -(float)width {return self->width;}
 -setWidth:(float)_width {self->width = _width; return self;}
--(float)height {return self->height;}
--setHeight:(float)_height {self->height = _height; return self;}
-*/
+-(int)height {return self->height;}
+-setHeight:(int)_height {self->height = _height; return self;}
+
+-initWithPList: (id)list {
+	NSLog(@"initWithPList: %@",[self class]);
+	[super initWithPList: list];
+	/// @todo error checking or exception handling.
+    //self->gendersFilePath = [[list objectForKey: @"gendersFilePath" missing: @"data/genders"] retain];
+    self->width = [[list objectForKey: @"width" missing: [NSNumber numberWithInt: self->width]] intValue];
+	self->height = [[list objectForKey: @"height" missing: [NSNumber numberWithInt: self->height]] intValue];
+    self->title_halign = [[list objectForKey: @"title_halign" missing: [NSNumber numberWithInt: self->title_halign]] intValue];
+    self->max_text_height = [[list objectForKey: @"max_text_height" missing: [NSNumber numberWithInt: self->max_text_height]] intValue];
+    self->red = [[list objectForKey: @"red" missing: [NSNumber numberWithFloat: self->red]] floatValue];
+    self->green = [[list objectForKey: @"green" missing: [NSNumber numberWithFloat: self->green]] floatValue];
+    self->blue = [[list objectForKey: @"blue" missing: [NSNumber numberWithFloat: self->blue]] floatValue];
+    self->borderred = [[list objectForKey: @"borderred" missing: [NSNumber numberWithFloat: self->borderred]] floatValue];
+    self->bordergreen = [[list objectForKey: @"bordergreen" missing: [NSNumber numberWithFloat: self->bordergreen]] floatValue];
+    self->borderblue = [[list objectForKey: @"borderblue" missing: [NSNumber numberWithFloat: self->borderblue]] floatValue];
+    self->fontred = [[list objectForKey: @"fontred" missing: [NSNumber numberWithFloat: self->fontred]] floatValue];
+    self->fontgreen = [[list objectForKey: @"fontgreen" missing: [NSNumber numberWithFloat: self->fontgreen]] floatValue];
+    self->fontblue = [[list objectForKey: @"fontblue" missing: [NSNumber numberWithFloat: self->fontblue]] floatValue];
+
+        //NSLog(@"gendersFilePath = %@", self->gendersFilePath);
+    return self;
+}
+-getPList {
+	NSLog(@"getPList: %@",self);
+	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary: [super getPList]];
+	[dict setObject: [NSNumber numberWithInt: self->width] forKey: @"width"];
+	[dict setObject: [NSNumber numberWithInt: self->height] forKey: @"height"];
+	[dict setObject: [NSNumber numberWithInt: self->title_halign] forKey: @"title_halign"];
+	[dict setObject: [NSNumber numberWithInt: self->title_halign] forKey: @"max_text_height"];
+	[dict setObject: [NSNumber numberWithFloat: self->red] forKey: @"red"];
+	[dict setObject: [NSNumber numberWithFloat: self->green] forKey: @"green"];
+	[dict setObject: [NSNumber numberWithFloat: self->blue] forKey: @"blue"];
+	[dict setObject: [NSNumber numberWithFloat: self->borderred] forKey: @"borderred"];
+	[dict setObject: [NSNumber numberWithFloat: self->bordergreen] forKey: @"bordergreen"];
+	[dict setObject: [NSNumber numberWithFloat: self->borderblue] forKey: @"borderblue"];
+	[dict setObject: [NSNumber numberWithFloat: self->fontred] forKey: @"fontred"];
+	[dict setObject: [NSNumber numberWithFloat: self->fontgreen] forKey: @"fontgreen"];
+	[dict setObject: [NSNumber numberWithFloat: self->fontblue] forKey: @"fontblue"];
+	return dict;
+}
 
 -glDraw {
 	//NSLog(@"drawing the tooltip!");
@@ -154,6 +216,29 @@ NSString *find_resource_path(NSString *filename);
 		glVertex2f( .5*self->width,-.5*self->height);
 	glEnd();
 	glColor3f(1,1,1);
+
+	if(glText == nil) {
+		glText = [[GLText alloc] initWithString: @"" andFont: @"LinLibertine_Re.ttf"];
+		[glText setColorRed: self->fontred Green: self->fontgreen Blue: self->fontblue];
+	}
+
+	float heightRatio=1,widthRatio=1;
+	/*	First, scale (if necessary) and draw the title of the tooltip:
+	 *  The scaling is necessary so that the text fits inside of the tooltip window
+	 */
+	[glText setString: title];
+	if([glText width] != 0)	// prevent against divide by zero
+		heightRatio = self->height / [glText height];
+	if([glText height] != 0)
+		widthRatio = self->width / [glText width];
+	//float scale = heightRatio < widthRatio ? .9*heightRatio : .9*widthRatio;
+	float scale = widthRatio;
+	glTranslatef(-0.5*self->width,-0.5*self->height,0.0);
+	glScalef(scale,scale,scale);
+	[glText glDraw];
+
+	/* Now we draw the body of the tooltip, taking special care of newline characters */
+
 	if(self->text != nil) {
 		float bounds[6];
 		// Start drawing  the text at the upper left part of the box
