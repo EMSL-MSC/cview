@@ -222,20 +222,25 @@ NSString *find_resource_path(NSString *filename);
 		[glText setColorRed: self->fontred Green: self->fontgreen Blue: self->fontblue];
 	}
 
-	float heightRatio=1,widthRatio=1;
+	float max_height_scale;
 	/*	First, scale (if necessary) and draw the title of the tooltip:
 	 *  The scaling is necessary so that the text fits inside of the tooltip window
 	 */
 	[glText setString: title];
-	if([glText width] != 0)	// prevent against divide by zero
-		heightRatio = self->height / [glText height];
-	if([glText height] != 0)
-		widthRatio = self->width / [glText width];
-	//float scale = heightRatio < widthRatio ? .9*heightRatio : .9*widthRatio;
-	float scale = widthRatio;
-	glTranslatef(-0.5*self->width,-0.5*self->height,0.0);
-	glScalef(scale,scale,scale);
-	[glText glDraw];
+	if([glText width] != 0 && [glText height] != 0) {	// prevent against divide by zero
+		max_height_scale = self->max_text_height / [glText height];
+		// Check to see if we can use the max_text_height for the size of the title
+		if(max_height_scale * [glText width] > self->width) {
+			// No, that would cause the font to draw over the end of the window
+			max_height_scale = self->width / [glText width];
+		}
+			//heightRatio = self->height / [glText height];
+		//float scale = heightRatio < widthRatio ? .9*heightRatio : .9*widthRatio;
+		//float scale = widthRatio;
+		glTranslatef(-0.5*self->width,-0.5*self->height,0.0);
+		glScalef(max_height_scale,max_height_scale,max_height_scale);
+		[glText glDraw];
+	}
 
 	/* Now we draw the body of the tooltip, taking special care of newline characters */
 
