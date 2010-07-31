@@ -16,9 +16,9 @@
 		    rotate_speed = 0.025;
 		    strafe_speed = 10;
 		    vangle = "-2.158336";
-		    x = 1159.947;
-		    y = 1356.332;
-		    z = "-173.7875";
+		    x = 1177.783;
+		    y = 1372.961;
+		    z = "-191.2613";
 		};
 		imageCycleTime = 0;
 		imageDailyDir = YES;
@@ -82,16 +82,17 @@
 		    borderblue = 0.09803922;
 		    bordergreen = 0.5843138;
 		    borderred = 0.9137255;
+		    bordersize = 10;
 		    fontblue = 1;
 		    fontgreen = 1;
 		    fontred = 1;
 		    green = 0.6352941;
-		    height = 302;
-		    isVisible = YES;
-		    max_text_height = 20;
+		    height = 185;
+		    isVisible = NO;
+		    max_text_height = 33;
 		    red = 0.4705882;
 		    title_halign = 0;
-		    width = 197;
+		    width = 433;
 		};
 	    };
 	}

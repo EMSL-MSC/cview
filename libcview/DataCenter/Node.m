@@ -146,8 +146,9 @@ All rights reserved.
     if(isVisible) {
         [super setupForDraw];
             [self setTemperature: [self getData: [self name]]];
+			float tmp = -1;
             if(self->temperature != -1)
-                self->temperature /=  100.0;
+				tmp = self->temperature / 100.0;
             glEnable(GL_BLEND);
             float max = [[datacenter dataSet] getScaledMax];
             if ([datacenter  currentMax] != max) {
@@ -157,12 +158,12 @@ All rights reserved.
             }
             if(selected == YES)
                 glColor4f(.1,.1,.1,1);
-            else if(temperature == -1) { // No valid data found from the dataSet    
+            else if(tmp == -1) { // No valid data found from the dataSet    
                 glColor4f(1,1,1,fadeval);// color the node white
             }else
-                glColor4f([[datacenter colorMap] r: temperature],
-						  [[datacenter colorMap] g: temperature],
-						  [[datacenter colorMap] b: temperature], fadeval);
+                glColor4f([[datacenter colorMap] r: tmp],
+						  [[datacenter colorMap] g: tmp],
+						  [[datacenter colorMap] b: tmp], fadeval);
             [super drawBox];    // draw a box around the node
 
             if(drawname == YES) {

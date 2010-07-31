@@ -72,12 +72,14 @@ NSString *find_resource_path(NSString *filename);
 -init {
     [super init];
 	self->title = [@"GLTooltip" retain]; // should i retain this?
-	self->text = [@"Hello World!\nHow are you today?" retain]; //ditto
+	self->text = [@"Hello World!\nHow are you today?\nI'm doing fine, and you?\nOh fabulous!" retain]; //ditto
 	self->title_halign = 0;
+	self->max_text_height = 20;
 	self->x = 100;
 	self->y = 0.5;
 	self->width = 50;
 	self->height = 100;
+	self->bordersize = 10;
 	self->borderred = 233.0/255.0;
 	self->bordergreen = 149.0/255.0;
 	self->borderblue = 25.0/255.0;
@@ -100,25 +102,31 @@ NSString *find_resource_path(NSString *filename);
 	return [NSArray arrayWithObjects: @"isVisible",
 									@"width",
 									@"height",
+									@"bordersize",
 									@"title_height",
 									@"title_halign",
 									@"max_text_height",
 									@"red",
 									@"green",
 									@"blue",
+									@"scale",
+									@"x",
+									@"y",
 									nil];
 }
 -(NSDictionary *)tweaksettings {
 	return [NSDictionary dictionaryWithObjectsAndKeys:
 		@"min=0 max=1",@"isVisible",
-		@"step=1 min=1 max=500",@"width",
-		@"step=1 min=1 max=500",@"height",
-		@"step=1 min=1 max=500",@"title_height",
+		@"step=1 min=1",@"width",
+		@"step=1 min=1",@"height",
+		@"step=1 min=0",@"bordersize",
+		@"step=1 min=1",@"title_height",
 		@"help='Title Horizontal Alignment' min=-1 max=1 step=1",@"title_halign",
-		@"help='Maximum text size' min=8 max=20 step=1",@"max_text_height",
+		@"help='Maximum text size' min=8 max=1000 step=1",@"max_text_height",
 		@"min=0.0 max=1.0 step=0.001",@"red",
 		@"min=0.0 max=1.0 step=0.001",@"green",
 		@"min=0.0 max=1.0 step=0.001",@"blue",
+		@"min=0.0 max=100.0 step=0.001",@"scale",
 		nil];
 }
 -description {
@@ -130,6 +138,7 @@ NSString *find_resource_path(NSString *filename);
 -setY:(float)_y {self->y = _y; return self;}
 -(NSString*)text {return text;}
 -setText:(NSString*)_text {
+//	NSLog(@"GLTooltip:setText()");
 	[self->text autorelease];
 	[_text retain];
 	self->text = _text;
@@ -148,10 +157,12 @@ NSString *find_resource_path(NSString *filename);
 -(int)title_halign {return self->title_halign;}
 -setTitle_halign:(int)_title_halign {self->title_halign = _title_halign; return self;}
 */
--(float)width {return self->width;}
--setWidth:(float)_width {self->width = _width; return self;}
+-(int)width {return self->width;}
+-setWidth:(int)_width {self->width = _width; return self;}
 -(int)height {return self->height;}
 -setHeight:(int)_height {self->height = _height; return self;}
+-(int)bordersize {return self->bordersize;}
+-setBordersize:(int)_bordersize {self->bordersize = _bordersize; return self;}
 
 -initWithPList: (id)list {
 	NSLog(@"initWithPList: %@",[self class]);
@@ -160,6 +171,7 @@ NSString *find_resource_path(NSString *filename);
     //self->gendersFilePath = [[list objectForKey: @"gendersFilePath" missing: @"data/genders"] retain];
     self->width = [[list objectForKey: @"width" missing: [NSNumber numberWithInt: self->width]] intValue];
 	self->height = [[list objectForKey: @"height" missing: [NSNumber numberWithInt: self->height]] intValue];
+	self->bordersize = [[list objectForKey: @"bordersize" missing: [NSNumber numberWithInt: self->bordersize]] intValue];
     self->title_halign = [[list objectForKey: @"title_halign" missing: [NSNumber numberWithInt: self->title_halign]] intValue];
     self->max_text_height = [[list objectForKey: @"max_text_height" missing: [NSNumber numberWithInt: self->max_text_height]] intValue];
     self->red = [[list objectForKey: @"red" missing: [NSNumber numberWithFloat: self->red]] floatValue];
@@ -181,7 +193,8 @@ NSString *find_resource_path(NSString *filename);
 	[dict setObject: [NSNumber numberWithInt: self->width] forKey: @"width"];
 	[dict setObject: [NSNumber numberWithInt: self->height] forKey: @"height"];
 	[dict setObject: [NSNumber numberWithInt: self->title_halign] forKey: @"title_halign"];
-	[dict setObject: [NSNumber numberWithInt: self->title_halign] forKey: @"max_text_height"];
+	[dict setObject: [NSNumber numberWithInt: self->max_text_height] forKey: @"max_text_height"];
+	[dict setObject: [NSNumber numberWithInt: self->bordersize] forKey: @"bordersize"];
 	[dict setObject: [NSNumber numberWithFloat: self->red] forKey: @"red"];
 	[dict setObject: [NSNumber numberWithFloat: self->green] forKey: @"green"];
 	[dict setObject: [NSNumber numberWithFloat: self->blue] forKey: @"blue"];
@@ -195,10 +208,10 @@ NSString *find_resource_path(NSString *filename);
 }
 
 -glDraw {
+	if(![self visible])
+		return self;
 	//NSLog(@"drawing the tooltip!");
 	glTranslatef(self->x,self->y,0);
-//	glScalef(100,100,100);
-	float bordersize = 10.0;
 	// Draw the boarder
 	glBegin(GL_POLYGON);
 		glColor3f(borderred,bordergreen,borderblue);
@@ -215,51 +228,77 @@ NSString *find_resource_path(NSString *filename);
 		glVertex2f( .5*self->width, .5*self->height);
 		glVertex2f( .5*self->width,-.5*self->height);
 	glEnd();
-	glColor3f(1,1,1);
 
 	if(glText == nil) {
 		glText = [[GLText alloc] initWithString: @"" andFont: @"LinLibertine_Re.ttf"];
 		[glText setColorRed: self->fontred Green: self->fontgreen Blue: self->fontblue];
 	}
 
-	float max_height_scale;
 	/*	First, scale (if necessary) and draw the title of the tooltip:
 	 *  The scaling is necessary so that the text fits inside of the tooltip window
 	 */
+	float max_height_scale,txtHeight;
 	[glText setString: title];
-	if([glText width] != 0 && [glText height] != 0) {	// prevent against divide by zero
+	if(self->title != nil && [glText width] != 0 && [glText height] != 0) {	// prevent against divide by zero
 		max_height_scale = self->max_text_height / [glText height];
 		// Check to see if we can use the max_text_height for the size of the title
 		if(max_height_scale * [glText width] > self->width) {
 			// No, that would cause the font to draw over the end of the window
 			max_height_scale = self->width / [glText width];
 		}
-			//heightRatio = self->height / [glText height];
-		//float scale = heightRatio < widthRatio ? .9*heightRatio : .9*widthRatio;
-		//float scale = widthRatio;
-		glTranslatef(-0.5*self->width,-0.5*self->height,0.0);
+		//[glText setScale: max_height_scale];
+		//NSLog(@"max_height_scale = %f", max_height_scale);
+		float xOffset,txtWidth=[glText width]*max_height_scale;
+		txtHeight=[glText height]*max_height_scale;
+		switch(self->title_halign) {
+		case -1:
+			xOffset = -0.5*self->width;//-.5*max_height_scale*[glText width];
+			break;
+		case 0:
+			xOffset = -0.5*txtWidth;
+			break;
+		case 1:
+			xOffset = 0.5*self->width-txtWidth;
+			break;
+		}
+		glPushMatrix();
+		glTranslatef(xOffset,-0.5*self->height,0.0);
 		glScalef(max_height_scale,max_height_scale,max_height_scale);
 		[glText glDraw];
+		glPopMatrix();
 	}
 
 	/* Now we draw the body of the tooltip, taking special care of newline characters */
-
-	if(self->text != nil) {
-		float bounds[6];
-		// Start drawing  the text at the upper left part of the box
-		glTranslatef(-.5*self->width,-.5*self->height,0);
-		//glScalef(10,10,10);
-		ftglGetFontBBox(theFont,[text UTF8String],[text length],bounds);
-		//printf("bounds[4] = %f\n", bounds[4]);
-		glTranslatef(0,bounds[4],0);
-//		drawString3D(0,0,0,GLUT_BITMAP_HELVETICA_12,self->text,1.0);
-
-		if (theFont==NULL) {
-			theFont = ftglCreateBitmapFont([find_resource_path(@"LinLibertine_Re.ttf") UTF8String]);
-			ftglSetFontFaceSize(theFont,14,72);
-			ftglSetFontCharMap(theFont,ft_encoding_unicode);
+	NSArray* lines = [self->text componentsSeparatedByCharactersInSet:
+		[NSCharacterSet characterSetWithCharactersInString: @"\n"]];
+//	NSLog(@"text = %@, lines = %@", self->text,lines);
+	NSEnumerator* iter = [lines objectEnumerator];
+	NSString *line;
+	/* this first loop is to find the longest line, and set our scaling based on that line */
+	max_height_scale = self->max_text_height / [glText height];
+	while( (line = [iter nextObject]) != nil ) {
+		[glText setString: line];
+		// Check to see if we can use the max_text_height for the size of the title
+		if(max_height_scale * [glText width] > self->width) {
+			// No, that would cause the font to draw over the end of the window
+			max_height_scale = self->width / [glText width];
 		}
-		ftglRenderFont(theFont,[text UTF8String], FTGL_RENDER_ALL);
+//		NSLog(@"line = %@, max_height_scale = %f, height = %f", line, max_height_scale, [glText height]);
+	}
+	iter = [lines objectEnumerator];
+	glTranslatef(-0.5*self->width,-0.5*self->height+1.5*txtHeight,0.0);
+	float bodyTxtHeight = 0.0;
+	while( (line = [iter nextObject]) != nil ) {
+		[glText setString: line];
+//		NSLog(@"(second loop)line = %@, max_height_scale = %f, height = %f", line, max_height_scale, [glText height]);
+	//	NSLog(@"bodyTxtHeight = %f", bodyTxtHeight);
+		glPushMatrix();
+		glTranslatef(0.0,bodyTxtHeight,0.0);
+		glScalef(max_height_scale,max_height_scale,max_height_scale);
+	//	glScalef(scale,scale,scale);
+		[glText glDraw];
+		glPopMatrix();
+		bodyTxtHeight += [glText height]*max_height_scale;
 	}
 
     return self;

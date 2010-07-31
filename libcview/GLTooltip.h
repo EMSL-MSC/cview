@@ -60,6 +60,9 @@ All rights reserved.
 #define GLTOOLTIP_H
 /**
 	Draw a general tooltip that can receive messages from the NSNotificationCenter
+	
+	Call setTitle to set the title of the tooltip
+	Call setText to set the message body of the tooltip
 
 	@author Brock Erwin
 	@ingroup cview3d
@@ -67,8 +70,8 @@ All rights reserved.
 #import "DrawableObject.h"
 
 @interface GLTooltip: DrawableObject <PList> {
-	float x,y,title_height;
-	int width,height;
+	float x,y,title_height,scale;
+	int width,height,bordersize;
 	int title_halign,max_text_height;
 	NSString* title;
 	NSString* text;
@@ -83,13 +86,19 @@ All rights reserved.
 -setY:(float)_y;
 -(NSString*)text;
 -setText:(NSString*)_text;
+-(NSString*)title;
+-setTitle:(NSString*)_title;
+-(int)width;
+-setWidth:(int)_width;
+-(int)height;
+-setHeight:(int)_height;
+-(int)bordersize;
+-setBordersize:(int)_bordersize;
+
 /*
 -(int)title_halign;
 -setTitle_halign:(int)_title_halign;
--(float)width;
--setWidth:(float)_width;
--(float)height;
--setHeight:(float)_height;
+
 -(NSArray *)attributeKeys;
 -(NSDictionary *)tweaksettings;
 */

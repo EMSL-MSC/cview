@@ -121,12 +121,6 @@ All rights reserved.
 }
 -(BOOL)mousePassiveMoveAtX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
     [[[world setHoverX: x] setHoverY: y] setDoPickDraw: YES];
-	self->tip = [world tooltip];
-	if(self->tip != nil) {
-		[[self->tip setX: x+300] setY: y]; 
-//		[self->tip setTitle: @"um, hello?"];
-	}
-	
     passiveMove = YES;
     leftClicked = NO;
 //    return NO;  // return value doesn't matter right now! ask evan about this
@@ -173,6 +167,14 @@ All rights reserved.
     NSLog(@"Node: name: %@ jobid: %f", [n name], _id);
     return self;
 }
+-(void)sleepAndUpdate:(id) sleeptime {
+	NSLog(@"sleeping....");
+	[NSThread sleepForTimeInterval: [sleeptime intValue]];
+	NSLog(@"woken up!");
+	// Posting a "DataSetUpdate" causes a full redraw to occur (we didn't actually update the dataset, but
+	// the desired effect will occur)
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
+}
 -processHits: (GLint) hitCount buffer: (GLuint*) selectBuf andSize: (GLint) buffSize inWorld: (GLWorld*) world {
     //////////////////////////////////////////////////
     /// process the hits/////
@@ -208,11 +210,32 @@ All rights reserved.
     }
     id thing = [IdDatabase objectForId: theId];
     Node *n;
+	// Found 
     if(thing != nil && [thing isKindOfClass: [Node class]]) {
+		self->tip = [world tooltip];
         n = thing;
-		[tip setText: [n name]];
+		if(self->tip != nil) {
+			// Set up the tooltip for viewing
+			[[tip setTitle: [n name]] show];
+			[tip setText: [NSString stringWithFormat: @"JobId: <not implemented>\nAmbient Temp: %.1f%@F\nFront Panel Temp: <not implemented>\nOther fun stuff: <not implemented>", [NSString stringWithCString: "\313\232"], [n getTemperature]]];
+			int x = [world hoverX];
+			int y = [world hoverY];
+			if(x > glutGet(GLUT_WINDOW_WIDTH) / 2)
+				x -= .5*[self->tip width];
+			else
+				x += .5*[self->tip width];
+			if(y > glutGet(GLUT_WINDOW_HEIGHT) / 2)
+				y -= .5*[self->tip height] + 80;
+			else
+				y += .5*[self->tip height] + 80;
+			[[tip setX: x] setY: y];
+
+			// Schedule the tip for later viewing
+			[NSThread detachNewThreadSelector: @selector(sleepAndUpdate:) toTarget: self withObject: [NSNumber numberWithInt: 2]];
+		}
     } else {
 		[self selectNode: nil];
+		[tip hide];
         return self;
 	}
     ///////////////////////////////////////////////////////////////////

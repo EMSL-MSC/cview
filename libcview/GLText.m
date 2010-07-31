@@ -210,6 +210,7 @@ All rights reserved.
 	float bounds[6];
 	ftglGetFontBBox(theFont,[string UTF8String],[string length],bounds);
 	//This really should deal with any rotations that may have happened
+	//TODO: what about dealing with the scale??????????
 	return abs(bounds[3]-bounds[0]);
 }
 
