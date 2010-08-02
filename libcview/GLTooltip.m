@@ -151,8 +151,6 @@ NSString *find_resource_path(NSString *filename);
 	self->title = _title;
 	return self;
 }
-
-
 /*
 -(int)title_halign {return self->title_halign;}
 -setTitle_halign:(int)_title_halign {self->title_halign = _title_halign; return self;}
@@ -279,7 +277,7 @@ NSString *find_resource_path(NSString *filename);
 	while( (line = [iter nextObject]) != nil ) {
 		[glText setString: line];
 		// Check to see if we can use the max_text_height for the size of the title
-		if(max_height_scale * [glText width] > self->width) {
+		if([glText width] != 0 && max_height_scale * [glText width] > self->width) {
 			// No, that would cause the font to draw over the end of the window
 			max_height_scale = self->width / [glText width];
 		}
