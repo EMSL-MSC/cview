@@ -61,7 +61,6 @@ All rights reserved.
 #import <Foundation/NSString.h>
 #import <gl.h>
 #import <glut.h>
-//#import "AisleOffsets.h"
 #import "../../libcview-data/WebDataSet.h"
 #import "../GLDataCenter.h"
 
@@ -118,7 +117,7 @@ All rights reserved.
     double thetime = [[NSDate date] timeIntervalSince1970]; // get current time in seconds
     if(fading == YES || unfading == YES) { // check to see if we should fade/unfade
         double scale = 0.0; // must be between 0 and 1, inclusive
-        if(wasfading == NO) {
+        if(self->wasfading == NO) {
             fadestart = thetime;    //we just started fading
             wasfading = YES;
             if( (fading == YES && fadeval == scale) ||
@@ -126,8 +125,8 @@ All rights reserved.
                 thetime = fadetime + fadestart + 1.0; // push it over the top
             [self show];
         }
-        if(thetime - fadestart > fadetime) {    // time to stop fading
-            if(fading == YES) {
+        if(thetime - self->fadestart > self->fadetime) {    // time to stop fading
+            if(self->fading == YES) {
                 fadeval = scale;
                 [self hide];
             } else if(unfading == YES)
@@ -143,7 +142,7 @@ All rights reserved.
         }
         glutPostRedisplay();    // Tell glut to draw again - we're still fading
     }
-    if(isVisible) {
+    if(self->isVisible) {
         [super setupForDraw];
             [self setTemperature: [self getData: [self name]]];
 			float tmp = -1;

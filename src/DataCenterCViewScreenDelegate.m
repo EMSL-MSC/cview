@@ -77,6 +77,12 @@ All rights reserved.
 @implementation DataCenterCViewScreenDelegate 
 -init {
 	self->tip = nil;
+	self->time = nil;
+	self->hovering = NO;
+	self->sel = nil;
+	self->sleeperCount = 0;
+	//self->sleeperLock = [NSLock newLockAt: self];
+	self->sleeperLock = [[NSLock alloc] init];
     lastSelection = nil;
     leftClicked = NO;
     passiveMove = NO;
@@ -168,12 +174,21 @@ All rights reserved.
     return self;
 }
 -(void)sleepAndUpdate:(id) sleeptime {
-	NSLog(@"sleeping....");
-	[NSThread sleepForTimeInterval: [sleeptime intValue]];
-	NSLog(@"woken up!");
+//	NSLog(@"sleeping....");
+	[self->sleeperLock lock];
+	++sleeperCount;
+	[self->sleeperLock unlock];
+	[NSThread sleepForTimeInterval: [sleeptime floatValue]];
+	[self->sleeperLock lock];
+//	NSLog(@"woken up! sleeperCount = %d",sleeperCount);
 	// Posting a "DataSetUpdate" causes a full redraw to occur (we didn't actually update the dataset, but
 	// the desired effect will occur)
-	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
+	if(sleeperCount == 1) {
+		[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
+		[self->tip show];
+	}
+	--sleeperCount;
+	[self->sleeperLock unlock];
 }
 -processHits: (GLint) hitCount buffer: (GLuint*) selectBuf andSize: (GLint) buffSize inWorld: (GLWorld*) world {
     //////////////////////////////////////////////////
@@ -184,7 +199,7 @@ All rights reserved.
     GLuint names, *ptr, *rowptr;
     ptr = (GLuint*)selectBuf;
 
-/* temporary code */
+/* temporary code */ /*
     NSEnumerator *enume = [[[world scene] getAllObjects] objectEnumerator];
     GLDataCenter *gcdT = nil;
     id elemen;
@@ -194,7 +209,7 @@ All rights reserved.
 			gcdT = elemen;
 			break;
 		}
-	}
+	}*/
 /* end temporary code */
 
     for(i=0;i<hitCount;++i) {
@@ -216,7 +231,7 @@ All rights reserved.
         n = thing;
 		if(self->tip != nil) {
 			// Set up the tooltip for viewing
-			[[tip setTitle: [n name]] show];
+			[tip setTitle: [n name]];
 			[tip setText: [NSString stringWithFormat: @"JobId: <not implemented>\nAmbient Temp: %.1f%@F\nFront Panel Temp: <not implemented>\nOther fun stuff: <not implemented>", [NSString stringWithCString: "\313\232"], [n getTemperature]]];
 			int x = [world hoverX];
 			int y = [world hoverY];
@@ -229,12 +244,13 @@ All rights reserved.
 			else
 				y += .5*[self->tip height] + 80;
 			[[tip setX: x] setY: y];
-
 			// Schedule the tip for later viewing
-			[NSThread detachNewThreadSelector: @selector(sleepAndUpdate:) toTarget: self withObject: [NSNumber numberWithInt: 2]];
+			[NSThread detachNewThreadSelector: @selector(sleepAndUpdate:) toTarget: self withObject: [NSNumber numberWithFloat: .7]];
+			self->sel = n;
 		}
-    } else {
+    } else { // not hovering over anything, no node is selected
 		[self selectNode: nil];
+		self->sel = nil;
 		[tip hide];
         return self;
 	}

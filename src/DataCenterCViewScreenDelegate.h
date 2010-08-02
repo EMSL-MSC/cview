@@ -77,6 +77,11 @@ All rights reserved.
     BOOL leftClicked;
     BOOL passiveMove;
 	GLTooltip* tip;
+	BOOL hovering;
+	NSDate* time;
+	Node* sel;
+	NSLock* sleeperLock;
+	int sleeperCount;
 }
 -initWithScreen: (GLScreen *)screen;
 -(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world;
