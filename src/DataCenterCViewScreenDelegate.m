@@ -183,7 +183,7 @@ All rights reserved.
 //	NSLog(@"woken up! sleeperCount = %d",sleeperCount);
 	// Posting a "DataSetUpdate" causes a full redraw to occur (we didn't actually update the dataset, but
 	// the desired effect will occur)
-	if(sleeperCount == 1) {
+	if(sleeperCount == 1 && self->sel != nil) {
 		[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
 		[self->tip show];
 	}

@@ -71,6 +71,11 @@ extern GLuint g_textureID;
 @implementation  GLDataCenter
 -init {
     [super init];
+	self->drawLegend = YES;
+	self->legend_location = 1;
+	self->legend_padd_side = 50;
+	self->legend_padd_top = 50;
+	self->scale = 1.0;
 	self->selectedNode = nil;
 	self->red = 0.475;
 	self->green = 0.314;
@@ -89,7 +94,7 @@ extern GLuint g_textureID;
     //[Node setGLTName: nil];
     return self;
 }
-
+-(float)scale { return self->scale; }
 -doInit {
     self->racks = [[NSMutableDictionary alloc] init];
     [self initWithGenders]; // use the genders file to initialize the data center
@@ -123,7 +128,6 @@ extern GLuint g_textureID;
             if(node != nil)
                 [nodeArray addObject: node];
         }
-
     }
     [nodeArray autorelease];//auto or regular, not really sure which to use....
     return nodeArray;
@@ -488,6 +492,9 @@ extern GLuint g_textureID;
 		[ds initWithPList: [list objectForKey: @"jobIDDataSet"]];
         jobIds = [ds retain];
 	}
+	self->drawLegend = [[list objectForKey: @"drawLegend"] boolValue];
+	self->legend_padd_side = [[list objectForKey: @"legend_padd_side"] floatValue];
+	self->legend_padd_top = [[list objectForKey: @"legend_padd_top"] floatValue];
     [self doInit];
     //[Node setWebDataSet: (WebDataSet*)self->dataSet];
     return self;
@@ -499,6 +506,9 @@ extern GLuint g_textureID;
 	[dict setObject: [jobIds getPList] forKey: @"jobIDDataSet"];
 	[dict setObject: [dataSet class] forKey: @"dataSetClass"];
 	[dict setObject: self->gendersFilePath forKey: @"gendersFilePath"];
+	[dict setObject: [NSNumber numberWithBool: self->drawLegend] forKey: @"drawLegend"];
+	[dict setObject: [NSNumber numberWithFloat: self->legend_padd_side] forKey: @"legend_padd_side"];
+	[dict setObject: [NSNumber numberWithFloat: self->legend_padd_top] forKey: @"legend_padd_top"];
 
 	return dict;
 }
@@ -596,77 +606,118 @@ extern GLuint g_textureID;
     [[self->racks allValues] makeObjectsPerformSelector:@selector(glPickDraw)];
     return self;
 }
--drawLegend {
+-glDrawLegend {
 	int i;
 	float bsize=0.25/1.0;//xscale;
-	float x,y;
+	float x,y,width,height;
 
 	x=0.0;//[dataSet width];
 //	NSLog(@"width = %f, height = %f", [dataSet width], [dataSet height]);
 	y=0.0;
+	GLint viewport[4];
+	glGetIntegerv(GL_VIEWPORT, viewport);
+	width=viewport[2];
+	height=viewport[3];
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	gluOrtho2D(0, width, 0, height);
+	glScalef(1.0, -1.0, 1.0);
+	glTranslatef(0.0, -height, 0.0);
+	glMatrixMode(GL_MODELVIEW);
+	glEnable(GL_BLEND);
 	glPushMatrix();
 	glClear(GL_DEPTH_BUFFER_BIT);
 	//glScalef(xscale,yscale,zscale); 	
 //	glClear (GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
-	glTranslatef(18.0f, 10.0f, -100.0f);
-	glScalef(0.05,0.05,0.05);
-	float s = 50;
+
+	float posX,posY;
+	float leg_width = 100,leg_height = 175;
+	switch(self->legend_location) {
+		case 0:
+			posX = legend_padd_side;
+			posY = legend_padd_top;
+			break;
+		case 1:
+			posX = width - leg_width - legend_padd_side;
+			posY = legend_padd_top;
+			break;
+		case 2:
+			posX = width - leg_width - legend_padd_side;
+			posY = height - leg_height - legend_padd_top;
+			break;
+		case 3:
+			posX = legend_padd_side;
+			posY = height - leg_height - legend_padd_top;
+			break;
+		default:
+			break;
+	}
+	glTranslatef(posX, posY, 0.0);
 	glPushMatrix();
-		glTranslatef(s/4, 0.0, 0.0);
+	//	glTranslatef(s/4, 0.0, 0.0);
 		glBegin(GL_POLYGON);
 			glColor3f(red,green,blue);
-			glVertex3f(-s, -s, 0.0f); // The bottom left corner  
-			glVertex3f(-s, 2*s, 0.0f); // The top left corner  
-			glVertex3f(s, 2*s, 0.0f); // The top right corner  
-			glVertex3f(s, -s, 0.0f); // The bottom right corner
+			glVertex2f(0,0); 
+			glVertex2f(leg_width,0); // The top right corner  
+			glVertex2f(leg_width,leg_height); // The bottom right corner  
+			glVertex2f(0,leg_height); // The bottom left corner
 		glEnd( );
 		glFlush( );
 	glPopMatrix();
-	glTranslatef(0.0,-0.5*s, 0.0);
+	glTranslatef(.3*leg_width, .79*leg_height, 0.0);
 
 	glBegin(GL_LINES);
 	for (i=1;i<currentMax+1;i++) {
 		[colorMap glMap: i];
 		//glColor3f(1.0,1.0,1.0);
-		glVertex3f(x,i-1.0,y);
-		glVertex3f(x,i,y);
+		glVertex3f(x,-i-1.0,y);
+		glVertex3f(x,-i,y);
 	}
 	glEnd();
 	
 	glColor3f(1.0,1.0,1.0);
 	glBegin(GL_QUADS);
 	for (i=0;i<currentMax+1;i+=(int)MAX(4,currentMax/5)) {
-		glVertex3f(x-bsize,i,y-bsize);
-		glVertex3f(x-bsize,i,y+bsize);
-		glVertex3f(x+bsize,i,y+bsize);
-		glVertex3f(x+bsize,i,y-bsize);
+		glVertex3f(x-bsize,-i,y-bsize);
+		glVertex3f(x-bsize,-i,y+bsize);
+		glVertex3f(x+bsize,-i,y+bsize);
+		glVertex3f(x+bsize,-i,y-bsize);
 	}
 	glEnd();
 
 	float xscale = 1.0;
 	for (i=0;i<currentMax+1;i+=(int)MAX(4,currentMax/5)) {
 		//NSLog(@"drawing a string *** i = %d, currentMax = %f",i,currentMax);
-		drawString3D(x+4.0/xscale,i,y,GLUT_BITMAP_HELVETICA_12,[dataSet getLabel: i],1.0);
+		drawString3D(x+4.0/xscale,-i,y,GLUT_BITMAP_HELVETICA_12,[dataSet getLabel: i],1.0);
 	}
 
 	glPopMatrix();
+
+	glDisable(GL_BLEND);
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
 	return self;
 }
-/*
 -(NSArray *)attributeKeys {
 	//isVisible comes from the DrawableObject
-	return [NSArray arrayWithObjects: @"red",@"green",@"blue",nil];
+	return [NSArray arrayWithObjects: @"isVisible",@"drawLegend",@"legend_location",@"legend_padd_side",@"legend_padd_top",@"scale",@"red",@"green",@"blue",nil];
 }
-
 -(NSDictionary *)tweaksettings {
 	return [NSDictionary dictionaryWithObjectsAndKeys:
+		@"min=0 max=1 step=1",@"isVisible",
+		@"min=0 max=1 step=1",@"drawLegend",
+		@"min=0 max=3 step=1",@"legend_location",
+		@"min=0 step=1",@"legend_padd_side",
+		@"min=0 step=1",@"legend_padd_top",
+		@"min=0 max=1000 step=.001",@"scale",
 		@"min=0.0 max=1.0 step=0.001",@"red",
 		@"min=0.0 max=1.0 step=0.001",@"green",
 		@"min=0.0 max=1.0 step=0.001",@"blue",
 		nil];
 }
-*/
 -(Node*)selectedNode {
 	return self->selectedNode;
 }
@@ -680,7 +731,8 @@ extern GLuint g_textureID;
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     [self drawFloor];
     [[self->racks allValues] makeObjectsPerformSelector:@selector(glDraw)]; // draw the racks
-//	[self drawLegend];
+	if(self->drawLegend)
+		[self glDrawLegend];
 
     GLenum err = glGetError();
     if(err != GL_NO_ERROR)

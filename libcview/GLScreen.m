@@ -240,7 +240,7 @@ int compareScreenColumns(id one,id two,void *context) {
 	delegate = [[DefaultGLScreenDelegate alloc] initWithScreen: self];
 
 	[[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(causeFullRedraw:) name: @"DataSetUpdate" object: nil];
-	glutTimerFunc(500,_periodicTimer,0);
+	glutTimerFunc(100,_periodicTimer,0);
 
 //We have to hack a little here for non-apple glut implementations that dont know anything about release pools, so dont periodically release the pool in glutMainLoop
 #ifndef __APPLE__

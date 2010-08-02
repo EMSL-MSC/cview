@@ -94,8 +94,13 @@ typedef struct
 	double currentMax;
 	float red,green,blue;	// colors for the legend background
 	Node* selectedNode;		// nil if no node is selected, non-nil if mouse is hovering over a node
+	float scale;
+	BOOL drawLegend;
+	float legend_padd_side,legend_padd_top;
+	int legend_location;
 }
 -init;
+-(float)scale;
 -(DataSet*)dataSet;
 -(GLText*)gltName;
 -setGltName:(GLText*)_gltName;
@@ -123,6 +128,6 @@ typedef struct
 -drawFloor;
 -(NSEnumerator*)getEnumerator;
 -addRack: (Rack*) Rack;
--(NSArray *)attributeKeys;
+//-(NSArray *)attributeKeys;
 @end
 #endif

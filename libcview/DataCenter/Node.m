@@ -145,6 +145,7 @@ All rights reserved.
     if(self->isVisible) {
         [super setupForDraw];
             [self setTemperature: [self getData: [self name]]];
+		//	NSLog(@"temperature = %f", self->temperature);
 			float tmp = -1;
             if(self->temperature != -1)
 				tmp = self->temperature / 100.0;
@@ -172,7 +173,7 @@ All rights reserved.
                     [datacenter setGltName: glT];
                     [glT setColorRed: 0 Green: 0 Blue: 0];
                 }
-                [glT setString: [[self name] lowercaseString]];
+                [glT setString: [self name]];
                 if([glT width] != 0 && [glT height] != 0) { // test for divide by zero
                     // Here we want to scale the font such that it fits inside the area on the front of the node
                     float heightRatio = [self height] / [glT height];

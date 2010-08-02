@@ -11,14 +11,14 @@
 	    rowp = 50;
 	    world = {
 		eye = {
-		    hangle = "-7.058319";
+		    hangle = "-7.024984";
 		    move_speed = 10;
 		    rotate_speed = 0.025;
 		    strafe_speed = 10;
-		    vangle = "-2.158336";
-		    x = 1177.783;
-		    y = 1372.961;
-		    z = "-191.2613";
+		    vangle = "-2.125002";
+		    x = 1507.95;
+		    y = 1319.039;
+		    z = 187.1014;
 		};
 		imageCycleTime = 0;
 		imageDailyDir = YES;
@@ -62,12 +62,15 @@
 				    key = env.ATemp;
 				};
 				dataSetClass = WebDataSet;
+				drawLegend = YES;
 				gendersFilePath = data/genders;
 				isVisible = YES;
 				jobIDDataSet = {
 				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
 				    key = job_id;
 				};
+				legend_padd_side = 55;
+				legend_padd_top = 48;
 			    };
 			    objectclass = GLDataCenter;
 			    valign = 0;

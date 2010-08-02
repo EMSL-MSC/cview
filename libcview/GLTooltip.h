@@ -59,7 +59,11 @@ All rights reserved.
 #ifndef GLTOOLTIP_H
 #define GLTOOLTIP_H
 /**
-	Draw a general tooltip that can receive messages from the NSNotificationCenter
+	Simple Tooltip that displays a title (right-aligned, centered, or left-aligned)
+	and some text.  Can also set the size of the font, but the tooltip is smart enough
+	not to allow the font to get so big that it extends past the edge of the width.
+	It will not detect if the text is drawn past the bottom of the tooltip
+	TODO: should this really be fixed, or is it good enough as is?
 	
 	Call setTitle to set the title of the tooltip
 	Call setText to set the message body of the tooltip
