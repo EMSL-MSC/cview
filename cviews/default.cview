@@ -16,9 +16,9 @@
 		    rotate_speed = 0.025;
 		    strafe_speed = 10;
 		    vangle = "-2.125002";
-		    x = 1507.95;
-		    y = 1319.039;
-		    z = 187.1014;
+		    x = 1185.795;
+		    y = 1225.503;
+		    z = "-250.1269";
 		};
 		imageCycleTime = 0;
 		imageDailyDir = YES;
@@ -69,8 +69,8 @@
 				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
 				    key = job_id;
 				};
-				legend_padd_side = 55;
-				legend_padd_top = 48;
+				legend_padd_side = 40;
+				legend_padd_top = 40;
 			    };
 			    objectclass = GLDataCenter;
 			    valign = 0;
@@ -90,12 +90,12 @@
 		    fontgreen = 1;
 		    fontred = 1;
 		    green = 0.6352941;
-		    height = 185;
+		    height = 144;
 		    isVisible = NO;
-		    max_text_height = 33;
+		    max_text_height = 23;
 		    red = 0.4705882;
 		    title_halign = 0;
-		    width = 433;
+		    width = 294;
 		};
 	    };
 	}

@@ -148,7 +148,7 @@ All rights reserved.
 		//	NSLog(@"temperature = %f", self->temperature);
 			float tmp = -1;
             if(self->temperature != -1)
-				tmp = self->temperature / 100.0;
+				tmp = self->temperature / [[datacenter dataSet] getMax];
             glEnable(GL_BLEND);
             float max = [[datacenter dataSet] getScaledMax];
             if ([datacenter  currentMax] != max) {
@@ -221,4 +221,5 @@ All rights reserved.
 	}
     return self;
 }
+-(GLDataCenter*)datacenter { return self->datacenter; }
 @end

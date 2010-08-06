@@ -77,9 +77,9 @@ extern GLuint g_textureID;
 	self->legend_padd_top = 50;
 	self->scale = 1.0;
 	self->selectedNode = nil;
-	self->red = 0.475;
-	self->green = 0.314;
-	self->blue = 0.363;
+	self->red = 0.38;
+	self->green = 0.38;
+	self->blue = 0.38;
     self->floor = nil;
     self->floorVertCount = 0;
     self->gendersFilePath = nil;
@@ -480,7 +480,7 @@ extern GLuint g_textureID;
 	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
 	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
 		ds=[c alloc];
-		[ds initWithPList: [list objectForKey: @"dataSet"]];
+		[[ds initWithPList: [list objectForKey: @"dataSet"]] disableScaling];
         self->dataSet = ds;
 	}
     self->gendersFilePath = [[list objectForKey: @"gendersFilePath" missing: @"data/genders"] retain];
@@ -495,6 +495,9 @@ extern GLuint g_textureID;
 	self->drawLegend = [[list objectForKey: @"drawLegend"] boolValue];
 	self->legend_padd_side = [[list objectForKey: @"legend_padd_side"] floatValue];
 	self->legend_padd_top = [[list objectForKey: @"legend_padd_top"] floatValue];
+	self->red = [[list objectForKey: @"red" missing: [NSNumber numberWithFloat: self->red]] floatValue];
+	self->green = [[list objectForKey: @"green" missing: [NSNumber numberWithFloat: self->green]] floatValue];
+	self->blue = [[list objectForKey: @"blue" missing: [NSNumber numberWithFloat: self->blue]] floatValue];
     [self doInit];
     //[Node setWebDataSet: (WebDataSet*)self->dataSet];
     return self;
@@ -509,6 +512,9 @@ extern GLuint g_textureID;
 	[dict setObject: [NSNumber numberWithBool: self->drawLegend] forKey: @"drawLegend"];
 	[dict setObject: [NSNumber numberWithFloat: self->legend_padd_side] forKey: @"legend_padd_side"];
 	[dict setObject: [NSNumber numberWithFloat: self->legend_padd_top] forKey: @"legend_padd_top"];
+	[dict setObject: [NSNumber numberWithFloat: self->red] forKey: @"red"];
+	[dict setObject: [NSNumber numberWithFloat: self->green] forKey: @"green"];
+	[dict setObject: [NSNumber numberWithFloat: self->blue] forKey: @"blue"];
 
 	return dict;
 }
@@ -519,6 +525,9 @@ extern GLuint g_textureID;
 }
 -(DataSet*)dataSet {
 	return dataSet;
+}
+-(WebDataSet*)jobIds {
+	return self->jobIds;
 }
 -(GLText*)gltName {
 	return gltName;
@@ -607,13 +616,16 @@ extern GLuint g_textureID;
     return self;
 }
 -glDrawLegend {
-	int i;
-	float bsize=0.25/1.0;//xscale;
-	float x,y,width,height;
-
-	x=0.0;//[dataSet width];
+	float width,height;
+	
+//	NSLog(@"currentMax = %f", currentMax);
+//	return self;
+/*
+	if(currentMax < .0000001 && currentMax > -.000000001) {
+		NSLog(@"currentMax = 0.0: drawing the legend would cause a divide by zero! not drawing it.");
+		return self;
+	}*/
 //	NSLog(@"width = %f, height = %f", [dataSet width], [dataSet height]);
-	y=0.0;
 	GLint viewport[4];
 	glGetIntegerv(GL_VIEWPORT, viewport);
 	width=viewport[2];
@@ -631,6 +643,7 @@ extern GLuint g_textureID;
 	//glScalef(xscale,yscale,zscale); 	
 //	glClear (GL_COLOR_BUFFER_BIT);
 	glLoadIdentity();
+//	NSLog(@"width = %f, height = %f", width, height);
 
 	float posX,posY;
 	float leg_width = 100,leg_height = 175;
@@ -666,31 +679,40 @@ extern GLuint g_textureID;
 		glEnd( );
 		glFlush( );
 	glPopMatrix();
-	glTranslatef(.3*leg_width, .79*leg_height, 0.0);
+
+	
+
+	int b = 20;
+	glTranslatef(.3*leg_width, leg_height-b, 0.0);
+	glBegin(GL_LINES);
+	//for (i=1;i<currentMax+1;i++) {
+	
+	int i;
+	for (i=1;i<leg_height-2*b;i++) {
+		[colorMap glMap: i * currentMax / (leg_height - 2*b)];
+		//glColor3f(1.0,1.0,1.0);
+		glVertex2f(-7,-i);
+		glVertex2f(0,-i);
+	}
+	//NSLog(@"i = %d, scaled = %f", i, i * currentMax / (leg_height - 2*b));
+	glEnd();
+	glColor3f(1.0,1.0,1.0);
 
 	glBegin(GL_LINES);
-	for (i=1;i<currentMax+1;i++) {
-		[colorMap glMap: i];
-		//glColor3f(1.0,1.0,1.0);
-		glVertex3f(x,-i-1.0,y);
-		glVertex3f(x,-i,y);
-	}
-	glEnd();
-	
-	glColor3f(1.0,1.0,1.0);
-	glBegin(GL_QUADS);
-	for (i=0;i<currentMax+1;i+=(int)MAX(4,currentMax/5)) {
-		glVertex3f(x-bsize,-i,y-bsize);
-		glVertex3f(x-bsize,-i,y+bsize);
-		glVertex3f(x+bsize,-i,y+bsize);
-		glVertex3f(x+bsize,-i,y-bsize);
+	//for (i=0;i<currentMax+1;i+=(int)MAX(4,currentMax/5)) {
+	//for (i=0;i<leg_height-2*b+1;i+=(int)(MAX(4,currentMax/5) * (leg_height - 2*b) / currentMax )) {
+	for (i=0;i<leg_height-2*b+1;i+=(int)(MAX(4, (leg_height - 2*b)/5))) {
+		glVertex2f(-9,-i);
+		glVertex2f(2,-i);
 	}
 	glEnd();
 
 	float xscale = 1.0;
-	for (i=0;i<currentMax+1;i+=(int)MAX(4,currentMax/5)) {
+//	for (i=0;i<currentMax+1;i+=(int)MAX(4,currentMax/5)) {
+	//for (i=0;i<leg_height-2*b+1;i+=(int) ( MAX(4,currentMax/5) * (leg_height - 2*b) / currentMax ) ) {
+	for (i=0;i<leg_height-2*b+1;i+=(int)(MAX(4, (leg_height - 2*b)/5))) {
 		//NSLog(@"drawing a string *** i = %d, currentMax = %f",i,currentMax);
-		drawString3D(x+4.0/xscale,-i,y,GLUT_BITMAP_HELVETICA_12,[dataSet getLabel: i],1.0);
+		drawString3D(4.0/xscale,-i,0,GLUT_BITMAP_HELVETICA_12,[dataSet getLabel: i * currentMax / (leg_height - 2*b)],1.0);
 	}
 
 	glPopMatrix();
@@ -743,5 +765,7 @@ extern GLuint g_textureID;
     NSEnumerator *enumerator = [self->racks objectEnumerator];
     return enumerator;
 }
-
+-description {
+	return @"GLDataCenter";
+}
 @end

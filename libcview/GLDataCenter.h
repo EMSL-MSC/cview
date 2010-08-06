@@ -102,6 +102,7 @@ typedef struct
 -init;
 -(float)scale;
 -(DataSet*)dataSet;
+-(WebDataSet*)jobIds;
 -(GLText*)gltName;
 -setGltName:(GLText*)_gltName;
 -(ColorMap*)colorMap;

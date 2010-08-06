@@ -230,20 +230,26 @@ All rights reserved.
 		self->tip = [world tooltip];
         n = thing;
 		if(self->tip != nil) {
-			// Set up the tooltip for viewing
-			[tip setTitle: [n name]];
-			[tip setText: [NSString stringWithFormat: @"JobId: <not implemented>\nAmbient Temp: %.1f%@F\nFront Panel Temp: <not implemented>\nOther fun stuff: <not implemented>", [NSString stringWithCString: "\313\232"], [n getTemperature]]];
-			int x = [world hoverX];
-			int y = [world hoverY];
-			if(x > glutGet(GLUT_WINDOW_WIDTH) / 2)
-				x -= .5*[self->tip width];
-			else
-				x += .5*[self->tip width];
-			if(y > glutGet(GLUT_WINDOW_HEIGHT) / 2)
-				y -= .5*[self->tip height] + 80;
-			else
-				y += .5*[self->tip height] + 80;
-			[[tip setX: x] setY: y];
+			if(self->sel != n) {
+				// Set up the tooltip for viewing
+				[tip setTitle: [n name]];
+				float jobId = 0;
+				float *row = [[[n datacenter] jobIds] dataRowByString: [[n name] uppercaseString]];
+				if(row != NULL)
+					jobId = row[0];
+				[tip setText: [NSString stringWithFormat: @"JobId: %f\nAmbient Temp: %.1f%@C\nFront Panel Temp: ", jobId, [NSString stringWithCString: "\313\232"], [n getTemperature]]];
+				int x = [world hoverX];
+				int y = [world hoverY];
+				if(x > glutGet(GLUT_WINDOW_WIDTH) / 2)
+					x -= .5*[self->tip width];
+				else
+					x += .5*[self->tip width];
+				if(y > glutGet(GLUT_WINDOW_HEIGHT) / 2)
+					y -= .5*[self->tip height] + 80;
+				else
+					y += .5*[self->tip height] + 80;
+				[[tip setX: x] setY: y];
+			}
 			// Schedule the tip for later viewing
 			[NSThread detachNewThreadSelector: @selector(sleepAndUpdate:) toTarget: self withObject: [NSNumber numberWithFloat: .7]];
 			self->sel = n;

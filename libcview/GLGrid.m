@@ -236,7 +236,7 @@ Data layout for reference:
 	int i;
 	float bsize=0.25/xscale;
 	float x,y;
-	NSLog(@"currentMax = %f",currentMax);
+	//NSLog(@"currentMax = %f",currentMax);
 
 	x=[dataSet width];
 
@@ -378,7 +378,7 @@ if(NO) {
 
 		[colorMap doMapWithPoints: verts thatHasLength: countPoints toColors: [colorRow mutableBytes]];
 		
-	//	glDrawArrays(GL_LINE_STRIP,0,countPoints);
+		glDrawArrays(GL_LINE_STRIP,0,countPoints);
 	}
 
 	glPopMatrix();

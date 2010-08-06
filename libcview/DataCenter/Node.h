@@ -96,5 +96,6 @@ All rights reserved.
 -setSelected:(BOOL)_selected;
 -cleanUp;
 -initWithName:(NSString*)_name andDataCenter:(GLDataCenter*) _datacenter;
+-(GLDataCenter*)datacenter;
 @end
 #endif // NODE_H
