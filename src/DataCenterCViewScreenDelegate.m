@@ -237,7 +237,7 @@ All rights reserved.
 				float *row = [[[n datacenter] jobIds] dataRowByString: [[n name] uppercaseString]];
 				if(row != NULL)
 					jobId = row[0];
-				[tip setText: [NSString stringWithFormat: @"JobId: %f\nAmbient Temp: %.1f%@C\nFront Panel Temp: ", jobId, [NSString stringWithCString: "\313\232"], [n getTemperature]]];
+				[tip setText: [NSString stringWithFormat: @"JobId: %.0f\nAmbient Temp: %.0f%@C\nFront Panel Temp: ", jobId, [NSString stringWithCString: "\313\232"], [n getTemperature]]];
 				int x = [world hoverX];
 				int y = [world hoverY];
 				if(x > glutGet(GLUT_WINDOW_WIDTH) / 2)

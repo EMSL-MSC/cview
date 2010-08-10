@@ -490,7 +490,7 @@ extern GLuint g_textureID;
 	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
 		ds=[c alloc];
 		[ds initWithPList: [list objectForKey: @"jobIDDataSet"]];
-        jobIds = [ds retain];
+        jobIds = [[ds retain] disableScaling];
 	}
 	self->drawLegend = [[list objectForKey: @"drawLegend"] boolValue];
 	self->legend_padd_side = [[list objectForKey: @"legend_padd_side"] floatValue];
