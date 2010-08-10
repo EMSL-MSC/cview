@@ -79,6 +79,7 @@ All rights reserved.
 	int row,col,rowp,colp; //layout parameters
 	int x,y,w,h; //calculated by layout
 }
+-setDelegate:(id)_delegate;
 @end
 
 @implementation AScreen
@@ -106,6 +107,10 @@ All rights reserved.
 	world=[GLWorld alloc];
 	[world initWithPList: [list objectForKey: @"world"]];
 	return self;
+}
+-setDelegate:(id)_delegate {
+    [world setDelegate: _delegate];
+    return self;
 }
 @end
 
@@ -149,7 +154,8 @@ void _renderSceneAll() {
 }
 void _periodicTimer(int value) {
 	[[GLScreen getMaster] checkState];
-	glutTimerFunc(1000,_periodicTimer,0);
+//	NSLog(@"periodic timer");
+	glutTimerFunc(100,_periodicTimer,0);
 }
 void _periodicPoolTimer(int value) {
 	[[GLScreen getMaster] resetPool];
@@ -214,6 +220,7 @@ int compareScreenColumns(id one,id two,void *context) {
 	//Gl init stuffage
     glShadeModel(GL_SMOOTH);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_POINT_SMOOTH);
@@ -233,7 +240,7 @@ int compareScreenColumns(id one,id two,void *context) {
 	delegate = [[DefaultGLScreenDelegate alloc] initWithScreen: self];
 
 	[[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(causeFullRedraw:) name: @"DataSetUpdate" object: nil];
-	glutTimerFunc(1000,_periodicTimer,0);
+	glutTimerFunc(100,_periodicTimer,0);
 
 //We have to hack a little here for non-apple glut implementations that dont know anything about release pools, so dont periodically release the pool in glutMainLoop
 #ifndef __APPLE__
@@ -506,7 +513,12 @@ double mysecond()
 
 -setDelegate: (id)adelegate {
 	[delegate autorelease];
+    if(adelegate == nil)
+        return self;
 	delegate = [adelegate retain];
+    NSLog(@"makeobjects....");
+    [worlds makeObjectsPerformSelector: @selector(setDelegate:) withObject: delegate];
+    NSLog(@"done");
 	return self;
 }
 

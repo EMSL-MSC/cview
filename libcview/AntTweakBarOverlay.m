@@ -220,8 +220,8 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 			//NSLog(@"name: %@, class: %@ keypath: %@ settings: %s",key,[o class],keypath, data);
 			
 			if ([o isKindOfClass: [NSNumber class]]) {
-				//NSLog(@"is number");
 				NSNumber *n = (NSNumber *)o;
+				//NSLog(@"is number:%c",*[n objCType]);
 				switch (*[n objCType]) {
 					case 'f':
 						TwAddVarCB(myBar, [keypath UTF8String], TW_TYPE_FLOAT, floatSetCallback, floatGetCallback, atb, data);

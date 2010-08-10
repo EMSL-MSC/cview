@@ -67,6 +67,9 @@ All rights reserved.
 
 @implementation GLWorld 
 -init {
+    [super init];
+	self->tooltip = nil;
+    delegate = nil;
 	displayList = -1;
 	imagePrefix=[NSMutableString stringWithString: @"glworld"];
 	imageDir=[NSMutableString stringWithString: @"."];
@@ -74,6 +77,10 @@ All rights reserved.
 	imageCycleTime = 0;
 	lastImageTime = 0;
 	overlay=nil;
+	backgroundColorR = 0.0;
+	backgroundColorG = 0.0;
+	backgroundColorB = 0.0;
+    doPickDraw = NO;
 
 	NSLog(@"%@",[self attributeKeys]);
 	//[NSClassDescription registerClassDescription: self forClass: [self class]];
@@ -89,6 +96,14 @@ All rights reserved.
 	///\todo error checking or exception handling.
 	scene = [[[Scene alloc] initWithPList: [list objectForKey: @"scene"]] retain];
 	eye = [[[Eye alloc] initWithPList: [list objectForKey: @"eye"]] retain];
+
+	// Initialize the tooltip with its plist if specified
+	id tooltip_plist = [list objectForKey: @"tooltip" missing: nil];
+	if(tooltip_plist != nil)
+		tooltip = [[GLTooltip alloc] initWithPList: tooltip_plist];
+	else
+		tooltip = nil;
+
 	id ov = [list objectForKey: @"overlay" missing: nil];
 	
 	if (ov != nil) {
@@ -99,6 +114,9 @@ All rights reserved.
 	imageDir = [[NSMutableString stringWithString: [list objectForKey: @"imageDir" missing: @"."]] retain];
 	imageDailyDir = [[list objectForKey: @"imageDailyDir" missing: @"NO"] boolValue];
 	imageCycleTime = [[list objectForKey: @"imageCycleTime" missing: @"0"] intValue];
+	backgroundColorR = [[list objectForKey: @"backgroundColorR" missing: @"0.0"] floatValue];
+	backgroundColorG = [[list objectForKey: @"backgroundColorG" missing: @"0.0"] floatValue];
+	backgroundColorB = [[list objectForKey: @"backgroundColorB" missing: @"0.0"] floatValue];
 
 	return self;
 }
@@ -114,17 +132,23 @@ All rights reserved.
 		[plist setObject: [overlay getPList] forKey: @"overlay"];
 	}
 
+	if(tooltip != nil) {
+		[plist setObject: [tooltip getPList] forKey: @"tooltip"];
+	}
+
 	[plist setObject: imagePrefix forKey: @"imagePrefix"];
 	[plist setObject: imageDir forKey: @"imageDir"];
 	[plist setObject: [NSNumber numberWithBool: imageDailyDir] forKey: @"imageDailyDir"];
 	[plist setObject: [NSNumber numberWithInt: imageCycleTime] forKey: @"imageCycleTime"];
-
+	[plist setObject: [NSNumber numberWithFloat: backgroundColorR] forKey: @"backgroundColorR"];
+	[plist setObject: [NSNumber numberWithFloat: backgroundColorG] forKey: @"backgroundColorG"];
+	[plist setObject: [NSNumber numberWithFloat: backgroundColorB] forKey: @"backgroundColorB"];
 	return plist;
 }
 
 -(NSArray *)attributeKeys {
 	//return [NSArray arrayWithObjects: @"eye",@"scene",@"imageDir",@"imagePrefix",@"imageDailyDir",@"imageCycleTime",@"overlay",nil];
-	return [NSArray arrayWithObjects: @"eye",@"scene",@"overlay",nil];
+	return [NSArray arrayWithObjects: @"eye",@"scene",@"overlay",@"backgroundColorR",@"backgroundColorG",@"backgroundColorB",@"tooltip",nil];
 }
 
 -(NSDictionary *)tweaksettings {
@@ -134,6 +158,9 @@ All rights reserved.
 		@"help='Strafe Speed' label='Strafe Speed' min=0.01 max=200",@"ss",
 		@"help='Move Speed' label='Move Speed' min=0.01 max=200",@"sd",
 		@"help='Turn Speed in radians' label='Turn Speed' min=0.01 max=6.28 step=0.002 precision=3",@"ts",
+		@"min=0.0 step=0.01 max=1.0",@"backgroundColorR",
+		@"min=0.0 step=0.01 max=1.0",@"backgroundColorG",
+		@"min=0.0 step=0.01 max=1.0",@"backgroundColorB",
 		nil];
 }
 
@@ -144,11 +171,17 @@ All rights reserved.
 	[scene autorelease];
 	[eye autorelease];
 	[overlay autorelease];
+    if(delegate != nil)
+        [delegate autorelease];
 	[super dealloc];
 	return;
 }
 
 -glDraw {
+    if(doPickDraw == YES)
+        [self glPickDraw];
+
+	glClearColor(backgroundColorR,backgroundColorG,backgroundColorB,1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
@@ -162,6 +195,8 @@ All rights reserved.
 	if (overlay) {
 		[self gl2DProlog];
 		[overlay glDraw];
+		if(self->tooltip != nil)
+			[self->tooltip glDraw];
 		[self gl2DEpilog];
 	}
 
@@ -169,7 +204,48 @@ All rights reserved.
 
 	return self;
 }
+-glPickDraw{
+    doPickDraw = NO;
+    float ratio; // set up stuff for gl to do picking
+    GLuint selectBuf[512]; GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    glSelectBuffer(512, selectBuf);
+    glRenderMode(GL_SELECT);
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    {
+        glLoadIdentity();
+        gluPickMatrix(hoverX, viewport[3] - hoverY, 1, 1, viewport);
+        ratio = 1.0f * viewport[2] / viewport[3];
+        gluPerspective(20.0, ratio, 0.1, 9000);
+        glMatrixMode(GL_MODELVIEW);
+        glInitNames();
 
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glLoadIdentity();
+
+        glPushMatrix();
+        [eye lookAt];
+
+        if (scene && [scene visible])
+            [scene glPickDraw];
+        
+        glPopMatrix();
+        glMatrixMode(GL_PROJECTION);
+    }
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    glFlush();
+
+    GLenum err = glGetError(); // Test for GL errors
+    if(err != GL_NO_ERROR)
+        NSLog(@"There was a glError, error number: %x", err);
+   
+    // Now let the delegate handle process the hits.
+    if(delegate != nil)
+        [(DefaultGLScreenDelegate*)delegate processHits: glRenderMode(GL_RENDER) buffer: selectBuf andSize: 512 inWorld: self];
+	return self;
+}
 -gl2DProlog {
 	GLint viewport[4];
 	int width;
@@ -220,6 +296,14 @@ All rights reserved.
 
 -overlay {
 	return overlay;
+}
+
+-(GLTooltip*)tooltip {
+	return tooltip;
+}
+-setTooltip:(GLTooltip*)_tooltip {
+	tooltip = _tooltip;
+	return self;
 }
 
 -setEye: ( Eye * ) e {
@@ -306,5 +390,29 @@ All rights reserved.
 	DestroyMagickWand(wand);
 	return self;
 }
-
+-(int)hoverX {
+	return hoverX;
+}
+-setHoverX:(int)x {
+    hoverX = x;
+    return self;
+}
+-(int)hoverY {
+	return hoverY;
+}
+-setHoverY:(int)y {
+    hoverY = y;
+    return self;
+}
+-setDoPickDraw:(BOOL)_doPickDraw {
+    doPickDraw = _doPickDraw;
+    return self;
+}
+-setDelegate: (id)_delegate {
+    self->delegate = [_delegate retain];
+    return self;
+}
+-(id)delegate {
+    return self->delegate;
+}
 @end

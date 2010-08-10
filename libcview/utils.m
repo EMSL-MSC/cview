@@ -60,6 +60,7 @@ All rights reserved.
 #include <glut.h>
 #include <string.h>
 #include <FTGL/ftgl.h>
+#include "config.h"
 #include "cview.h"
 
 void drawString3D_glut(float x,float y,float z,void *font,NSString *string,float offset) {
@@ -105,7 +106,11 @@ NSString *find_resource_path(NSString *filename) {
 	NSFileManager *mgr = [NSFileManager defaultManager];
 	NSString *file=nil;
 	///@todo Should we have the data paths here
-	NSArray *paths = [NSArray arrayWithObjects: @"",PKG_DATA_DIR,@"../data/",@"./data/",nil];
+	NSMutableArray *paths = [NSMutableArray arrayWithObjects: @"",PKG_DATA_DIR,@"../data/",@"./data/",nil];
+	#if CVIEW_TEST_BUILD
+		[paths addObject: @"../tests/"];
+		[paths addObject: @"./tests/"];
+	#endif
 
 	NSEnumerator *e = [paths objectEnumerator];
 	id o;

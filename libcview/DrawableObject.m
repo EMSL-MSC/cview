@@ -93,7 +93,9 @@ All rights reserved.
 	NSLog(@"Ahh... someone Screwed up and didnt subclass correctly...");
 	return self;
 }
-
+-(id) glPickDraw {
+	return self;  // Someone didn't subclass, so he/she doesn't care about our pickdrawing abilities..... so sad! :-(
+}
 -show {
 	isVisible = YES;
 	return self;

@@ -95,6 +95,7 @@ digraph tickfile {
 	BOOL allowRescale;
 	NSURL *baseURL;
 	UpdateThread *thread;
+    NSMutableDictionary *indexByString;
 }
 -initWithUrlBase: (NSURL *)base andKey: (NSString *)key;
 /** returns the stored row label from the loaded data */
@@ -103,4 +104,7 @@ digraph tickfile {
 -(NSString *)columnTick: (int)col;
 /** return the current Data Key */
 -(NSString *)getDataKey;
+/** get row of data based on xTick string **/
+-(float*)dataRowByString:(NSString*)xTick;
+-initializeIndexByStringDictionary;
 @end

@@ -85,7 +85,6 @@ All rights reserved.
 	[pfile autorelease];
 	return [super dealloc];
 }
-
 -keyPress: (NSNotification *)notification {
 	NSString *err;
 	NSLog(@"Toggle: %@",notification);
@@ -121,11 +120,74 @@ All rights reserved.
 /**@file cview.m
 	@ingroup cviewapp
 */
-
+/// Print usage information to stdout 
+void usage() {
+	printf("\nUsage: cview [OPTIONS] \n\
+DESCRIPTION\n\
+    cview will display 3d graphs from a given dataset specified in the .cview file\n\
+    cview is very flexible and can be configured to display any number of graphs in\n\
+    any number of \"screens\" (a window inside a window).\n\
+    most of the configuration is stored in the .cview file rather than\n\
+    passed on the command line.\n\
+\n\
+HOTKEYS\n\
+    MOVEMENT\n\
+       w/a/s/d           Strafe Up/Down/Left/Right\n\
+       PageUp/Down       Pitch Up/Down\n\
+       Up/Down Arrow     Move Forward/Backward\n\
+       Left/Right Arrow  Turn Left/Right\n\
+       Left Click-Drag   Strafe In the direction you are moving the mouse\n\
+       Right Click-Drag  Tilt the camera angle in the direction you are moving the mouse\n\
+       Mouse Wheel-Drag  Move the mouse while holding down the mouse wheel to adjust the zoom\n\
+    AUXILARY\n");
+#if HAVE_ANTTWEAKBAR
+    printf("\
+       t  Brings up the AntTweakBar display which allows you to adjust certain things about\n\
+          camera angle and position as well as position of scene objects\n");
+#endif
+    printf("\
+       ~  Saves Eye attributes (camera angle and position) as well as the position of scene\n\
+          objects to the current *.cview file (this is very useful)\n\
+       f  Toggle fullscreen\n\
+       p  Print current eye coordinates\n\
+       z  Dump Screen to file\n\
+       q  Quits\n\
+\n\
+OPTIONS\n\
+    -c FILE.cview\n\
+       Start cview with a cview file (usually ends with .cview, but doesn't have to) cview\n\
+       cannot be started without this file, and if '-c' is not specified, cview tries to load\n\
+       cviews/default.cview.  Your .cview file will specify how many viewports to have in the\n\
+       window, what scene objects to load into each viewport, the position of each scene\n\
+       object and many other options.  For more information see cviews/help.cview.\n\
+    -dataUpdateInterval NUM\n\
+       Where NUM is the number of seconds to wait before updating the dataset.  Defaults to\n\
+       30.0 seconds if this option is not given.\n\
+    -dumpclasses t\n\
+       Startup a ObjectTracker thread if t > 0, the number how often in seconds to dump the\n\
+       class counts: file is cview.classes.  For debugging cview only.\n\
+    -ScreenDelegate DELEGATE\n\
+       Start cview with the screen delegate DELEGATE. DELEGATE must be a subclass of\n\
+       DefaultScreenDelegate.  The delegate's job is to handle key and mouse presses and\n\
+       decide what to do with them. This probably shouldn't be changed by the standard user\n\
+       and defaults to ");
+#if HAVE_GENDERS
+       printf("DataCenterCViewScreenDelegate");
+#else
+       printf("CViewScreenDelegate");
+#endif
+       printf(".\n\
+    -h\n\
+    -help\n\
+    -?\n\
+       Print this help message and exit.\n\
+	\n\n");
+    exit(0);
+}
+extern int aninteger;
 int main(int argc,char *argv[], char *env[]) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	ENABLEDEBUGALLOC;
-
 #ifdef CLS_DUMP
 	GSDebugAllocationActiveRecordingObjects(CLS_DUMP);
 #endif
@@ -146,12 +208,28 @@ int main(int argc,char *argv[], char *env[]) {
 		- c The PList formatted config file to load 
 	*/
 	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
-	[args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
-			@"chinook.cview", @"c",
+#if HAVE_GENDERS
+    [args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
+			@"cviews/default.cview", @"c",
 			@"30.0",@"dataUpdateInterval",
 			@"0",@"dumpclasses",
+            @"DataCenterCViewScreenDelegate",@"ScreenDelegate", // use DataCenter since we have genders
 			nil]];
+#else
+    [args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
+			@"cviews/default.cview", @"c",
+			@"30.0",@"dataUpdateInterval",
+			@"0",@"dumpclasses",
+            @"CViewScreenDelegate",@"ScreenDelegate",
+			nil]];
+#endif
+    NSLog(@"aninteger = %d", aninteger);
 
+    // Print usage and exit if user passed -h, -?, or -help
+    if([args stringForKey: @"h"] != nil ||
+       [args stringForKey: @"?"] != nil ||
+       [args stringForKey: @"help"] != nil)
+        usage();
 	config = [args stringForKey: @"c"];
 	updateInterval = [args floatForKey: @"dataUpdateInterval"];
 	dumpclasses = [args integerForKey: @"dumpclasses"];
@@ -173,10 +251,24 @@ int main(int argc,char *argv[], char *env[]) {
 		printf("Error loading PList: %s. Exiting\n",[config UTF8String]);
 		exit(4);
 	}
-
+    Class c;
+    /*  The following code has been added to allow the Screen Delegate type to be passed on the command line
+     *  if not specified on the command line, defaults to DataCenterCViewScreenDelegate if the genders library
+     *  is present
+     */
+	c = NSClassFromString([args stringForKey: @"ScreenDelegate"]);
+	if (c == nil) { // if nil then the class wasn't found
+        NSLog(@"\"%@\" is not a valid class known to cview: Exiting",[args stringForKey: @"ScreenDelegate"]);
+        usage();    // print usage and exit
+    // Make sure that the passed screen delegate is properly subclassed
+	}else if(![c isSubclassOfClass: [DefaultGLScreenDelegate class]]) {
+        NSLog(@"\"%@\" is not a subclass of DefaultGLScreenDelegate: Exiting",[args stringForKey: @"ScreenDelegate"]);
+        usage();    // print usage and exit
+    }
 	GLScreen * g = [[GLScreen alloc] initWithPList:plist];
-	CViewScreenDelegate *cvsd = [[CViewScreenDelegate alloc] initWithScreen:g];
-	[g setDelegate: cvsd];
+    DefaultGLScreenDelegate *delegate = [[c alloc] initWithScreen: g];
+
+	[g setDelegate: delegate];
 
 	//FIXME get rid of this soon, put it in delegate
 	MainKeyHandler *mkh = [[MainKeyHandler alloc] initWithRoot: g andPFile: config];
@@ -185,7 +277,6 @@ int main(int argc,char *argv[], char *env[]) {
 
 	plist = [g getPList];
 	//NSLog([NSPropertyListSerialization stringFromPropertyList: plist]);
-	
 
 	DUMPALLOCLIST(YES);
 

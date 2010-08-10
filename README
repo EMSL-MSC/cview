@@ -23,8 +23,13 @@ REQUIREMENTS
 			pkgconfig
 			ftgl
 			freetype2
+
+OPTIONAL
+
+    The genders library is required to compile the GLDataCenter to view the 3D DataCenter
+    which is available in many distributions or from https://computing.llnl.gov/linux/genders.html
 		
-	Optionally you can add the AntTweakBar for ease in editing your cview files from:
+	You can also add the AntTweakBar for ease in editing your cview files from:
 		http://www.antisphere.com/Wiki/tools:anttweakbar
 
 

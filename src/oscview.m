@@ -57,6 +57,9 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
+#ifndef GLAPIENTRY
+#define GLAPIENTRY
+#endif
 #import <GL/osmesa.h>
 #import <glut.h>
 #import "Wand.h"
@@ -64,6 +67,8 @@ All rights reserved.
 #import "debug.h"
 #import "PList.h"
 #import "cview.h"
+
+#import "ObjectTracker.h"
 
 int main(int argc,char *argv[], char *env[]) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -100,17 +105,25 @@ int main(int argc,char *argv[], char *env[]) {
 				format: &fmt
 				errorDescription: &err
 				];
-	//NSLog(@"plist: %@ %d %@",plist,fmt,err);
+	NSLog(@"plist: %@ %d %@",plist,fmt,err);
 	if (plist==nil) {
 		printf("Error loading PList: %s. Exiting\n",[config UTF8String]);
 		exit(4);
+	}
+
+	//check for full cview file, and grab first world
+	NSArray *worlds = [plist valueForKey: @"worlds"];
+	if (worlds != nil) {
+		NSLog(@"Compat Mode Detected: %@",worlds);
+		plist = [[worlds objectAtIndex: 0] valueForKey: @"world"];
+		NSLog(@"Compat list: %@",plist );
 	}
 
 	GLWorld * g = [[GLWorld alloc] initWithPList:plist];
 	NSLog(@"Setup done");
 
 	plist = [g getPList];
-	NSLog([NSPropertyListSerialization stringFromPropertyList: plist]);
+//	NSLog([NSPropertyListSerialization stringFromPropertyList: plist]);
 	
 
 	DUMPALLOCLIST(YES);
@@ -132,7 +145,7 @@ int main(int argc,char *argv[], char *env[]) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();	
 	
-	gluPerspective(20.0,ratio,0.1,5000);
+	gluPerspective(20.0,ratio,0.1,10000);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	//Gl init stuffage

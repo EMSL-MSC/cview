@@ -266,4 +266,7 @@ All rights reserved.
 	return self;
 }
 #endif
+-processHits: (GLint) hitCount buffer: (GLuint*) selectBuf andSize: (GLint) buffSize inWorld: (GLWorld*) world {
+    return self;    // do nothing by default
+}
 @end

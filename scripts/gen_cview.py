@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-
-
+# -*- coding: latin-1 -*-
 
 # This file is port of the CVIEW graphics system, which is goverened by the following License
 # 

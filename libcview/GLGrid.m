@@ -85,6 +85,9 @@ Data layout for reference:
 	xTicks = 0;
 	yTicks = 0;
 	fontScale = 1.0;
+	fontColorR = 1.0;
+	fontColorG = 1.0;
+	fontColorB = 1.0;
 	xscale=1.0;
 	yscale=1.0;
 	zscale=1.0;
@@ -139,6 +142,9 @@ Data layout for reference:
 	xTicks = [[list objectForKey: @"xTicks"] intValue];
 	yTicks = [[list objectForKey: @"yTicks"] intValue];	
 	fontScale = [[list objectForKey: @"fontScale" missing: @"1.0"] floatValue];
+	fontColorR = [[list objectForKey: @"fontColorR" missing: @"1.0"] floatValue];
+	fontColorG = [[list objectForKey: @"fontColorG" missing: @"1.0"] floatValue];
+	fontColorB = [[list objectForKey: @"fontColorB" missing: @"1.0"] floatValue];
 	xscale = [[list objectForKey: @"xscale" missing: @"1.0"] floatValue];
 	yscale = [[list objectForKey: @"yscale" missing: @"1.0"] floatValue];
 	zscale = [[list objectForKey: @"zscale" missing: @"1.0"] floatValue];
@@ -146,6 +152,7 @@ Data layout for reference:
 
 	Class c;
 	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
+    NSLog(@"dataSetClass is: %@", c);
 	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
 		ds=[c alloc];
 		[ds initWithPList: [list objectForKey: @"dataSet"]];
@@ -162,6 +169,9 @@ Data layout for reference:
 	[dict setObject: [dataSet getPList] forKey: @"dataSet"];
 	[dict setObject: [dataSet class] forKey: @"dataSetClass"];
 	[dict setObject: [NSNumber numberWithFloat: fontScale] forKey: @"fontScale"];
+	[dict setObject: [NSNumber numberWithFloat: fontColorR] forKey: @"fontColorR"];
+	[dict setObject: [NSNumber numberWithFloat: fontColorG] forKey: @"fontColorG"];
+	[dict setObject: [NSNumber numberWithFloat: fontColorB] forKey: @"fontColorB"];
 	[dict setObject: [NSNumber numberWithFloat: xscale] forKey: @"xscale"];
 	[dict setObject: [NSNumber numberWithFloat: yscale] forKey: @"yscale"];
 	[dict setObject: [NSNumber numberWithFloat: zscale] forKey: @"zscale"];
@@ -170,7 +180,7 @@ Data layout for reference:
 
 -(NSArray *)attributeKeys {
 	//isVisible comes from the DrawableObject
-	return [NSArray arrayWithObjects: @"isVisible",@"xTicks",@"yTicks",@"fontScale",@"xscale",@"yscale",@"zscale",@"dataSet",@"dzmult",@"rmult",nil];
+	return [NSArray arrayWithObjects: @"isVisible",@"xTicks",@"yTicks",@"fontScale",@"xscale",@"yscale",@"zscale",@"dataSet",@"dzmult",@"rmult",@"fontColorR",@"fontColorG",@"fontColorB",nil];
 }
 
 -(NSDictionary *)tweaksettings {
@@ -184,6 +194,9 @@ Data layout for reference:
 		@"min=0 max=1",@"isVisible",
 		@"step=0.1",@"dxmult",
 		@"step=0.1",@"rmult",
+		@"min=0.0 step=0.01 max=1.0",@"fontColorR",
+		@"min=0.0 step=0.01 max=1.0",@"fontColorG",
+		@"min=0.0 step=0.01 max=1.0",@"fontColorB",
 		nil];
 }
 
@@ -222,9 +235,10 @@ Data layout for reference:
 	glScalef(1.0,1.0,zscale); 
 	glTranslatef(0.0,0,[dataSet height]+15+15*fontScale);
 	glRotatef(90,1.0,0.0,0.0);
-	glColor3f(1.0,1.0,1.0);
+	
 	glScalef(fontScale,fontScale,fontScale/zscale);
 
+	[descText setColorRed: fontColorR Green: fontColorG Blue: fontColorB];
 	[descText glDraw];
 
 	glPopMatrix();
@@ -251,7 +265,7 @@ Data layout for reference:
 	}
 	glEnd();
 	
-	glColor3f(1.0,1.0,1.0);
+	glColor3f(fontColorR,fontColorG,fontColorB);
 	glBegin(GL_QUADS);
 	for (i=0;i<currentMax+1;i+=(int)MAX(4,currentMax/5)) {
 		glVertex3f(x-bsize,i,y-bsize);
@@ -287,7 +301,7 @@ Data layout for reference:
 	
 	glEnd();
 
-	glColor3f(1.0,1.0,1.0);
+	glColor3f(fontColorR,fontColorG,fontColorB);
 	if (yTicks) {
 		int p = [dataSet width];
 		glBegin(GL_LINES);

@@ -56,31 +56,21 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
+#import "Identifiable.h"
+#import "IdDatabase.h"
 #import <Foundation/Foundation.h>
-#import <memcache.h>
-
-
-
-
-
-
-
-int main(int argc,char *argv[], char *env[]) {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	//needed for NSLog
-	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
-	struct memcache *mc;
-	void *data;
-	
-	mc = mc_new();
-
-	mc_server_add4(mc,"127.0.0.1:11211");
-
-	//mc_add(mc,"hello",5,"This is a sample String",24,1000,0);
-
-	data=mc_aget(mc,"hello",5);
-	NSLog(@"Data returned: %s",(char *)data);
-	free(data);
-	return 0;
+@implementation Identifiable
+-init {
+    [super init];
+    //NSLog(@"identifiable init");
+    self->myid = [IdDatabase reserveUniqueId: self];
+    return self;
 }
-
+-(unsigned int)myid {
+    return self->myid;
+}
+-setMyid:(unsigned int)_myid {
+    self->myid = _myid;
+    return self;
+}
+@end

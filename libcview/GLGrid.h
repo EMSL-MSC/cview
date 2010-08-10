@@ -77,6 +77,9 @@ This class implements the gl drawing code to show a graph of lines above a lower
 	NSMutableData *colorRow;
 	GLText *descText;
 	float fontScale;
+	float fontColorR;
+	float fontColorG;
+	float fontColorB;
 	float xscale,yscale,zscale;
 	float dzmult,rmult;
 }
