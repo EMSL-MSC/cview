@@ -9,8 +9,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="2560"
-   height="145"
+   width="1884"
+   height="765"
    id="svg2"
    sodipodi:version="0.32"
    inkscape:version="0.47 r22583"
@@ -65,7 +65,7 @@
      inkscape:cx="742.3748"
      inkscape:cy="651.57515"
      inkscape:document-units="px"
-     inkscape:current-layer="svg2"
+     inkscape:current-layer="stretchlayer"
      showgrid="true"
      showguides="false"
      inkscape:window-width="1847"
@@ -94,11 +94,18 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
-  <svg
+  <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1"
-     >
+     id="layer1">
+    <path
+       style="fill:none;stroke:#78a22e;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 2.5253813,139.2105 l 194.7183387,0 83.86541,-80.220653 678.31244,-0.02538"
+       id="path2490"
+       sodipodi:nodetypes="cccc"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"
+       inkscape:export-filename="/home/efelix/text3371.png" />
     <g
        transform="matrix(0.5240536,0,0,-0.5240536,20.647035,107.77518)"
        inkscape:label="EMSL_Color_Logo"
@@ -146,27 +153,7 @@
         </g>
       </g>
     </g>
-    <text
-       xml:space="preserve"
-       style="font-size:56px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
-       x="448.50772"
-       y="-457.28458"
-       id="text3367"><tspan
-         sodipodi:role="line"
-         id="tspan3369"
-         x="448.50772"
-         y="-457.28458" /></text>
-    <path
-       style="fill:none;stroke:#78a22e;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="M 0,140 L 195,140 279,60 300,60"
-       id="path2490"
-       sodipodi:nodetypes="cccc"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"
-       inkscape:export-filename="/home/efelix/text3371.png" />
-  </svg>
-  <g
-	id="textstring" >
+
     <text
        xml:space="preserve"
        style="font-size:56px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#6ea41b;fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
@@ -186,8 +173,15 @@
      id="stretchlayer"
      inkscape:label="StretchLayer"
      preserveAspectRatio="none">
-	<line x1="300" y1="60" x2="100%" y2="60"
-	 style="fill:none;stroke:#78a22e;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-	/>
+    <path
+       inkscape:export-filename="/home/efelix/text3371.png"
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       sodipodi:nodetypes="ccc"
+       id="stretchy"
+       d="m 960.0,58.964467 l 2000,0.0"
+       style="fill:none;stroke:#78a22e;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       inkscape:label="#stretch"
+       onload="x=document.width" />
   </g>
 </svg>
