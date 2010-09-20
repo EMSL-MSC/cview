@@ -58,6 +58,7 @@ All rights reserved.
 */
 #import <Foundation/Foundation.h>
 #import <sys/param.h>  //for max/min
+#import <locale.h>
 #import "DataSet.h"
 #import "DictionaryExtra.h"
 #import "math.h"
@@ -66,6 +67,7 @@ All rights reserved.
 //I wish there was magic to stringify into
 #define S(x) @ #x
 #define DS_DEFAULT_LIMIT_S S(DS_DEFAULT_LIMIT)
+#define DS_DEFAULT_LABEL_FORMAT @"%'.0f %@"
 
 @implementation DataSet
 
@@ -90,11 +92,7 @@ All rights reserved.
 	//lockedMax=0;
 	allowScaling=YES;
 	textDescription=name;
-#ifdef __APPLE__
-	formatter = [[NSNumberFormatter alloc] init];
-	[formatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
-	[formatter setFormat:@"#,##0.##"];
-#endif
+	labelFormat=DS_DEFAULT_LABEL_FORMAT;
 	return self;
 }
 
@@ -102,6 +100,7 @@ All rights reserved.
 	NSLog(@"initWithPList: DataSet:%@",[self class]);
 	lockedMax = [[list objectForKey:@"lockedMax" missing: @"0"] floatValue];
 	currentLimit = [[list objectForKey:@"limit" missing: DS_DEFAULT_LIMIT_S] floatValue];
+	labelFormat=[list objectForKey:@"labelFormat" missing: DS_DEFAULT_LABEL_FORMAT];
 	return self;
 }
 
@@ -112,12 +111,14 @@ All rights reserved.
 		[dict setObject: [NSNumber numberWithFloat: lockedMax] forKey: @"lockedMax"];
 	if (currentLimit != DS_DEFAULT_LIMIT)
 		[dict setObject: [NSNumber numberWithFloat: currentLimit] forKey: @"limit"];
+	if ([labelFormat compare: DS_DEFAULT_LABEL_FORMAT] != NSOrderedSame)
+		[dict setObject: labelFormat forKey: @"labelFormat"];
 	return dict;
 }
 
 -(void)dealloc {
 	NSLog(@"DataSet dealloc: %@",name);
-	[formatter autorelease];
+	[labelFormat autorelease];
 	[data autorelease];
 	[name autorelease];
 	[rateSuffix autorelease];
@@ -300,15 +301,17 @@ All rights reserved.
 
 - (NSString *)getLabel: (float)rate {
 	//FIXME scaling?
-#ifdef __APPLE__
-	//[formatter  setFormatterBehavior:NSNumberFormatterDecimalStyle];
-	NSString *str = [formatter stringFromNumber: [NSNumber numberWithFloat: rate/currentScale]];
-	return [NSString stringWithFormat: @"%@ %@",str,rateSuffix];
-#else
-	return [NSString stringWithFormat: @"%.2f %@",rate/currentScale,rateSuffix];
-#endif
+	return [NSString stringWithFormat: labelFormat,rate/currentScale,rateSuffix];
 }
-
+- (NSString *)getLabelFormat {
+	return labelFormat;
+}
+- setLabelFormat: (NSString *)fmt {
+	[labelFormat autorelease];
+	labelFormat = fmt;
+	[labelFormat retain];
+	return self;
+}
 - (NSString *)getDescription {
 	//NSLog(@"%p",textDescription);
 	//NSLog(@"%@",textDescription);

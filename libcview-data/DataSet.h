@@ -77,7 +77,7 @@ This class provides a basic data store, with associated information.  It is orga
 	float lockedMax;
 	BOOL allowScaling;
 	NSString *textDescription;
-	NSNumberFormatter *formatter;
+	NSString *labelFormat;
 }
 - initWithName: (NSString *)n Width: (int)w Height: (int)h;
 - initWithWidth: (int)w Height: (int)h;
@@ -101,6 +101,10 @@ This class provides a basic data store, with associated information.  It is orga
 - lockMax: (int)max;
 /** create a textual label for the rate given, based off the current scale values */
 - (NSString *)getLabel: (float)rate;
+/** return the current label format for displaying data */
+- (NSString *)getLabelFormat;
+/** set a new label format for displaying data this should contain one %f and one %@ for formatting in that order*/
+- setLabelFormat: (NSString *)fmt;
 - autoScale: (int)limit;
 /** Auto scale the data according to the current limit */
 - autoScale;

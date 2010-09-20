@@ -79,17 +79,34 @@ int main(int argc,char *argv[], char *env[]) {
 	//needed for NSLog
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
-
-	SinDataSet *data = [[SinDataSet alloc] initWithName: @"Test" Width: 10 Height: 10];	
-
-	dump(data);
-	[data shiftData: -2];
-	[data shiftData: 1];
-	NSLog(@"Should see an Error Here");
-	[data shiftData: -100];
-	dump(data);
-
-	[data getMax];
+	@try {
+		SinDataSet *data = [[SinDataSet alloc] initWithName: @"Test" Width: 10 Height: 10];	
+	
+		dump(data);
+		[data shiftData: -2];
+		[data shiftData: 1];
+		NSLog(@"Should see an Error Here");
+		[data shiftData: -100];
+		dump(data);
+	
+		NSLog(@"Max: %f",[data getMax]);
+		NSLog(@"Rate: %@",[data getRate]);
+		NSLog(@"PList: %@",[data getPList]);
+		NSLog(@"GetLabel: %@",[data getLabel: 1343203.4]);
+		[data setLabelFormat: @"%40.5f %@"];
+		NSLog(@"GetLabel: %@",[data getLabel: 1343203.4]);
+		NSLog(@"PList: %@",[data getPList]);
+	}
+	@catch (NSException *localException) {
+		NSLog(@"Error: %@", localException);
+		//NSArray *arr = [localException callStackReturnAddresses];
+		//NSEnumerator *e = [arr objectEnumerator];
+		//NSObject *o;
+		//while ( (o=[e nextObject]) != nil) {
+		//	NSLog(@"Stack: %@",o);	
+		//}
+		return -1;
+	}
 	[pool release];
 	return 0;
 }
