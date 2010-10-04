@@ -10,12 +10,17 @@ LICENSE
 REQUIREMENTS
 
 	autoconf/automake
+	libtool
+	gcc for Objective C/C/C++
 
 	Linux -
-		gnustep-base
+		libgnustep-base-dev
 		ImageMagick > 9.0
-		ftgl
+		ftgl2
 		freetype2
+	Ubuntu 10.04 package build deps: g++ gobjc libgnustep-base-dev libftgl-dev libfreetype6-dev libmagickwand-dev freeglut3-dev
+	Ubuntu 10.04 package optional build deps: libosmesa6-dev libgenders0-dev doxygen
+	Ubuntu packages for anttweakbar can be used by adding ppa:thjc/ppa to your sources with apt-add-repository
 
 	Mac OS X - 
 		Ports
