@@ -115,6 +115,10 @@ All rights reserved.
 	return dict;
 }
 
+-(NSArray *)attributeKeys {
+	//isVisible comes from the DrawableObject
+	return [NSArray arrayWithObjects: @"labelFormat",nil];
+}
 -(void)dealloc {
 	NSLog(@"DataSet dealloc: %@",name);
 	[labelFormat autorelease];

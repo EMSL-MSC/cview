@@ -116,21 +116,23 @@ static void TW_CALL intGetCallback(void *value, void *clientData) {
 	NSNumber *i=[atb->object valueForKeyPath: atb->name];
 	*(int *)value = [i intValue];
 }
-/** @todo Figure out how to do NSStrings properly */
-/*FIXME these are really bad since they change the pointer to new objects... which arnt necessarily retained, or released properly...... i should be able to handle NSMutableStrings...
+
+/*The Setting of strings can be dangeous, as if there is not a set<attrib> Function call the string may overwrite
+ *  things that are not retained properly.  It should be safe if the set<attib> is in place properly.  but we cant garruntee that here. */
 static void TW_CALL stringSetCallback(const void *value, void *clientData) {
 	ATB_Node *atb = (ATB_Node *)clientData;
 
 	[atb->object setValue: [NSString stringWithCString: (const char *)value] forKeyPath: atb->name];
 }
-*/
-/*
+
+
 static void TW_CALL mutableStringSetCallback(const void *value, void *clientData) {
 	ATB_Node *atb = (ATB_Node *)clientData;
 
 	NSMutableString *ms=[atb->object valueForKeyPath: atb->name];
 	[ms setString: [NSString stringWithCString: (const char *)value]];
 }
+
 static void TW_CALL stringGetCallback(void *value, void *clientData) {
 	ATB_Node *atb = (ATB_Node *)clientData;
 	const char *f;
@@ -139,7 +141,7 @@ static void TW_CALL stringGetCallback(void *value, void *clientData) {
 	strncpy((char *)value, f, MIN(strlen(f),MAX_STRING-1));
 	((char *)value)[MIN(strlen(f),MAX_STRING)]=0;
 }
-*/
+
 /*
 static void TW_CALL urlSetCallback(const void *value, void *clientData) {
 	ATB_Node *atb = (ATB_Node *)clientData;
@@ -236,25 +238,21 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 				if (grp)
 					TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@",name,keypath,grp] UTF8String]);
 			}
-/*
-			else if ([o isKindOfClass: [NSMutableString class]]) {
-				NSString *s=(NSString *)o;
 
+			else if ([o isKindOfClass: [NSMutableString class]]) {
 				TwAddVarCB(myBar, [keypath UTF8String], TW_TYPE_CSSTRING(MAX_STRING), mutableStringSetCallback, stringGetCallback, atb, data);
 
 				if (grp)
 					TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@",name,keypath,grp] UTF8String]);	
 			}
-*/
-/*
-			else if ([o isKindOfClass: [NSString class]]) {
-				NSString *s=(NSString *)o;
 
+			else if ([o isKindOfClass: [NSString class]]) {
 				TwAddVarCB(myBar, [keypath UTF8String], TW_TYPE_CSSTRING(MAX_STRING), stringSetCallback, stringGetCallback, atb, data);
 
 				if (grp)
 					TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@",name,keypath,grp] UTF8String]);	
 			}
+			/*
  			else if ([o isKindOfClass: [NSURL class]]) {
 				NSURL *u=(NSURL *)o;
 

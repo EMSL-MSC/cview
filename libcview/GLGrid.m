@@ -180,7 +180,7 @@ Data layout for reference:
 
 -(NSArray *)attributeKeys {
 	//isVisible comes from the DrawableObject
-	return [NSArray arrayWithObjects: @"isVisible",@"xTicks",@"yTicks",@"fontScale",@"xscale",@"yscale",@"zscale",@"dataSet",@"dzmult",@"rmult",@"fontColorR",@"fontColorG",@"fontColorB",nil];
+	return [NSArray arrayWithObjects: @"isVisible",@"xTicks",@"yTicks",@"fontScale",@"xscale",@"yscale",@"zscale",@"dataSet",@"dzmult",@"rmult",@"fontColorR",@"fontColorG",@"fontColorB",@"dataSet",nil];
 }
 
 -(NSDictionary *)tweaksettings {
