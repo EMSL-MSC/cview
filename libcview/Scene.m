@@ -95,7 +95,7 @@ All rights reserved.
 			[NSNumber numberWithBool: align],@"align",
 			nil];
 	else
-		return nil;
+		return [NSNull null];
 }
 
 -initWithPList: (id)list {
@@ -318,7 +318,10 @@ All rights reserved.
     if(objects == nil)
         return self;
 	NSArray *os = [objects arrayObjectsFromPerformedSelector: @selector(getPList)];
-	return [NSDictionary dictionaryWithObjectsAndKeys: os, @"objects", nil];
+	//Remove any Null objects
+	NSMutableArray *mos = [NSMutableArray arrayWithArray: os];
+	[mos removeObject: [NSNull null]]; 
+	return [NSDictionary dictionaryWithObjectsAndKeys: mos, @"objects", nil];
 }
 
 -initWithPList: (id)list {
@@ -332,7 +335,7 @@ All rights reserved.
 	NSEnumerator *e;
 
 	e = [arr objectEnumerator];
-	while ((l = [e nextObject])) {		
+	while ((l = [e nextObject])) {
 		so=[SceneObject alloc];
 		[so initWithPList: l];
 		[objects addObject: so];
