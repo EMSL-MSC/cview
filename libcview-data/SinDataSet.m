@@ -65,6 +65,7 @@ All rights reserved.
 -initWithName: (NSString *)key Width: (int)w Height: (int)h {
 	[super initWithName: key Width: w Height: h];
 	dx=0.0;
+	rateSuffix=@"Nums";
 	[self updateData];
 	return self;
 }

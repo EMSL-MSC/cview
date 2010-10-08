@@ -65,8 +65,8 @@ int main(int argc,char *argv[], char *env[]) {
 	//needed for NSLog
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
-	SinDataSet *ds = [[SinDataSet alloc] initWithWidth: 1000 Height: 128];
-	SinDataSet *ds2 = [[SinDataSet alloc] initWithWidth: 500 Height: 128];
+	SinDataSet *ds = [[SinDataSet alloc] initWithName: @"Sin()" Width: 1000 Height: 128];
+	SinDataSet *ds2 = [[SinDataSet alloc] initWithName: @"Sin()" Width: 500 Height: 128];
 	UpdateThread *t = [[UpdateThread alloc] initWithUpdatable: ds];
 	UpdateThread *t2 = [[UpdateThread alloc] initWithUpdatable: ds2];
 	[ds autoScale: 100];

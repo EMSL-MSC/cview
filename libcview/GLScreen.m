@@ -66,6 +66,7 @@ All rights reserved.
 #import <Foundation/Foundation.h>
 #include <unistd.h>
 #include <sys/time.h>
+#include <locale.h>
 #include "debug.h"
 #import "cview.h"
 #import "ListComp.h"
@@ -472,6 +473,7 @@ int compareScreenColumns(id one,id two,void *context) {
 }
 
 -run {
+	 setlocale(LC_ALL, "");
 	glutMainLoop();
 	return self;
 }

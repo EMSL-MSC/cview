@@ -58,7 +58,6 @@ All rights reserved.
 */
 #import <Foundation/Foundation.h>
 #import <sys/param.h>  //for max/min
-#import <locale.h>
 #import "DataSet.h"
 #import "DictionaryExtra.h"
 #import "math.h"
@@ -298,6 +297,7 @@ All rights reserved.
 
 	return self;
 }
+
 
 - (NSString *)getLabel: (float)rate {
 	//FIXME scaling?
