@@ -109,7 +109,7 @@ All rights reserved.
     // First find the nodename in the xticks array
     float *row = [((WebDataSet*)[datacenter dataSet]) dataRowByString: [nodeName uppercaseString]];
     if(row != NULL)
-        return row[0];
+        return row[1];
     else
         return -1;
 }
