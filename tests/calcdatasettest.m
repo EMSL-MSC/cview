@@ -77,10 +77,10 @@ int main(int argc,char *argv[], char *env[]) {
 	[t2 startUpdateThread: 1.0];
 
 	Scene * scene = [[Scene alloc] initWithObject:
-		[[[[GLGridSurface alloc] initWithDataSet: cds] setXTicks: 50] setYTicks: 16]
+		[[[[GLGrid alloc] initWithDataSet: cds andType: G_SURFACE] setXTicks: 50] setYTicks: 16]
 		atX: 0 Y: 0 Z: 0];
 
-	[scene addObject: [[[[GLGridSurface alloc] initWithDataSet: ds2] setXTicks: 50] setYTicks: 16]
+	[scene addObject: [[[[GLGrid alloc] initWithDataSet: ds2 andType: G_SURFACE] setXTicks: 50] setYTicks: 16]
 		atX: 0 Y: 0 Z: 200];
 
 	GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test"];

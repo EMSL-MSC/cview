@@ -71,15 +71,7 @@ All rights reserved.
 }
 @end
 
-/** @objcdef
-	- gridToMultiGrid - If set to yes will force all Grid Type Classes to be added with a MultiGrid Container Class during plist initialization
-*/
 @implementation SceneObject
-+(void)initialize {
-	[[NSUserDefaults standardUserDefaults] registerDefaults: 
-		[NSDictionary dictionaryWithObject: @"no" forKey:@"gridToMultiGrid"]];
-}
-
 -getPList {
 	id o = [object getPList];
 	NSLog(@"SceneObject: %@ %f %f %f",object,x,y,z);
@@ -118,11 +110,6 @@ All rights reserved.
 		[object retain];		
 
 		NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
-		if ([[object class] isSubclassOfClass: [GLGrid class]] && [defs boolForKey:@"gridToMultiGrid"]==YES) {
-			MultiGrid *mg = [[MultiGrid alloc] initWithGrid: (GLGrid *)object];
-			[object autorelease];
-			object = mg;
-		}
 	}
 	return self;
 }

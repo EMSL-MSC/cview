@@ -115,7 +115,6 @@ cviewall -url <url> [optional defaults]\n\
        gridw               Int          1           How many Grids to lay down in the horizontal direction\n\
        metrics             String Array (all)       What metrics to show.\n\
        dataUpdateInterval  Float        30          How often in seconds to update the data from the given URL\n\
-       gridToMultiGrid     Bool         0           Use MultiGrid Objects that can display differently\n\
 	\n\n");
 
     exit(ecode);
@@ -188,7 +187,6 @@ int main(int argc,char *argv[], char *env[]) {
 		[d autoScale: 100];	
 		[t startUpdateThread: updateInterval];
 		o=[[[[[GLGrid alloc] initWithDataSet: d] setXTicks: 50] setYTicks: 32] show];
-		o=[[MultiGrid alloc] initWithGrid: (GLGrid *)o];
 		//NSLog(@"%@",o);
 		[scene1 addObject: o atX: posx Y: 0 Z: -posy];
 		

@@ -126,7 +126,6 @@
 			    align = NO;
 			    halign = 0;
 			    object = {
-				grid = {
 				    dataSet = {
 					baseURL = "http://chumbucket/cluster/pdu/";
 					key = total_current;
@@ -139,11 +138,9 @@
 				    yTicks = 8;
 				    yscale = 1;
 				    zscale = 1;
-				};
-				gridclass = GLGridSurface;
 				isVisible = YES;
 			    };
-			    objectclass = MultiGrid;
+			    objectclass = GLGrid;
 			    valign = 0;
 			    x = 0;
 			    y = 0;

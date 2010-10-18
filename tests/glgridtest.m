@@ -76,7 +76,7 @@ int main(int argc,char *argv[], char *env[]) {
 
 	GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test"];
 	Scene * scene = [[Scene alloc] initWithObject:
-		[[[[GLGridSurface alloc] initWithDataSet: ds] setXTicks: 50] setYTicks: 16]
+		[[[[GLGrid alloc] initWithDataSet: ds andType: G_SURFACE] setXTicks: 50] setYTicks: 16]
 		atX: 0 Y: 0 Z: 0];
 
 	[scene addObject: [[[[GLGrid alloc] initWithDataSet: ds2] setXTicks: 50] setYTicks: 16]

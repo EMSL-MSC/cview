@@ -79,8 +79,21 @@ Data layout for reference:
 
 
 @implementation  GLGrid
+static NSArray *gridTypeStrings=nil;
+static const SEL gridTypeSelectors[] =	{ 
+	@selector(drawLines),
+	@selector(drawRibbons),
+	@selector(drawSurface),
+	@selector(drawPoints)
+}
+;
++(void)initialize {
+	gridTypeStrings = [NSArray arrayWithObjects: @"Lines",@"Ribbons",@"Surface",@"Points",nil];
+	return;
+}
 -init {
 	[super init];
+	dataSetLock = [[NSRecursiveLock alloc] init];
 	currentMax = 0.0;
 	xTicks = 0;
 	yTicks = 0;
@@ -93,8 +106,17 @@ Data layout for reference:
 	zscale=1.0;
 	dzmult=0.0;
 	rmult=1.0;
+	surfaceIndices=nil;
+	gridType=G_LINES;
 	descText = [[GLText alloc] initWithString: @"Unset" andFont: @"LinLibertine_Re.ttf"];
 	return self;
+}
+
+-initWithDataSet: (DataSet *)ds andType: (GridTypesEnum)type{
+	[self init];
+	[self setGridType:type];
+	[self setDataSet: ds];
+	return self; 	
 }
 
 -initWithDataSet: (DataSet *)ds {
@@ -103,32 +125,58 @@ Data layout for reference:
 	return self;
 }
 
--setDataSet: (DataSet *)ds numRows: (int)num {
-	float *d;
-	int i,j;
-		
+-setDataSet: (DataSet *)ds {
+	[dataSetLock lock];	
 	[ds retain];
 	[dataSet autorelease];
 	dataSet = ds;
-	[dataRow autorelease];
-	[colorRow autorelease];
-	dataRow = [[NSMutableData alloc] initWithLength: num*3*[ds height]*sizeof(float)];
-	colorRow = [[NSMutableData alloc] initWithLength: num*3*[ds height]*sizeof(float)];
-	d = (float *)[dataRow mutableBytes];
-	// setup drawable array... (0,unknown,rownum)
-	for (i=0;i<[ds height];i++)
-		for (j=0;j<num;j++)
-			d[i*(3*num)+2+j*3]=i;
-	
 	[descText setString: [dataSet getDescription]]; //assume description will not change..
-
+	[self resetDrawingArrays];
+	[dataSetLock unlock];
+	
 	return self;
 }
 
--setDataSet: (DataSet *)ds {
-	return [self setDataSet: ds numRows: 1];
-}
+-(void)resetDrawingArrays {
+	float *d;
+	int num=1;
+	int i,j,w,h;
+	int index=0;
+	int numSurfaceVertices;
+	GLuint *indices;
 
+	[dataSetLock lock];	
+	w=[dataSet width];
+	h=[dataSet height];
+		
+	[dataRow autorelease];
+	[colorRow autorelease];
+	if (gridType == G_RIBBON)
+		num++;
+	dataRow = [[NSMutableData alloc] initWithLength: num*3*h*sizeof(float)];
+	colorRow = [[NSMutableData alloc] initWithLength: num*3*h*sizeof(float)];
+	d = (float *)[dataRow mutableBytes];
+	// setup drawable array... (0,unknown,rownum)
+	for (i=0;i<h;i++)
+		for (j=0;j<num;j++)
+			d[i*(3*num)+2+j*3]=i;
+	
+	
+	if (gridType == G_SURFACE) {
+		numSurfaceVertices = ((w - 1) * 2) * h;
+	
+		surfaceIndices = [[NSMutableData alloc] initWithLength: numSurfaceVertices*sizeof(GLuint)];
+		indices = (GLuint *)[surfaceIndices mutableBytes];
+			for(i=0;i<w-1;i++)
+			for(j=0;j<h;j++) {
+				indices[index++] = i*h + j;
+				indices[index++] = (i+1)*h + j;
+			}
+	}
+	[dataSetLock unlock];	
+	
+	return;
+}
 
 -(DataSet *)getDataSet {
 	return dataSet;
@@ -148,11 +196,11 @@ Data layout for reference:
 	xscale = [[list objectForKey: @"xscale" missing: @"1.0"] floatValue];
 	yscale = [[list objectForKey: @"yscale" missing: @"1.0"] floatValue];
 	zscale = [[list objectForKey: @"zscale" missing: @"1.0"] floatValue];
-
+	gridType = [[list objectForKey: @"gridType" missing: G_LINES_STRING] intValue];	
 
 	Class c;
 	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
-    NSLog(@"dataSetClass is: %@", c);
+	NSLog(@"dataSetClass is: %@", c);
 	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
 		ds=[c alloc];
 		[ds initWithPList: [list objectForKey: @"dataSet"]];
@@ -175,12 +223,14 @@ Data layout for reference:
 	[dict setObject: [NSNumber numberWithFloat: xscale] forKey: @"xscale"];
 	[dict setObject: [NSNumber numberWithFloat: yscale] forKey: @"yscale"];
 	[dict setObject: [NSNumber numberWithFloat: zscale] forKey: @"zscale"];
+	[dict setObject: [NSNumber numberWithInt: gridType] forKey: @"gridType"];
 	return dict;
 }
 
 -(NSArray *)attributeKeys {
 	//isVisible comes from the DrawableObject
-	return [NSArray arrayWithObjects: @"isVisible",@"xTicks",@"yTicks",@"fontScale",@"xscale",@"yscale",@"zscale",@"dataSet",@"dzmult",@"rmult",@"fontColorR",@"fontColorG",@"fontColorB",@"dataSet",nil];
+	return [NSArray arrayWithObjects: @"isVisible",@"xTicks",@"yTicks",@"fontScale",@"xscale",@"yscale",@"zscale",
+									@"dzmult",@"rmult",@"fontColorR",@"fontColorG",@"fontColorB",@"gridType",@"dataSet",nil];
 }
 
 -(NSDictionary *)tweaksettings {
@@ -197,15 +247,18 @@ Data layout for reference:
 		@"min=0.0 step=0.01 max=1.0",@"fontColorR",
 		@"min=0.0 step=0.01 max=1.0",@"fontColorG",
 		@"min=0.0 step=0.01 max=1.0",@"fontColorB",
+		@"min=0 max=3",@"gridType",
 		nil];
 }
 
 -(void)dealloc {
 	NSLog(@"GLGrid dealloc");
+	[dataSetLock lock];
 	[colorMap autorelease];
 	[dataRow autorelease];
 	[colorRow autorelease];
 	[dataSet autorelease];
+	[dataSetLock autorelease];
 	return [super dealloc];
 }
 
@@ -222,10 +275,12 @@ Data layout for reference:
 
 	glScalef(1.0,1.0,1.0); 
 	
+	[dataSetLock lock];
 	[self drawPlane];
-	[self drawData];
+	[self performSelector:gridTypeSelectors[gridType]];
 	[self drawAxis];
 	[self drawTitles];
+	[dataSetLock unlock];
 	
 	return self;
 }
@@ -332,7 +387,53 @@ Data layout for reference:
 	return self;
 }
 
--drawData {
+-setXTicks: (int) delta {
+	xTicks = delta;
+	return self;
+}
+-setYTicks: (int) delta {
+	yTicks = delta;
+	return self;
+}
+-(int)xTicks {
+	return xTicks;
+}
+-(int)yTicks {
+	return yTicks;
+}
+-setFontScale:(float)scale {
+	fontScale=scale;
+	return self;
+}
+-(float)fontScale {
+	return fontScale;
+}
+
+-description {
+	return [[self class] description];
+}
+
+-(NSString*)getName {
+	NSString *retval = [super getName];
+	if(!name)
+		retval = [dataSet description];
+	return retval;
+}
+
+
+-(void)setGridType:(GridTypesEnum)code {
+	if (code >=0 && code < G_COUNT)
+		gridType = code;
+	/**@todo actualy switch drawing*/
+	[self resetDrawingArrays];
+}
+
+-(GridTypesEnum)getGridType {
+	return gridType; 
+}
+
+
+-drawLines {
 	int i,j;
 	float *dl;
 	float *verts;
@@ -390,37 +491,133 @@ Data layout for reference:
 	return self;
 }
 
--setXTicks: (int) delta {
-	xTicks = delta;
-	return self;
-}
--setYTicks: (int) delta {
-	yTicks = delta;
-	return self;
-}
--(int)xTicks {
-	return xTicks;
-}
--(int)yTicks {
-	return yTicks;
-}
--setFontScale:(float)scale {
-	fontScale=scale;
-	return self;
-}
--(float)fontScale {
-	return fontScale;
+-(void)regenerateIndicies {
+		return;
 }
 
--description {
-	return [[self class] description];
+-drawSurface {
+	int i,j;
+	int dataIndex=0;
+	int vertIndex=0;
+	unsigned int stripLength = [surfaceIndices length]/sizeof(GLuint)/([dataSet width]-1);
+	NSMutableData *vertsObj = [[NSMutableData alloc] initWithLength: (3*[dataSet height] * [dataSet width])*sizeof(float)];
+	float *verts = (float *)[vertsObj mutableBytes];
+	NSMutableData *colorObj = [[NSMutableData alloc] initWithLength: (3 * [dataSet height] * [dataSet width]) * sizeof(float)];
+	float *color = (float *)[colorObj mutableBytes];
+	float *data = [dataSet data];
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glPushMatrix();	
+	glScalef(xscale,yscale,zscale);
+
+	[colorMap doMapWithData: data thatHasLength: [dataSet height] * [dataSet width] toColors: color];
+	for(i=0;i<[dataSet width];i++) {
+		for(j=0;j<[dataSet height];j++) {
+			verts[vertIndex++] = (float)i;
+			verts[vertIndex++] = data[dataIndex++];
+			verts[vertIndex++] = (float)j;
+		}
+	}
+	glVertexPointer(3, GL_FLOAT, 0, verts);
+	glColorPointer(3, GL_FLOAT, 0, color);
+	
+	for(i=0; i < ([dataSet width]-1); i++) {
+		glDrawElements(GL_TRIANGLE_STRIP, stripLength, GL_UNSIGNED_INT, [surfaceIndices mutableBytes] + (i * stripLength) * sizeof(int));
+	}
+
+	glPopMatrix();
+	[vertsObj autorelease];
+	[colorObj autorelease];
+	return self;
 }
 
--(NSString*)getName {
-	NSString *retval = [super getName];
-	if(!name)
-		retval = [dataSet description];
-	return retval;
+-drawPoints {
+	int i,j;
+	float *dl;
+	float *verts;
+	float glparm[3];
+	verts = [dataRow mutableBytes];
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glPushMatrix();	
+	glScalef(xscale,yscale,zscale);
+
+	glVertexPointer(3, GL_FLOAT, 0, verts);
+	glColorPointer(3, GL_FLOAT, 0, [colorRow mutableBytes]);
+
+	//Bigger points up close stuff
+	glPointSize(150);
+#if HAVE_OPENGL_1_4
+	glparm[0]=0;
+	glPointParameterfv(GL_POINT_SIZE_MIN,glparm);
+	glparm[0]=20.0;
+	glPointParameterfv(GL_POINT_SIZE_MAX,glparm);
+	glparm[0]=0.0;
+	glparm[1]=-0.01;
+	glparm[2]=0.025;
+	glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, glparm);
+#endif
+	//end bigger stuff..
+
+	for (i=0;i<[dataSet width];i++) {
+		dl=[dataSet dataRow: i];
+
+
+		[colorMap doMapWithData: dl thatHasLength: [dataSet height] toColors: [colorRow mutableBytes]];
+		//is there a gooder way? FIXME
+		for (j=0;j<[dataSet height];j++) {
+			verts[j*3+1] = dl[j];
+			verts[j*3+0] = (float)i;
+		}	
+		glDrawArrays(GL_POINTS,0,[dataSet height]);
+	}
+
+	glPopMatrix();
+	return self;
 }
 
+-drawRibbons {
+	int i,j;
+	float *dl,*newdl;
+	float *verts;
+	NSMutableData *temp = [[NSMutableData alloc] initWithLength: [dataSet height]*2*sizeof(float)];
+	verts = [dataRow mutableBytes];
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
+	glPushMatrix();	
+	glScalef(xscale,yscale,zscale);
+
+	glVertexPointer(3, GL_FLOAT, 0, verts);
+	glColorPointer(3, GL_FLOAT, 0, [colorRow mutableBytes]);
+	glColor3f(1.0,1.0,0.0);
+
+	for (i=0;i<[dataSet width];i++) {
+		dl=[dataSet dataRow: i];
+		newdl = (float *)[temp mutableBytes];
+
+		for (j=0;j<[dataSet height];j++) {
+			newdl[j*2+0]=dl[j];
+			newdl[j*2+1]=dl[j];
+		}
+
+		[colorMap doMapWithData: newdl 
+			thatHasLength: [dataSet height]*2 
+			toColors: [colorRow mutableBytes]];
+		//is there a gooder way? FIXME
+		for (j=0;j<[dataSet height];j++) {
+			verts[j*6+1] = dl[j];
+			verts[j*6+0] = (float)i;
+			verts[j*6+4] = dl[j];
+			verts[j*6+3] = (float)i+1.0;
+		}
+		glDrawArrays(GL_QUAD_STRIP,0,[dataSet height]*2);
+	}
+
+	glPopMatrix();
+	[temp autorelease];
+	return self;
+}
 @end

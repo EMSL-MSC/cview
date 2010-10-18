@@ -58,8 +58,8 @@ All rights reserved.
 */
 #import <Foundation/Foundation.h>
 #import "CViewScreenDelegate.h"
+#import "GLGrid.h"
 #import "WebDataSet.h"
-#import "MultiGrid.h"
 
 
 #if HAVE_ANTTWEAKBAR
@@ -67,14 +67,14 @@ All rights reserved.
 void TW_CALL cv_setGridType(const void *value, void *clientData)
 { 
     NSLog(@"Setit: %d",*(GridTypesEnum *)value);
-	MultiGrid *mg = (MultiGrid *)clientData;
-	[mg setGridType: *(GridTypesEnum *)value];
+	GLGrid *grid = (GLGrid *)clientData;
+	[grid setGridType: *(GridTypesEnum *)value];
 }
 
 void TW_CALL cv_getGridType(void *value, void *clientData)
 { 
-	MultiGrid *mg = (MultiGrid *)clientData;
-    *(GridTypesEnum *)value = [mg getGridType];
+	GLGrid *grid = (GLGrid *)clientData;
+    *(GridTypesEnum *)value = [grid getGridType];
 }
 #endif
 
@@ -100,9 +100,9 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 		NSEnumerator *list;
 		list = [[[world scene] getAllObjects] objectEnumerator];
 		while ( (o = [list nextObject]) ) {
-			if ([o isKindOfClass: [MultiGrid class]]) {	
+			if ([o isKindOfClass: [GLGrid class]]) {	
 				//Try to get a friendly name
-				id name = [[(MultiGrid *)o getGrid] getDataSet];
+				id name = [(GLGrid *)o getDataSet];
 				//if ([name isKindOfClass: [WebDataSet class]])
 				//	name = [(WebDataSet *)name getDataKey];
 				NSString *string = [NSString stringWithFormat: @"Grid: %@",name];

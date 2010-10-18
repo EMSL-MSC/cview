@@ -69,10 +69,6 @@ All rights reserved.
 #import "DefaultGLScreenDelegate.h"
 #import "ColorMap.h"
 #import "GLGrid.h"
-#import "GLGridSurface.h"
-#import "GLRibbonGrid.h"
-#import "GLPointGrid.h"
-#import "MultiGrid.h"
 #import "GLText.h"
 #import "GLImage.h"
 
