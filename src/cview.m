@@ -66,57 +66,6 @@ All rights reserved.
 #import "CViewScreenDelegate.h"
 //#define CLS_DUMP NSClassFromString(@"GSCBufferString")
 
-@interface MainKeyHandler : NSObject {
-	id root;
-	NSString *pfile;
-}
--initWithRoot: (id)r andPFile: (NSString *)pf;
--keyPress: (NSNotification *)notification;
-@end
-
-@implementation MainKeyHandler
--initWithRoot: (id)r andPFile: (NSString *)pf{
-	root=[r retain];//FIXME check if plist?
-	pfile=[pf retain];
-	return self;
-}
--(void)dealloc {
-	[root autorelease];
-	[pfile autorelease];
-	return [super dealloc];
-}
--keyPress: (NSNotification *)notification {
-	NSString *err;
-	NSLog(@"Toggle: %@",notification);
-	if ([[notification name] compare: @"keyPress"]==NSOrderedSame) {
-		unsigned char c = [[[notification userInfo] objectForKey: @"key"] unsignedCharValue];
-		switch (c) {
-			case '~':
-				NSLog(@"!key: %c",c);
-				id plist = [root getPList];
-				
-				NSData *nsd = [NSPropertyListSerialization dataFromPropertyList: (NSDictionary *)plist
-					format: NSPropertyListOpenStepFormat errorDescription: &err];
-				[nsd writeToFile: pfile atomically: YES];
-				break;
-#ifdef CLS_DUMP
-			case '!':
-				a=GSDebugAllocationListRecordedObjects(CLS_DUMP);
-				i = [a objectEnumerator];
-				
-				while ((o = [i nextObject])) {
-					NSLog(@"%d:%@",[o retainCount],[o description]);
-				}
-				break;
-#endif
-			default:
-				NSLog(@"key: %c",c);
-				break;
-		}
-	}
-	return self;
-}
-@end
 /**@file cview.m
 	@ingroup cviewapp
 */
@@ -261,18 +210,16 @@ int main(int argc,char *argv[], char *env[]) {
         NSLog(@"\"%@\" is not a valid class known to cview: Exiting",[args stringForKey: @"ScreenDelegate"]);
         usage();    // print usage and exit
     // Make sure that the passed screen delegate is properly subclassed
-	}else if(![c isSubclassOfClass: [DefaultGLScreenDelegate class]]) {
+	}else if(![c isSubclassOfClass: [CViewScreenDelegate class]]) {
         NSLog(@"\"%@\" is not a subclass of DefaultGLScreenDelegate: Exiting",[args stringForKey: @"ScreenDelegate"]);
         usage();    // print usage and exit
     }
 	GLScreen * g = [[GLScreen alloc] initWithPList:plist];
-    DefaultGLScreenDelegate *delegate = [[c alloc] initWithScreen: g];
+    CViewScreenDelegate *delegate = [[c alloc] initWithScreen: g];
+	[delegate setOutputFile: config];
 
 	[g setDelegate: delegate];
 
-	//FIXME get rid of this soon, put it in delegate
-	MainKeyHandler *mkh = [[MainKeyHandler alloc] initWithRoot: g andPFile: config];
-	[[NSNotificationCenter defaultCenter] addObserver: mkh selector: @selector(keyPress:) name: @"keyPress" object: nil];
 	NSLog(@"Setup done");
 
 	plist = [g getPList];
@@ -285,7 +232,6 @@ int main(int argc,char *argv[], char *env[]) {
 	MagickWandTerminus();
 
 	[g autorelease];
-	[mkh autorelease];
 	[pool release];
 
 	return 0;

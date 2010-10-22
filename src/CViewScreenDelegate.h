@@ -68,5 +68,8 @@ All rights reserved.
 TwBar *modbar;
 #else
 #endif
+	NSString *PListOutputFile;
 }
+-(void)setOutputFile: (NSString *)file;
+-(NSString *)getOutputFile;
 @end

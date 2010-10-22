@@ -109,7 +109,6 @@ All rights reserved.
 		[object initWithPList: [list objectForKey: @"object"]];
 		[object retain];		
 
-		NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
 	}
 	return self;
 }

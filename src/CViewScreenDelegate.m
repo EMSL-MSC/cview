@@ -79,6 +79,28 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 #endif
 
 @implementation CViewScreenDelegate 
+-init {
+	PListOutputFile = nil;
+	return self;
+}
+
+-(void)setOutputFile: (NSString *)file {
+	[file retain];
+	[PListOutputFile autorelease];
+	PListOutputFile= file;
+	return;
+}
+
+-(NSString *)getOutputFile {
+	return PListOutputFile;
+}
+
+-dealloc {
+	NSLog(@"CViewScreenDelegate dealloc");
+	[PListOutputFile autorelease];
+	[super dealloc];
+	return self;	
+}
 #if HAVE_ANTTWEAKBAR
 
 -setupTweakers: (GLWorld *)world {
@@ -123,4 +145,36 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 }
 #endif
 
+-(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world; {
+	if ([super keyPress: key atX: x andY: y inGLWorld: world] == NO) {
+		switch (key) {
+			case '~':
+				if (PListOutputFile != nil) {
+					NSString *err;
+					id plist = [myScreen getPList];
+				
+					NSData *nsd = [NSPropertyListSerialization dataFromPropertyList: (NSDictionary *)plist
+						format: NSPropertyListOpenStepFormat errorDescription: &err];
+					[nsd writeToFile: PListOutputFile atomically: YES];
+				}
+				break;
+#ifdef CLS_DUMP
+			case '!':
+				a=GSDebugAllocationListRecordedObjects(CLS_DUMP);
+				i = [a objectEnumerator];
+				
+				while ((o = [i nextObject])) {
+					NSLog(@"%d:%@",[o retainCount],[o description]);
+				}
+				break;
+#endif
+			default:
+				NSLog(@"key: %c",key);
+				return NO;
+				break;		
+		}
+		return YES;
+	}
+	return NO;
+}
 @end

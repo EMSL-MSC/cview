@@ -71,8 +71,8 @@ All rights reserved.
 	self->tooltip = nil;
     delegate = nil;
 	displayList = -1;
-	imagePrefix=[NSMutableString stringWithString: @"glworld"];
-	imageDir=[NSMutableString stringWithString: @"."];
+	imagePrefix=[[NSMutableString stringWithString: @"glworld"] retain];
+	imageDir=[[NSMutableString stringWithString: @"."] retain];
 	imageDailyDir = NO;
 	imageCycleTime = 0;
 	lastImageTime = 0;
@@ -171,15 +171,15 @@ All rights reserved.
 	[scene autorelease];
 	[eye autorelease];
 	[overlay autorelease];
-    if(delegate != nil)
-        [delegate autorelease];
+	if(delegate != nil)
+		[delegate autorelease];
 	[super dealloc];
 	return;
 }
 
 -glDraw {
-    if(doPickDraw == YES)
-        [self glPickDraw];
+	if(doPickDraw == YES)
+		[self glPickDraw];
 
 	glClearColor(backgroundColorR,backgroundColorG,backgroundColorB,1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

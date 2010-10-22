@@ -179,7 +179,6 @@ All rights reserved.
     }
 	ftglGetFontBBox(theFont,[string UTF8String],[string length],bounds);
 	glPushMatrix();
-    //printf("bounds[4] = %f\n", bounds[4]);
 
 	glTranslatef(0,bounds[4],0);
 	glScalef(scale[0],-scale[1],scale[2]);	
@@ -187,7 +186,7 @@ All rights reserved.
 	glRotatef(rotates[1],0.0,1.0,0.0);
 	glRotatef(rotates[2],0.0,0.0,1.0);
 	glColor3fv(color);
-
+	
 	ftglRenderFont(theFont,[string UTF8String], FTGL_RENDER_ALL);
 
 	glPopMatrix();

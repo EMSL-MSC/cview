@@ -102,10 +102,12 @@ void usage(NSString *msg,int ecode) {
 	}
 
 	printf("\ncviewall use:\n\
-cviewall -url <url> [optional defaults]\n\
+cviewall -url <url> [optional defaults] [-c <file>]\n\
 \n\
     cview all is a program to load up a set of metrics into a cview graphical \n\
     view by showing all metrics from a given URL, or those specified in the defaults\n\
+    a cview plist file can be output by pressing '~' to the file cviewall.cview\n\
+    this filename can be changed with the -c flag\n\
 \n\
     Defaults for cviewall all can be stored using the defaults program, and/or \n\
     on the command line in the form -<defaultname> <defaultval>.\n\
@@ -127,6 +129,7 @@ int main(int argc,char *argv[], char *env[]) {
 
 	//	NSArray *oclasses = [NSArray arrayWithObjects: [GLGrid class],[GLGridSurface class],[GLRibbonGrid class],[GLPointGrid class],nil];
 	DrawableObject *o;
+	NSString *configfile;
 	float updateInterval;
 	int posy=0,posx=0,w,x=0;
 
@@ -142,6 +145,7 @@ int main(int argc,char *argv[], char *env[]) {
 			[NSArray arrayWithObjects: @"all",nil],@"metrics",
 			@"1",@"gridw",
 			@"30.0",@"dataUpdateInterval",
+			@"cviewall.cview",@"c",
 			nil]];
 
 	NSLog(@"url=%@",[args stringForKey: @"url"]);
@@ -152,10 +156,11 @@ int main(int argc,char *argv[], char *env[]) {
 	w = [args integerForKey: @"gridw"];
 	NSLog(@"gridw=%d",w);
 	updateInterval = [args floatForKey: @"dataUpdateInterval"];
-	
+	configfile = [args stringForKey: @"c"];
 
 	GLScreen * g = [[GLScreen alloc] initName: @"Chinook NWperf" withWidth: 1200 andHeight: 600];
 	CViewScreenDelegate *cvsd = [[CViewScreenDelegate alloc] initWithScreen:g];
+	[cvsd setOutputFile: configfile];
 	[g setDelegate: cvsd];
 
 	Scene * scene1 = [[Scene alloc] init];

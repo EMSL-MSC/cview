@@ -145,7 +145,7 @@ int main(int argc,char *argv[], char *env[]) {
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();	
 	
-	gluPerspective(20.0,ratio,0.1,10000);
+	gluPerspective(20.0,ratio,0.1,20000);
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	//Gl init stuffage
@@ -161,8 +161,6 @@ int main(int argc,char *argv[], char *env[]) {
     glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
-    glClearDepth(1.0);
-
 //////////////
 	[g glDraw];
 
@@ -171,8 +169,8 @@ int main(int argc,char *argv[], char *env[]) {
 	MagickSetType(wand,TrueColorType);
 	MagickSetSize(wand,width,height);
 
-	//glReadPixels(0,0,width,height,GL_RGBA,GL_UNSIGNED_BYTE,[pixels mutableBytes]);
-	MagickConstituteImage(wand,width,height,"RGBA",CharPixel,[buffer mutableBytes]);
+	//Dump the alpha channel for now..  otherwise black shows up as transparent.
+	MagickConstituteImage(wand,width,height,"RGBP",CharPixel,[buffer mutableBytes]);
 
 	MagickFlipImage(wand);
 	MagickWriteImage(wand,[filename UTF8String]);

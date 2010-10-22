@@ -196,8 +196,12 @@ int findStringInArray(NSArray *arr,NSString *str) {
 -initWithData {
 	int x,y,i;
 	int MaxX=1,MaxY=1;
-	float val;
+	float val,junk;
 	char *ptr,*end,*sptr;
+
+	x=-1;
+	y=-1;
+	val=-1;
 
 	//check for any defaults set in alloc
 	if (xIndex==-1) xIndex=0;
@@ -222,7 +226,7 @@ int findStringInArray(NSArray *arr,NSString *str) {
 			else if (i==colIndex) 
 				val = strtod(ptr,&ptr);
 			else
-				strtod(ptr,&ptr);
+				junk=strtod(ptr,&ptr);
 			if (sptr==ptr) {
 				//NSLog(@"eat bad: %p '%x'",ptr,*ptr);
 				ptr++; //eat bad input
@@ -249,7 +253,7 @@ int findStringInArray(NSArray *arr,NSString *str) {
 -(float *)expandDataSetWidth: (int)w andHeight: (int)h {
 	int nw,nh;
 	int r;
-	float *d;
+	float *d=NULL;
 	int sw,sh;
 	sw=width;
 	sh=height;

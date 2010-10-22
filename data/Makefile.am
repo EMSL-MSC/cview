@@ -1,4 +1,4 @@
-pkgdata_DATA = *.ttf* LICENSE.txt *.svg
+pkgdata_DATA = $(wildcard *.ttf*) LICENSE.txt $(wildcard *.svg)
 
-EXTRA_DIST = *.ttf* LICENSE.txt *.svg
+EXTRA_DIST = $(wildcard *.ttf*) LICENSE.txt $(wildcard *.svg)
 

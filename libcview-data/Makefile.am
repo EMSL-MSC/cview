@@ -5,7 +5,7 @@ OBJCDEPMODE = depmode=gcc
 # set the include path found by configure
 INCLUDES = $(all_includes) -I$(top_srcdir)/libcview-data
 
-pkginclude_HEADERS = *.h
+pkginclude_HEADERS = $(wildcard *.h)
 
 lib_LTLIBRARIES = libcview-data.la
 
