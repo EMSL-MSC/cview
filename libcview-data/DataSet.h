@@ -65,7 +65,11 @@ This class provides a basic data store, with associated information.  It is orga
 @author Evan Felix
 @ingroup cviewdata
 */
-
+#define DS_DEFAULT_LIMIT 100.0
+//I wish there was magic to stringify into
+#define S(x) @ #x
+#define DS_DEFAULT_LIMIT_S S(DS_DEFAULT_LIMIT)
+#define DS_DEFAULT_LABEL_FORMAT @"%'.0f %@"
 @interface DataSet: NSObject <PList> {
 	NSString *name;
 	NSMutableData *data; ///< float based 2d array, data is stored prescaled by the currentScale scale.  so a datapoint of 100.0 and a currentScale of .25 is stored as 25.0

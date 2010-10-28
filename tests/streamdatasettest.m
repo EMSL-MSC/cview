@@ -56,21 +56,58 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-/**
-	CView Data library
-	@author Evan Felix
-	@ingroup cviewdata
-*/
-#include "calcdataset.h"
-#import "CalculatedDataSet.h"
-#import "DataSet.h"
-#import "DictionaryExtra.h"
-#import "ListComp.h"
-#import "SinDataSet.h"
-#import "UpdateThread.h"
-#import "WebDataSet.h"
-#import "XYDataSet.h"
-#import "StreamDataSet.h"
+#import <Foundation/Foundation.h>
+#import "cview-data.h"
+#import "cview.h"
 
-NSArray *getStringFields(NSString *str);
-int findStringInArray(NSArray *arr,NSString *str);
+int dump(DataSet *data) {
+	int i,j;
+	float *d;
+
+	for (i=0;i<[data width];i++) {
+		printf("%3d: ",i);
+		d = [data dataRow: i];
+		for (j=0;j<10;j++)
+			printf("%f ",d[j]);
+		printf("\n");
+	}
+	return 0;
+}
+int main(int argc,char *argv[], char *env[]) {
+	DrawableObject *o;
+
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+#ifndef __APPLE__
+	//needed for NSLog
+	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
+#endif
+
+	NSString *testdata = find_resource_path(@"testdata.xy");
+	if (testdata == nil) {
+		NSLog(@"Error Loading Test Data");
+		exit(1);
+	}
+		
+
+	StreamDataSet *f = [[StreamDataSet alloc] initWithCommand: @"cat" arguments: 
+		[NSArray arrayWithObjects: find_resource_path(@"streamdata.txt"),nil] depth: 64];
+	
+	GLScreen * g = [[GLScreen alloc] initName: @"StreamDataSet Test" withWidth: 1000 andHeight: 800];
+
+	Scene * scene1 = [[Scene alloc] init];
+	o=[[[[GLGrid alloc] initWithDataSet: f] setXTicks: 4] setYTicks: 4];
+	[scene1 addObject: o atX: 0 Y: 0 Z: 0];
+	
+	GLWorld * gw1 = [[[g addWorld: @"Top" row: 0 col: 0 rowPercent: 50 colPercent:50] 
+		setScene: scene1] 
+		setEye: [[[Eye alloc] init] setX: 200.0 Y: 500.0 Z: 400.0 Hangle:1.15 Vangle: -2.45]
+	];
+	
+	NSLog(@"%@",[g getPList]);
+	//dump(f);
+	[g run];
+
+	[pool release];
+
+	return 0;
+}

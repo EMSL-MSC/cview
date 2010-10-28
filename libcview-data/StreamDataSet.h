@@ -56,21 +56,57 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-/**
-	CView Data library
-	@author Evan Felix
-	@ingroup cviewdata
-*/
-#include "calcdataset.h"
-#import "CalculatedDataSet.h"
+#import <Foundation/Foundation.h>
 #import "DataSet.h"
-#import "DictionaryExtra.h"
-#import "ListComp.h"
-#import "SinDataSet.h"
 #import "UpdateThread.h"
-#import "WebDataSet.h"
-#import "XYDataSet.h"
-#import "StreamDataSet.h"
+#import "PList.h"
 
-NSArray *getStringFields(NSString *str);
-int findStringInArray(NSArray *arr,NSString *str);
+/**
+Extension of the data class to retrieve the data from command attached to a pipe. 
+
+The Data stream Should consist of a delimeter separated set of lines with data in them.
+
+The command is specified with a path tot he command, and an array of arguments
+
+A depth is also needed for how much data should be kept. defautl is 128 data lines
+
+The data is formatted with no column headers, but each line should be proceded by a row id.
+
+Sample output:
+@verbatim
+13:26:06     35    100    100    100 
+13:26:07     35    100    100    100 
+13:26:08     33    100    100    100 
+13:26:09     36    100    100    100 
+13:26:10     32    100    100    100 
+13:26:11     35    100    100    100 
+13:26:12     34    100    100    100 
+13:26:13     34    100    100    100 
+13:26:14     34    100    100    100 
+@endverbatim
+Which came from: colmux -address "cu4n1 cu4n2 cu4n3 cu4n4" -command "-sc -P -i 30" -column 2 -time
+
+@author Evan Felix
+@ingroup cviewdata
+*/
+#define DEFAULT_DEPTH 128
+
+@interface StreamDataSet: DataSet <PList> {
+	int columnCount;
+	NSString *command;
+	NSArray *arguments;
+	NSTask *theTask;
+	NSFileHandle *theFile;
+	NSPipe *thePipe;
+	NSMutableData *remainingData;
+	NSMutableArray *Yticks;
+	BOOL running;
+}
+-initWithCommand: (NSString *)cmd arguments: (NSArray *)args;
+-initWithCommand: (NSString *)cmd arguments: (NSArray *)args depth: (int)d;
+-addRow: (NSArray *)arr;
+-(NSArray *)getNextLineArray;
+-(NSData *)getNextLine;
+/** thread run */
+-(void)run:(id)args;
+@end

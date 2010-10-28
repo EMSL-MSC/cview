@@ -56,21 +56,26 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-/**
-	CView Data library
-	@author Evan Felix
-	@ingroup cviewdata
-*/
-#include "calcdataset.h"
-#import "CalculatedDataSet.h"
-#import "DataSet.h"
-#import "DictionaryExtra.h"
-#import "ListComp.h"
-#import "SinDataSet.h"
-#import "UpdateThread.h"
-#import "WebDataSet.h"
-#import "XYDataSet.h"
-#import "StreamDataSet.h"
+#import <Foundation/Foundation.h>
 
-NSArray *getStringFields(NSString *str);
-int findStringInArray(NSArray *arr,NSString *str);
+NSArray *getStringFields(NSString *str) {
+	NSString *s;
+	NSMutableArray *arr = [NSMutableArray arrayWithCapacity: 10];
+	NSScanner *scn = [NSScanner scannerWithString: str];
+	while ([scn scanUpToCharactersFromSet: [NSCharacterSet whitespaceCharacterSet] intoString: &s] == YES) {
+		[arr addObject: s];
+	}
+	return arr;
+}
+
+int findStringInArray(NSArray *arr,NSString *str) {
+	NSString *s;
+	int i,col = -1;
+	if (arr)
+		for (i=0;i<[arr count];i++) {
+			s = [arr objectAtIndex: i];
+			if ([s compare: str options: NSCaseInsensitiveSearch] == NSOrderedSame) 
+				col = i;
+		}
+	return col;
+}

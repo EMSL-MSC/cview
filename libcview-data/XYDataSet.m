@@ -62,30 +62,9 @@ All rights reserved.
 #include <stdlib.h>
 #include <string.h>
 #import "XYDataSet.h"
+#import "cview-data.h"
 
 #define NEWLINE @"\n"
-
-NSArray *getStringFields(NSString *str) {
-	NSString *s;
-	NSMutableArray *arr = [NSMutableArray arrayWithCapacity: 10];
-	NSScanner *scn = [NSScanner scannerWithString: str];
-	while ([scn scanUpToCharactersFromSet: [NSCharacterSet whitespaceCharacterSet] intoString: &s] == YES) {
-		[arr addObject: s];
-	}
-	return arr;
-}
-
-int findStringInArray(NSArray *arr,NSString *str) {
-	NSString *s;
-	int i,col = -1;
-	if (arr)
-		for (i=0;i<[arr count];i++) {
-			s = [arr objectAtIndex: i];
-			if ([s compare: str options: NSCaseInsensitiveSearch] == NSOrderedSame) 
-				col = i;
-		}
-	return col;
-}
 
 @implementation XYDataSet
 +alloc {
