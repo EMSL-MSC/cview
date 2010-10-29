@@ -88,7 +88,7 @@ All rights reserved.
 	[theTask launch];
 	
 	//2. Read first line of data to detemine width of dataStart
-	remainingData = [NSMutableData dataWithCapacity:1024];
+	remainingData = [[NSMutableData dataWithCapacity:1024] retain];
 	arr=[self getNextLineArray];
 	NSLog(@"Line: %@",arr);
 	
@@ -160,7 +160,7 @@ All rights reserved.
 		//  search for newline in remainingData
 			len = [remainingData length];
 			d = (char *)[remainingData bytes];
-			for ( ptr=d, i=0; *ptr!='\n' && i<len; ptr++, i++ )
+			for ( ptr=d, i=0; i<len && *ptr!='\n'; ptr++, i++ )
 				;//NO ACTION
 		//  if line found
 			if (i<len) {
@@ -232,6 +232,8 @@ All rights reserved.
 	NSArray *arr;
 	int d;
 	
+	[super initWithPList: list];
+	
 	cmd = [list objectForKey:@"command" missing: @"echo"];
 	arr = [list objectForKey:@"arguments" missing: [NSArray arrayWithObjects: @"Bad 0 1 2 3 4 5 6 7 8",nil]];
 	d = [[list objectForKey:@"depth" missing: S(DEFAULT_DEPTH)] intValue];
@@ -259,6 +261,7 @@ All rights reserved.
 	[theTask autorelease];
 	[thePipe autorelease];
 	[Yticks autorelease];
+	[remainingData autorelease];
 	[super dealloc];
 }
 
