@@ -56,24 +56,62 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
+/** 
+This class implements the gl drawing code to show a graph of lines above a lower base plane, with X and Y labels, with a z-axix tower showing the height of the data.  The data is provided by a DataSet class.  The coloring of the lines is provided by a self-created ColorMap class.
 
+The class can display 4 types of Grid: Lines, Surfaces, Ribbons and Points.
+@author Evan Felix <evan.felix@pnl.gov>, (C) 2008
+@ingroup cview3d
+*/
 #import <Foundation/Foundation.h>
-#import <sys/param.h>  //for max/min
-
-#import "DrawableObject.h"
-#import "Scene.h"
-#import "Eye.h"
-#import "GLWorld.h"
-#import "GLScreenDelegate.h"
-#import "GLScreen.h"
-#import "DefaultGLScreenDelegate.h"
+#import "DataSet.h"
 #import "ColorMap.h"
-#import "GLGrid.h"
-#import "GLBar.h"
+#import "DrawableObject.h"
 #import "GLText.h"
-#import "GLImage.h"
 
-//Implemented in utils.m
-void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
-NSFileHandle *find_resource(NSString *filename);
-NSString *find_resource_path(NSString *filename);
+typedef enum { B_SQUARE=0,B_COUNT } BarTypesEnum;
+#define B_SQUARE_STRING @"0"
+
+@interface GLBar: DrawableObject {
+	DataSet *dataSet;
+	ColorMap *colorMap;
+	double currentMax;
+	GLText *descText;
+	float fontScale;
+	float fontColorR;
+	float fontColorG;
+	float fontColorB;
+	float xscale,yscale,zscale;
+	float dzmult,rmult;
+	BarTypesEnum barType;
+	NSRecursiveLock *dataSetLock;
+	float baseWidth,baseLength;
+	float barWidth,barLength;
+	int gridw,gridl;
+}
+-init;
+/** Create GLBar with a dataset, using the default Square Drawing method*/ 
+-initWithDataSet: (DataSet *)ds;
+/** Create GLBar with a dataset, using the given Drawing method*/ 
+-initWithDataSet: (DataSet *)ds andType: (BarTypesEnum)type;
+/** change the dataSet displayed */
+-setDataSet: (DataSet *)ds;
+/** get the current dataset */
+-(DataSet *)getDataSet;
+-glDraw;
+/** draw the overall grid description text */
+-drawTitles;
+/** draw the z axis tower with appropriate ticks */
+-drawAxis;
+/** draw the lower plane, with x and y axis ticks */
+-drawPlane;
+/** set the scaling of the descriptive text */
+-setFontScale:(float)scale;
+-(float)fontScale;
+/**Set the current type of grid to display*/
+-(void)setBarType:(BarTypesEnum)code;
+/**Returns the current Type of Grid being Displayed*/
+-(BarTypesEnum)getBarType;
+/** draw the data bars*/
+-drawSquares;
+@end

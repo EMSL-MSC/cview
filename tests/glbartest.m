@@ -56,24 +56,39 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
+#import "SinDataSet.h"
+#import "cview.h"
 
-#import <Foundation/Foundation.h>
-#import <sys/param.h>  //for max/min
+int main(int argc,char *argv[], char *env[]) {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+#ifndef __APPLE__
+	//needed for NSLog
+	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
+#endif
+	SinDataSet *ds = [[SinDataSet alloc] initWithName: @"Sin()" Width: 1000 Height: 128];
+	SinDataSet *ds2 = [[SinDataSet alloc] initWithName: @"Sin()" Width: 500 Height: 128];
+	UpdateThread *t = [[UpdateThread alloc] initWithUpdatable: ds];
+	UpdateThread *t2 = [[UpdateThread alloc] initWithUpdatable: ds2];
+	[ds autoScale: 100];
+	[ds2 autoScale: 100];
+	[t startUpdateThread: 1.0];
+	[t2 startUpdateThread: 1.0];
 
-#import "DrawableObject.h"
-#import "Scene.h"
-#import "Eye.h"
-#import "GLWorld.h"
-#import "GLScreenDelegate.h"
-#import "GLScreen.h"
-#import "DefaultGLScreenDelegate.h"
-#import "ColorMap.h"
-#import "GLGrid.h"
-#import "GLBar.h"
-#import "GLText.h"
-#import "GLImage.h"
+	GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test"];
+	Scene * scene = [[Scene alloc] initWithObject:
+		[[GLBar alloc] initWithDataSet: ds ]
+		atX: 1300 Y: 0 Z: 0];
 
-//Implemented in utils.m
-void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
-NSFileHandle *find_resource(NSString *filename);
-NSString *find_resource_path(NSString *filename);
+	[scene addObject: [[GLBar alloc] initWithDataSet: ds2]
+		atX: 0 Y: 0 Z: 200];
+
+	[[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50] 
+		setScene: scene] 
+		setEye: [[[Eye alloc] init] setX: 2900 Y: 4650.0 Z: 5660.0 Hangle:-4.99 Vangle: -2.33]
+	];
+	[g dumpScreens];
+	[g run];
+	[pool release];
+	return 0;
+}
+
