@@ -80,11 +80,11 @@ Data layout for reference:
 
 @implementation  GLGrid
 static NSArray *gridTypeStrings=nil;
-static const SEL gridTypeSelectors[] =	{ 
-	@selector(drawLines),
-	@selector(drawRibbons),
-	@selector(drawSurface),
-	@selector(drawPoints)
+static const char *gridTypeSelectors[] =	{ 
+	"drawLines",
+	"drawRibbons",
+	"drawSurface",
+	"drawPoints"
 }
 ;
 +(void)initialize {
@@ -277,7 +277,7 @@ static const SEL gridTypeSelectors[] =	{
 	
 	[dataSetLock lock];
 	[self drawPlane];
-	[self performSelector:gridTypeSelectors[gridType]];
+	[self performSelector: sel_registerName(gridTypeSelectors[gridType]) ];
 	[self drawAxis];
 	[self drawTitles];
 	[dataSetLock unlock];

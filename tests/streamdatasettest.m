@@ -89,7 +89,8 @@ int main(int argc,char *argv[], char *env[]) {
 	}
 		
 
-	StreamDataSet *f = [[StreamDataSet alloc] initWithCommand: @"cat" arguments: 
+		NSLog(@"starting");
+	StreamDataSet *f = [[StreamDataSet alloc] initWithCommand: find_resource_path(@"slowcat") arguments: 
 		[NSArray arrayWithObjects: find_resource_path(@"streamdata.txt"),nil] depth: 64];
 	
 	GLScreen * g = [[GLScreen alloc] initName: @"StreamDataSet Test" withWidth: 1000 andHeight: 800];

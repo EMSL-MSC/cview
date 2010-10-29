@@ -126,6 +126,7 @@ All rights reserved.
 		d[i*height+0] = [str floatValue];
 		i++;
 	}
+	[self autoScale];
 	return self;
 }
 
@@ -169,15 +170,15 @@ All rights reserved.
 				linedata = [remainingData subdataWithRange: range];
 				range.location = ++i; // skip the newline
 				range.length = len-i;
-				newdata = [[remainingData subdataWithRange: range] retain];
+				newdata = [remainingData subdataWithRange: range];
 				[remainingData autorelease];
-				remainingData = newdata;
+				remainingData = [[NSMutableData dataWithData: newdata] retain];
 		//    return data
 				return linedata;
 			}
 		// get more data, blocking if necessary
 			newdata = [theFile availableData];
-			//NSLog(@"newdata: %@",newdata);
+			//NSLog(@"newdata: %@",[newdata class]);
 			if (newdata != nil && [newdata length] > 0 ) {
 				[remainingData appendData: newdata];
 			}
@@ -187,8 +188,8 @@ All rights reserved.
 		}
 	}
 	@catch (NSException *localException) {
-        NSLog(@"Error: %@", localException);
-    }
+		NSLog(@"Error: %@", localException);
+	}
 	return nil;
 }
 
@@ -207,6 +208,9 @@ All rights reserved.
 			[self addRow:arr];
 		}
 		
+
+		[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
+
 		if (count++ >= 1000 ) {
 			[tpool release];
 			tpool = [[NSAutoreleasePool alloc] init];

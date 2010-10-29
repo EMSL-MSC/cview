@@ -49,25 +49,34 @@ if [[ "x$target_vendor" = "xapple" ]]; then
 		base="/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks"
 	fi
 	OPENGL_OBJCFLAGS="-I${base}/OpenGL.framework/Headers/ -I${base}/GLUT.framework/Headers/"
+	dnl cant check library linking on apple
+CPPFLAGS+=" $OPENGL_OBJCFLAGS "
+OBJCFLAGS+=" $OPENGL_OBJCFLAGS "
+	AC_CHECK_HEADERS("gl.h",,[AC_MSG_ERROR([cannot find gl.h])])
+	AC_CHECK_HEADERS("glut.h",,[AC_MSG_ERROR([cannot find glut.h])])
 else
 	AC_PATH_PROG(GNUSTEP_CONFIG,gnustep-config)
 	FOUNDATION_LDFLAGS=" `$GNUSTEP_CONFIG --base-libs` "
 	FOUNDATION_OBJCFLAGS=" `$GNUSTEP_CONFIG --objc-flags` "
-    dnl Test to see if we're on mingw (windows ... yuck!)
-    case "$host" in
-    *mingw*)
-        dnl Maybe shouldn't default to freeglut....
-        AC_MSG_NOTICE("host is $host therefore linking against opengl32 and freeglut instead of GL and GLUT")
-        OPENGL_LDFLAGS="-lopengl32 -lglu32 -lfreeglut"
-        ;;
-    *)
-        OPENGL_LDFLAGS="-lGL -lglut"
-        ;;
-    esac
-    OPENGL_OBJCFLAGS="-I/usr/include/GL "
+	dnl Test to see if we're on mingw (windows ... yuck!)
+	case "$host" in
+	*mingw*)
+		dnl Maybe shouldn't default to freeglut....
+		AC_MSG_NOTICE("host is $host therefore linking against opengl32 and freeglut instead of GL and GLUT")
+		OPENGL_LDFLAGS="-lopengl32 -lglu32 -lfreeglut"
+		;;
+	*)
+		OPENGL_LDFLAGS="-lGL -lglut"
+		;;
+	esac
+	OPENGL_OBJCFLAGS="-I/usr/include/GL "
+	CPPFLAGS+=" $OPENGL_OBJCFLAGS "
+	OBJCFLAGS+=" $OPENGL_OBJCFLAGS "
+	AC_CHECK_HEADERS("gl.h",,[AC_MSG_ERROR([cannot find gl.h])])
+	AC_CHECK_LIB(GL,glColor4f,,[AC_MSG_ERROR([cannot link with libGL])])
+	AC_CHECK_HEADERS("glut.h",,[AC_MSG_ERROR([cannot find glut.h])])
+	AC_CHECK_LIB(glut,glutGet,,[AC_MSG_ERROR([cannot link with libglut])])
 fi
-CPPFLAGS+=" $OPENGL_OBJCFLAGS "
-OBJCFLAGS+=" $OPENGL_OBJCFLAGS "
 
 AC_SUBST(FOUNDATION_LDFLAGS)
 AC_SUBST(FOUNDATION_CFLAGS)
@@ -82,10 +91,6 @@ PKG_CHECK_MODULES([FTGL],[ftgl > 2.1.2])
 AC_CHECK_LIB(ftgl,ftglCreateExtrudeFont)
 AC_SUBST(OPTBUILD)
 
-AC_CHECK_HEADERS("gl.h",,[AC_MSG_ERROR([cannot find gl.h])])
-AC_CHECK_LIB(GL,glColor4f,,[AC_MSG_ERROR([cannot link with libGL])])
-AC_CHECK_HEADERS("glut.h",,[AC_MSG_ERROR([cannot find glut.h])])
-AC_CHECK_LIB(glut,glutGet,,[AC_MSG_ERROR([cannot link with libglut])])
 AC_CHECK_HEADERS([limits.h stdlib.h string.h unistd.h])
 
 AC_MSG_CHECKING(for OpenGL version 1.4 or greater)
