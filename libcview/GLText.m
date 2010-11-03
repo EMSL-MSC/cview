@@ -57,11 +57,17 @@ All rights reserved.
 
 */
 #include <gl.h>
+#include <glut.h>
 #import "cview.h"
 #import "DictionaryExtra.h"
 
 	
 @implementation GLText
+static NSMutableDictionary *fontCache=nil;
++(void)initialize {
+	fontCache = [[NSMutableDictionary dictionaryWithCapacity: 5] retain];
+	return;
+}
 - initWithString: (NSString *)str andFont: (NSString *)font {
 	int i;
 	[super init];
@@ -155,15 +161,26 @@ All rights reserved.
 	return self;
 }
 - setFont: (NSString *)font_res {
+	id fontPointer;
 	[font_res retain];
 	[fontResource autorelease];
 	fontResource=font_res;
 
-	theFont = ftglCreateExtrudeFont([fontResource UTF8String]);
-	if (!theFont)
-		NSLog(@"Error Loading Font:%@",fontResource);
-	ftglSetFontFaceSize(theFont,36,72);
-	ftglSetFontCharMap(theFont,ft_encoding_unicode);
+	NSString * key = [NSString stringWithFormat: @"%s-%d",font_res,glutGetWindow()];
+
+	fontPointer = [fontCache valueForKey: key];
+	if (fontPointer == nil) {
+		theFont = ftglCreateExtrudeFont([fontResource UTF8String]);
+		if (!theFont)
+			NSLog(@"Error Loading Font:%@",fontResource);
+		ftglSetFontFaceSize(theFont,36,72);
+		ftglSetFontCharMap(theFont,ft_encoding_unicode);
+		fontPointer = [NSNumber numberWithLong: (long)theFont];
+		[fontCache setObject: fontPointer forKey: key];
+	}
+	else {
+		theFont = (FTGLfont *)[fontPointer longValue];
+	}	
 	return self;
 }
 - glDraw {
@@ -180,7 +197,8 @@ All rights reserved.
 	ftglGetFontBBox(theFont,[string UTF8String],[string length],bounds);
 	glPushMatrix();
 
-	glTranslatef(0,bounds[4],0);
+	if (rotates[0]==0.0 && rotates[1]==0.0 && rotates[2]==0.0)
+		glTranslatef(0,bounds[4],0);
 	glScalef(scale[0],-scale[1],scale[2]);	
 	glRotatef(rotates[0],1.0,0.0,0.0);
 	glRotatef(rotates[1],0.0,1.0,0.0);

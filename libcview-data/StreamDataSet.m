@@ -73,8 +73,9 @@ All rights reserved.
 }
 
 -initWithCommand: (NSString *)cmd arguments: (NSArray *)args depth: (int)d {
-	NSArray *arr;
+	NSArray *arr=nil,*headers=nil;
 	int i;
+	BOOL nodata;
 
 	//1. Start command Stream
 	command = [cmd retain];
@@ -89,17 +90,36 @@ All rights reserved.
 	
 	//2. Read first line of data to detemine width of dataStart
 	remainingData = [[NSMutableData dataWithCapacity:1024] retain];
-	arr=[self getNextLineArray];
-	NSLog(@"Line: %@",arr);
+	i=10;
+	nodata = YES;
+	while (nodata) {
+		arr=[self getNextLineArray];
+		NSLog(@"Line: %@",arr);
+		switch ([self getRowType:arr]) {
+			case ROW_HEADER:
+				headers = arr;
+				break;
+			case ROW_DATA:
+				nodata=NO;
+				break;
+			default:
+				break;
+		}		
+	}
 	
 	//3. initialze superclass.
 	[super initWithName: command Width: ([arr count]-1) Height: d];
 	Yticks = [[NSMutableArray arrayWithCapacity: d] retain];
 	for (i=0;i<d;i++)
 		[Yticks addObject: @"None"];
+	Xticks = [[NSMutableArray arrayWithCapacity: [arr count]] retain];
 	
 	//4. insert first row of data
 	[self addRow: arr];
+	if ([headers count]-1 == [arr count]) {
+		[self addRow: headers];
+	}
+			
 
 	//5. Start thread to read rest of data.
 	running = YES;
@@ -108,25 +128,60 @@ All rights reserved.
 	return self;
 }
 
+-(RowTypeEnum)getRowType: (NSArray *)arr {
+	//Three cases:
+	//1. blank line
+	if ([arr count] == 0)  {
+		return ROW_BLANK;
+	}
+	//2. header line
+	else if ([[arr objectAtIndex: 0] compare: @"#"] == NSOrderedSame) {
+		return ROW_HEADER;
+	}
+	//3. data line
+	else if ([arr count]>0) {
+		return ROW_DATA;
+	}
+	else
+		return ROW_CRAP;
+}
+
 -addRow: (NSArray *)arr {
 	float *d;
 	int i;
 	NSEnumerator *e;
 	NSString *str;
+
+	switch ([self getRowType: arr]) {
+		case ROW_HEADER:
+			e=[arr objectEnumerator];
+			[e nextObject];
+			[e nextObject];
+			i=0;
+			while ((str = [e nextObject]) != nil) {
+				[Xticks insertObject: str atIndex: i ];
+				i++;
+			}
+			break;
+		case ROW_DATA:
+			[self shiftData: 1];
+			d = [data mutableBytes];
+			e=[arr objectEnumerator];
+			str = (NSString *)[e nextObject];
+			[Yticks insertObject: str atIndex: 0];
+			[Yticks removeLastObject];
 	
-	[self shiftData: 1];
-	d = [data mutableBytes];
-	e=[arr objectEnumerator];
-	str = (NSString *)[e nextObject];
-	[Yticks insertObject: str atIndex: 0];
-	[Yticks removeLastObject];
-	
-	i=0;
-	while ((str = [e nextObject]) != nil) {
-		d[i*height+0] = [str floatValue];
-		i++;
+			i=0;
+			while ((str = [e nextObject]) != nil) {
+				d[i*height+0] = [str floatValue];
+				i++;
+			}
+			[self autoScale];
+			break;
+		default:
+			NSLog(@"Bad Row Seen: %@",arr);
+			break;
 	}
-	[self autoScale];
 	return self;
 }
 
@@ -160,10 +215,11 @@ All rights reserved.
 		//  search for newline in remainingData
 			len = [remainingData length];
 			d = (char *)[remainingData bytes];
-			for ( ptr=d, i=0; i<len && *ptr!='\n'; ptr++, i++ )
-				;//NO ACTION
+			ptr=memchr(d,'\n',len);
+		
 		//  if line found
-			if (i<len) {
+			if (ptr != NULL) {
+				i=ptr-d;
 		//    save extra data
 				range.location = 0;
 				range.length = i;
@@ -226,6 +282,9 @@ All rights reserved.
 	return [Yticks objectAtIndex:row];
 }
 
+- (NSString *)columnTick: (int)col {
+	return [Xticks objectAtIndex:col];
+}
 -initWithPList: (id)list {
 	NSLog(@"initWithPList: %@",[self class]);
 	NSString *cmd;

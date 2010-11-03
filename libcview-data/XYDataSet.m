@@ -87,22 +87,23 @@ All rights reserved.
 		rawData = [NSData dataWithContentsOfURL: dataURL];
 		len = [rawData length];
 		d=(char *)[rawData bytes];	
-		for ( ptr=d, i=0; *ptr!='\n' && i<len; ptr++, i++ )
-			;
-
-		str = [NSString stringWithCString:d length: i];
-		//NSLog(@"Headers String: %@",str);
-		arr = getStringFields(str);
-		columnCount = [arr count];
-		if ([[NSScanner scannerWithString: str] scanCharactersFromSet: [NSCharacterSet letterCharacterSet] intoString: NULL]==YES) {
-			//NSLog(@"Header found: %@",str);
-			dataStart = i+1;
-			headers = [arr retain];
+		ptr=memchr(d,'\n',len);
+		if (ptr != NULL) {
+			i=ptr-d;
+			str = [NSString stringWithCString:d length: i];
+			//NSLog(@"Headers String: %@",str);
+			arr = getStringFields(str);
+			columnCount = [arr count];
+			if ([[NSScanner scannerWithString: str] scanCharactersFromSet: [NSCharacterSet letterCharacterSet] intoString: NULL]==YES) {
+				//NSLog(@"Header found: %@",str);
+				dataStart = i+1;
+				headers = [arr retain];
+			}
+			else {
+				dataStart = 0;
+			}
+			headersRead=YES;
 		}
-		else {
-			dataStart = 0;
-		}
-		headersRead=YES;
 	}
 	return;
 }

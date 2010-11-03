@@ -74,7 +74,7 @@ static const char *barTypeSelectors[] =	{
 
 static float bar_quads[72] = {
 0.0 , 0.0 , 0.0 , 1.0 , 0.0 , 0.0 , 1.0 , 1.0 , 0.0 , 0.0 , 1.0 , 0.0 , //Front Face
-0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 1.0 , 1.0 , 0.0 , 1.0 , 1.0 , 0.0 , 0.0 , //Bottom
+//0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 1.0 , 1.0 , 0.0 , 1.0 , 1.0 , 0.0 , 0.0 , //Bottom
 0.0 , 0.0 , 0.0 , 0.0 , 1.0 , 0.0 , 0.0 , 1.0 , 1.0 , 0.0 , 0.0 , 1.0 , //Left
 0.0 , 1.0 , 0.0 , 1.0 , 1.0 , 0.0 , 1.0 , 1.0 , 1.0 , 0.0 , 1.0 , 1.0 , //Top
 1.0 , 0.0 , 0.0 , 1.0 , 0.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 0.0 , //Right
@@ -103,6 +103,7 @@ static float bar_quads[72] = {
 	gridl=0;
 	barType=B_SQUARE;
 	descText = [[GLText alloc] initWithString: @"Unset" andFont: @"LinLibertine_Re.ttf"];
+	barText = nil;
 	return self;
 }
 
@@ -121,6 +122,8 @@ static float bar_quads[72] = {
 
 -setDataSet: (DataSet *)ds {
 	float f;
+	int i;
+	GLText *txt;
 	[dataSetLock lock];	
 	[ds retain];
 	[dataSet autorelease];
@@ -133,6 +136,13 @@ static float bar_quads[72] = {
 		gridl++;
 	NSLog(@"Size: %d => %d %d",[ds width],gridw,gridl);
 	[dataSetLock unlock];
+	
+	barText = [[NSMutableArray arrayWithCapacity: [ds width]] retain];
+	for (i=0;i<[ds width];i++) {
+		txt = [[GLText alloc] initWithString: [ds columnTick: i] andFont: @"LinLibertine_Re.ttf"];
+		[txt setRotationOnX: -90.0 Y:0.0 Z:0.0];
+		[barText insertObject: txt atIndex: i];
+	}
 	
 	return self;
 }
@@ -226,6 +236,7 @@ static float bar_quads[72] = {
 	[colorMap autorelease];
 	[dataSet autorelease];
 	[dataSetLock autorelease];
+	[barText autorelease];
 	return [super dealloc];
 }
 
@@ -361,6 +372,7 @@ static float bar_quads[72] = {
 	int i,j,num,l;
 	float *dl;
 	float val,sw,sl,mw,ml;
+	GLText *txt;
 
 	mw=(baseWidth-barWidth)/2.0;
 	ml=(baseLength-barLength)/2.0;
@@ -374,28 +386,35 @@ static float bar_quads[72] = {
 
 	glVertexPointer(3, GL_FLOAT, 0, bar_quads);
 
-//	dl=[dataSet ];
-	
+	glPolygonOffset(0.0,0.1);
 	num=0;
 	for (i=0;i<gridw;i++) {
 		for (j=0;j<gridl;j++) {
 			glPushMatrix();	
 
-			val = [dataSet dataRow: num][0];
+			val = [dataSet dataRow: num][1];
 			//NSLog(@"Draw: %f %f,%f",val,i*baseWidth,j*baseLength);
 			[colorMap glMap:val];
 			//glColor3f(1.0,1.0,1.0);
 			glTranslatef(i*baseWidth+mw,0.0,j*baseLength+ml);
 			glScalef(sw,val,sl);
-			glDrawArrays(GL_QUADS,0,24);
+			glDrawArrays(GL_QUADS,0,20);
 
 			glColor3f(0.0,0.0,0.0);
-			for (l=0;l<24;l+=4)
+			for (l=0;l<20;l+=4)
 				glDrawArrays(GL_LINE_LOOP,l,4);
+			glPopMatrix();
+			
+			glPushMatrix();	
+			glTranslatef(i*baseWidth+mw*1.25,val+0.1,(j)*baseLength+ml+barLength/2);
+			txt = [barText objectAtIndex: num];
+			[txt setString: [dataSet columnTick:num]];
+			[txt bestFitForWidth: barWidth andHeight: barLength];
+			[txt glDraw];
 
 			glPopMatrix();
 			num++;
-			if ( num>[dataSet width]) {
+			if ( num>=[dataSet width]) {
 				i=gridw; //get out
 				j=gridl;
 			}

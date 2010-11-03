@@ -122,5 +122,10 @@ All rights reserved.
 	[super dealloc];
 }
 
+- (NSString *)columnTick: (int)col {
+	float f = dx+col/100.0;
+	return [NSString stringWithFormat: @"Sin(%f) = %f",f,sin(f)];
+}
+
 @end /* SinDataSet */
 

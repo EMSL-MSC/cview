@@ -68,9 +68,11 @@ The Data stream Should consist of a delimeter separated set of lines with data i
 
 The command is specified with a path tot he command, and an array of arguments
 
-A depth is also needed for how much data should be kept. defautl is 128 data lines
+A depth is also needed for how much data should be kept. default is 128 data lines
 
-The data is formatted with no column headers, but each line should be proceded by a row id.
+Each line should be proceded by a row id.
+
+Headers are allowed if the first column is a '#' hash sign, and each column is specified.
 
 Sample output:
 @verbatim
@@ -90,6 +92,7 @@ Which came from: colmux -address "cu4n1 cu4n2 cu4n3 cu4n4" -command "-sc -P -i 3
 @ingroup cviewdata
 */
 #define DEFAULT_DEPTH 128
+typedef enum {ROW_DATA,ROW_BLANK,ROW_HEADER,ROW_CRAP} RowTypeEnum;
 
 @interface StreamDataSet: DataSet <PList> {
 	int columnCount;
@@ -100,10 +103,12 @@ Which came from: colmux -address "cu4n1 cu4n2 cu4n3 cu4n4" -command "-sc -P -i 3
 	NSPipe *thePipe;
 	NSMutableData *remainingData;
 	NSMutableArray *Yticks;
+	NSMutableArray *Xticks;
 	BOOL running;
 }
 -initWithCommand: (NSString *)cmd arguments: (NSArray *)args;
 -initWithCommand: (NSString *)cmd arguments: (NSArray *)args depth: (int)d;
+-(RowTypeEnum)getRowType: (NSArray *)arr;
 -addRow: (NSArray *)arr;
 -(NSArray *)getNextLineArray;
 -(NSData *)getNextLine;

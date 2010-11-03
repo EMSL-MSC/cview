@@ -88,6 +88,7 @@ typedef enum { B_SQUARE=0,B_COUNT } BarTypesEnum;
 	float baseWidth,baseLength;
 	float barWidth,barLength;
 	int gridw,gridl;
+	NSMutableArray *barText;
 }
 -init;
 /** Create GLBar with a dataset, using the default Square Drawing method*/ 
