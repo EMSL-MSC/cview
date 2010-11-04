@@ -272,6 +272,7 @@ static float bar_quads[72] = {
 	glScalef(fontScale,fontScale,fontScale/zscale);
 
 	[descText setColorRed: fontColorR Green: fontColorG Blue: fontColorB];
+	[descText setString: [dataSet getDescription]]; 
 	[descText glDraw];
 
 	glPopMatrix();

@@ -288,6 +288,7 @@ All rights reserved.
 -initWithPList: (id)list {
 	NSLog(@"initWithPList: %@",[self class]);
 	NSString *cmd;
+	NSString *str;
 	NSArray *arr;
 	int d;
 	
@@ -296,8 +297,16 @@ All rights reserved.
 	cmd = [list objectForKey:@"command" missing: @"echo"];
 	arr = [list objectForKey:@"arguments" missing: [NSArray arrayWithObjects: @"Bad 0 1 2 3 4 5 6 7 8",nil]];
 	d = [[list objectForKey:@"depth" missing: S(DEFAULT_DEPTH)] intValue];
-	/**@todo do init*/
-	return [self initWithCommand: cmd arguments: arr depth:d ];
+	
+	[self initWithCommand: cmd arguments: arr depth:d ];
+	/*fixup the name if needed */
+	str = [list objectForKey:@"description"];
+	if (str != nil) {
+		[str retain];
+		[textDescription autorelease];
+		textDescription=str;
+	}
+	return self;
 }
 
 -getPList {

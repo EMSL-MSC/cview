@@ -75,7 +75,7 @@ All rights reserved.
 }
 
 -initWithWidth: (int)w Height: (int)h {
-	name = @"No Name";
+	name = @"NoName";
 	width=w;
 	height=h;
 	data = [[NSMutableData alloc] initWithLength: w*h*sizeof(float)];
@@ -96,6 +96,7 @@ All rights reserved.
 	lockedMax = [[list objectForKey:@"lockedMax" missing: @"0"] floatValue];
 	currentLimit = [[list objectForKey:@"limit" missing: DS_DEFAULT_LIMIT_S] floatValue];
 	labelFormat=[list objectForKey:@"labelFormat" missing: DS_DEFAULT_LABEL_FORMAT];
+	name = [[list objectForKey:@"name" missing: @"NoName"] retain];
 	return self;
 }
 
@@ -108,6 +109,8 @@ All rights reserved.
 		[dict setObject: [NSNumber numberWithFloat: currentLimit] forKey: @"limit"];
 	if ([labelFormat compare: DS_DEFAULT_LABEL_FORMAT] != NSOrderedSame)
 		[dict setObject: labelFormat forKey: @"labelFormat"];
+	if ([name compare: @"NoName"] != NSOrderedSame )
+		[dict setObject: name forKey: @"name"];
 	return dict;
 }
 

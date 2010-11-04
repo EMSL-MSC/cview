@@ -57,12 +57,14 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
+#include <execinfo.h>
 #import "cview-data.h"
 #import "cview.h"
 
 int dump(DataSet *data) {
 	int i,j;
 	float *d;
+
 
 	for (i=0;i<[data width];i++) {
 		printf("%3d: ",i);
@@ -75,7 +77,7 @@ int dump(DataSet *data) {
 }
 int main(int argc,char *argv[], char *env[]) {
 	DrawableObject *o;
-
+	
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 #ifndef __APPLE__
 	//needed for NSLog
@@ -105,6 +107,7 @@ int main(int argc,char *argv[], char *env[]) {
 	];
 	
 	NSLog(@"%@",[g getPList]);
+
 	//dump(f);
 	[g run];
 
