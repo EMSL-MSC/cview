@@ -25,11 +25,17 @@ REQUIREMENTS
 	Test data generators need: python-numeric
 
 	Mac OS X - 
-		Ports
+		XCode
+		Ports - macports.org
 			ImageMagick
 			pkgconfig
 			ftgl
 			freetype2
+			automake
+			autoconf
+			libtool
+		Ports Optional:
+			anttweakbar
 
 OPTIONAL
 
