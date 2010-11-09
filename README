@@ -34,6 +34,7 @@ REQUIREMENTS
 			automake
 			autoconf
 			libtool
+			py-numeric
 		Ports Optional:
 			anttweakbar
 
