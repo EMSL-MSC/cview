@@ -69,7 +69,11 @@ This class provides a basic data store, with associated information.  It is orga
 //I wish there was magic to stringify into
 #define S(x) @ #x
 #define DS_DEFAULT_LIMIT_S S(DS_DEFAULT_LIMIT)
-#define DS_DEFAULT_LABEL_FORMAT @"%'.0f %@"
+#ifdef __APPLE__
+  #define DS_DEFAULT_LABEL_FORMAT @"%.0f %@"
+#else
+  #define DS_DEFAULT_LABEL_FORMAT @"%'.0f %@"
+#endif
 #define DS_DEFAULT_NAME @"NoName"
 #define DS_DEFAULT_RATE_SUFFIX @"NoRate"
 @interface DataSet: NSObject <PList> {
