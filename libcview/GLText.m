@@ -136,12 +136,58 @@ static NSMutableDictionary *fontCache=nil;
 	return dict;
 }
 
+-(NSArray *)attributeKeys {
+	//isVisible comes from the DrawableObject
+	return [NSArray arrayWithObjects: @"isVisible",
+									@"colorRed",@"colorGreen",@"colorBlue",
+									//@"scaleX",@"scaleY",@"scaleZ",
+									//@"rotX",@"rotY",@"rotZ",
+									nil];
+}
+
+-(NSDictionary *)tweaksettings {
+	return [NSDictionary dictionaryWithObjectsAndKeys:
+		@"min=0.1 step=0.05",@"scaleX",
+		@"min=0.1 step=0.05",@"scaleY",
+		@"min=0.1 step=0.05",@"scaleZ",
+		@"min=0 max=1",@"isVisible",
+		@"min=0.0 step=0.01 max=1.0",@"colorRed",
+		@"min=0.0 step=0.01 max=1.0",@"colorGreen",
+		@"min=0.0 step=0.01 max=1.0",@"colorBlue",	
+		@"min=-3.14159 max=3.14159 step=0.01745 precision=5",@"rotX",
+		@"min=-3.14159 max=3.14159 step=0.01745 precision=5",@"rotY",
+		@"min=-3.14159 max=3.14159 step=0.01745 precision=5",@"rotZ",
+		nil];
+}
+
 - setColorRed: (float)r Green: (float)g Blue: (float)b {
 	color[0]=r;
 	color[1]=g;
 	color[2]=b;
 	return self;
 }
+- setColorRed: (float)r {
+	color[0]=r;
+	return self;
+}
+- (float)getColorRed { 
+	return color[0]; 
+}
+- setColorGreen: (float)g {
+	color[1]=g;
+	return self;
+}
+- (float)getColorGreen {
+	return color[1];
+}
+- setColorBlue: (float)b {
+	color[2]=b;
+	return self;
+}
+- (float)getColorBlue {
+	return color[2];
+}
+
 - setScale: (float)s {
 	int i;
 	for (i=0;i<3;i++)

@@ -92,7 +92,7 @@ Which came from: colmux -address "cu4n1 cu4n2 cu4n3 cu4n4" -command "-sc -P -i 3
 @ingroup cviewdata
 */
 #define DEFAULT_DEPTH 128
-typedef enum {ROW_DATA,ROW_BLANK,ROW_HEADER,ROW_CRAP} RowTypeEnum;
+typedef enum {ROW_DATA,ROW_BLANK,ROW_HEADER,ROW_META,ROW_CRAP} RowTypeEnum;
 
 @interface StreamDataSet: DataSet <PList> {
 	int columnCount;
@@ -104,6 +104,7 @@ typedef enum {ROW_DATA,ROW_BLANK,ROW_HEADER,ROW_CRAP} RowTypeEnum;
 	NSMutableData *remainingData;
 	NSMutableArray *Yticks;
 	NSMutableArray *Xticks;
+	NSMutableArray *meta;
 	BOOL running;
 }
 -initWithCommand: (NSString *)cmd arguments: (NSArray *)args;

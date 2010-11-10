@@ -73,12 +73,12 @@ static const char *barTypeSelectors[] =	{
 };
 
 static float bar_quads[72] = {
+0.0 , 1.0 , 0.0 , 1.0 , 1.0 , 0.0 , 1.0 , 1.0 , 1.0 , 0.0 , 1.0 , 1.0 , //Top  keep here.
 0.0 , 0.0 , 0.0 , 1.0 , 0.0 , 0.0 , 1.0 , 1.0 , 0.0 , 0.0 , 1.0 , 0.0 , //Front Face
+0.0 , 0.0 , 1.0 , 0.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 0.0 , 1.0 , //Back
 //0.0 , 0.0 , 0.0 , 0.0 , 0.0 , 1.0 , 1.0 , 0.0 , 1.0 , 1.0 , 0.0 , 0.0 , //Bottom
 0.0 , 0.0 , 0.0 , 0.0 , 1.0 , 0.0 , 0.0 , 1.0 , 1.0 , 0.0 , 0.0 , 1.0 , //Left
-0.0 , 1.0 , 0.0 , 1.0 , 1.0 , 0.0 , 1.0 , 1.0 , 1.0 , 0.0 , 1.0 , 1.0 , //Top
 1.0 , 0.0 , 0.0 , 1.0 , 0.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 0.0 , //Right
-0.0 , 0.0 , 1.0 , 0.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 0.0 , 1.0 , //Back
 };
 
 
@@ -90,6 +90,9 @@ static float bar_quads[72] = {
 	fontColorR = 1.0;
 	fontColorG = 1.0;
 	fontColorB = 1.0;
+	highlightColorR = 0.4;
+	highlightColorG = 0.4;
+	highlightColorB = 0.4;
 	xscale=1.0;
 	yscale=1.0;
 	zscale=1.0;
@@ -101,6 +104,7 @@ static float bar_quads[72] = {
 	barLength=30.0;
 	gridw=0;
 	gridl=0;
+	usersetwidth=0;
 	barType=B_SQUARE;
 	descText = [[GLText alloc] initWithString: @"Unset" andFont: @"LinLibertine_Re.ttf"];
 	barText = nil;
@@ -121,7 +125,6 @@ static float bar_quads[72] = {
 }
 
 -setDataSet: (DataSet *)ds {
-	float f;
 	int i;
 	GLText *txt;
 	[dataSetLock lock];	
@@ -129,18 +132,15 @@ static float bar_quads[72] = {
 	[dataSet autorelease];
 	dataSet = ds;
 	[descText setString: [dataSet getDescription]]; //assume description will not change..
-	f = sqrt([ds width]);
-	gridw = (int)floor(f);
-	gridl = [ds width]/gridw;
-	if (gridw*gridl < [ds width])
-		gridl++;
-	NSLog(@"Size: %d => %d %d",[ds width],gridw,gridl);
+	[self setWidth: sqrt([ds width])];
+	usersetwidth=NO;
 	[dataSetLock unlock];
 	
 	barText = [[NSMutableArray arrayWithCapacity: [ds width]] retain];
 	for (i=0;i<[ds width];i++) {
 		txt = [[GLText alloc] initWithString: [ds columnTick: i] andFont: @"LinLibertine_Re.ttf"];
 		[txt setRotationOnX: -90.0 Y:0.0 Z:0.0];
+		//[txt setColorRed: 0.0 Green: 0.0 Blue: 0.0];
 		[barText insertObject: txt atIndex: i];
 	}
 	
@@ -150,16 +150,31 @@ static float bar_quads[72] = {
 -(DataSet *)getDataSet {
 	return dataSet;
 }
-
+-(float)getWidth {
+	return gridw;
+}
+-setWidth: (float)w {
+	gridw = (int)floor(w);
+	gridl = [dataSet width]/gridw;
+	if (gridw*gridl < [dataSet width])
+		gridl++;
+	//NSLog(@"Size: %d => %d %d",[dataSet width],gridw,gridl);
+	usersetwidth=YES;
+	return self;
+}
 -initWithPList: (id)list {
 	NSLog(@"initWithPList: %@",[self class]);
 	DataSet *ds;
+	int w;
 	[super initWithPList: list];
 	/// @todo error checking or exception handling.
 	fontScale = [[list objectForKey: @"fontScale" missing: @"1.0"] floatValue];
 	fontColorR = [[list objectForKey: @"fontColorR" missing: @"1.0"] floatValue];
 	fontColorG = [[list objectForKey: @"fontColorG" missing: @"1.0"] floatValue];
 	fontColorB = [[list objectForKey: @"fontColorB" missing: @"1.0"] floatValue];
+	highlightColorR = [[list objectForKey: @"highlightColorR" missing: @"0.4"] floatValue];
+	highlightColorG = [[list objectForKey: @"highlightColorG" missing: @"0.4"] floatValue];
+	highlightColorB = [[list objectForKey: @"highlightColorB" missing: @"0.4"] floatValue];
 	xscale = [[list objectForKey: @"xscale" missing: @"1.0"] floatValue];
 	yscale = [[list objectForKey: @"yscale" missing: @"1.0"] floatValue];
 	zscale = [[list objectForKey: @"zscale" missing: @"1.0"] floatValue];
@@ -168,14 +183,19 @@ static float bar_quads[72] = {
 	baseWidth = [[list objectForKey: @"baseWidth" missing: @"50.0"] floatValue];
 	barWidth = [[list objectForKey: @"barWidth" missing: @"30.0"] floatValue];
 	barType = [[list objectForKey: @"barType" missing: B_SQUARE_STRING] intValue];	
-
+	w = [[list objectForKey: @"width" missing: @"-1"] intValue];
+	
 	Class c;
 	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
 	NSLog(@"dataSetClass is: %@", c);
 	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
 		ds=[c alloc];
 		[ds initWithPList: [list objectForKey: @"dataSet"]];
-		[self setDataSet: ds];		
+		[self setDataSet: ds];
+		if (w > 0) {
+			[self setWidth: w];
+			usersetwidth = YES;
+		}
 	}
 	return self;
 }
@@ -189,6 +209,9 @@ static float bar_quads[72] = {
 	[dict setObject: [NSNumber numberWithFloat: fontColorR] forKey: @"fontColorR"];
 	[dict setObject: [NSNumber numberWithFloat: fontColorG] forKey: @"fontColorG"];
 	[dict setObject: [NSNumber numberWithFloat: fontColorB] forKey: @"fontColorB"];
+	[dict setObject: [NSNumber numberWithFloat: highlightColorR] forKey: @"highlightColorR"];
+	[dict setObject: [NSNumber numberWithFloat: highlightColorG] forKey: @"highlightColorG"];
+	[dict setObject: [NSNumber numberWithFloat: highlightColorB] forKey: @"highlightColorB"];
 	[dict setObject: [NSNumber numberWithFloat: xscale] forKey: @"xscale"];
 	[dict setObject: [NSNumber numberWithFloat: yscale] forKey: @"yscale"];
 	[dict setObject: [NSNumber numberWithFloat: zscale] forKey: @"zscale"];
@@ -197,6 +220,8 @@ static float bar_quads[72] = {
 	[dict setObject: [NSNumber numberWithFloat: barLength] forKey: @"barLength"];
 	[dict setObject: [NSNumber numberWithFloat: baseLength] forKey: @"baseLength"];
 	[dict setObject: [NSNumber numberWithInt: barType] forKey: @"barType"];
+	if (usersetwidth)
+		[dict setObject: [NSNumber numberWithInt: gridw] forKey: @"width"];		
 	return dict;
 }
 
@@ -205,13 +230,12 @@ static float bar_quads[72] = {
 	return [NSArray arrayWithObjects: @"isVisible",@"fontScale",@"xscale",@"yscale",@"zscale",
 									@"dzmult",@"rmult",@"fontColorR",@"fontColorG",@"fontColorB",
 									@"barType",@"dataSet",@"baseWidth",@"barWidth",@"baseLength",
-									@"barLength",nil];
+									@"highlightColorR",@"highlightColorG",@"highlightColorB",
+									@"barLength",@"width",nil];
 }
 
 -(NSDictionary *)tweaksettings {
 	return [NSDictionary dictionaryWithObjectsAndKeys:
-		[NSString stringWithFormat: @"help='Tick separation in the X direction' min=1 max=%d step=1 precision=0",[dataSet width]],@"xTicks",
-		[NSString stringWithFormat: @"help='Tick separation in the Y direction' min=1 max=%d step=1 precision=0",[dataSet height]],@"yTicks",
 		@"min=0.1 step=0.05",@"xscale",
 		@"min=0.1 step=0.05",@"yscale",
 		@"min=0.1 step=0.05",@"zscale",
@@ -221,12 +245,16 @@ static float bar_quads[72] = {
 		@"step=0.1",@"rmult",
 		@"min=0.0 step=0.01 max=1.0",@"fontColorR",
 		@"min=0.0 step=0.01 max=1.0",@"fontColorG",
-		@"min=0.0 step=0.01 max=1.0",@"fontColorB",
+		@"min=0.0 step=0.01 max=1.0",@"fontColorB",	
+		@"min=0.0 step=0.01 max=1.0",@"highlightColorR",
+		@"min=0.0 step=0.01 max=1.0",@"highlightColorG",
+		@"min=0.0 step=0.01 max=1.0",@"highlightColorB",
 		@"min=0 max=3",@"barType",
 		@"min=1.0",@"baseWidth",
 		@"min=1.0",@"barWidth",
 		@"min=1.0",@"baseLength",
 		@"min=1.0",@"barLength",
+		[NSString stringWithFormat: @"min=1 step=1 max=%d",[dataSet width]],@"width",
 		nil];
 }
 
@@ -374,6 +402,7 @@ static float bar_quads[72] = {
 	float *dl;
 	float val,sw,sl,mw,ml;
 	GLText *txt;
+	NSDictionary *meta;
 
 	mw=(baseWidth-barWidth)/2.0;
 	ml=(baseLength-barLength)/2.0;
@@ -387,7 +416,7 @@ static float bar_quads[72] = {
 
 	glVertexPointer(3, GL_FLOAT, 0, bar_quads);
 
-	glPolygonOffset(0.0,0.1);
+	glPolygonOffset(0.0,0.2);
 	num=0;
 	for (i=0;i<gridw;i++) {
 		for (j=0;j<gridl;j++) {
@@ -400,9 +429,18 @@ static float bar_quads[72] = {
 			glTranslatef(i*baseWidth+mw,0.0,j*baseLength+ml);
 			glScalef(sw,val,sl);
 			glDrawArrays(GL_QUADS,0,20);
+			
+			meta = [dataSet columnMeta: num];
+			if (meta != nil) {
+				NSNumber *high = [meta objectForKey: @"highlight"];
+				if ([high intValue]==1) {
+					glColor3f(highlightColorR,highlightColorG,highlightColorB);
+					glDrawArrays(GL_QUADS,0,4);
+				}
+			}
 
 			glColor3f(0.0,0.0,0.0);
-			for (l=0;l<20;l+=4)
+			for (l=0;l<12;l+=4)
 				glDrawArrays(GL_LINE_LOOP,l,4);
 			glPopMatrix();
 			

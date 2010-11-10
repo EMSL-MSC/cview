@@ -70,6 +70,8 @@ This class provides a basic data store, with associated information.  It is orga
 #define S(x) @ #x
 #define DS_DEFAULT_LIMIT_S S(DS_DEFAULT_LIMIT)
 #define DS_DEFAULT_LABEL_FORMAT @"%'.0f %@"
+#define DS_DEFAULT_NAME @"NoName"
+#define DS_DEFAULT_RATE_SUFFIX @"NoRate"
 @interface DataSet: NSObject <PList> {
 	NSString *name;
 	NSMutableData *data; ///< float based 2d array, data is stored prescaled by the currentScale scale.  so a datapoint of 100.0 and a currentScale of .25 is stored as 25.0
@@ -96,6 +98,8 @@ This class provides a basic data store, with associated information.  It is orga
 - (int)height;
 - (NSString *)rowTick: (int)row;
 - (NSString *)columnTick: (int)col;
+/** Return meta information about a column of data. nil otherwise*/
+- (NSDictionary *)columnMeta: (int)col;
 /** return the maimum value of the data set */ 
 - (float)getMax;
 /** return the scaled verion of the max, or the true value */
@@ -115,6 +119,7 @@ This class provides a basic data store, with associated information.  It is orga
 /** replace the data in the dataset with a new one, scaling where necessary */
 - autoScaleWithNewData: (NSData *)data;
 - disableScaling;
+-setDescription: (NSString *)description;
 - (NSString *)getDescription;
 - setRate:(NSString *)r;
 -(NSString *)getRate;

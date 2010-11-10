@@ -76,6 +76,7 @@ All rights reserved.
 	NSArray *arr=nil,*headers=nil;
 	int i;
 	BOOL nodata;
+	NSNull *n;
 
 	//1. Start command Stream
 	command = [cmd retain];
@@ -113,6 +114,12 @@ All rights reserved.
 	for (i=0;i<d;i++)
 		[Yticks addObject: @"None"];
 	Xticks = [[NSMutableArray arrayWithCapacity: [arr count]] retain];
+	meta = [[NSMutableArray arrayWithCapacity: [arr count]] retain];
+	n = [NSNull null];
+	for (i=0;i<[arr count];i++) {
+		[Xticks addObject: n];
+		[meta addObject: [NSMutableDictionary dictionaryWithCapacity: 4]];
+	}
 	
 	//4. insert first row of data
 	[self addRow: arr];
@@ -129,7 +136,6 @@ All rights reserved.
 }
 
 -(RowTypeEnum)getRowType: (NSArray *)arr {
-	//Three cases:
 	//1. blank line
 	if ([arr count] == 0)  {
 		return ROW_BLANK;
@@ -137,6 +143,10 @@ All rights reserved.
 	//2. header line
 	else if ([[arr objectAtIndex: 0] compare: @"#"] == NSOrderedSame) {
 		return ROW_HEADER;
+	}
+	//3. info line
+	else if ([[arr objectAtIndex: 0] compare: @"$"] == NSOrderedSame) {
+		return ROW_META;
 	}
 	//3. data line
 	else if ([arr count]>0) {
@@ -150,7 +160,9 @@ All rights reserved.
 	float *d;
 	int i;
 	NSEnumerator *e;
-	NSString *str;
+	NSString *str,*host,*key;
+	NSNumber *num;
+	NSMutableDictionary *info;
 
 	switch ([self getRowType: arr]) {
 		case ROW_HEADER:
@@ -161,6 +173,23 @@ All rights reserved.
 			while ((str = [e nextObject]) != nil) {
 				[Xticks insertObject: str atIndex: i ];
 				i++;
+			}
+			break;
+		case ROW_META:
+			if ([arr count] == 4) {
+				e=[arr objectEnumerator];
+				[e nextObject];
+				host = [e nextObject]; 
+				key = [e nextObject];
+				num = [NSNumber valueFromString: [e nextObject]];
+				NSLog(@"meta info: %@ %@ %@",host,key,num);
+				i = [Xticks indexOfObject:host];
+				if (i != NSNotFound) {
+					info = [meta objectAtIndex: i];
+					[info setObject: num forKey: key];
+				}
+				else 
+					NSLog(@"bad meta host: %@",host);
 			}
 			break;
 		case ROW_DATA:
@@ -285,6 +314,11 @@ All rights reserved.
 - (NSString *)columnTick: (int)col {
 	return [Xticks objectAtIndex:col];
 }
+
+- (NSDictionary *)columnMeta: (int)row {
+	return [meta objectAtIndex: row];
+}
+
 -initWithPList: (id)list {
 	NSLog(@"initWithPList: %@",[self class]);
 	NSString *cmd;
@@ -301,11 +335,9 @@ All rights reserved.
 	[self initWithCommand: cmd arguments: arr depth:d ];
 	/*fixup the name if needed */
 	str = [list objectForKey:@"description"];
-	if (str != nil) {
-		[str retain];
-		[textDescription autorelease];
-		textDescription=str;
-	}
+	if (str != nil)
+		[self setDescription: str];
+		
 	return self;
 }
 
@@ -315,6 +347,7 @@ All rights reserved.
 
 	[dict setObject: command forKey: @"command"];
 	[dict setObject: arguments forKey: @"arguments"];
+	[dict setObject: textDescription forKey: @"description"];
 	if (height != DEFAULT_DEPTH)
 		[dict setObject: [NSNumber numberWithInt: height] forKey: @"depth"];
 	return dict;
@@ -329,6 +362,8 @@ All rights reserved.
 	[theTask autorelease];
 	[thePipe autorelease];
 	[Yticks autorelease];
+	[Xticks autorelease];
+	[meta autorelease];
 	[remainingData autorelease];
 	[super dealloc];
 }

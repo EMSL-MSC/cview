@@ -81,6 +81,9 @@ typedef enum { B_SQUARE=0,B_COUNT } BarTypesEnum;
 	float fontColorR;
 	float fontColorG;
 	float fontColorB;
+	float highlightColorR;	
+	float highlightColorG;	
+	float highlightColorB;
 	float xscale,yscale,zscale;
 	float dzmult,rmult;
 	BarTypesEnum barType;
@@ -89,6 +92,7 @@ typedef enum { B_SQUARE=0,B_COUNT } BarTypesEnum;
 	float barWidth,barLength;
 	int gridw,gridl;
 	NSMutableArray *barText;
+	BOOL usersetwidth;
 }
 -init;
 /** Create GLBar with a dataset, using the default Square Drawing method*/ 
@@ -99,6 +103,8 @@ typedef enum { B_SQUARE=0,B_COUNT } BarTypesEnum;
 -setDataSet: (DataSet *)ds;
 /** get the current dataset */
 -(DataSet *)getDataSet;
+-(float)getWidth;
+-setWidth: (float)w;
 -glDraw;
 /** draw the overall grid description text */
 -drawTitles;
