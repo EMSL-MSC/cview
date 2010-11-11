@@ -261,7 +261,7 @@ All rights reserved.
 		}
 		currentScale=newscale;
 		[self resetMax];
-		NSLog(@"scale(%@): %.2f %6f %.2f %d",name,oldmax,newscale,currentMax,currentLimit);
+		//NSLog(@"scale(%@): %.2f %6f %.2f %d",name,oldmax,newscale,currentMax,currentLimit);
 	}
 
 	return self;

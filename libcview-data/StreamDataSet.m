@@ -223,7 +223,7 @@ All rights reserved.
 	if (d != nil) {
 		str = [NSString stringWithCString:[d bytes] length: [d length]];
 		arr=getStringFields(str);
-		//NSLog(@"array: %@",arr);
+		NSLog(@"array: %@",arr);
 		return arr;
 	}
 	return nil;
