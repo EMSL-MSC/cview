@@ -77,7 +77,7 @@ void drawString3D(float x,float y,float z,void *font,NSString *string,float offs
 
 	if (theFont==NULL) {
 		theFont = ftglCreateBitmapFont([find_resource_path(@"LinLibertine_Re.ttf") UTF8String]);
-		ftglSetFontFaceSize(theFont,32,72);
+		ftglSetFontFaceSize(theFont,14,72);
 		ftglSetFontCharMap(theFont,ft_encoding_unicode);
 	}
 //	NSLog(@"drawString3D: %@ %p",string,theFont);

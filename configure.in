@@ -84,11 +84,11 @@ AC_SUBST(OPENGL_LDFLAGS)
 AC_SUBST(OPENGL_CFLAGS)
 
 PKG_CHECK_MODULES([WAND],[Wand])
-AC_CHECK_LIB(MagickWand,NewMagickWand,,,[-lMagickCore])
+AC_CHECK_LIB(MagickWand,NewMagickWand,[echo -n],,[-lMagickCore])
 AC_CHECK_FUNCS(MagickExportImagePixels)
 
 PKG_CHECK_MODULES([FTGL],[ftgl > 2.1.2])
-AC_CHECK_LIB(ftgl,ftglCreateExtrudeFont)
+AC_CHECK_LIB(ftgl,ftglCreateExtrudeFont,[echo -n])
 AC_SUBST(OPTBUILD)
 
 AC_CHECK_HEADERS([limits.h stdlib.h string.h unistd.h])
