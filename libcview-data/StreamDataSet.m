@@ -148,7 +148,7 @@ All rights reserved.
 	else if ([[arr objectAtIndex: 0] compare: @"$"] == NSOrderedSame) {
 		return ROW_META;
 	}
-	//3. data line
+	//4. data line
 	else if ([arr count]>0) {
 		return ROW_DATA;
 	}
@@ -232,7 +232,7 @@ All rights reserved.
 -(NSData *)getNextLine {
 	NSRange range;
 	NSData *linedata,*newdata;
-	char *d,*ptr;
+	char *d,*newline;
 	int len,i,count;
 	///@todo error handling
 	
@@ -244,11 +244,10 @@ All rights reserved.
 		//  search for newline in remainingData
 			len = [remainingData length];
 			d = (char *)[remainingData bytes];
-			ptr=memchr(d,'\n',len);
+			newline=memchr(d,'\n',len);
 		
-		//  if line found
-			if (ptr != NULL) {
-				i=ptr-d;
+			if (newline) {
+				i=newline-d;
 		//    save extra data
 				range.location = 0;
 				range.length = i;
@@ -258,12 +257,10 @@ All rights reserved.
 				newdata = [remainingData subdataWithRange: range];
 				[remainingData autorelease];
 				remainingData = [[NSMutableData dataWithData: newdata] retain];
-		//    return data
 				return linedata;
 			}
 		// get more data, blocking if necessary
 			newdata = [theFile availableData];
-			//NSLog(@"newdata: %@",[newdata class]);
 			if (newdata != nil && [newdata length] > 0 ) {
 				[remainingData appendData: newdata];
 			}
