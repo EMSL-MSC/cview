@@ -518,9 +518,7 @@ double mysecond()
     if(adelegate == nil)
         return self;
 	delegate = [adelegate retain];
-    NSLog(@"makeobjects....");
     [worlds makeObjectsPerformSelector: @selector(setDelegate:) withObject: delegate];
-    NSLog(@"done");
 	return self;
 }
 

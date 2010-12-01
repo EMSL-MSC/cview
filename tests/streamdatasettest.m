@@ -57,23 +57,61 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
+#include <execinfo.h>
+#import "cview-data.h"
 #import "cview.h"
 
-typedef enum { G_LINES=0,G_RIBBON,G_SURFACE,G_POINTS } GridTypesEnum;
-/**
-	Class to manage a set of related GLGrid based drawing objects
+int dump(DataSet *data) {
+	int i,j;
+	float *d;
 
-@author Evan Felix
-@ingroup cview3d
-*/
-@interface MultiGrid: DrawableObject {
-	DataSet *dataSet;
-	GridTypesEnum type;
-	GLGrid *grid;
+
+	for (i=0;i<[data width];i++) {
+		printf("%3d: ",i);
+		d = [data dataRow: i];
+		for (j=0;j<10;j++)
+			printf("%f ",d[j]);
+		printf("\n");
+	}
+	return 0;
 }
--initWithGrid: (GLGrid *)g;
--initWithDataSet: (DataSet *)ds;
--(void)setGridType:(GridTypesEnum)code;
--(GridTypesEnum)getGridType;
--(GLGrid *)getGrid;
-@end
+int main(int argc,char *argv[], char *env[]) {
+	DrawableObject *o;
+	
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+#ifndef __APPLE__
+	//needed for NSLog
+	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
+#endif
+
+	NSString *testdata = find_resource_path(@"testdata.xy");
+	if (testdata == nil) {
+		NSLog(@"Error Loading Test Data");
+		exit(1);
+	}
+		
+
+		NSLog(@"starting");
+	StreamDataSet *f = [[StreamDataSet alloc] initWithCommand: find_resource_path(@"slowcat") arguments: 
+		[NSArray arrayWithObjects: find_resource_path(@"streamdata.txt"),nil] depth: 64];
+	
+	GLScreen * g = [[GLScreen alloc] initName: @"StreamDataSet Test" withWidth: 1000 andHeight: 800];
+
+	Scene * scene1 = [[Scene alloc] init];
+	o=[[[[GLGrid alloc] initWithDataSet: f] setXTicks: 4] setYTicks: 4];
+	[scene1 addObject: o atX: 0 Y: 0 Z: 0];
+	
+	GLWorld * gw1 = [[[g addWorld: @"Top" row: 0 col: 0 rowPercent: 50 colPercent:50] 
+		setScene: scene1] 
+		setEye: [[[Eye alloc] init] setX: 200.0 Y: 500.0 Z: 400.0 Hangle:1.15 Vangle: -2.45]
+	];
+	
+	NSLog(@"%@",[g getPList]);
+
+	//dump(f);
+	[g run];
+
+	[pool release];
+
+	return 0;
+}

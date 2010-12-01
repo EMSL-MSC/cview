@@ -57,102 +57,92 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
+#import "DefaultGLScreenDelegate.h"
+#import "GLGrid.h"
 #import "WebDataSet.h"
 #import "cview.h"
 
-@interface NSMutableArray (Toggler)
--doToggle: (NSNotification *)notification;
+@interface Toggle: DefaultGLScreenDelegate
 @end
 
-@implementation NSMutableArray (Toggler) 
--doToggle: (NSNotification *)notification {
-	int index=0;
-	//NSLog(@"Toggle: %@",notification);
-	if ([[notification name] compare: @"keyPress"]==NSOrderedSame) 
-		if ([[[notification userInfo] objectForKey: @"key"] unsignedCharValue] == 't') {
-					NSEnumerator *list;
-					DrawableObject *obj;
-					list = [self objectEnumerator];
-					while ( (obj = [list nextObject]) )
-						if ([obj visible]) {
-							index = [self indexOfObject: obj];
-							[obj hide];
-						}
-					obj = [self objectAtIndex: (index+1)%[self count]];
-					//NSLog(@"%@",obj);
-					[obj show];
+@implementation Toggle
+-(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world; {
+	if ([super keyPress: key atX: x andY: y inGLWorld: world] == NO && key == 'g') {
+		//Find the GLGrids:	
+		id o;
+		NSEnumerator *list;
+		list = [[[world scene] getAllObjects] objectEnumerator];
+		while ( (o = [list nextObject]) ) {
+			if ([o isKindOfClass: [GLGrid class]]) {	
+				GLGrid *g = (GLGrid *)o;
+				[g setGridType: ([g getGridType]+1)%G_COUNT];
+			}
 		}
-	return self;
+		return YES;
+	}
+	return NO;
 }
 @end
 
-
 int main(int argc,char *argv[], char *env[]) {
-	NSArray *oclasses = [NSArray arrayWithObjects: [GLGrid class],[GLGridSurface class],[GLRibbonGrid class],[GLPointGrid class],nil];
 	DrawableObject *o;
-	NSEnumerator *list;
-	Class c;
-	NSMutableArray *toggler;
+	Toggle *toggler;
 
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 #ifndef __APPLE__
 	//needed for NSLog
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
-	NSURL *cluster = [NSURL URLWithString: @"http://chumbucket/cluster/chinook/"];
-	WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cpu_user"];
-	WebDataSet *f = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cpu_system"];
-	UpdateThread *td = [[UpdateThread alloc] initWithUpdatable: d];
-	UpdateThread *tf = [[UpdateThread alloc] initWithUpdatable: f];
-	[d autoScale: 100];	
-	[td startUpdateThread: 30.0];
-	[f autoScale: 100];	
-	[tf startUpdateThread: 30.0];
-
-
-	GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test" withWidth: 1200 andHeight: 600];
-
-
-	Scene * scene1 = [[Scene alloc] init];
-
-	toggler = [NSMutableArray arrayWithCapacity: 5];
-	list = [oclasses objectEnumerator];
-	while ( (c = [list nextObject]) ) {
-		o=[[[[[c alloc] initWithDataSet: d] setXTicks: 50] setYTicks: 32] hide];
-		//NSLog(@"%@",o);
+	@try {
+		NSURL *cluster = [NSURL URLWithString: @"http://chumbucket/cluster/chinook/"];
+		WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.user"];
+		WebDataSet *f = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.sys"];
+		UpdateThread *td = [[UpdateThread alloc] initWithUpdatable: d];
+		UpdateThread *tf = [[UpdateThread alloc] initWithUpdatable: f];
+		[d autoScale: 100];	
+		[td startUpdateThread: 30.0];
+		[f autoScale: 100];	
+		[tf startUpdateThread: 30.0];
+	
+	
+		GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test" withWidth: 1200 andHeight: 600];
+	
+	
+		Scene * scene1 = [[Scene alloc] init];
+	
+		o=[[[[GLGrid alloc] initWithDataSet: d] setXTicks: 50] setYTicks: 32];
 		[scene1 addObject: o atX: 0 Y: 0 Z: 0];
-		[toggler addObject: o];
-	}
-	[[toggler objectAtIndex: 0] show];
-	GLWorld * gw1 = [[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50] 
-		setScene: scene1] 
-		setEye: [[[Eye alloc] init] setX: 56.0 Y: 1250.0 Z: 1000.0 Hangle:-4.72 Vangle: -2.45]
-	];
-	[[NSNotificationCenter defaultCenter] addObserver: toggler selector: @selector(doToggle:) name: @"keyPress" object: gw1];
-
-
-	// SCENE2
-	Scene * scene2 = [[Scene alloc] init];
-
-	toggler = [NSMutableArray arrayWithCapacity: 5];
-	list = [oclasses objectEnumerator];
-	while ( (c = [list nextObject]) ) {
-		o=[[[[[c alloc] initWithDataSet: f] setXTicks: 50] setYTicks: 32] hide];
-		//NSLog(@"%@",o);
+	
+		GLWorld * gw1 = [[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50] 
+			setScene: scene1] 
+			setEye: [[[Eye alloc] init] setX: 56.0 Y: 1250.0 Z: 1000.0 Hangle:-4.72 Vangle: -2.45]
+		];
+		
+		// SCENE2
+		Scene * scene2 = [[Scene alloc] init];
+		o=[[[[GLGrid alloc] initWithDataSet: f] setXTicks: 50] setYTicks: 32];
 		[scene2 addObject: o atX: 0 Y: 0 Z: 0];
-		[toggler addObject: o];
+	
+		GLWorld * gw2 = [[[g addWorld: @"TR" row: 0 col: 2 rowPercent: 50 colPercent:50] 
+			setScene: scene2] 
+			setEye: [[[Eye alloc] init] setX: 56.0 Y: 1250.0 Z: 1000.0 Hangle:-4.72 Vangle: -2.45]
+		];
+		
+		toggler = [[Toggle alloc] initWithScreen: g];
+		[g setDelegate: toggler];
+		
+		[g run];
 	}
-	[[toggler objectAtIndex: 0] show];
-	GLWorld * gw2 = [[[g addWorld: @"TR" row: 0 col: 2 rowPercent: 50 colPercent:50] 
-		setScene: scene2] 
-		setEye: [[[Eye alloc] init] setX: 56.0 Y: 1250.0 Z: 1000.0 Hangle:-4.72 Vangle: -2.45]
-	];
-	[[NSNotificationCenter defaultCenter] addObserver: toggler selector: @selector(doToggle:) name: @"keyPress" object: gw2];
-
-
-	[g run];
-
-
+	@catch (NSException *localException) {
+		NSLog(@"Error: %@", localException);
+		//NSArray *arr = [localException callStackReturnAddresses];
+		//NSEnumerator *e = [arr objectEnumerator];
+		//NSObject *o;
+		//while ( (o=[e nextObject]) != nil) {
+		//	NSLog(@"Stack: %@",o);	
+		//}
+		return -1;
+	}
 	[pool release];
 
 	return 0;

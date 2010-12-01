@@ -22,12 +22,21 @@ REQUIREMENTS
 	Ubuntu 10.04 package optional build deps: libosmesa6-dev libgenders0-dev doxygen
 	Ubuntu packages for anttweakbar can be used by adding ppa:thjc/ppa to your sources with apt-add-repository
 
+	Test data generators need: python-numeric
+
 	Mac OS X - 
-		Ports
+		XCode
+		Ports - macports.org
 			ImageMagick
 			pkgconfig
 			ftgl
 			freetype2
+			automake
+			autoconf
+			libtool
+			py-numeric
+		Ports Optional:
+			anttweakbar
 
 OPTIONAL
 

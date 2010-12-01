@@ -66,7 +66,12 @@ All rights reserved.
 //I wish there was magic to stringify into
 #define S(x) @ #x
 #define DS_DEFAULT_LIMIT_S S(DS_DEFAULT_LIMIT)
-#define DS_DEFAULT_LABEL_FORMAT @"%'.0f %@"
+#ifdef __APPLE__
+  #define DS_DEFAULT_LABEL_FORMAT @"%.0f %@"
+#else
+  #define DS_DEFAULT_LABEL_FORMAT @"%'.0f %@"
+#endif
+
 
 @implementation DataSet
 
@@ -79,7 +84,8 @@ All rights reserved.
 }
 
 -initWithWidth: (int)w Height: (int)h {
-	name = @"No Name";
+	if (name == nil)
+		name = DS_DEFAULT_NAME;
 	width=w;
 	height=h;
 	data = [[NSMutableData alloc] initWithLength: w*h*sizeof(float)];
@@ -87,10 +93,12 @@ All rights reserved.
 	currentMax = 1.0;
 	if (currentLimit==0.0)
 		currentLimit = DS_DEFAULT_LIMIT;
-	rateSuffix=@"None!";
+	if (rateSuffix == nil)
+		rateSuffix = DS_DEFAULT_RATE_SUFFIX;
 	//lockedMax=0;
 	allowScaling=YES;
-	textDescription=name;
+	if (textDescription == nil)
+		[self setDescription: name];
 	labelFormat=DS_DEFAULT_LABEL_FORMAT;
 	return self;
 }
@@ -100,6 +108,8 @@ All rights reserved.
 	lockedMax = [[list objectForKey:@"lockedMax" missing: @"0"] floatValue];
 	currentLimit = [[list objectForKey:@"limit" missing: DS_DEFAULT_LIMIT_S] floatValue];
 	labelFormat=[list objectForKey:@"labelFormat" missing: DS_DEFAULT_LABEL_FORMAT];
+	name = [[list objectForKey:@"name" missing: DS_DEFAULT_NAME] retain];
+	rateSuffix=[list objectForKey:@"rateSuffix" missing: DS_DEFAULT_RATE_SUFFIX];
 	return self;
 }
 
@@ -112,12 +122,17 @@ All rights reserved.
 		[dict setObject: [NSNumber numberWithFloat: currentLimit] forKey: @"limit"];
 	if ([labelFormat compare: DS_DEFAULT_LABEL_FORMAT] != NSOrderedSame)
 		[dict setObject: labelFormat forKey: @"labelFormat"];
+	if ([name compare: DS_DEFAULT_NAME] != NSOrderedSame )
+		[dict setObject: name forKey: @"name"];
+	if ([rateSuffix compare: DS_DEFAULT_RATE_SUFFIX] != NSOrderedSame )
+		[dict setObject: rateSuffix forKey: @"rateSuffix"];
+	
 	return dict;
 }
 
 -(NSArray *)attributeKeys {
 	//isVisible comes from the DrawableObject
-	return [NSArray arrayWithObjects: @"labelFormat",nil];
+	return [NSArray arrayWithObjects: @"lockedMax",@"labelFormat",@"rateSuffix",nil];
 }
 -(void)dealloc {
 	NSLog(@"DataSet dealloc: %@",name);
@@ -188,6 +203,10 @@ All rights reserved.
 	return [NSString stringWithFormat: @"Col %d",col];
 }
 
+- (NSDictionary *)columnMeta: (int)col {
+	return nil;
+}
+
 - (float)resetMax {
 	int i;
 
@@ -251,7 +270,7 @@ All rights reserved.
 		}
 		currentScale=newscale;
 		[self resetMax];
-		NSLog(@"scale(%@): %.2f %6f %.2f %d",name,oldmax,newscale,currentMax,currentLimit);
+		//NSLog(@"scale(%@): %.2f %6f %.2f %d",name,oldmax,newscale,currentMax,currentLimit);
 	}
 
 	return self;
@@ -310,12 +329,20 @@ All rights reserved.
 - (NSString *)getLabelFormat {
 	return labelFormat;
 }
+
 - setLabelFormat: (NSString *)fmt {
 	[labelFormat autorelease];
 	labelFormat = fmt;
 	[labelFormat retain];
 	return self;
 }
+
+-setDescription: (NSString *)description {
+	[textDescription autorelease];
+	textDescription = description;
+	[textDescription retain];
+}
+
 - (NSString *)getDescription {
 	//NSLog(@"%p",textDescription);
 	//NSLog(@"%@",textDescription);

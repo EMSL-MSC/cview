@@ -78,6 +78,12 @@ All rights reserved.
 - (NSString *)getString;
 - setString: (NSString*)s;
 - setColorRed: (float)r Green: (float)g Blue: (float)b;
+- setColorRed: (float)r;
+- (float)getColorRed;
+- setColorGreen: (float)g;
+- (float)getColorGreen;
+- setColorBlue: (float)b;
+- (float)getColorBlue;
 - setScale: (float)s;
 - setScaleX: (float)x Y: (float)y Z: (float)z;
 - setRotationOnX: (float)x Y: (float)y Z: (float)z;

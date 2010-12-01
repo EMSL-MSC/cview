@@ -58,8 +58,8 @@ All rights reserved.
 */
 #import <Foundation/Foundation.h>
 #import "CViewScreenDelegate.h"
+#import "GLGrid.h"
 #import "WebDataSet.h"
-#import "MultiGrid.h"
 
 
 #if HAVE_ANTTWEAKBAR
@@ -67,18 +67,40 @@ All rights reserved.
 void TW_CALL cv_setGridType(const void *value, void *clientData)
 { 
     NSLog(@"Setit: %d",*(GridTypesEnum *)value);
-	MultiGrid *mg = (MultiGrid *)clientData;
-	[mg setGridType: *(GridTypesEnum *)value];
+	GLGrid *grid = (GLGrid *)clientData;
+	[grid setGridType: *(GridTypesEnum *)value];
 }
 
 void TW_CALL cv_getGridType(void *value, void *clientData)
 { 
-	MultiGrid *mg = (MultiGrid *)clientData;
-    *(GridTypesEnum *)value = [mg getGridType];
+	GLGrid *grid = (GLGrid *)clientData;
+    *(GridTypesEnum *)value = [grid getGridType];
 }
 #endif
 
 @implementation CViewScreenDelegate 
+-init {
+	PListOutputFile = nil;
+	return self;
+}
+
+-(void)setOutputFile: (NSString *)file {
+	[file retain];
+	[PListOutputFile autorelease];
+	PListOutputFile= file;
+	return;
+}
+
+-(NSString *)getOutputFile {
+	return PListOutputFile;
+}
+
+-dealloc {
+	NSLog(@"CViewScreenDelegate dealloc");
+	[PListOutputFile autorelease];
+	[super dealloc];
+	return self;	
+}
 #if HAVE_ANTTWEAKBAR
 
 -setupTweakers: (GLWorld *)world {
@@ -100,9 +122,9 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 		NSEnumerator *list;
 		list = [[[world scene] getAllObjects] objectEnumerator];
 		while ( (o = [list nextObject]) ) {
-			if ([o isKindOfClass: [MultiGrid class]]) {	
+			if ([o isKindOfClass: [GLGrid class]]) {	
 				//Try to get a friendly name
-				id name = [[(MultiGrid *)o getGrid] getDataSet];
+				id name = [(GLGrid *)o getDataSet];
 				//if ([name isKindOfClass: [WebDataSet class]])
 				//	name = [(WebDataSet *)name getDataKey];
 				NSString *string = [NSString stringWithFormat: @"Grid: %@",name];
@@ -123,4 +145,36 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 }
 #endif
 
+-(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world; {
+	if ([super keyPress: key atX: x andY: y inGLWorld: world] == NO) {
+		switch (key) {
+			case '~':
+				if (PListOutputFile != nil) {
+					NSString *err;
+					id plist = [myScreen getPList];
+				
+					NSData *nsd = [NSPropertyListSerialization dataFromPropertyList: (NSDictionary *)plist
+						format: NSPropertyListOpenStepFormat errorDescription: &err];
+					[nsd writeToFile: PListOutputFile atomically: YES];
+				}
+				break;
+#ifdef CLS_DUMP
+			case '!':
+				a=GSDebugAllocationListRecordedObjects(CLS_DUMP);
+				i = [a objectEnumerator];
+				
+				while ((o = [i nextObject])) {
+					NSLog(@"%d:%@",[o retainCount],[o description]);
+				}
+				break;
+#endif
+			default:
+				NSLog(@"key: %c",key);
+				return NO;
+				break;		
+		}
+		return YES;
+	}
+	return NO;
+}
 @end

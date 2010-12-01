@@ -62,30 +62,9 @@ All rights reserved.
 #include <stdlib.h>
 #include <string.h>
 #import "XYDataSet.h"
+#import "cview-data.h"
 
 #define NEWLINE @"\n"
-
-NSArray *getStringFields(NSString *str) {
-	NSString *s;
-	NSMutableArray *arr = [NSMutableArray arrayWithCapacity: 10];
-	NSScanner *scn = [NSScanner scannerWithString: str];
-	while ([scn scanUpToCharactersFromSet: [NSCharacterSet whitespaceCharacterSet] intoString: &s] == YES) {
-		[arr addObject: s];
-	}
-	return arr;
-}
-
-int findStringInArray(NSArray *arr,NSString *str) {
-	NSString *s;
-	int i,col = -1;
-	if (arr)
-		for (i=0;i<[arr count];i++) {
-			s = [arr objectAtIndex: i];
-			if ([s compare: str options: NSCaseInsensitiveSearch] == NSOrderedSame) 
-				col = i;
-		}
-	return col;
-}
 
 @implementation XYDataSet
 +alloc {
@@ -108,22 +87,23 @@ int findStringInArray(NSArray *arr,NSString *str) {
 		rawData = [NSData dataWithContentsOfURL: dataURL];
 		len = [rawData length];
 		d=(char *)[rawData bytes];	
-		for ( ptr=d, i=0; *ptr!='\n' && i<len; ptr++, i++ )
-			;
-
-		str = [NSString stringWithCString:d length: i];
-		//NSLog(@"Headers String: %@",str);
-		arr = getStringFields(str);
-		columnCount = [arr count];
-		if ([[NSScanner scannerWithString: str] scanCharactersFromSet: [NSCharacterSet letterCharacterSet] intoString: NULL]==YES) {
-			//NSLog(@"Header found: %@",str);
-			dataStart = i+1;
-			headers = [arr retain];
+		ptr=memchr(d,'\n',len);
+		if (ptr != NULL) {
+			i=ptr-d;
+			str = [NSString stringWithCString:d length: i];
+			//NSLog(@"Headers String: %@",str);
+			arr = getStringFields(str);
+			columnCount = [arr count];
+			if ([[NSScanner scannerWithString: str] scanCharactersFromSet: [NSCharacterSet letterCharacterSet] intoString: NULL]==YES) {
+				//NSLog(@"Header found: %@",str);
+				dataStart = i+1;
+				headers = [arr retain];
+			}
+			else {
+				dataStart = 0;
+			}
+			headersRead=YES;
 		}
-		else {
-			dataStart = 0;
-		}
-		headersRead=YES;
 	}
 	return;
 }
@@ -196,8 +176,12 @@ int findStringInArray(NSArray *arr,NSString *str) {
 -initWithData {
 	int x,y,i;
 	int MaxX=1,MaxY=1;
-	float val;
+	float val,junk;
 	char *ptr,*end,*sptr;
+
+	x=-1;
+	y=-1;
+	val=-1;
 
 	//check for any defaults set in alloc
 	if (xIndex==-1) xIndex=0;
@@ -222,7 +206,7 @@ int findStringInArray(NSArray *arr,NSString *str) {
 			else if (i==colIndex) 
 				val = strtod(ptr,&ptr);
 			else
-				strtod(ptr,&ptr);
+				junk=strtod(ptr,&ptr);
 			if (sptr==ptr) {
 				//NSLog(@"eat bad: %p '%x'",ptr,*ptr);
 				ptr++; //eat bad input
@@ -249,7 +233,7 @@ int findStringInArray(NSArray *arr,NSString *str) {
 -(float *)expandDataSetWidth: (int)w andHeight: (int)h {
 	int nw,nh;
 	int r;
-	float *d;
+	float *d=NULL;
 	int sw,sh;
 	sw=width;
 	sh=height;

@@ -69,4 +69,8 @@ All rights reserved.
 #import "SinDataSet.h"
 #import "UpdateThread.h"
 #import "WebDataSet.h"
+#import "XYDataSet.h"
+#import "StreamDataSet.h"
 
+NSArray *getStringFields(NSString *str);
+int findStringInArray(NSArray *arr,NSString *str);

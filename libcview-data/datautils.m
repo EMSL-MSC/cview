@@ -57,57 +57,25 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
-#define GL_GLEXT_PROTOTYPES
-#import <gl.h>
-#import <glut.h>
-#import "cview.h"
-#import "DataSet.h"
 
-@implementation  GLPointGrid
-
--drawData {
-	int i,j;
-	float *dl;
-	float *verts;
-	float glparm[3];
-	verts = [dataRow mutableBytes];
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glPushMatrix();	
-	glScalef(xscale,yscale,zscale);
-
-	glVertexPointer(3, GL_FLOAT, 0, verts);
-	glColorPointer(3, GL_FLOAT, 0, [colorRow mutableBytes]);
-
-	//Bigger points up close stuff
-	glPointSize(150);
-#if HAVE_OPENGL_1_4
-	glparm[0]=0;
-	glPointParameterfv(GL_POINT_SIZE_MIN,glparm);
-	glparm[0]=20.0;
-	glPointParameterfv(GL_POINT_SIZE_MAX,glparm);
-	glparm[0]=0.0;
-	glparm[1]=-0.01;
-	glparm[2]=0.025;
-	glPointParameterfv(GL_POINT_DISTANCE_ATTENUATION, glparm);
-#endif
-	//end bigger stuff..
-
-	for (i=0;i<[dataSet width];i++) {
-		dl=[dataSet dataRow: i];
-
-
-		[colorMap doMapWithData: dl thatHasLength: [dataSet height] toColors: [colorRow mutableBytes]];
-		//is there a gooder way? FIXME
-		for (j=0;j<[dataSet height];j++) {
-			verts[j*3+1] = dl[j];
-			verts[j*3+0] = (float)i;
-		}	
-		glDrawArrays(GL_POINTS,0,[dataSet height]);
+NSArray *getStringFields(NSString *str) {
+	NSString *s;
+	NSMutableArray *arr = [NSMutableArray arrayWithCapacity: 10];
+	NSScanner *scn = [NSScanner scannerWithString: str];
+	while ([scn scanUpToCharactersFromSet: [NSCharacterSet whitespaceCharacterSet] intoString: &s] == YES) {
+		[arr addObject: s];
 	}
-
-	glPopMatrix();
-	return self;
+	return arr;
 }
-@end
+
+int findStringInArray(NSArray *arr,NSString *str) {
+	NSString *s;
+	int i,col = -1;
+	if (arr)
+		for (i=0;i<[arr count];i++) {
+			s = [arr objectAtIndex: i];
+			if ([s compare: str options: NSCaseInsensitiveSearch] == NSOrderedSame) 
+				col = i;
+		}
+	return col;
+}

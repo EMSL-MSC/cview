@@ -270,11 +270,12 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 					NSString *newpath=[NSString stringWithFormat:@"%@.%@.%d",name,keypath,i];
 					NSString *newkey=[NSString stringWithFormat:@"%@[%d]",key,i];
 					NSLog(@"Array Member: %@  keypath: %@",newpath,newkey);
-					if ([self parseTree: [a objectAtIndex: i] withGroup: newpath])
+					if ([self parseTree: [a objectAtIndex: i] withGroup: newpath]) {
 						if (grp)
 							TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@ label=%@-%@ close",name,newpath,grp,newkey,[[a objectAtIndex: i] description]] UTF8String]);
 						else
 							TwDefine([[NSString stringWithFormat:@"%@/%@ label=%@-%@ close",name,newpath,newkey,[[a objectAtIndex: i] description]] UTF8String]);
+					}
  				}
  			}
 			else {

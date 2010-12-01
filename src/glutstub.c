@@ -57,6 +57,7 @@ All rights reserved.
 
 */
 #include <gl.h>
+#include <glut.h>
 
 /**
 	This file is needed to take the place of glut calls that are not supported by 
@@ -76,7 +77,20 @@ int glutGetWindow(void) {
 }
 
 int glutGet(GLenum state) {
-	return 1;
+	GLint gint[4];
+	glGetIntegerv(GL_VIEWPORT,gint);
+	switch (state) {
+		case GLUT_WINDOW_X:
+			return gint[0];
+		case GLUT_WINDOW_Y:
+			return gint[1];
+		case GLUT_WINDOW_WIDTH:
+			return gint[2];
+		case GLUT_WINDOW_HEIGHT:
+			return gint[3];
+		default:
+			return 1;
+	}
 }
 
 void glutBitmapCharacter(void *font, int character) {

@@ -61,8 +61,8 @@ All rights reserved.
 #import <Foundation/Foundation.h>
 #import "DataCenterCViewScreenDelegate.h"
 #import "WebDataSet.h"
-#import "MultiGrid.h"
 #import "GLWorld.h"
+#import "GLGrid.h"
 #import "Scene.h"
 #import "GLDataCenter.h"
 #import "IdDatabase.h"

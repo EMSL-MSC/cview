@@ -56,16 +56,39 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-/**
-	Draw a mesh surface of the data
+#import "SinDataSet.h"
+#import "cview.h"
 
-	@author Ken Schmidt <kenneth.schmidt@pnl.gov>, (C) 2008
-	@ingroup cview3d
-*/
-#import "GLGrid.h"
+int main(int argc,char *argv[], char *env[]) {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+#ifndef __APPLE__
+	//needed for NSLog
+	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
+#endif
+	SinDataSet *ds = [[SinDataSet alloc] initWithName: @"Sin()" Width: 1000 Height: 128];
+	SinDataSet *ds2 = [[SinDataSet alloc] initWithName: @"Sin()" Width: 500 Height: 128];
+	UpdateThread *t = [[UpdateThread alloc] initWithUpdatable: ds];
+	UpdateThread *t2 = [[UpdateThread alloc] initWithUpdatable: ds2];
+	[ds autoScale: 100];
+	[ds2 autoScale: 100];
+	[t startUpdateThread: 1.0];
+	[t2 startUpdateThread: 1.0];
 
-@interface GLGridSurface: GLGrid  {
-	NSMutableData *surfaceIndices;
+	GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test"];
+	Scene * scene = [[Scene alloc] initWithObject:
+		[[GLBar alloc] initWithDataSet: ds ]
+		atX: 1300 Y: 0 Z: 0];
+
+	[scene addObject: [[GLBar alloc] initWithDataSet: ds2]
+		atX: 0 Y: 0 Z: 200];
+
+	[[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50] 
+		setScene: scene] 
+		setEye: [[[Eye alloc] init] setX: 2900 Y: 4650.0 Z: 5660.0 Hangle:-4.99 Vangle: -2.33]
+	];
+	[g dumpScreens];
+	[g run];
+	[pool release];
+	return 0;
 }
--drawData;
-@end
+

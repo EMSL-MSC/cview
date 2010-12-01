@@ -56,73 +56,69 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
+/** 
+This class implements the gl drawing code to show a graph of lines above a lower base plane, with X and Y labels, with a z-axix tower showing the height of the data.  The data is provided by a DataSet class.  The coloring of the lines is provided by a self-created ColorMap class.
+
+The class can display 4 types of Grid: Lines, Surfaces, Ribbons and Points.
+@author Evan Felix <evan.felix@pnl.gov>, (C) 2008
+@ingroup cview3d
+*/
 #import <Foundation/Foundation.h>
-#import <gl.h>
-#import <glut.h>
-#import "cview.h"
 #import "DataSet.h"
+#import "ColorMap.h"
+#import "DrawableObject.h"
+#import "GLText.h"
 
-@implementation  GLGridSurface
--setDataSet: (DataSet *)ds {
-	int i,j;
-	int index=0;
-	int numSurfaceVertices;
-	GLuint *indices;
+typedef enum { B_SQUARE=0,B_COUNT } BarTypesEnum;
+#define B_SQUARE_STRING @"0"
 
-	numSurfaceVertices = (([ds width] - 1) * 2) * [ds height];
-
-	surfaceIndices = [[NSMutableData alloc] initWithLength: numSurfaceVertices*sizeof(GLuint)];
-	indices = (GLuint *)[surfaceIndices mutableBytes];
-	for(i=0;i<[ds width]-1;i++)
-		for(j=0;j<[ds height];j++) {
-			indices[index++] = i*[ds height] + j;
-			indices[index++] = (i+1)*[ds height] + j;
-		}
-
-	return [super setDataSet:ds];
+@interface GLBar: DrawableObject {
+	DataSet *dataSet;
+	ColorMap *colorMap;
+	double currentMax;
+	GLText *descText;
+	float fontScale;
+	float fontColorR;
+	float fontColorG;
+	float fontColorB;
+	float highlightColorR;	
+	float highlightColorG;	
+	float highlightColorB;
+	float xscale,yscale,zscale;
+	float dzmult,rmult;
+	BarTypesEnum barType;
+	NSRecursiveLock *dataSetLock;
+	float baseWidth,baseLength;
+	float barWidth,barLength;
+	int gridw,gridl;
+	NSMutableArray *barText;
+	BOOL usersetwidth;
 }
-
-
--(void)dealloc {
-	NSLog(@"GLGridSurface dealloc");
-	[surfaceIndices autorelease];
-	return [super dealloc];
-}
-
--drawData {
-	int i,j;
-	int dataIndex=0;
-	int vertIndex=0;
-	unsigned int stripLength = [surfaceIndices length]/sizeof(GLuint)/([dataSet width]-1);
-	NSMutableData *vertsObj = [[NSMutableData alloc] initWithLength: (3*[dataSet height] * [dataSet width])*sizeof(float)];
-	float *verts = (float *)[vertsObj mutableBytes];
-	NSMutableData *colorObj = [[NSMutableData alloc] initWithLength: (3 * [dataSet height] * [dataSet width]) * sizeof(float)];
-	float *color = (float *)[colorObj mutableBytes];
-	float *data = [dataSet data];
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glPushMatrix();	
-	glScalef(xscale,yscale,zscale);
-
-	[colorMap doMapWithData: data thatHasLength: [dataSet height] * [dataSet width] toColors: color];
-	for(i=0;i<[dataSet width];i++) {
-		for(j=0;j<[dataSet height];j++) {
-			verts[vertIndex++] = (float)i;
-			verts[vertIndex++] = data[dataIndex++];
-			verts[vertIndex++] = (float)j;
-		}
-	}
-	glVertexPointer(3, GL_FLOAT, 0, verts);
-	glColorPointer(3, GL_FLOAT, 0, color);
-	
-	for(i=0; i < ([dataSet width]-1); i++) {
-		glDrawElements(GL_TRIANGLE_STRIP, stripLength, GL_UNSIGNED_INT, [surfaceIndices mutableBytes] + (i * stripLength) * sizeof(int));
-	}
-
-	glPopMatrix();
-	[vertsObj autorelease];
-	[colorObj autorelease];
-	return self;
-}
+-init;
+/** Create GLBar with a dataset, using the default Square Drawing method*/ 
+-initWithDataSet: (DataSet *)ds;
+/** Create GLBar with a dataset, using the given Drawing method*/ 
+-initWithDataSet: (DataSet *)ds andType: (BarTypesEnum)type;
+/** change the dataSet displayed */
+-setDataSet: (DataSet *)ds;
+/** get the current dataset */
+-(DataSet *)getDataSet;
+-(float)getWidth;
+-setWidth: (float)w;
+-glDraw;
+/** draw the overall grid description text */
+-drawTitles;
+/** draw the z axis tower with appropriate ticks */
+-drawAxis;
+/** draw the lower plane, with x and y axis ticks */
+-drawPlane;
+/** set the scaling of the descriptive text */
+-setFontScale:(float)scale;
+-(float)fontScale;
+/**Set the current type of grid to display*/
+-(void)setBarType:(BarTypesEnum)code;
+/**Returns the current Type of Grid being Displayed*/
+-(BarTypesEnum)getBarType;
+/** draw the data bars*/
+-drawSquares;
 @end

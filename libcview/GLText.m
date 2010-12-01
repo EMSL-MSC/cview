@@ -57,11 +57,17 @@ All rights reserved.
 
 */
 #include <gl.h>
+#include <glut.h>
 #import "cview.h"
 #import "DictionaryExtra.h"
 
 	
 @implementation GLText
+static NSMutableDictionary *fontCache=nil;
++(void)initialize {
+	fontCache = [[NSMutableDictionary dictionaryWithCapacity: 5] retain];
+	return;
+}
 - initWithString: (NSString *)str andFont: (NSString *)font {
 	int i;
 	[super init];
@@ -130,12 +136,58 @@ All rights reserved.
 	return dict;
 }
 
+-(NSArray *)attributeKeys {
+	//isVisible comes from the DrawableObject
+	return [NSArray arrayWithObjects: @"isVisible",
+									@"colorRed",@"colorGreen",@"colorBlue",
+									//@"scaleX",@"scaleY",@"scaleZ",
+									//@"rotX",@"rotY",@"rotZ",
+									nil];
+}
+
+-(NSDictionary *)tweaksettings {
+	return [NSDictionary dictionaryWithObjectsAndKeys:
+		@"min=0.1 step=0.05",@"scaleX",
+		@"min=0.1 step=0.05",@"scaleY",
+		@"min=0.1 step=0.05",@"scaleZ",
+		@"min=0 max=1",@"isVisible",
+		@"min=0.0 step=0.01 max=1.0",@"colorRed",
+		@"min=0.0 step=0.01 max=1.0",@"colorGreen",
+		@"min=0.0 step=0.01 max=1.0",@"colorBlue",	
+		@"min=-3.14159 max=3.14159 step=0.01745 precision=5",@"rotX",
+		@"min=-3.14159 max=3.14159 step=0.01745 precision=5",@"rotY",
+		@"min=-3.14159 max=3.14159 step=0.01745 precision=5",@"rotZ",
+		nil];
+}
+
 - setColorRed: (float)r Green: (float)g Blue: (float)b {
 	color[0]=r;
 	color[1]=g;
 	color[2]=b;
 	return self;
 }
+- setColorRed: (float)r {
+	color[0]=r;
+	return self;
+}
+- (float)getColorRed { 
+	return color[0]; 
+}
+- setColorGreen: (float)g {
+	color[1]=g;
+	return self;
+}
+- (float)getColorGreen {
+	return color[1];
+}
+- setColorBlue: (float)b {
+	color[2]=b;
+	return self;
+}
+- (float)getColorBlue {
+	return color[2];
+}
+
 - setScale: (float)s {
 	int i;
 	for (i=0;i<3;i++)
@@ -155,15 +207,26 @@ All rights reserved.
 	return self;
 }
 - setFont: (NSString *)font_res {
+	id fontPointer;
 	[font_res retain];
 	[fontResource autorelease];
 	fontResource=font_res;
 
-	theFont = ftglCreateExtrudeFont([fontResource UTF8String]);
-	if (!theFont)
-		NSLog(@"Error Loading Font:%@",fontResource);
-	ftglSetFontFaceSize(theFont,36,72);
-	ftglSetFontCharMap(theFont,ft_encoding_unicode);
+	NSString * key = [NSString stringWithFormat: @"%s-%d",font_res,glutGetWindow()];
+
+	fontPointer = [fontCache valueForKey: key];
+	if (fontPointer == nil) {
+		theFont = ftglCreateExtrudeFont([fontResource UTF8String]);
+		if (!theFont)
+			NSLog(@"Error Loading Font:%@",fontResource);
+		ftglSetFontFaceSize(theFont,36,72);
+		ftglSetFontCharMap(theFont,ft_encoding_unicode);
+		fontPointer = [NSNumber numberWithLong: (long)theFont];
+		[fontCache setObject: fontPointer forKey: key];
+	}
+	else {
+		theFont = (FTGLfont *)[fontPointer longValue];
+	}	
 	return self;
 }
 - glDraw {
@@ -179,15 +242,15 @@ All rights reserved.
     }
 	ftglGetFontBBox(theFont,[string UTF8String],[string length],bounds);
 	glPushMatrix();
-    //printf("bounds[4] = %f\n", bounds[4]);
 
-	glTranslatef(0,bounds[4],0);
+	if (rotates[0]==0.0 && rotates[1]==0.0 && rotates[2]==0.0)
+		glTranslatef(0,bounds[4],0);
 	glScalef(scale[0],-scale[1],scale[2]);	
 	glRotatef(rotates[0],1.0,0.0,0.0);
 	glRotatef(rotates[1],0.0,1.0,0.0);
 	glRotatef(rotates[2],0.0,0.0,1.0);
 	glColor3fv(color);
-
+	
 	ftglRenderFont(theFont,[string UTF8String], FTGL_RENDER_ALL);
 
 	glPopMatrix();
@@ -208,6 +271,8 @@ All rights reserved.
 -(float)width {
 ///@todo store the bounding box infos
 	float bounds[6];
+	if (string == nil)
+		return 1;
 	ftglGetFontBBox(theFont,[string UTF8String],[string length],bounds);
 	//This really should deal with any rotations that may have happened
 	//TODO: what about dealing with the scale??????????
@@ -217,6 +282,8 @@ All rights reserved.
 -(float)height {
 ///@todo store the bounding box infos
 	float bounds[6];
+	if (string == nil)
+		return 1;
 	ftglGetFontBBox(theFont,[string UTF8String],[string length],bounds);
 	//This really should deal with any rotations that may have happened
 	return abs(bounds[4]-bounds[1]);

@@ -57,58 +57,62 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
-#import <gl.h>
-#import <glut.h>
-#import "cview.h"
 #import "DataSet.h"
+#import "UpdateThread.h"
+#import "PList.h"
 
-@implementation GLRibbonGrid
+/**
+Extension of the data class to retrieve the data from command attached to a pipe. 
 
-//This fuction overides the GLGrid, because everything has to be double the size.
--setDataSet: (DataSet *)ds {
-	return [super setDataSet: ds numRows: 2];
+The Data stream Should consist of a delimeter separated set of lines with data in them.
+
+The command is specified with a path tot he command, and an array of arguments
+
+A depth is also needed for how much data should be kept. default is 128 data lines
+
+Each line should be proceded by a row id.
+
+Headers are allowed if the first column is a '#' hash sign, and each column is specified.
+
+Sample output:
+@verbatim
+13:26:06     35    100    100    100 
+13:26:07     35    100    100    100 
+13:26:08     33    100    100    100 
+13:26:09     36    100    100    100 
+13:26:10     32    100    100    100 
+13:26:11     35    100    100    100 
+13:26:12     34    100    100    100 
+13:26:13     34    100    100    100 
+13:26:14     34    100    100    100 
+@endverbatim
+Which came from: colmux -address "cu4n1 cu4n2 cu4n3 cu4n4" -command "-sc -P -i 30" -column 2 -time
+
+@author Evan Felix
+@ingroup cviewdata
+*/
+#define DEFAULT_DEPTH 128
+typedef enum {ROW_DATA,ROW_BLANK,ROW_HEADER,ROW_META,ROW_CRAP} RowTypeEnum;
+
+@interface StreamDataSet: DataSet <PList> {
+	int columnCount;
+	NSString *command;
+	NSArray *arguments;
+	NSTask *theTask;
+	NSFileHandle *theFile;
+	NSPipe *thePipe;
+	NSMutableData *remainingData;
+	NSMutableArray *Yticks;
+	NSMutableArray *Xticks;
+	NSMutableArray *meta;
+	BOOL running;
 }
-
--drawData {
-	int i,j;
-	float *dl,*newdl;
-	float *verts;
-	NSMutableData *temp = [[NSMutableData alloc] initWithLength: [dataSet height]*2*sizeof(float)];
-	verts = [dataRow mutableBytes];
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glEnableClientState(GL_COLOR_ARRAY);
-	glPushMatrix();	
-	glScalef(xscale,yscale,zscale);
-
-	glVertexPointer(3, GL_FLOAT, 0, verts);
-	glColorPointer(3, GL_FLOAT, 0, [colorRow mutableBytes]);
-	glColor3f(1.0,1.0,0.0);
-
-	for (i=0;i<[dataSet width];i++) {
-		dl=[dataSet dataRow: i];
-		newdl = (float *)[temp mutableBytes];
-
-		for (j=0;j<[dataSet height];j++) {
-			newdl[j*2+0]=dl[j];
-			newdl[j*2+1]=dl[j];
-		}
-
-		[colorMap doMapWithData: newdl 
-			thatHasLength: [dataSet height]*2 
-			toColors: [colorRow mutableBytes]];
-		//is there a gooder way? FIXME
-		for (j=0;j<[dataSet height];j++) {
-			verts[j*6+1] = dl[j];
-			verts[j*6+0] = (float)i;
-			verts[j*6+4] = dl[j];
-			verts[j*6+3] = (float)i+1.0;
-		}
-		glDrawArrays(GL_QUAD_STRIP,0,[dataSet height]*2);
-	}
-
-	glPopMatrix();
-	[temp autorelease];
-	return self;
-}
+-initWithCommand: (NSString *)cmd arguments: (NSArray *)args;
+-initWithCommand: (NSString *)cmd arguments: (NSArray *)args depth: (int)d;
+-(RowTypeEnum)getRowType: (NSArray *)arr;
+-addRow: (NSArray *)arr;
+-(NSArray *)getNextLineArray;
+-(NSData *)getNextLine;
+/** thread run */
+-(void)run:(id)args;
 @end

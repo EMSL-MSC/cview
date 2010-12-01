@@ -102,10 +102,12 @@ void usage(NSString *msg,int ecode) {
 	}
 
 	printf("\ncviewall use:\n\
-cviewall -url <url> [optional defaults]\n\
+cviewall -url <url> [optional defaults] [-c <file>]\n\
 \n\
     cview all is a program to load up a set of metrics into a cview graphical \n\
     view by showing all metrics from a given URL, or those specified in the defaults\n\
+    a cview plist file can be output by pressing '~' to the file cviewall.cview\n\
+    this filename can be changed with the -c flag\n\
 \n\
     Defaults for cviewall all can be stored using the defaults program, and/or \n\
     on the command line in the form -<defaultname> <defaultval>.\n\
@@ -115,7 +117,6 @@ cviewall -url <url> [optional defaults]\n\
        gridw               Int          1           How many Grids to lay down in the horizontal direction\n\
        metrics             String Array (all)       What metrics to show.\n\
        dataUpdateInterval  Float        30          How often in seconds to update the data from the given URL\n\
-       gridToMultiGrid     Bool         0           Use MultiGrid Objects that can display differently\n\
 	\n\n");
 
     exit(ecode);
@@ -128,6 +129,7 @@ int main(int argc,char *argv[], char *env[]) {
 
 	//	NSArray *oclasses = [NSArray arrayWithObjects: [GLGrid class],[GLGridSurface class],[GLRibbonGrid class],[GLPointGrid class],nil];
 	DrawableObject *o;
+	NSString *configfile;
 	float updateInterval;
 	int posy=0,posx=0,w,x=0;
 
@@ -143,6 +145,7 @@ int main(int argc,char *argv[], char *env[]) {
 			[NSArray arrayWithObjects: @"all",nil],@"metrics",
 			@"1",@"gridw",
 			@"30.0",@"dataUpdateInterval",
+			@"cviewall.cview",@"c",
 			nil]];
 
 	NSLog(@"url=%@",[args stringForKey: @"url"]);
@@ -153,10 +156,11 @@ int main(int argc,char *argv[], char *env[]) {
 	w = [args integerForKey: @"gridw"];
 	NSLog(@"gridw=%d",w);
 	updateInterval = [args floatForKey: @"dataUpdateInterval"];
-	
+	configfile = [args stringForKey: @"c"];
 
 	GLScreen * g = [[GLScreen alloc] initName: @"Chinook NWperf" withWidth: 1200 andHeight: 600];
 	CViewScreenDelegate *cvsd = [[CViewScreenDelegate alloc] initWithScreen:g];
+	[cvsd setOutputFile: configfile];
 	[g setDelegate: cvsd];
 
 	Scene * scene1 = [[Scene alloc] init];
@@ -188,7 +192,6 @@ int main(int argc,char *argv[], char *env[]) {
 		[d autoScale: 100];	
 		[t startUpdateThread: updateInterval];
 		o=[[[[[GLGrid alloc] initWithDataSet: d] setXTicks: 50] setYTicks: 32] show];
-		o=[[MultiGrid alloc] initWithGrid: (GLGrid *)o];
 		//NSLog(@"%@",o);
 		[scene1 addObject: o atX: posx Y: 0 Z: -posy];
 		
