@@ -89,7 +89,7 @@ All rights reserved.
 	theFile = [thePipe fileHandleForReading];
 	[theTask launch];
 	
-	//2. Read first line of data to detemine width of dataStart
+	//2. Read first line of data to detemine width of dataSet
 	remainingData = [[NSMutableData dataWithCapacity:1024] retain];
 	i=10;
 	nodata = YES;
