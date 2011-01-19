@@ -85,7 +85,6 @@ static NSMutableDictionary *fontCache=nil;
 -(void)dealloc {
 	NSLog(@"%@ dealloc",[self class]);
 	[string autorelease];
-	ftglDestroyFont(theFont);
 	[fontResource autorelease];
 	[super dealloc];
 	return;
@@ -207,12 +206,16 @@ static NSMutableDictionary *fontCache=nil;
 	return self;
 }
 - setFont: (NSString *)font_res {
-	id fontPointer;
 	[font_res retain];
 	[fontResource autorelease];
 	fontResource=font_res;
+	theFont=NULL;
+	return self;
+}
 
-	NSString * key = [NSString stringWithFormat: @"%s-%d",font_res,glutGetWindow()];
+- doFontSet {
+	id fontPointer;
+	NSString * key = [NSString stringWithFormat: @"%@-%d",fontResource,glutGetWindow()];
 
 	fontPointer = [fontCache valueForKey: key];
 	if (fontPointer == nil) {
@@ -229,6 +232,7 @@ static NSMutableDictionary *fontCache=nil;
 	}	
 	return self;
 }
+
 - glDraw {
 ///@todo store the bounding box infos
 	float bounds[6];
@@ -236,7 +240,9 @@ static NSMutableDictionary *fontCache=nil;
         NSLog(@"in GLText::glDraw() string is nill! cannot draw this....");
         return self;
     }
-    if(theFont == NULL) {
+	if (theFont == NULL)
+		[self doFontSet];
+    if (theFont == NULL) {
         NSLog(@"in GLText::glDraw() theFont is nill! please initialize before attempting to draw....");
         return self;
     }
@@ -271,6 +277,8 @@ static NSMutableDictionary *fontCache=nil;
 -(float)width {
 ///@todo store the bounding box infos
 	float bounds[6];
+	if (theFont == NULL)
+		[self doFontSet];
 	if (string == nil)
 		return 1;
 	ftglGetFontBBox(theFont,[string UTF8String],[string length],bounds);
@@ -282,6 +290,8 @@ static NSMutableDictionary *fontCache=nil;
 -(float)height {
 ///@todo store the bounding box infos
 	float bounds[6];
+	if (theFont == NULL)
+		[self doFontSet];
 	if (string == nil)
 		return 1;
 	ftglGetFontBBox(theFont,[string UTF8String],[string length],bounds);
