@@ -1,7 +1,7 @@
 {
-    height = 993;
+    height = 946;
     name = "Hadoop Cluster";
-    width = 1278;
+    width = 1246;
     worlds = (
 	{
 	    col = 0;
@@ -19,41 +19,41 @@
 		    rotate_speed = 0.025;
 		    strafe_speed = 10;
 		    vangle = "-2.374999";
-		    x = 613.1932;
-		    y = 2587.305;
-		    z = 3251.639;
+		    x = 630.8564;
+		    y = 3793.868;
+		    z = 4983.114;
 		};
 		imageCycleTime = 60;
 		imageDailyDir = NO;
 		imageDir = "/home/efelix/images";
 		imagePrefix = chinook;
-        overlay = { 
-            objects = ( 
-            {   
-                align = YES;
-                halign = "-1";
-                object = { 
-                colorB = 1;
-                colorG = 1;
-                colorR = 1;
-                fontfile = ./data/LinLibertine_Re.ttf;
-                isVisible = YES;
-                rotX = 0;
-                rotY = 0;
-                rotZ = 0;
-                scaleX = 1;
-                scaleY = 1;
-                scaleZ = 1;
-                string = "Hadoop Cluster Graphs";
-                };  
-                objectclass = GLText;
-                valign = 1;
-                x = 0;
-                y = 100;
-                z = 0;
-            }   
-            );  
-        };  
+		overlay = {
+		    objects = (
+			{
+			    align = YES;
+			    halign = "-1";
+			    object = {
+				colorB = 1;
+				colorG = 1;
+				colorR = 1;
+				fontfile = ./data/LinLibertine_Re.ttf;
+				isVisible = YES;
+				rotX = 0;
+				rotY = 0;
+				rotZ = 0;
+				scaleX = 1;
+				scaleY = 1;
+				scaleZ = 1;
+				string = "Hadoop Cluster Graphs";
+			    };
+			    objectclass = GLText;
+			    valign = 1;
+			    x = 0;
+			    y = 100;
+			    z = 0;
+			}
+		    );
+		};
 		scene = {
 		    objects = (
 			{
@@ -200,6 +200,93 @@
 			    x = 0;
 			    y = 0;
 			    z = 1200;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/hadoop/";
+				    key = mem_buffers;
+				    name = mem_buffers;
+				    rateSuffix = KB;
+				};
+				dataSetClass = WebDataSet;
+				fontColorB = 1;
+				fontColorG = 1;
+				fontColorR = 1;
+				fontScale = 1;
+				gridType = 2;
+				isVisible = YES;
+				xTicks = 1;
+				xscale = 40.15;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 1500;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/hadoop/";
+				    key = mem_cached;
+				    name = mem_cached;
+				    rateSuffix = KB;
+				};
+				dataSetClass = WebDataSet;
+				fontColorB = 1;
+				fontColorG = 1;
+				fontColorR = 1;
+				fontScale = 1;
+				gridType = 2;
+				isVisible = YES;
+				xTicks = 1;
+				xscale = 40.15;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 1800;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/hadoop/";
+				    key = mem_shared;
+				    name = mem_shared;
+				    rateSuffix = KB;
+				};
+				dataSetClass = WebDataSet;
+				fontColorB = 1;
+				fontColorG = 1;
+				fontColorR = 1;
+				fontScale = 1;
+				gridType = 2;
+				isVisible = YES;
+				xTicks = 1;
+				xscale = 40.15;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 2100;
 			}
 		    );
 		};
