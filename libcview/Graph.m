@@ -1,6 +1,6 @@
 /*
 
-This file is port of the CVIEW graphics system, which is goverened by the following License
+This file is part of the CVIEW graphics system, which is goverened by the following License
 
 Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
@@ -56,97 +56,103 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-#include <gl.h>
-#include <glut.h>
-#include <string.h>
-#include <FTGL/ftgl.h>
-#include "config.h"
-#include "cview.h"
-
-void drawString3D_glut(float x,float y,float z,void *font,NSString *string,float offset) {
-	int i;
-	const char *s = [string UTF8String];
-	//NSLog(@"drawString3D: %@",string);
-	glRasterPos3f(x, y - offset, z);
-	for (i = 0;i < strlen(s);i++)
-		glutBitmapCharacter(font, (int)s[i]);
+#include "Graph.h"
+@implementation Graph
+-(id) init {
+	[super init];
+	verts = [[NSMutableDictionary dictionaryWithCapacity:32] retain];
+	edges = [[NSMutableSet setWithCapacity:32] retain];
+	return self;
 }
 
-void drawString3D(float x,float y,float z,void *font,NSString *string,float offset) {
-	static FTGLfont *theFont=NULL;
+-(void)dealloc {
+	NSLog(@"%@ dealloc",[self class]);
+	[verts autorelease];
+	[edges autorelease];
+	[super dealloc];
+	return;
+}
 
-	if (theFont==NULL) {
-		theFont = ftglCreateBitmapFont([find_resource_path(@"LinLibertine_Re.ttf") UTF8String]);
-		ftglSetFontFaceSize(theFont,14,72);
-		ftglSetFontCharMap(theFont,ft_encoding_unicode);
+-(void) addVertex: (NSString *)name {
+	[self addVertex: name withInfo: [NSNull null]];
+	return;
+}
+
+-(void) addVertex: (NSString *)name withInfo: (id)data {
+	if (data == nil)
+		data = [NSNull null];
+	[verts setValue:data forKey: name];
+	return;	
+}
+
+-(BOOL) removeVertex: (NSString *)name {
+	NSArray *edge;
+	NSEnumerator *list;
+	//Verify no edges have this vertex
+	list = [edges objectEnumerator];
+	while ( (edge = [list nextObject]) ) {
+		if ([edge containsObject: name])
+			return NO;
 	}
-//	NSLog(@"drawString3D: %@ %p",string,theFont);
-	glRasterPos3f(x, y - offset, z);
-
-	ftglRenderFont(theFont,[string UTF8String], FTGL_RENDER_ALL);
+	[verts removeObjectForKey: name];
+	return YES;
 }
 
+-(NSEnumerator *)vertexEnumerator {
+	return [[verts allKeys] objectEnumerator];
+}
 
-/**
-Find a resource, looking in:
-	sourcetree
-	pkgdatadir
-	current directory(should handle passed in full path)
-*/
-NSFileHandle *find_resource(NSString *filename) {
-	NSString *file = find_resource_path(filename);
-	if (file)
-		return [NSFileHandle fileHandleForReadingAtPath: file];
+-(BOOL) addEdge: (NSString *)end1 and: (NSString *)end2 {
+	return [self addEdge: end1 and: end2 withInfo: [NSNull null]];
+}
+
+-(BOOL) addEdge: (NSString *)end1 and: (NSString *)end2 withInfo: (id) data {
+	if (data == nil)
+		data = [NSNull null];
+	//Verify edges are valid.
+	if ([verts objectForKey: end1] != nil && [verts objectForKey: end2] != nil) {
+		[edges addObject: [NSArray arrayWithObjects: end1,end2,data,nil]];
+		return YES;
+	}
 	else
-		return nil;
+		return NO;
 }
 
-NSString *find_resource_path(NSString *filename) {
-
-	NSFileManager *mgr = [NSFileManager defaultManager];
-	NSString *file=nil;
-	///@todo Should we have the data paths here
-	NSMutableArray *paths = [NSMutableArray arrayWithObjects: @"",PKG_DATA_DIR,@"../data/",@"./data/",nil];
-	#if CVIEW_TEST_BUILD
-		[paths addObject: @"../tests/"];
-		[paths addObject: @"./tests/"];
-	#endif
-
-	NSEnumerator *e = [paths objectEnumerator];
-	id o;
-	NSString *path;
-	
-	while ((o = [e nextObject])) {
-		path = [NSString stringWithFormat: @"%@%@",(NSString *)o,filename];
-		if ( [mgr isReadableFileAtPath: path] ) {
-			file = path;
+-(BOOL) removeEdge: (NSString *)end1 and: (NSString *)end2 {
+	NSEnumerator *list = [self edgeEnumerator];
+	NSArray *a;
+	while ( (a = [list nextObject]) ) {
+		if ( [[a objectAtIndex: 0 ] compare: end1] == NSOrderedSame &&
+			 [[a objectAtIndex: 1 ] compare: end2] == NSOrderedSame ) {
+			[edges removeObject: a];
+			return YES;
 		}
 	}
-	return file;
+	return NO;
 }
 
-/** @todo check to see if this needs a configure check, and ifdef it.*/
+-(NSEnumerator *)edgeEnumerator {
+	return [edges objectEnumerator];
+}
 
-//this used column major matricies.
-flts multQbyV(const flts *m,const flts v) {
-	flts t,x,y,z,w;
-	int i;
-	for (i=0;i<4;i++) {
-		x.f[i]=v.f[0];
-		y.f[i]=v.f[1];
-		z.f[i]=v.f[2];
-		w.f[i]=v.f[3];
+-(id) vertexData: (NSString *)vertex {
+	return [verts objectForKey:vertex];
+}
+
+//This should maybe actually dump to a file we could feed to graphviz or something...
+-(void) dumpToLog {
+	id o;
+	NSEnumerator *list;
+	//vertices
+	list = [self vertexEnumerator];
+	while ( (o = [list nextObject]) ) {
+		NSLog(@"%@ => %@",o,[verts objectForKey:o]);
 	}
-	t.v = __builtin_ia32_mulps(m[0].v,x.v);
-	t.v += __builtin_ia32_mulps(m[1].v,y.v);
-	t.v += __builtin_ia32_mulps(m[2].v,z.v);
-	t.v += __builtin_ia32_mulps(m[3].v,w.v);
-	return t;
+	//Edges
+	list = [self edgeEnumerator];
+	while ( (o = [list nextObject]) ) {
+		NSLog(@"%@",o);
+	}
+	return;	
 }
-
-void dumpV(flts f) {
-	int i;
-	for (i=0;i<4;i++)
-		printf("% 8.2f ",f.f[i]);
-	printf("\n");
-}
+@end

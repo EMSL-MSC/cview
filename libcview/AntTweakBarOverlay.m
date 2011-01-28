@@ -218,7 +218,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 		
 			if (setting)
 				data=[setting UTF8String];
-			data=[[NSString stringWithFormat:@"label=%@ %s",key,data] UTF8String];
+			data=[[NSString stringWithFormat:@"label='%@' %s",key,data] UTF8String];
 			//NSLog(@"name: %@, class: %@ keypath: %@ settings: %s",key,[o class],keypath, data);
 			
 			if ([o isKindOfClass: [NSNumber class]]) {
@@ -267,12 +267,12 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 				int i;
  
  				for (i=0;i<[a count];i++) {
-					NSString *newpath=[NSString stringWithFormat:@"%@.%@.%d",name,keypath,i];
+					NSString *newpath=[NSString stringWithFormat:@"%@.%d",keypath,i];
 					NSString *newkey=[NSString stringWithFormat:@"%@[%d]",key,i];
 					NSLog(@"Array Member: %@  keypath: %@",newpath,newkey);
 					if ([self parseTree: [a objectAtIndex: i] withGroup: newpath]) {
 						if (grp)
-							TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@ label=%@-%@ close",name,newpath,grp,newkey,[[a objectAtIndex: i] description]] UTF8String]);
+							TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@ label='%@-%@' close",name,newpath,grp,newkey,[[a objectAtIndex: i] description]] UTF8String]);
 						else
 							TwDefine([[NSString stringWithFormat:@"%@/%@ label=%@-%@ close",name,newpath,newkey,[[a objectAtIndex: i] description]] UTF8String]);
 					}
@@ -282,7 +282,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 				NSLog(@"Class Type Unhandled: %@  keypath: %@",[o class],keypath);
 				if ([self parseTree: o withGroup: keypath] ) {
 					if (grp)
-						TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@ label=%@-%@ close",name,keypath,grp,key,[o description]] UTF8String]);
+						TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@ label='%@-%@' close",name,keypath,grp,key,[o description]] UTF8String]);
 					else
 						TwDefine([[NSString stringWithFormat:@"%@/%@ label=%@-%@ close",name,keypath,key,[o description]] UTF8String]);
 				}

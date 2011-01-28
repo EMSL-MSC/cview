@@ -1,6 +1,6 @@
 /*
 
-This file is port of the CVIEW graphics system, which is goverened by the following License
+This file is part of the CVIEW graphics system, which is goverened by the following License
 
 Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
@@ -56,97 +56,43 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-#include <gl.h>
-#include <glut.h>
-#include <string.h>
-#include <FTGL/ftgl.h>
-#include "config.h"
-#include "cview.h"
-
-void drawString3D_glut(float x,float y,float z,void *font,NSString *string,float offset) {
-	int i;
-	const char *s = [string UTF8String];
-	//NSLog(@"drawString3D: %@",string);
-	glRasterPos3f(x, y - offset, z);
-	for (i = 0;i < strlen(s);i++)
-		glutBitmapCharacter(font, (int)s[i]);
-}
-
-void drawString3D(float x,float y,float z,void *font,NSString *string,float offset) {
-	static FTGLfont *theFont=NULL;
-
-	if (theFont==NULL) {
-		theFont = ftglCreateBitmapFont([find_resource_path(@"LinLibertine_Re.ttf") UTF8String]);
-		ftglSetFontFaceSize(theFont,14,72);
-		ftglSetFontCharMap(theFont,ft_encoding_unicode);
-	}
-//	NSLog(@"drawString3D: %@ %p",string,theFont);
-	glRasterPos3f(x, y - offset, z);
-
-	ftglRenderFont(theFont,[string UTF8String], FTGL_RENDER_ALL);
-}
-
-
-/**
-Find a resource, looking in:
-	sourcetree
-	pkgdatadir
-	current directory(should handle passed in full path)
+#import <Foundation/Foundation.h>
+/** A simple graph implementation consiting of a set of Vertices and Edges.
+    Each vertex or edge can be associated with a used data object, that will be 
+    can be returned during edge traversal.
+	@author Evan Felix
+	@ingroup cview3d
 */
-NSFileHandle *find_resource(NSString *filename) {
-	NSString *file = find_resource_path(filename);
-	if (file)
-		return [NSFileHandle fileHandleForReadingAtPath: file];
-	else
-		return nil;
-}
 
-NSString *find_resource_path(NSString *filename) {
+@interface Graph: NSObject {
+	NSMutableDictionary *verts;
+	NSMutableSet *edges;
+};
+-(id) init;
+/** Add a vertex to the graph with a NSNull data member*/
+-(void) addVertex: (NSString *)name;
+/** Add a vertex to the graph with a data parameter, if data is nil, an NSNull object will be put in the data storage area */
+-(void) addVertex: (NSString *)name withInfo: (id)data;
+/** remove vertex from set if possible.
+a vertex cannot be removed while edges exist that refer to it.
+Returns TRUE if the vertex was sucessfully removed.*/
+-(BOOL) removeVertex: (NSString *)name;
+/** return an unordered enumerater for each vertex*/
+-(NSEnumerator *)vertexEnumerator;
+/** Add an edge. Both Vertices should already exist in the graph
+Returns True if successfully added.
+the data is associated with the edge,
+*/
+-(BOOL) addEdge: (NSString *)end1 and: (NSString *)end2 withInfo: (id) data;
+/** add an edge with a null data member*/
+-(BOOL) addEdge: (NSString *)end1 and: (NSString *)end2;
+/** Retrieve User data for a given vertex */
+-(id) vertexData: (NSString *)vertex;
+/** Remove an edge given the two end points */
+-(BOOL) removeEdge: (NSString *)end1 and: (NSString *)end2;
+/** Return an enumerator for each edge.  Each object is an Array with (vertex,vertex,data) in it */
+-(NSEnumerator *)edgeEnumerator;
+/** Dump the graph using NSLog*/
+-(void) dumpToLog;
+@end
 
-	NSFileManager *mgr = [NSFileManager defaultManager];
-	NSString *file=nil;
-	///@todo Should we have the data paths here
-	NSMutableArray *paths = [NSMutableArray arrayWithObjects: @"",PKG_DATA_DIR,@"../data/",@"./data/",nil];
-	#if CVIEW_TEST_BUILD
-		[paths addObject: @"../tests/"];
-		[paths addObject: @"./tests/"];
-	#endif
-
-	NSEnumerator *e = [paths objectEnumerator];
-	id o;
-	NSString *path;
-	
-	while ((o = [e nextObject])) {
-		path = [NSString stringWithFormat: @"%@%@",(NSString *)o,filename];
-		if ( [mgr isReadableFileAtPath: path] ) {
-			file = path;
-		}
-	}
-	return file;
-}
-
-/** @todo check to see if this needs a configure check, and ifdef it.*/
-
-//this used column major matricies.
-flts multQbyV(const flts *m,const flts v) {
-	flts t,x,y,z,w;
-	int i;
-	for (i=0;i<4;i++) {
-		x.f[i]=v.f[0];
-		y.f[i]=v.f[1];
-		z.f[i]=v.f[2];
-		w.f[i]=v.f[3];
-	}
-	t.v = __builtin_ia32_mulps(m[0].v,x.v);
-	t.v += __builtin_ia32_mulps(m[1].v,y.v);
-	t.v += __builtin_ia32_mulps(m[2].v,z.v);
-	t.v += __builtin_ia32_mulps(m[3].v,w.v);
-	return t;
-}
-
-void dumpV(flts f) {
-	int i;
-	for (i=0;i<4;i++)
-		printf("% 8.2f ",f.f[i]);
-	printf("\n");
-}

@@ -1,6 +1,6 @@
 /*
 
-This file is port of the CVIEW graphics system, which is goverened by the following License
+This file is part of the CVIEW graphics system, which is goverened by the following License
 
 Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
@@ -56,97 +56,54 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-#include <gl.h>
-#include <glut.h>
-#include <string.h>
-#include <FTGL/ftgl.h>
-#include "config.h"
-#include "cview.h"
+#import <Foundation/Foundation.h>
+#include <execinfo.h>
+#import "cview-data.h"
+#import "cview.h"
 
-void drawString3D_glut(float x,float y,float z,void *font,NSString *string,float offset) {
-	int i;
-	const char *s = [string UTF8String];
-	//NSLog(@"drawString3D: %@",string);
-	glRasterPos3f(x, y - offset, z);
-	for (i = 0;i < strlen(s);i++)
-		glutBitmapCharacter(font, (int)s[i]);
-}
-
-void drawString3D(float x,float y,float z,void *font,NSString *string,float offset) {
-	static FTGLfont *theFont=NULL;
-
-	if (theFont==NULL) {
-		theFont = ftglCreateBitmapFont([find_resource_path(@"LinLibertine_Re.ttf") UTF8String]);
-		ftglSetFontFaceSize(theFont,14,72);
-		ftglSetFontCharMap(theFont,ft_encoding_unicode);
-	}
-//	NSLog(@"drawString3D: %@ %p",string,theFont);
-	glRasterPos3f(x, y - offset, z);
-
-	ftglRenderFont(theFont,[string UTF8String], FTGL_RENDER_ALL);
-}
-
-
-/**
-Find a resource, looking in:
-	sourcetree
-	pkgdatadir
-	current directory(should handle passed in full path)
-*/
-NSFileHandle *find_resource(NSString *filename) {
-	NSString *file = find_resource_path(filename);
-	if (file)
-		return [NSFileHandle fileHandleForReadingAtPath: file];
-	else
-		return nil;
-}
-
-NSString *find_resource_path(NSString *filename) {
-
-	NSFileManager *mgr = [NSFileManager defaultManager];
-	NSString *file=nil;
-	///@todo Should we have the data paths here
-	NSMutableArray *paths = [NSMutableArray arrayWithObjects: @"",PKG_DATA_DIR,@"../data/",@"./data/",nil];
-	#if CVIEW_TEST_BUILD
-		[paths addObject: @"../tests/"];
-		[paths addObject: @"./tests/"];
-	#endif
-
-	NSEnumerator *e = [paths objectEnumerator];
-	id o;
-	NSString *path;
+int main(int argc,char *argv[], char *env[]) {
+	DrawableObject *o;
 	
-	while ((o = [e nextObject])) {
-		path = [NSString stringWithFormat: @"%@%@",(NSString *)o,filename];
-		if ( [mgr isReadableFileAtPath: path] ) {
-			file = path;
-		}
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+#ifndef __APPLE__
+	//needed for NSLog
+	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
+#endif
+	@try {
+
+		NSLog(@"starting");
+	
+		GLScreen * g = [[GLScreen alloc] initName: @"Infiniband Test" withWidth: 1500 andHeight: 800];
+
+		Scene * scene1 = [[Scene alloc] init];
+
+		NSString *err;
+		NSData *file = [NSData dataWithContentsOfFile: find_resource_path(@"pnnlfabric.plist")];
+		NSPropertyListFormat fmt;
+		id plist = [NSPropertyListSerialization propertyListFromData: file 
+				mutabilityOption: NSPropertyListImmutable 
+				format: &fmt
+				errorDescription: &err
+				];
+		GLInfinibandNetwork *ib = [[GLInfinibandNetwork alloc] initWithPList: plist];
+		[ib loadNetLinks: find_resource(@"pnnlfabric.ibnetdiscover")];
+		
+		[scene1 addObject: ib atX: 0 Y: 0 Z: 0];
+	
+		GLWorld * gw1 = [[[g addWorld: @"Top" row: 0 col: 0 rowPercent: 50 colPercent:50] 
+			setScene: scene1] 
+			setEye: [[[Eye alloc] init] setX: 1200.0 Y: 2800.0 Z: -3400.0 Hangle:-1.53 Vangle: -2.22]
+		];
+	
+		NSLog(@"%@",[g getPList]);
+
+		[g run];
 	}
-	return file;
-}
-
-/** @todo check to see if this needs a configure check, and ifdef it.*/
-
-//this used column major matricies.
-flts multQbyV(const flts *m,const flts v) {
-	flts t,x,y,z,w;
-	int i;
-	for (i=0;i<4;i++) {
-		x.f[i]=v.f[0];
-		y.f[i]=v.f[1];
-		z.f[i]=v.f[2];
-		w.f[i]=v.f[3];
+	@catch (NSException *localException) {
+		NSLog(@"Error: %@", localException);
+		return -1;
 	}
-	t.v = __builtin_ia32_mulps(m[0].v,x.v);
-	t.v += __builtin_ia32_mulps(m[1].v,y.v);
-	t.v += __builtin_ia32_mulps(m[2].v,z.v);
-	t.v += __builtin_ia32_mulps(m[3].v,w.v);
-	return t;
-}
+	[pool release];
 
-void dumpV(flts f) {
-	int i;
-	for (i=0;i<4;i++)
-		printf("% 8.2f ",f.f[i]);
-	printf("\n");
+	return 0;
 }

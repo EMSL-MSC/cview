@@ -72,8 +72,25 @@ All rights reserved.
 #import "GLBar.h"
 #import "GLText.h"
 #import "GLImage.h"
+#import "Graph.h"
+#import "GLInfinibandNetwork.h"
 
+/*This ties us to gcc, though intell compilers have _mm_* instruction 
+  that would work, and gcc supports them, but they add ugly castings.
+*/
+#ifndef __FLTS__
+#define __FLTS__
+#include <x86intrin.h>
+typedef float v4sf __attribute__ ((vector_size (16)));
+
+typedef union __flts {
+	v4sf v;
+	float f[4];
+} flts;
+#endif
 //Implemented in utils.m
 void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
 NSFileHandle *find_resource(NSString *filename);
 NSString *find_resource_path(NSString *filename);
+flts multQbyV(const flts *m,const flts v);
+void dumpV(flts f);
