@@ -119,15 +119,26 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 
 @interface IBPort:DrawableObject {
 	IBChassis *chassis;
+	float colorR;
+	float colorG;
+	float colorB;
 @public
 	float x,y,z;
 	float w,h;
 }
 -(void)glVertex;
 -(id)setChassis: (IBChassis *)c;
+-(id)setColorR: (float)r G: (float)g B: (float)b;
 @end
 
 @implementation IBPort 
+-(id)init {
+	[super init];
+	colorR=1.0;
+	colorG=0.0;
+	colorB=0.0;
+	return self;
+}
 -(id)setChassis: (IBChassis *)c {
 	[c retain];
 	[chassis autorelease];
@@ -174,7 +185,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	glLoadMatrixf((GLfloat*)m);
 		
 
-	//glDrawArrays(GL_LINE_LOOP,4,4);
+	glColor3f(colorR,colorG,colorB);
 	glBegin(GL_LINE_LOOP);
 	glVertex3f(x,y,z);
 	glVertex3f(x+w,y,z);
@@ -188,6 +199,12 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	return self;
 }
 
+-(id)setColorR: (float)r G: (float)g B: (float)b {
+	colorR=r;
+	colorG=g;
+	colorB=b;
+	return self;
+}
 @end
 
 @implementation IBChassis
@@ -244,21 +261,21 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 			for (j=0;j<24;j++) {
 				//Front Port
 				port = [[[IBPort alloc] init] autorelease];
-				port->x = i*pw;
-				port->y = j*ph;
+				port->x = i*pw+0.5;
+				port->y = j*ph+0.5;
 				port->z = 0;
-				port->w = pw;
-				port->h = ph;
+				port->w = pw-1;
+				port->h = ph-1;
 				[port setChassis: self];
 				s = [self getLinePortKeyX: i Y: j nodeMap: map];
 				[g addVertex: s withInfo: port];
 				//switch back port
 				port = [[[IBPort alloc] init] autorelease];
-				port->x = 100+i*spw;
-				port->y = j*ph;
+				port->x = 100+i*spw+0.5;
+				port->y = j*ph+0.5;
 				port->z = 90.5;
-				port->w = spw;
-				port->h = 5;
+				port->w = spw-1;
+				port->h = 4;
 				[port setChassis: self];
 				s = [self getLinePortKeyX: i+12 Y: j nodeMap: map];
 				[g addVertex: s withInfo: port];
@@ -274,11 +291,11 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 				glVertex3f(5+i*75,50+j*100.0,240);
 				for (p=0;p<24;p++) {
 					port = [[[IBPort alloc] init] autorelease];
-					port->x = 5+i*75+fpw*p;
-					port->y = 50+j*100;
+					port->x = 5+i*75+fpw*p+0.5;
+					port->y = 50+j*100+0.5;
 					port->z = 210;
-					port->w = fpw;
-					port->h = 5;
+					port->w = fpw-1;
+					port->h = 4;
 					[port setChassis: self];
 					s = [self getFabricPortKey: i Y: j Port: p nodeMap: map];
 					[g addVertex: s withInfo: port];
@@ -305,7 +322,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	NSString *s;
 	// "CU1 IB Switch - Spine 1 Chip 3"
     s = [NSString stringWithFormat: @"%@ - Spine %d Chip %d", name, x+1, y+1];
-	return [NSString stringWithFormat: @"%@-%d",[map objectForKey: s],p];
+	return [NSString stringWithFormat: @"%@-%d",[map objectForKey: s],p+1];
 }
 
 -(id) glDraw {
@@ -438,8 +455,9 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	NSArray *lines = [linestring componentsSeparatedByCharactersInSet: [NSCharacterSet characterSetWithCharactersInString: @"\n"]];
 	NSString *line;
 	NSEnumerator *e;
-	NSString *from,*to;
+	NSString *from,*to,*speed;
 	int tport,fport;
+	BOOL good;
 	
 	e = [lines objectEnumerator];
 	while ( (line = [e nextObject] ) ) {
@@ -450,11 +468,19 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 		to = [line substringWithRange: NSMakeRange(52,18)];
 		fport = [[line substringWithRange: NSMakeRange(9,2)] intValue];
 		tport = [[line substringWithRange: NSMakeRange(49,2)] intValue];
+		speed = [line substringWithRange: NSMakeRange(34,3)];
 		//NSLog(@"%@ %d  %@ %d",from,fport,to,tport);
 		
 		if ([from length]>0 && [to length]>0)
-			[graph addEdge: [NSString stringWithFormat: @"%@-%d",from,fport] and: [NSString stringWithFormat: @"%@-%d",to,tport]];
+			good = [graph addEdge: [NSString stringWithFormat: @"%@-%d",from,fport] and: [NSString stringWithFormat: @"%@-%d",to,tport]];
+		if ([speed compare: @"DDR"] == NSOrderedSame) {
+			if ([from length]>0)
+				[[graph vertexData: [NSString stringWithFormat: @"%@-%d",from,fport]] setColorR: 0.4 G: 0.2 B: 0.2];
+			if ([to length]>0)
+				[[graph vertexData: [NSString stringWithFormat: @"%@-%d",to,tport]] setColorR: 0.4 G: 0.2 B: 0.2];
+		}
 	}
+	return YES;
 }
 
 -(id) glDraw {
@@ -463,20 +489,21 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	NSArray *a;
 	id o;
 	
+	glPushMatrix();
+	glScalef(0.5,0.5,0.5);
 	e = [chassis objectEnumerator];
 	while ( (c = [e nextObject]) ) {
 		[c glDraw];
 	}
 	
 	glColor3f(0.4,0.2,0.2);
-
 	e = [graph vertexEnumerator];
 	while ( (o = [e nextObject]) ) {
 		o=[graph vertexData: o];
 		//NSLog(@"%@",o);
 		[o glDraw];
 	}
-
+	
 	glPushMatrix();
 	glLoadIdentity();
 	glColor3f(0.0,0.0,1.0);
@@ -487,6 +514,8 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 		[[graph vertexData: [a objectAtIndex: 1]] glVertex];
 		glEnd();
 	}
+	glPopMatrix();
+	
 	glPopMatrix();
 	return self;
 }
