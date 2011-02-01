@@ -61,7 +61,7 @@ All rights reserved.
 -(id) init {
 	[super init];
 	verts = [[NSMutableDictionary dictionaryWithCapacity:32] retain];
-	edges = [[NSMutableSet setWithCapacity:32] retain];
+	edges = [[NSMutableDictionary dictionaryWithCapacity:32] retain];
 	return self;
 }
 
@@ -89,7 +89,7 @@ All rights reserved.
 	NSArray *edge;
 	NSEnumerator *list;
 	//Verify no edges have this vertex
-	list = [edges objectEnumerator];
+	list = [self edgeEnumerator];
 	while ( (edge = [list nextObject]) ) {
 		if ([edge containsObject: name])
 			return NO;
@@ -107,11 +107,13 @@ All rights reserved.
 }
 
 -(BOOL) addEdge: (NSString *)end1 and: (NSString *)end2 withInfo: (id) data {
+	NSArray *key;
 	if (data == nil)
 		data = [NSNull null];
 	//Verify edges are valid.
 	if ([verts objectForKey: end1] != nil && [verts objectForKey: end2] != nil) {
-		[edges addObject: [NSArray arrayWithObjects: end1,end2,data,nil]];
+		key = [NSArray arrayWithObjects: end1,end2,nil];
+		[edges setObject: data forKey: key];
 		return YES;
 	}
 	else
@@ -119,20 +121,21 @@ All rights reserved.
 }
 
 -(BOOL) removeEdge: (NSString *)end1 and: (NSString *)end2 {
-	NSEnumerator *list = [self edgeEnumerator];
-	NSArray *a;
-	while ( (a = [list nextObject]) ) {
-		if ( [[a objectAtIndex: 0 ] compare: end1] == NSOrderedSame &&
-			 [[a objectAtIndex: 1 ] compare: end2] == NSOrderedSame ) {
-			[edges removeObject: a];
-			return YES;
-		}
-	}
-	return NO;
+	NSArray *a = [NSArray arrayWithObjects: end1,end2,nil];
+	[edges removeObjectForKey: a];
+	return YES;
+}
+
+-(id) edgeData: (NSArray *)arr {
+	return [edges objectForKey: arr];
+}
+
+-(id) edgeData: (NSString *)end1 and: (NSString *)end2 {
+	return [self edgeData:[NSArray arrayWithObjects: end1,end2,nil]];
 }
 
 -(NSEnumerator *)edgeEnumerator {
-	return [edges objectEnumerator];
+	return [[edges allKeys] objectEnumerator];
 }
 
 -(id) vertexData: (NSString *)vertex {
@@ -151,7 +154,7 @@ All rights reserved.
 	//Edges
 	list = [self edgeEnumerator];
 	while ( (o = [list nextObject]) ) {
-		NSLog(@"%@",o);
+		NSLog(@"Edge: %@,%@ => %@",[o objectAtIndex:0],[o objectAtIndex:1],[edges objectForKey: o]);
 	}
 	return;	
 }

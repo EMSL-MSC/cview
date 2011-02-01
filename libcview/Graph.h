@@ -66,7 +66,7 @@ All rights reserved.
 
 @interface Graph: NSObject {
 	NSMutableDictionary *verts;
-	NSMutableSet *edges;
+	NSMutableDictionary *edges;
 };
 -(id) init;
 /** Add a vertex to the graph with a NSNull data member*/
@@ -88,9 +88,13 @@ the data is associated with the edge,
 -(BOOL) addEdge: (NSString *)end1 and: (NSString *)end2;
 /** Retrieve User data for a given vertex */
 -(id) vertexData: (NSString *)vertex;
+/** Retrieve User data for a give edge */
+-(id) edgeData: (NSString *)end1 and: (NSString *)end2;
+/** retrieve user data for a given edge, with both edges packed in an array as returned by an edgeEnumerator */
+-(id) edgeData: (NSArray *)arr;
 /** Remove an edge given the two end points */
 -(BOOL) removeEdge: (NSString *)end1 and: (NSString *)end2;
-/** Return an enumerator for each edge.  Each object is an Array with (vertex,vertex,data) in it */
+/** Return an enumerator for each edge.  Each object is an Array with (vertex,vertex) in it */
 -(NSEnumerator *)edgeEnumerator;
 /** Dump the graph using NSLog*/
 -(void) dumpToLog;
