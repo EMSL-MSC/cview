@@ -134,6 +134,7 @@ OPTIONS\n\
     exit(0);
 }
 extern int aninteger;
+extern int nsarray_integer;
 int main(int argc,char *argv[], char *env[]) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	ENABLEDEBUGALLOC;
@@ -173,6 +174,7 @@ int main(int argc,char *argv[], char *env[]) {
 			nil]];
 #endif
     NSLog(@"aninteger = %d", aninteger);
+    NSLog(@"nsarray_integer = %d", nsarray_integer);
 
     // Print usage and exit if user passed -h, -?, or -help
     if([args stringForKey: @"h"] != nil ||

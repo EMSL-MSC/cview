@@ -60,6 +60,7 @@ All rights reserved.
 #import <Foundation/Foundation.h>
 #import "ListComp.h"
 
+int nsarray_integer = 7;
 //EJF: see makeObjectsPerformSelector: in NSArray.m for where i started...
 @implementation NSArray (ListComp) 
 -(NSArray *)arrayObjectsFromPerformedSelector: (SEL)aSelector {
