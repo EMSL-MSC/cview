@@ -85,8 +85,10 @@ int main(int argc,char *argv[], char *env[]) {
 				format: &fmt
 				errorDescription: &err
 				];
+		NSLog(@"%@",plist);
 		GLInfinibandNetwork *ib = [[GLInfinibandNetwork alloc] initWithPList: plist];
 		[ib loadNetLinks: find_resource(@"pnnlfabric.ibnetdiscover")];
+		[ib loadNetCounts: find_resource(@"pnnlfabric.linkcounts")];
 		
 		[scene1 addObject: ib atX: 0 Y: 0 Z: 0];
 	

@@ -80,7 +80,7 @@ All rights reserved.
 */
 #ifndef __FLTS__
 #define __FLTS__
-#include <x86intrin.h>
+#include <xmmintrin.h>
 typedef float v4sf __attribute__ ((vector_size (16)));
 
 typedef union __flts {

@@ -99,7 +99,7 @@ All rights reserved.
 }
 
 -(NSEnumerator *)vertexEnumerator {
-	return [[verts allKeys] objectEnumerator];
+	return [verts keyEnumerator];
 }
 
 -(BOOL) addEdge: (NSString *)end1 and: (NSString *)end2 {
@@ -107,13 +107,18 @@ All rights reserved.
 }
 
 -(BOOL) addEdge: (NSString *)end1 and: (NSString *)end2 withInfo: (id) data {
-	NSArray *key;
+	NSMutableDictionary *d;
 	if (data == nil)
 		data = [NSNull null];
 	//Verify edges are valid.
 	if ([verts objectForKey: end1] != nil && [verts objectForKey: end2] != nil) {
-		key = [NSArray arrayWithObjects: end1,end2,nil];
-		[edges setObject: data forKey: key];
+		d = [edges objectForKey: end1];
+		if (d == nil) {
+			d = [NSMutableDictionary dictionaryWithCapacity: 4];
+			[edges setObject: d forKey: end1];
+		}
+		
+		[d setObject: data forKey: end2];
 		return YES;
 	}
 	else
@@ -121,21 +126,47 @@ All rights reserved.
 }
 
 -(BOOL) removeEdge: (NSString *)end1 and: (NSString *)end2 {
-	NSArray *a = [NSArray arrayWithObjects: end1,end2,nil];
-	[edges removeObjectForKey: a];
-	return YES;
+	NSMutableDictionary *d;
+	int count;
+	d = [edges objectForKey: end1];
+	if (d == nil)
+		return NO;
+	count = [d count];
+	[d removeObjectForKey: end2];
+	return count != [d count];
 }
 
 -(id) edgeData: (NSArray *)arr {
-	return [edges objectForKey: arr];
+	NSMutableDictionary *d;
+	d = [edges objectForKey: [arr objectAtIndex:0]];
+	if (d == nil)
+		return nil;
+	return [d objectForKey: [arr objectAtIndex:1]];
 }
 
 -(id) edgeData: (NSString *)end1 and: (NSString *)end2 {
-	return [self edgeData:[NSArray arrayWithObjects: end1,end2,nil]];
+	NSMutableDictionary *d;
+	d = [edges objectForKey: end1];
+	if (d == nil)
+		return nil;
+	return [d objectForKey: end2];
 }
 
 -(NSEnumerator *)edgeEnumerator {
-	return [[edges allKeys] objectEnumerator];
+	NSMutableArray *arr = [NSMutableArray arrayWithCapacity:100];
+	NSEnumerator *o,*i;
+	NSDictionary *outer,*inner;
+	NSString *key1,*key2;
+	o = [edges keyEnumerator];
+	while (( key1 = [o nextObject] )) {
+		outer = [edges objectForKey: key1];
+		i = [outer keyEnumerator];
+		while (( key2 = [i nextObject] )) {
+			//NSLog(@"%@ %@",key1,key2);
+			[arr addObject: [NSArray arrayWithObjects: key1,key2,nil]];
+		}
+	}
+	return [arr objectEnumerator];
 }
 
 -(id) vertexData: (NSString *)vertex {
@@ -154,7 +185,7 @@ All rights reserved.
 	//Edges
 	list = [self edgeEnumerator];
 	while ( (o = [list nextObject]) ) {
-		NSLog(@"Edge: %@,%@ => %@",[o objectAtIndex:0],[o objectAtIndex:1],[edges objectForKey: o]);
+		NSLog(@"Edge: %@,%@ => %@",[o objectAtIndex:0],[o objectAtIndex:1],[self edgeData: o]);
 	}
 	return;	
 }
