@@ -191,9 +191,7 @@ All rights reserved.
 }
 
 -(BOOL) addEdge: (NSString *)end1 and: (NSString *)end2 withInfo: (id) data {
-	NSMutableDictionary *d;
-	GraphVertex *gv1,*gv2,*gv;
-	NSString *other;
+	GraphVertex *gv1,*gv2;
 	if (data == nil)
 		data = [NSNull null];
 		
@@ -249,7 +247,6 @@ All rights reserved.
 -(NSEnumerator *)edgeEnumerator {
 	NSMutableArray *arr = [NSMutableArray arrayWithCapacity:100];
 	NSEnumerator *o,*i;
-	NSDictionary *outer,*inner;
 	NSString *key1,*key2;
 	GraphVertex *gv;
 	

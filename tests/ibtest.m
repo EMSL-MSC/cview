@@ -62,7 +62,6 @@ All rights reserved.
 #import "cview.h"
 
 int main(int argc,char *argv[], char *env[]) {
-	DrawableObject *o;
 	
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 #ifndef __APPLE__
@@ -78,7 +77,7 @@ int main(int argc,char *argv[], char *env[]) {
 		Scene * scene1 = [[Scene alloc] init];
 
 		NSString *err;
-		NSData *file = [NSData dataWithContentsOfFile: find_resource_path(@"pnnlfabric.plist")];
+		NSData *file = [NSData dataWithContentsOfFile: find_resource_path(@"ib_med.plist")];
 		NSPropertyListFormat fmt;
 		id plist = [NSPropertyListSerialization propertyListFromData: file 
 				mutabilityOption: NSPropertyListImmutable 
@@ -87,14 +86,12 @@ int main(int argc,char *argv[], char *env[]) {
 				];
 		NSLog(@"%@",plist);
 		GLInfinibandNetwork *ib = [[GLInfinibandNetwork alloc] initWithPList: plist];
-		[ib loadNetLinks: find_resource(@"pnnlfabric.ibnetdiscover")];
-		[ib loadNetCounts: find_resource(@"pnnlfabric.linkcounts")];
 		
 		[scene1 addObject: ib atX: 0 Y: 0 Z: 0];
 	
 		GLWorld * gw1 = [[[g addWorld: @"Top" row: 0 col: 0 rowPercent: 50 colPercent:50] 
 			setScene: scene1] 
-			setEye: [[[Eye alloc] init] setX: 1200.0 Y: 2800.0 Z: -3400.0 Hangle:-1.53 Vangle: -2.22]
+			setEye: [[[Eye alloc] init] setX: 200.0 Y: 500.0 Z: -400.0 Hangle:-1.15 Vangle: -2.42]
 		];
 	
 		NSLog(@"%@",[g getPList]);

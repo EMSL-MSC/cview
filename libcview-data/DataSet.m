@@ -341,6 +341,7 @@ All rights reserved.
 	[textDescription autorelease];
 	textDescription = description;
 	[textDescription retain];
+	return self;
 }
 
 - (NSString *)getDescription {

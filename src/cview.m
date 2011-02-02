@@ -151,87 +151,94 @@ int main(int argc,char *argv[], char *env[]) {
 	//needed for NSLog
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
-	/** @objcdef 
-		- dataUpdateInterval - time in seconds that the URL reload code will delay between reads
-		- dumpclasses - startup a ObjectTracker thread if >0, the number how often in seconds to dump the class counts: file is cview.classes
-		- c The PList formatted config file to load 
-	*/
-	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
-#if HAVE_GENDERS
-    [args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
-			@"cviews/default.cview", @"c",
-			@"30.0",@"dataUpdateInterval",
-			@"0",@"dumpclasses",
-            @"DataCenterCViewScreenDelegate",@"ScreenDelegate", // use DataCenter since we have genders
-			nil]];
-#else
-    [args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
-			@"cviews/default.cview", @"c",
-			@"30.0",@"dataUpdateInterval",
-			@"0",@"dumpclasses",
-            @"CViewScreenDelegate",@"ScreenDelegate",
-			nil]];
-#endif
-    NSLog(@"aninteger = %d", aninteger);
+	@try {
+		/** @objcdef 
+			- dataUpdateInterval - time in seconds that the URL reload code will delay between reads
+			- dumpclasses - startup a ObjectTracker thread if >0, the number how often in seconds to dump the class counts: file is cview.classes
+			- c The PList formatted config file to load 
+		*/
+		NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
+	#if HAVE_GENDERS
+		[args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
+				@"cviews/default.cview", @"c",
+				@"30.0",@"dataUpdateInterval",
+				@"0",@"dumpclasses",
+		        @"DataCenterCViewScreenDelegate",@"ScreenDelegate", // use DataCenter since we have genders
+				nil]];
+	#else
+		[args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
+				@"cviews/default.cview", @"c",
+				@"30.0",@"dataUpdateInterval",
+				@"0",@"dumpclasses",
+		        @"CViewScreenDelegate",@"ScreenDelegate",
+				nil]];
+	#endif
+		NSLog(@"aninteger = %d", aninteger);
 
-    // Print usage and exit if user passed -h, -?, or -help
-    if([args stringForKey: @"h"] != nil ||
-       [args stringForKey: @"?"] != nil ||
-       [args stringForKey: @"help"] != nil)
-        usage();
-	config = [args stringForKey: @"c"];
-	updateInterval = [args floatForKey: @"dataUpdateInterval"];
-	dumpclasses = [args integerForKey: @"dumpclasses"];
+		// Print usage and exit if user passed -h, -?, or -help
+		if([args stringForKey: @"h"] != nil ||
+		   [args stringForKey: @"?"] != nil ||
+		   [args stringForKey: @"help"] != nil)
+		    usage();
+		config = [args stringForKey: @"c"];
+		updateInterval = [args floatForKey: @"dataUpdateInterval"];
+		dumpclasses = [args integerForKey: @"dumpclasses"];
 
-	if (dumpclasses > 0) 
-		[[[ObjectTracker alloc] initWithFile: @"cview.classes" andInterval: dumpclasses] retain];
+		if (dumpclasses > 0) 
+			[[[ObjectTracker alloc] initWithFile: @"cview.classes" andInterval: dumpclasses] retain];
 	
-	MagickWandGenesis();
+		MagickWandGenesis();
 
-	NSData *file = [NSData dataWithContentsOfFile: config];
-	NSPropertyListFormat fmt;
-	id plist = [NSPropertyListSerialization propertyListFromData: file 
-				mutabilityOption: NSPropertyListImmutable 
-				format: &fmt
-				errorDescription: &err
-				];
-	//NSLog(@"plist: %@ %d %@",plist,fmt,err);
-	if (plist==nil) {
-		printf("Error loading PList: %s. Exiting\n",[config UTF8String]);
-		exit(4);
+		NSData *file = [NSData dataWithContentsOfFile: config];
+		NSPropertyListFormat fmt;
+		id plist = [NSPropertyListSerialization propertyListFromData: file 
+					mutabilityOption: NSPropertyListImmutable 
+					format: &fmt
+					errorDescription: &err
+					];
+		//NSLog(@"plist: %@ %d %@",plist,fmt,err);
+		if (plist==nil) {
+			printf("Error loading PList: %s. Exiting\n",[config UTF8String]);
+			exit(4);
+		}
+		Class c;
+		/*  The following code has been added to allow the Screen Delegate type to be passed on the command line
+		 *  if not specified on the command line, defaults to DataCenterCViewScreenDelegate if the genders library
+		 *  is present
+		 */
+		c = NSClassFromString([args stringForKey: @"ScreenDelegate"]);
+		if (c == nil) { // if nil then the class wasn't found
+		    NSLog(@"\"%@\" is not a valid class known to cview: Exiting",[args stringForKey: @"ScreenDelegate"]);
+		    usage();    // print usage and exit
+		// Make sure that the passed screen delegate is properly subclassed
+		}else if(![c isSubclassOfClass: [CViewScreenDelegate class]]) {
+		    NSLog(@"\"%@\" is not a subclass of DefaultGLScreenDelegate: Exiting",[args stringForKey: @"ScreenDelegate"]);
+		    usage();    // print usage and exit
+		}
+		GLScreen * g = [[GLScreen alloc] initWithPList:plist];
+		CViewScreenDelegate *delegate = [[c alloc] initWithScreen: g];
+		[delegate setOutputFile: config];
+
+		[g setDelegate: delegate];
+
+		NSLog(@"Setup done");
+
+		plist = [g getPList];
+		//NSLog([NSPropertyListSerialization stringFromPropertyList: plist]);
+
+		DUMPALLOCLIST(YES);
+
+		[g run];
+
+		MagickWandTerminus();
+
+		[g autorelease];
 	}
-    Class c;
-    /*  The following code has been added to allow the Screen Delegate type to be passed on the command line
-     *  if not specified on the command line, defaults to DataCenterCViewScreenDelegate if the genders library
-     *  is present
-     */
-	c = NSClassFromString([args stringForKey: @"ScreenDelegate"]);
-	if (c == nil) { // if nil then the class wasn't found
-        NSLog(@"\"%@\" is not a valid class known to cview: Exiting",[args stringForKey: @"ScreenDelegate"]);
-        usage();    // print usage and exit
-    // Make sure that the passed screen delegate is properly subclassed
-	}else if(![c isSubclassOfClass: [CViewScreenDelegate class]]) {
-        NSLog(@"\"%@\" is not a subclass of DefaultGLScreenDelegate: Exiting",[args stringForKey: @"ScreenDelegate"]);
-        usage();    // print usage and exit
-    }
-	GLScreen * g = [[GLScreen alloc] initWithPList:plist];
-    CViewScreenDelegate *delegate = [[c alloc] initWithScreen: g];
-	[delegate setOutputFile: config];
+	@catch (NSException *localException) {
+		NSLog(@"Critical Error: %@", localException);
+		return -1;
+	}
 
-	[g setDelegate: delegate];
-
-	NSLog(@"Setup done");
-
-	plist = [g getPList];
-	//NSLog([NSPropertyListSerialization stringFromPropertyList: plist]);
-
-	DUMPALLOCLIST(YES);
-
-	[g run];
-
-	MagickWandTerminus();
-
-	[g autorelease];
 	[pool release];
 
 	return 0;

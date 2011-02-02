@@ -57,6 +57,7 @@ All rights reserved.
 
 */
 #import "GLInfinibandNetwork.h"
+#import "ListComp.h"
 #import "DictionaryExtra.h"
 static float box_quads[72] = {
 0.0 , 1.0 , 0.0 , 1.0 , 1.0 , 0.0 , 1.0 , 1.0 , 1.0 , 0.0 , 1.0 , 1.0 , //Top  keep here.
@@ -78,7 +79,6 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	NSArray *lines = [linestring componentsSeparatedByCharactersInSet: [NSCharacterSet characterSetWithCharactersInString: @"\n"]];
 	NSString *line,*guid,*label;
 	NSEnumerator *e;
-	NSUInteger pos;
 	
 	e = [lines objectEnumerator];
 	while ( (line = [e nextObject] ) ) {
@@ -171,8 +171,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 }
 
 -(void)glVertex {
-	flts v,r,*c,t[4];
-	int i;
+	flts v,r,*c;
 	v.f[0]=x+w/2.0;
 	v.f[1]=y+h/2.0;
 	v.f[2]=z;
@@ -196,7 +195,6 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 
 
 -(id) glDraw {
-	int l;
 	flts *m = [chassis getGLRef];
 	
 	glPushMatrix();
@@ -229,6 +227,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 @implementation IBChassis
 -(id)getPList {
 	NSMutableDictionary *list = [super getPList];
+	[list setObject: type forKey: @"type"];
 	#define SD(x,k) [list setObject: [NSNumber numberWithFloat: x] forKey: k];
 	SD(rotx,@"rotx");
 	SD(roty,@"roty");
@@ -276,6 +275,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 		ph = 300.0/24;
 		spw = 100.0/12;
 
+		//fabric ports
 		for (i=0;i<12;i++)
 			for (j=0;j<24;j++) {
 				//Front Port
@@ -304,10 +304,10 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 		fpw=65.0/24;
 		for (i=0;i<4;i++)
 			for (j=0;j<3;j++) {
-				glVertex3f(5+i*75,50+j*100.0,210);
+				/*glVertex3f(5+i*75,50+j*100.0,210);
 				glVertex3f(70+i*75,50+j*100.0,210);
 				glVertex3f(70+i*75,50+j*100.0,240);
-				glVertex3f(5+i*75,50+j*100.0,240);
+				glVertex3f(5+i*75,50+j*100.0,240);      WTF*/
 				for (p=0;p<24;p++) {
 					port = [[[IBPort alloc] init] autorelease];
 					port->x = 5+i*75+fpw*p+0.5;
@@ -317,6 +317,56 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 					port->h = 4;
 					[port setChassis: self];
 					s = [self getFabricPortKey: i Y: j Port: p nodeMap: map];
+					[g addVertex: s withInfo: port];
+				}
+			}
+	}
+	
+	if ([type compare: @"TEST040208" ] == NSOrderedSame) {
+		pw = 40.0/4;
+		ph = 40.0/4;
+		spw = 30.0/4;
+
+		for (i=0;i<4;i++)
+			for (j=0;j<4;j++) {
+				//Front Port
+				port = [[[IBPort alloc] init] autorelease];
+				port->x = i*pw+0.5;
+				port->y = j*ph+0.5;
+				port->z = 0;
+				port->w = pw-1;
+				port->h = ph-1;
+				[port setChassis: self];
+				s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@L%d",name,j+1]],i+5];
+				//NSLog(@"FP: %@ %@",s,port);
+				[g addVertex: s withInfo: port];
+				//switch back port
+				port = [[[IBPort alloc] init] autorelease];
+				port->x = 5+i*spw+0.5;
+				port->y = j*ph+0.5;
+				port->z = 15.5;
+				port->w = spw-1;
+				port->h = 4;
+				[port setChassis: self];
+				s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@L%d",name,j+1]],1+i];
+				//NSLog(@"BP: %@ %@",s,port);
+				[g addVertex: s withInfo: port];
+			}
+			
+		//Fabric Switches
+		fpw=30.0/8;
+		for (i=0;i<1;i++)
+			for (j=0;j<2;j++) {
+				for (p=0;p<8;p++) {
+					port = [[[IBPort alloc] init] autorelease];
+					port->x = 5+i*20+fpw*p+0.5;
+					port->y = 10+j*10+0.5;
+					port->z = 25;
+					port->w = fpw-1;
+					port->h = 4;
+					[port setChassis: self];
+					s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@F%d",name,j+1]],p+1];
+					//NSLog(@"FS: %@ %@",s,port);
 					[g addVertex: s withInfo: port];
 				}
 			}
@@ -357,22 +407,23 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	glGetFloatv(GL_MODELVIEW_MATRIX,(GLfloat *)reference);
 
 
-	/* bounding box */
-	for (l=0;l<60;l+=12) {
-		if (l==0)
-			glColor3f(1.0,0.0,0.0);
-		else
-			glColor3f(0.5,0.5,0.5);
-
-		glBegin(GL_LINE_LOOP);		
-		for (i=l;i<l+12;i+=3)
-			glVertex3f(box_quads[i]*300,box_quads[i+1]*300,box_quads[i+2]*300);
-		glEnd();
-	}
-	/*end bounding*/
 	
 	//Line switches
 	if ([type compare: @"ISR2012" ] == NSOrderedSame) {
+		/* bounding box */
+		for (l=0;l<60;l+=12) {
+			if (l==0)
+				glColor3f(1.0,0.0,0.0);
+			else
+				glColor3f(0.5,0.5,0.5);
+
+			glBegin(GL_LINE_LOOP);		
+			for (i=l;i<l+12;i+=3)
+				glVertex3f(box_quads[i]*300,box_quads[i+1]*300,box_quads[i+2]*300);
+			glEnd();
+		}
+		/*end bounding*/
+
 		pw = 300.0/12;
 		ph = 300.0/24;
 		for (i=0;i<24;i++) {
@@ -405,6 +456,52 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 			}
 	}
 	
+	if ([type compare: @"TEST040208" ] == NSOrderedSame) {
+		/* bounding box */
+		for (l=0;l<60;l+=12) {
+			if (l==0)
+				glColor3f(1.0,0.0,0.0);
+			else
+				glColor3f(0.5,0.5,0.5);
+
+			glBegin(GL_LINE_LOOP);		
+			for (i=l;i<l+12;i+=3)
+				glVertex3f(box_quads[i]*40,box_quads[i+1]*40,box_quads[i+2]*40);
+			glEnd();
+		}
+		/*end bounding*/
+
+		pw = 40.0/4;
+		ph = 40.0/4;
+		for (i=0;i<4;i++) {
+			glColor3f(0.0,0.0,0.7);
+			glBegin(GL_LINE_LOOP);
+			glVertex3f(5,i*ph,5);
+			glVertex3f(35,i*ph,5);
+			glVertex3f(35,i*ph,15);
+			glVertex3f(5,i*ph,15);
+			glEnd();
+			glColor3f(0.0,0.0,0.4);
+			glBegin(GL_LINES);
+			for (l=0;l<4;l++) {
+				glVertex3f(pw*l+pw/2,i*ph+ph/2,0);
+				glVertex3f(10+l*(30.0/4.0),i*ph,5);
+			}
+			glEnd();
+		}
+		
+		//Fabric Switches
+		for (i=0;i<1;i++)
+			for (j=0;j<2;j++) {
+				glColor3f(0.0,0.0,0.7);
+				glBegin(GL_LINE_LOOP);
+				glVertex3f(5+i*20,10+j*10.0,25);
+				glVertex3f(35+i*20,10+j*10.0,25);
+				glVertex3f(35+i*20,10+j*10.0,35);
+				glVertex3f(5+i*20,10+j*10.0,35);
+				glEnd();
+			}
+	}
 	
 	glPopMatrix();	
 	return self;
@@ -421,7 +518,11 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 
 @implementation GLInfinibandNetwork
 -(id)getPList {
-	NSMutableDictionary *list = [NSMutableDictionary dictionaryWithCapacity:4];
+	NSMutableDictionary *list = [super getPList];
+	[list setObject: portSpeed forKey: @"portspeed"];
+	[list setObject: nodemapfile forKey: @"nodemapfile"];
+	[list setObject: [chassis arrayObjectsFromPerformedSelector:@selector(getPList)] forKey: @"chassis"];
+
 	return list;
 }
 
@@ -430,13 +531,17 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	NSEnumerator *e;
 	IBChassis *ibc;
 	NSDictionary *d;
-	[super init];
+	[super initWithPList: list];
 	
 	graph = [[Graph alloc] init];
 	chassis = [[NSMutableArray arrayWithCapacity: 16] retain];
 	
-	nodemapfile = [[list objectForKey: @"nodemapfile" missing: @"testfabric.plist"] retain];
+	netcountfile = [[list objectForKey: @"netcountfile" missing: @"ib_med.linkcounts"] retain];
+	netlinksfile = [[list objectForKey: @"netlinksfile" missing: @"ib_med.ibnetdiscover"] retain];
+	nodemapfile = [[list objectForKey: @"nodemapfile" missing: @"ib-node-names.map"] retain];	
 	nodemap = [scanNodeMapFile(find_resource(nodemapfile)) retain];
+	
+	portSpeed = [[list objectForKey: @"portspeed" missing: @"DDR"] retain];
 	
 	c = [list objectForKey: @"chassis" missing: [NSArray array]];
 	e = [c objectEnumerator];
@@ -447,9 +552,13 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 		[ibc populateGraph: graph nodeMap: nodemap];
 	}
 	//NSLog(@"%@",chassis);
-	colorMap = [[ColorMap mapWithMax:8] retain];
+	//colorMap = [[ColorMap mapWithMax:8] retain];
 	//[graph addEdge: @"0x8f104003f26fb-13" and: @"0x8f104003f273a-24"];
 	//[graph dumpToLog];
+	[self loadNetLinks: find_resource(netlinksfile)];
+	//This sets up the ColorMap as well
+	[self loadNetCounts: find_resource(netcountfile)];
+
 	return self;
 }
 
@@ -465,6 +574,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	[chassis autorelease];
 	[nodemap autorelease];
 	[colorMap autorelease];
+	[portSpeed autorelease];
 	[super dealloc];
 	return;
 }
@@ -505,8 +615,8 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 					[IBLink link]
 					];
 		}
-		/** @todo parameterze the speed check*/
-		if ([speed compare: @"DDR"] == NSOrderedSame) {
+		
+		if ([speed compare: portSpeed ] == NSOrderedSame) {
 			if ([from length]>0)
 				[[graph vertexData: [NSString stringWithFormat: @"%@-%d",from,fport]] setColorR: 0.4 G: 0.2 B: 0.2];
 			if ([to length]>0)
