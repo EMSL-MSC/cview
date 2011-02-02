@@ -73,17 +73,20 @@ int main(int argc,char *argv[], char *env[]) {
 		[g addVertex: @"two"];
 		[g addVertex: @"three"];
 		[g addVertex: @"four"];
+		[g addVertex: @"a"];
+		[g addVertex: @"b"];
 		
 		NSLog(@" 1. 1=%d",[g addEdge: @"one" and: @"two"]);
 		NSLog(@" 2. 1=%d",[g addEdge: @"one" and: @"four"]);
 		NSLog(@" 3. 1=%d",[g addEdge: @"four" and: @"one" withInfo: @"edgedata"]);
 		NSLog(@" 4. 1=%d",[g addEdge: @"two" and: @"two"]);
 		NSLog(@" 5. 0=%d",[g addEdge: @"one" and: @"five"]);
-		NSLog(@" 6. 0=%d",[g removeVertex: @"one"]);
-		NSLog(@" 7. 1=%d",[g removeVertex: @"three"]);
-		NSLog(@" 8. 0=%d",[g removeEdge: @"one" and: @"five"]);
-		NSLog(@" 9. 1=%d",[g removeEdge: @"one" and: @"four"]);
-		NSLog(@"10. edgedata=%@",[g edgeData: @"four" and: @"one"]);
+		NSLog(@" 6. 1=%d",[g addEdge: @"b" and: @"a"]);
+		NSLog(@" 7. 0=%d",[g removeVertex: @"one"]);
+		NSLog(@" 8. 1=%d",[g removeVertex: @"three"]);
+		NSLog(@" 9. 0=%d",[g removeEdge: @"one" and: @"five"]);
+		NSLog(@"10. 0=%d",[g removeVertex: @"a"]);
+		NSLog(@"11. edgedata=%@",[g edgeData: @"four" and: @"one"]);
 		[g dumpToLog];
 	}
 	@catch (NSException *localException) {

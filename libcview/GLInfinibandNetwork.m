@@ -89,9 +89,9 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 		//verify the line looks like we want it to
 		if ([line hasPrefix: @"0x"] && 
 			[line hasSuffix: @"\""] &&
-		    [line compare: @" \"" options: NSLiteralSearch range: NSMakeRange(18,2)] == NSOrderedSame ) {
-			   guid = [line substringWithRange: NSMakeRange(0,18)];
-			   label = [line substringWithRange: NSMakeRange(20,[line length]-21)];
+		    [line compare: @" \"" options: NSLiteralSearch range: NSMakeRange(15,2)] == NSOrderedSame ) {
+			   guid = [line substringWithRange: NSMakeRange(0,15)];
+			   label = [line substringWithRange: NSMakeRange(17,[line length]-18)];
 			   //NSLog(@"%@,%@",guid,label);
 			   [dict setObject:guid forKey: label];
 		}
@@ -447,7 +447,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 		[ibc populateGraph: graph nodeMap: nodemap];
 	}
 	//NSLog(@"%@",chassis);
-	colorMap = [ColorMap mapWithMax:8];
+	colorMap = [[ColorMap mapWithMax:8] retain];
 	//[graph addEdge: @"0x8f104003f26fb-13" and: @"0x8f104003f273a-24"];
 	//[graph dumpToLog];
 	return self;
@@ -464,6 +464,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	[nodemapfile autorelease];
 	[chassis autorelease];
 	[nodemap autorelease];
+	[colorMap autorelease];
 	[super dealloc];
 	return;
 }
@@ -488,7 +489,14 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 		fport = [[line substringWithRange: NSMakeRange(9,2)] intValue];
 		tport = [[line substringWithRange: NSMakeRange(49,2)] intValue];
 		speed = [line substringWithRange: NSMakeRange(34,3)];
-		//NSLog(@"%@ %d  %@ %d",from,fport,to,tport);
+		
+		
+		if ([from hasPrefix: @"0x000"])
+			from = [NSString stringWithFormat: @"0x%@",[from substringFromIndex: 5]];
+		if ([to hasPrefix: @"0x000"])
+			to = [NSString stringWithFormat: @"0x%@",[to substringFromIndex: 5]];
+		//NSLog(@"%@ %d  %@ %d  %@",from,fport,to,tport,speed);
+		
 		
 		if ([from length]>0 && [to length]>0) {
 			good = [graph addEdge: 
@@ -497,6 +505,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 					[IBLink link]
 					];
 		}
+		/** @todo parameterze the speed check*/
 		if ([speed compare: @"DDR"] == NSOrderedSame) {
 			if ([from length]>0)
 				[[graph vertexData: [NSString stringWithFormat: @"%@-%d",from,fport]] setColorR: 0.4 G: 0.2 B: 0.2];
@@ -513,24 +522,34 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	NSString *linestring = [NSString stringWithCString: [data bytes] length: [data length]];
 	NSArray *lines = [linestring componentsSeparatedByCharactersInSet: [NSCharacterSet characterSetWithCharactersInString: @"\n"]];
 	NSString *line;
+	NSArray *parts;
 	NSEnumerator *e;
 	NSString *from,*to;
 	IBLink *link;
 	int count;
+	int max=1;
+	
 	
 	e = [lines objectEnumerator];
 	while ( (line = [e nextObject] ) ) {
 		if ( [line length]==0 )
 			continue;
-		from = [line substringWithRange: NSMakeRange(0,21)];
-		to = [line substringWithRange: NSMakeRange(22,21)];
-		count = [[line substringFromIndex: 42] intValue];
+		parts = [line componentsSeparatedByCharactersInSet: [NSCharacterSet whitespaceCharacterSet]];
+		count = [[parts objectAtIndex: 0] intValue];
+		from = [parts objectAtIndex: 1];
+		to = [parts objectAtIndex: 2];
 
-		NSLog(@"Link: %@ %@ %d",from,to,count);
+
+		//NSLog(@"Link: %@ %@ %d",from,to,count);
 		link = [graph edgeData: from and: to];
-		if (link)
+		if (link) {
 			[link setValue: count];
+			max = MAX(max,count);
+		}
 	}
+	[colorMap autorelease];
+	colorMap = [[ColorMap mapWithMax: max] retain];
+	return YES;
 }
 
 -(id) glDraw {
@@ -559,8 +578,8 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	glColor3f(0.0,0.0,1.0);
 	e = [graph edgeEnumerator];
 	while ( (a = [e nextObject]) ) {
-		glBegin(GL_LINES);
 		[colorMap glMap: [[graph edgeData: a] getValue]];
+		glBegin(GL_LINES);
 		[[graph vertexData: [a objectAtIndex: 0]] glVertex];
 		[[graph vertexData: [a objectAtIndex: 1]] glVertex];
 		glEnd();

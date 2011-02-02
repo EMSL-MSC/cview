@@ -57,18 +57,92 @@ All rights reserved.
 
 */
 #include "Graph.h"
+@interface GraphVertex:NSObject {
+	id info;
+	NSMutableDictionary *edgeInfo;
+}
++(id)graphVertexWithInfo: (id)i;
+-(id)getInfo;
+-(void)setInfo: (id)i;
+-(BOOL)hasEdge: (NSString *)edge;
+-(BOOL)hasEdges;
+-(id)edgeInfo: (NSString *)edge;
+-(void)addEdge: (NSString *)edge withInfo: (id)i;
+-(BOOL)removeEdge: (NSString *)edge;
+-(NSEnumerator *)edgeEnumerator;
+@end
+
+@implementation GraphVertex
++(id)graphVertexWithInfo: (id)i {
+	GraphVertex *gv = [[[GraphVertex alloc] init] autorelease];
+	[gv setInfo: i];
+	return gv;
+}
+
+-(id)init {
+	[super init];
+	edgeInfo = [[NSMutableDictionary dictionaryWithCapacity: 8] retain];
+	return self;
+}
+
+-(void)dealloc {
+	[info autorelease];
+	[edgeInfo autorelease];
+	[super dealloc];
+}
+
+-(id)getInfo {
+	return info;
+}
+
+-(void)setInfo: (id)i {
+	[i retain];
+	[info autorelease];
+	info = i;
+}
+
+-(BOOL)hasEdge: (NSString *)edge {
+	return [edgeInfo objectForKey: edge] != nil;
+}
+
+-(BOOL)hasEdges {
+	return [edgeInfo count]!=0;
+}
+
+-(id)edgeInfo: (NSString *)edge {
+	return [edgeInfo objectForKey: edge];
+}
+
+-(void)addEdge: (NSString *)edge withInfo: (id)i {
+	[edgeInfo setObject: i forKey: edge];
+}
+
+-(BOOL)removeEdge: (NSString *)edge {
+	int count;
+	count = [edgeInfo count];
+	[edgeInfo removeObjectForKey: edge];
+	return count != [edgeInfo count];
+}
+-(NSEnumerator *)edgeEnumerator {
+	return [edgeInfo keyEnumerator];
+}
+-(NSString *)description {
+	return [NSString stringWithFormat: @"GV:<I:%@><E:%@>",info,edgeInfo];
+}
+@end
+
 @implementation Graph
 -(id) init {
 	[super init];
 	verts = [[NSMutableDictionary dictionaryWithCapacity:32] retain];
-	edges = [[NSMutableDictionary dictionaryWithCapacity:32] retain];
+	//edges = [[NSMutableDictionary dictionaryWithCapacity:32] retain];
 	return self;
 }
 
 -(void)dealloc {
 	NSLog(@"%@ dealloc",[self class]);
 	[verts autorelease];
-	[edges autorelease];
+	//[edges autorelease];
 	[super dealloc];
 	return;
 }
@@ -79,23 +153,33 @@ All rights reserved.
 }
 
 -(void) addVertex: (NSString *)name withInfo: (id)data {
+	GraphVertex *gv;
 	if (data == nil)
 		data = [NSNull null];
-	[verts setValue:data forKey: name];
+	gv = [GraphVertex graphVertexWithInfo: data];
+	[verts setObject: gv forKey: name];
 	return;	
 }
 
 -(BOOL) removeVertex: (NSString *)name {
-	NSArray *edge;
+	NSString *key;
 	NSEnumerator *list;
+	GraphVertex *gv = [verts objectForKey: name];
 	//Verify no edges have this vertex
-	list = [self edgeEnumerator];
-	while ( (edge = [list nextObject]) ) {
-		if ([edge containsObject: name])
-			return NO;
+	if (gv == nil || [gv hasEdges] ) {
+		return NO;
 	}
-	[verts removeObjectForKey: name];
-	return YES;
+	else {
+		//verify no vertices refer to the vertex:
+	
+		list = [self vertexEnumerator];
+		while ( (key = [list nextObject]) )
+			if ([[verts objectForKey: key] hasEdge: name])
+				return NO;	
+	
+		[verts removeObjectForKey: name];
+		return YES;
+	}
 }
 
 -(NSEnumerator *)vertexEnumerator {
@@ -108,17 +192,24 @@ All rights reserved.
 
 -(BOOL) addEdge: (NSString *)end1 and: (NSString *)end2 withInfo: (id) data {
 	NSMutableDictionary *d;
+	GraphVertex *gv1,*gv2,*gv;
+	NSString *other;
 	if (data == nil)
 		data = [NSNull null];
-	//Verify edges are valid.
-	if ([verts objectForKey: end1] != nil && [verts objectForKey: end2] != nil) {
-		d = [edges objectForKey: end1];
-		if (d == nil) {
-			d = [NSMutableDictionary dictionaryWithCapacity: 4];
-			[edges setObject: d forKey: end1];
-		}
 		
-		[d setObject: data forKey: end2];
+	//Verify edges are valid.	
+	gv1 = [verts objectForKey: end1];
+	gv2 = [verts objectForKey: end2];
+	//NSLog(@"aE GV: %@ %@",gv1,gv2);
+	if ( gv1 != nil && gv2 != nil) {
+		/*if ([gv1 hasEdge: end2] && [gv2 hasEdge: end1] && gv1 != gv2) 
+			[NSException raise: @"doubly linked edges" format: @"%@ %@ %@ %@",gv1,gv2,end1,end2];*/
+			
+		if ([gv2 hasEdge: end1]) 
+			[gv2 addEdge: end1 withInfo: data];
+		else 
+			[gv1 addEdge: end2 withInfo: data];
+
 		return YES;
 	}
 	else
@@ -126,30 +217,33 @@ All rights reserved.
 }
 
 -(BOOL) removeEdge: (NSString *)end1 and: (NSString *)end2 {
-	NSMutableDictionary *d;
-	int count;
-	d = [edges objectForKey: end1];
-	if (d == nil)
-		return NO;
-	count = [d count];
-	[d removeObjectForKey: end2];
-	return count != [d count];
+	GraphVertex *gv1,*gv2;
+	gv1 = [verts objectForKey: end1];
+	gv2 = [verts objectForKey: end2];
+	//NSLog(@"re GV: %@ %@",gv1,gv2);
+	return [gv1 removeEdge: end2] | [gv2 removeEdge: end1]; 
+	
 }
 
 -(id) edgeData: (NSArray *)arr {
-	NSMutableDictionary *d;
-	d = [edges objectForKey: [arr objectAtIndex:0]];
-	if (d == nil)
-		return nil;
-	return [d objectForKey: [arr objectAtIndex:1]];
+	return [self edgeData: [arr objectAtIndex:0] and: [arr objectAtIndex:1]];
 }
 
 -(id) edgeData: (NSString *)end1 and: (NSString *)end2 {
-	NSMutableDictionary *d;
-	d = [edges objectForKey: end1];
-	if (d == nil)
-		return nil;
-	return [d objectForKey: end2];
+	GraphVertex *gv1,*gv2;
+	id data;
+	
+	gv1 = [verts objectForKey: end1];
+	gv2 = [verts objectForKey: end2];
+	//NSLog(@"re GV: %@ %@",gv1,gv2);
+	if ( gv1 != nil && gv2 != nil) {
+		data = [gv1 edgeInfo: end2];
+		if (data!=nil)
+			return data;
+		
+		return [gv2 edgeInfo: end1];
+	}
+	return nil;
 }
 
 -(NSEnumerator *)edgeEnumerator {
@@ -157,12 +251,14 @@ All rights reserved.
 	NSEnumerator *o,*i;
 	NSDictionary *outer,*inner;
 	NSString *key1,*key2;
-	o = [edges keyEnumerator];
+	GraphVertex *gv;
+	
+	o = [verts keyEnumerator];
 	while (( key1 = [o nextObject] )) {
-		outer = [edges objectForKey: key1];
-		i = [outer keyEnumerator];
+		gv = [verts objectForKey: key1];
+		i = [gv edgeEnumerator];
 		while (( key2 = [i nextObject] )) {
-			//NSLog(@"%@ %@",key1,key2);
+			//NSLog(@"eE %@ %@",key1,key2);
 			[arr addObject: [NSArray arrayWithObjects: key1,key2,nil]];
 		}
 	}
@@ -170,13 +266,14 @@ All rights reserved.
 }
 
 -(id) vertexData: (NSString *)vertex {
-	return [verts objectForKey:vertex];
+	return [[verts objectForKey:vertex] getInfo];
 }
 
 //This should maybe actually dump to a file we could feed to graphviz or something...
 -(void) dumpToLog {
 	id o;
 	NSEnumerator *list;
+	NSLog(@"");
 	//vertices
 	list = [self vertexEnumerator];
 	while ( (o = [list nextObject]) ) {
@@ -187,6 +284,7 @@ All rights reserved.
 	while ( (o = [list nextObject]) ) {
 		NSLog(@"Edge: %@,%@ => %@",[o objectAtIndex:0],[o objectAtIndex:1],[self edgeData: o]);
 	}
+	NSLog(@"");
 	return;	
 }
 @end
