@@ -281,7 +281,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 				//Front Port
 				port = [[[IBPort alloc] init] autorelease];
 				port->x = i*pw+0.5;
-				port->y = j*ph+0.5;
+				port->y = (24-j)*ph+0.5;
 				port->z = 0;
 				port->w = pw-1;
 				port->h = ph-1;
@@ -291,7 +291,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 				//switch back port
 				port = [[[IBPort alloc] init] autorelease];
 				port->x = 100+i*spw+0.5;
-				port->y = j*ph+0.5;
+				port->y = (24-j)*ph+0.5;
 				port->z = 90.5;
 				port->w = spw-1;
 				port->h = 4;
@@ -332,7 +332,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 				//Front Port
 				port = [[[IBPort alloc] init] autorelease];
 				port->x = i*pw+0.5;
-				port->y = j*ph+0.5;
+				port->y = (4-j)*ph+0.5;
 				port->z = 0;
 				port->w = pw-1;
 				port->h = ph-1;
@@ -343,7 +343,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 				//switch back port
 				port = [[[IBPort alloc] init] autorelease];
 				port->x = 5+i*spw+0.5;
-				port->y = j*ph+0.5;
+				port->y = (4-j)*ph+0.5;
 				port->z = 15.5;
 				port->w = spw-1;
 				port->h = 4;
@@ -521,6 +521,11 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	NSMutableDictionary *list = [super getPList];
 	[list setObject: portSpeed forKey: @"portspeed"];
 	[list setObject: nodemapfile forKey: @"nodemapfile"];
+	[list setObject: netlinksfile forKey: @"netlinksfile"];
+	[list setObject: netcountfile forKey: @"netcountfile"];
+	if (colorMax != 0)
+		[list setObject: [NSNumber numberWithInt: colorMax] forKey: @"colorMax"];
+
 	[list setObject: [chassis arrayObjectsFromPerformedSelector:@selector(getPList)] forKey: @"chassis"];
 
 	return list;
@@ -536,9 +541,10 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	graph = [[Graph alloc] init];
 	chassis = [[NSMutableArray arrayWithCapacity: 16] retain];
 	
+	colorMax = [[list objectForKey: @"colorMax" missing: @"0"] intValue];
 	netcountfile = [[list objectForKey: @"netcountfile" missing: @"ib_med.linkcounts"] retain];
 	netlinksfile = [[list objectForKey: @"netlinksfile" missing: @"ib_med.ibnetdiscover"] retain];
-	nodemapfile = [[list objectForKey: @"nodemapfile" missing: @"ib-node-names.map"] retain];	
+	nodemapfile = [[list objectForKey: @"nodemapfile" missing: @"ib-node-names.map"] retain];
 	nodemap = [scanNodeMapFile(find_resource(nodemapfile)) retain];
 	
 	portSpeed = [[list objectForKey: @"portspeed" missing: @"DDR"] retain];
@@ -551,10 +557,6 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 		[chassis addObject: ibc];
 		[ibc populateGraph: graph nodeMap: nodemap];
 	}
-	//NSLog(@"%@",chassis);
-	//colorMap = [[ColorMap mapWithMax:8] retain];
-	//[graph addEdge: @"0x8f104003f26fb-13" and: @"0x8f104003f273a-24"];
-	//[graph dumpToLog];
 	[self loadNetLinks: find_resource(netlinksfile)];
 	//This sets up the ColorMap as well
 	[self loadNetCounts: find_resource(netcountfile)];
@@ -564,7 +566,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 
 -(NSArray *)attributeKeys {
 	//isVisible comes from the DrawableObject
-	return [NSArray arrayWithObjects: @"chassis",@"nodemapfile",@"nodemap",nil];
+	return [NSArray arrayWithObjects: @"chassis",@"nodemapfile",@"netlinksfile",@"netcountfile",@"nodemap",@"colorMax",nil];
 }
 
 -(void)dealloc {
@@ -658,6 +660,11 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 		}
 	}
 	[colorMap autorelease];
+	if (colorMax > 0) {
+		if (max > colorMax)
+			NSLog(@"colorMax is lower than data max, continuing anyway: %d > %d",max,colorMax);
+		max = colorMax;
+	}
 	colorMap = [[ColorMap mapWithMax: max] retain];
 	return YES;
 }
