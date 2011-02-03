@@ -40,6 +40,7 @@ AC_ARG_WITH([genders],AS_HELP_STRING([--with-genders=PATH],[Compile With genders
 
 
 if [[ "x$target_vendor" = "xapple" ]]; then
+	ON_MINGW="no"
 	FOUNDATION_LDFLAGS="-framework Foundation"
 	FOUNDATION_OBJCFLAGS=""
 	OPENGL_LDFLAGS="-framework OpenGL -framework GLUT"
@@ -61,21 +62,37 @@ else
 	dnl Test to see if we're on mingw (windows ... yuck!)
 	case "$host" in
 	*mingw*)
+		ON_MINGW="yes"
 		dnl Maybe shouldn't default to freeglut....
 		AC_MSG_NOTICE("host is $host therefore linking against opengl32 and freeglut instead of GL and GLUT")
-		OPENGL_LDFLAGS="-lopengl32 -lglu32 -lfreeglut"
+		OPENGL_LIBNAME="opengl32"
+		OPENGL_LIBRARY="-l$OPENGL_LIBNAME"
+		OPENGL_LOCATION=" -L/mingw/lib "
+		GLUT_LIBRARY="-lfreeglut"
+		GLU_LIBRARY="-lglu32"
+		AC_MSG_NOTICE("adding CPPFLAGS+=-I/mingw/include and LDDFLAGS+=-L/mingw/lib")
+		OPENGL_OBJCFLAGS=" -I/mingw/include/GL  "
 		;;
 	*)
-		OPENGL_LDFLAGS="-lGL -lglut"
+		OPENGL_LOCATION=""
+		ON_MINGW="no"
+		OPENGL_OBJCFLAGS=" -I/usr/include/GL "
+		OPENGL_LIBNAME="GL"
+		OPENGL_LIBRARY="-l$OPENGL_LIBNAME"
+		GLUT_LIBRARY="-lglut"
 		;;
 	esac
-	OPENGL_OBJCFLAGS="-I/usr/include/GL "
+	OPENGL_LDFLAGS=" $OPENGL_LOCATION $OPENGL_LIBRARY $GLU_LIBRARY  $GLUT_LIBRARY"
 	CPPFLAGS+=" $OPENGL_OBJCFLAGS "
 	OBJCFLAGS+=" $OPENGL_OBJCFLAGS "
 	AC_CHECK_HEADERS("gl.h",,[AC_MSG_ERROR([cannot find gl.h])])
-	AC_CHECK_LIB(GL,glColor4f,,[AC_MSG_ERROR([cannot link with libGL])])
+	if [[ "$ON_MINGW" = "no" ]]; then
+		AC_CHECK_LIB($OPENGL_LIBNAME,glColor4f,,[AC_MSG_ERROR([cannot link with lib$OPENGL_LIBNAME])])
+	fi
 	AC_CHECK_HEADERS("glut.h",,[AC_MSG_ERROR([cannot find glut.h])])
-	AC_CHECK_LIB(glut,glutGet,,[AC_MSG_ERROR([cannot link with libglut])])
+	if [[ "$ON_MINGW" = "no" ]]; then
+		AC_CHECK_LIB(glut,glutGet,,[AC_MSG_ERROR([cannot link with libglut])])
+	fi
 fi
 
 AC_SUBST(FOUNDATION_LDFLAGS)
@@ -84,11 +101,19 @@ AC_SUBST(OPENGL_LDFLAGS)
 AC_SUBST(OPENGL_CFLAGS)
 
 PKG_CHECK_MODULES([WAND],[Wand])
-AC_CHECK_LIB(MagickWand,NewMagickWand,[echo -n],,[-lMagickCore])
-AC_CHECK_FUNCS(MagickExportImagePixels)
+if [[ "$ON_MINGW" = "no" ]]; then
+	AC_CHECK_LIB(MagickWand,NewMagickWand,[echo -n],,[-lMagickCore])
+	AC_CHECK_FUNCS(MagickExportImagePixels)
+else
+	LDFLAGS+=" -lMagickWand -lMagickCore "
+fi
 
 PKG_CHECK_MODULES([FTGL],[ftgl > 2.1.2])
-AC_CHECK_LIB(ftgl,ftglCreateExtrudeFont,[echo -n])
+if [[ "$ON_MINGW" = "no" ]]; then
+	AC_CHECK_LIB(ftgl,ftglCreateExtrudeFont,[echo -n])
+else
+	LDFLAGS+=" -lftgl "
+fi
 AC_SUBST(OPTBUILD)
 
 AC_CHECK_HEADERS([limits.h stdlib.h string.h unistd.h])
