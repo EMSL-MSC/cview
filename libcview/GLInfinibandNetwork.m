@@ -269,7 +269,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 				//Front Port
 				port = [[[IBPort alloc] init] autorelease];
 				port->x = i*pw+0.5;
-				port->y = (24-j)*ph+0.5;
+				port->y = (23-j)*ph+0.5;
 				port->z = 0;
 				port->w = pw-1;
 				port->h = ph-1;
@@ -279,7 +279,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 				//switch back port
 				port = [[[IBPort alloc] init] autorelease];
 				port->x = 100+i*spw+0.5;
-				port->y = (24-j)*ph+0.5;
+				port->y = (23-j)*ph+0.5;
 				port->z = 90.5;
 				port->w = spw-1;
 				port->h = 4;
@@ -320,7 +320,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 				//Front Port
 				port = [[[IBPort alloc] init] autorelease];
 				port->x = i*pw+0.5;
-				port->y = (4-j)*ph+0.5;
+				port->y = (3-j)*ph+0.5;
 				port->z = 0;
 				port->w = pw-1;
 				port->h = ph-1;
@@ -331,7 +331,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 				//switch back port
 				port = [[[IBPort alloc] init] autorelease];
 				port->x = 5+i*spw+0.5;
-				port->y = (4-j)*ph+0.5;
+				port->y = (3-j)*ph+0.5;
 				port->z = 15.5;
 				port->w = spw-1;
 				port->h = 4;
