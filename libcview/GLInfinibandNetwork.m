@@ -179,18 +179,8 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 
 	c=[chassis getGLRef];
 	r=multQbyV(c,v);
-	//NSLog(@"V");
-	//dumpV(v);
-	//NSLog(@"M");
-	//for (i=0;i<4;i++)
-	//	dumpV(c[i]);
-	//NSLog(@"R");
 
-	//dumpV(r);
 	glVertex4fv((GLfloat *)&r.f);
-
-//	glVertex3f(x+w/2.0,y+h/2.0,z);
-//	NSLog(@"%f %f %f",x+w/2.0,y+h/2.0,z);
 }
 
 
@@ -198,9 +188,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	flts *m = [chassis getGLRef];
 	
 	glPushMatrix();
-	//glVertexPointer(3, GL_FLOAT, 0, box_quads);
 	glLoadMatrixf((GLfloat*)m);
-		
 
 	glColor3f(colorR,colorG,colorB);
 	glBegin(GL_LINE_LOOP);
