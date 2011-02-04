@@ -186,6 +186,12 @@ All rights reserved.
 	glLoadIdentity();
 
 	glPushMatrix();
+	glBegin(GL_TRIANGLES);
+	glVertex3f(-1.0f, -0.5f, -4.0f);    // lower left vertex
+	glVertex3f( 1.0f, -0.5f, -4.0f);    // lower right vertex
+	glVertex3f( 0.0f,  0.5f, -4.0f);    // upper vertex
+	glEnd();
+
 	[eye lookAt];
 
 	if (scene && [scene visible])
