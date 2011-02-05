@@ -105,6 +105,11 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	float locx,locy,locz;
 	flts reference[4];
 	float rotx,roty,rotz;
+	int nLineBoards,nLineExtPorts,nLineIntPorts,nFabricBoards,nFabricChips,nFabricChipPorts;
+	float switchHeight,switchWidth,switchPortHeight,switchPortWidth,switchDepth;
+	float chassisDepth,chassisHeight,chassisWidth;
+	float portHeight,portWidth;
+	float fabricBoardWidth,fabricSwitchWidth,fabricSwitchDepth,fabricPortWidth,fabricPortHeight;	
 }
 -(id)populateGraph: (Graph *)g nodeMap: (NSDictionary *)map;
 -(NSString *)getLinePortKeyX: (int)x Y: (int)y nodeMap: (NSDictionary *)map;
@@ -238,6 +243,45 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	GD(locy,@"locy",@"0.0");
 	GD(locz,@"locz",@"0.0");
 	#undef GD
+
+	if ([type compare: @"TEST040208" ] == NSOrderedSame) {
+		nLineBoards      = 4;
+		nLineExtPorts    = 4;
+		nLineIntPorts    = 4;
+		nFabricBoards    = 1;
+		nFabricChips     = 2;
+		nFabricChipPorts = 8;
+	}
+
+	if ([type compare: @"ISR2012" ] == NSOrderedSame) {
+		nLineBoards      = 24;
+		nLineExtPorts    = 12;
+		nLineIntPorts    = 12;
+		nFabricBoards    = 4;
+		nFabricChips     = 3;
+		nFabricChipPorts = 24;
+	}
+	
+	chassisWidth = nLineExtPorts * 20.0;
+	chassisHeight = nLineBoards * 10.0;
+	chassisDepth = chassisWidth*0.6;
+	if (nFabricBoards>0)
+		chassisDepth *= 2;
+		
+	portWidth = chassisWidth / nLineExtPorts;
+	portHeight = chassisHeight / nLineBoards;
+	
+	switchWidth = MIN(MAX(nLineIntPorts,nLineExtPorts) * 5,chassisWidth*0.9);
+	switchDepth = switchWidth*0.5;
+	switchPortWidth = switchWidth/nLineExtPorts;
+	switchPortHeight = 8.0;
+
+	fabricBoardWidth = chassisWidth/nFabricBoards;
+	fabricSwitchWidth = fabricBoardWidth * 0.9;
+	fabricSwitchDepth = 20.0;
+	fabricPortWidth = fabricSwitchWidth/nFabricChipPorts;
+	fabricPortHeight = switchPortHeight;	
+
 	return self;
 }
 
@@ -254,10 +298,11 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 -(id)populateGraph: (Graph *)g nodeMap: (NSDictionary *)map {
 	//add all the ports..
 	int i,j,p;
-	float pw,ph,spw,fpw;
+	float pw,ph,spw,fpw,cw;
 	IBPort * port;
 	NSString *s;
 	
+	/*
 	if ([type compare: @"ISR2012" ] == NSOrderedSame) {
 		pw = 300.0/12;
 		ph = 300.0/24;
@@ -292,10 +337,6 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 		fpw=65.0/24;
 		for (i=0;i<4;i++)
 			for (j=0;j<3;j++) {
-				/*glVertex3f(5+i*75,50+j*100.0,210);
-				glVertex3f(70+i*75,50+j*100.0,210);
-				glVertex3f(70+i*75,50+j*100.0,240);
-				glVertex3f(5+i*75,50+j*100.0,240);      WTF*/
 				for (p=0;p<24;p++) {
 					port = [[[IBPort alloc] init] autorelease];
 					port->x = 5+i*75+fpw*p+0.5;
@@ -311,58 +352,60 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	}
 	
 	if ([type compare: @"TEST040208" ] == NSOrderedSame) {
-		pw = 40.0/4;
-		ph = 40.0/4;
-		spw = 30.0/4;
-
-		for (i=0;i<4;i++)
-			for (j=0;j<4;j++) {
+*/
+		for (i=0;i<nLineExtPorts;i++)
+			for (j=0;j<nLineBoards;j++) {
 				//Front Port
 				port = [[[IBPort alloc] init] autorelease];
-				port->x = i*pw+0.5;
-				port->y = (3-j)*ph+0.5;
+				port->x = i*portWidth+0.5;
+				port->y = (nLineBoards-1-j)*portHeight+0.5;
 				port->z = 0;
-				port->w = pw-1;
-				port->h = ph-1;
+				port->w = portWidth-1;
+				port->h = portHeight-1;
 				[port setChassis: self];
-				s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@L%d",name,j+1]],i+5];
+				//NSLog([NSString stringWithFormat: @"%@-L%d",name,j+1]);
+				s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@-L%d",name,j+1]],i+nLineIntPorts+1];
 				//NSLog(@"FP: %@ %@",s,port);
 				[g addVertex: s withInfo: port];
+			}
+			
+			
+		for (i=0;i<nLineIntPorts;i++)
+			for (j=0;j<nLineBoards;j++) {
 				//switch back port
 				port = [[[IBPort alloc] init] autorelease];
-				port->x = 5+i*spw+0.5;
-				port->y = (3-j)*ph+0.5;
-				port->z = 15.5;
-				port->w = spw-1;
-				port->h = 4;
+				port->x = (chassisWidth - switchWidth)/2 + i*switchPortWidth + 0.5;
+				port->y = (nLineBoards-1-j) * portHeight + 0.5;
+				port->z = chassisDepth*0.25 - switchDepth/2.0;
+				port->w = switchPortWidth-1;
+				port->h = switchPortHeight;
 				[port setChassis: self];
-				s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@L%d",name,j+1]],1+i];
+				s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@-L%d",name,j+1]],1+i];
 				//NSLog(@"BP: %@ %@",s,port);
 				[g addVertex: s withInfo: port];
 			}
 			
 		//Fabric Switches
-		fpw=30.0/8;
-		for (i=0;i<1;i++)
-			for (j=0;j<2;j++) {
-				for (p=0;p<8;p++) {
+		for (i=0;i<nFabricBoards;i++)
+			for (j=0;j<nFabricChips;j++) {
+				for (p=0;p<nFabricChipPorts;p++) {
 					port = [[[IBPort alloc] init] autorelease];
-					port->x = 5+i*20+fpw*p+0.5;
-					port->y = 10+j*10+0.5;
-					port->z = 25;
-					port->w = fpw-1;
-					port->h = 4;
+					port->x = (fabricBoardWidth-fabricSwitchWidth)/2+i*fabricBoardWidth+fabricPortWidth*p+0.2;
+					port->y = (chassisHeight/nFabricChips)*(2*j+1)/2.0+0.2;
+					port->z = chassisDepth*.75-fabricSwitchDepth/2.0;
+					port->w = fabricPortWidth-0.4;
+					port->h = fabricPortHeight;
 					[port setChassis: self];
-					s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@F%d",name,j+1]],p+1];
+					s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@-F%dS%d",name,i+1,j+1]],p+1];
 					//NSLog(@"FS: %@ %@",s,port);
 					[g addVertex: s withInfo: port];
 				}
 			}
-	}
+	//}
 	//[g dumpToLog];
 	return self;
 }
-
+/*
 -(NSString *)getLinePortKeyX: (int)x Y: (int)y  nodeMap: (NSDictionary *)map {
     NSString *s;
     int line,chip,port;
@@ -381,10 +424,10 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
     s = [NSString stringWithFormat: @"%@ - Spine %d Chip %d", name, x+1, y+1];
 	return [NSString stringWithFormat: @"%@-%d",[map objectForKey: s],p+1];
 }
-
+*/
 -(id) glDraw {
 	int l,i,j;
-	float pw,ph;
+	float pw,ph,sn,sf,sl,sr,sh;
 	glPushMatrix();
 	glTranslatef(locx,locy,locz);
 	glRotatef(rotx,1.0,0.0,0.0);
@@ -395,10 +438,10 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	glGetFloatv(GL_MODELVIEW_MATRIX,(GLfloat *)reference);
 
 
-	
+	/*
 	//Line switches
 	if ([type compare: @"ISR2012" ] == NSOrderedSame) {
-		/* bounding box */
+		// bounding box 
 		for (l=0;l<60;l+=12) {
 			if (l==0)
 				glColor3f(1.0,0.0,0.0);
@@ -410,7 +453,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 				glVertex3f(box_quads[i]*300,box_quads[i+1]*300,box_quads[i+2]*300);
 			glEnd();
 		}
-		/*end bounding*/
+		//end bounding
 
 		pw = 300.0/12;
 		ph = 300.0/24;
@@ -445,7 +488,8 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	}
 	
 	if ([type compare: @"TEST040208" ] == NSOrderedSame) {
-		/* bounding box */
+	*/
+		/// bounding box 
 		for (l=0;l<60;l+=12) {
 			if (l==0)
 				glColor3f(1.0,0.0,0.0);
@@ -454,42 +498,52 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 
 			glBegin(GL_LINE_LOOP);		
 			for (i=l;i<l+12;i+=3)
-				glVertex3f(box_quads[i]*40,box_quads[i+1]*40,box_quads[i+2]*40);
+				glVertex3f(box_quads[i]*chassisWidth,box_quads[i+1]*chassisHeight,box_quads[i+2]*chassisDepth);
 			glEnd();
 		}
-		/*end bounding*/
+		/// end bounding
 
-		pw = 40.0/4;
-		ph = 40.0/4;
-		for (i=0;i<4;i++) {
+		//line board switches
+		sl=(chassisWidth-switchWidth)/2;
+		sr=sl+switchWidth;
+		sf=chassisDepth*0.25 - switchDepth/2.0;
+		sn=sf-switchDepth;
+		for (i=0;i<nLineBoards;i++) {
+			sh=i*(chassisHeight/nLineBoards);
 			glColor3f(0.0,0.0,0.7);
 			glBegin(GL_LINE_LOOP);
-			glVertex3f(5,i*ph,5);
-			glVertex3f(35,i*ph,5);
-			glVertex3f(35,i*ph,15);
-			glVertex3f(5,i*ph,15);
+			glVertex3f(sl,sh,sn);
+			glVertex3f(sr,sh,sn);
+			glVertex3f(sr,sh,sf);
+			glVertex3f(sl,sh,sf);
 			glEnd();
 			glColor3f(0.0,0.0,0.4);
 			glBegin(GL_LINES);
-			for (l=0;l<4;l++) {
-				glVertex3f(pw*l+pw/2,i*ph+ph/2,0);
-				glVertex3f(10+l*(30.0/4.0),i*ph,5);
+			for (l=0;l<nLineExtPorts;l++) {
+				glVertex3f(portWidth*l+portWidth/2,i*portHeight+portHeight/2,0);
+				glVertex3f(sl+l*switchPortWidth,i*(chassisHeight/nLineBoards),sn);
 			}
 			glEnd();
 		}
 		
 		//Fabric Switches
-		for (i=0;i<1;i++)
-			for (j=0;j<2;j++) {
+		sn=chassisDepth*.75-fabricSwitchDepth/2.0;
+		sf=sn+fabricSwitchDepth;
+		for (i=0;i<nFabricBoards;i++) {
+			sl=(fabricBoardWidth-fabricSwitchWidth)/2+i*fabricBoardWidth;
+			sr=sl+fabricSwitchWidth;
+			for (j=0;j<nFabricChips;j++) {
+				sh=(chassisHeight/nFabricChips)*(2*j+1)/2.0;
 				glColor3f(0.0,0.0,0.7);
 				glBegin(GL_LINE_LOOP);
-				glVertex3f(5+i*20,10+j*10.0,25);
-				glVertex3f(35+i*20,10+j*10.0,25);
-				glVertex3f(35+i*20,10+j*10.0,35);
-				glVertex3f(5+i*20,10+j*10.0,35);
+				glVertex3f(sl,sh,sn);
+				glVertex3f(sr,sh,sn);
+				glVertex3f(sr,sh,sf);
+				glVertex3f(sl,sh,sf);
 				glEnd();
 			}
-	}
+		}
+//	}
 	
 	glPopMatrix();	
 	return self;
