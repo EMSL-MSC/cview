@@ -57,6 +57,7 @@ All rights reserved.
 
 */
 #import "GLInfinibandNetwork.h"
+#import "GLText.h"
 #import "ListComp.h"
 #import "DictionaryExtra.h"
 static float box_quads[72] = {
@@ -109,11 +110,10 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	float switchHeight,switchWidth,switchPortHeight,switchPortWidth,switchDepth;
 	float chassisDepth,chassisHeight,chassisWidth;
 	float portHeight,portWidth;
-	float fabricBoardWidth,fabricSwitchWidth,fabricSwitchDepth,fabricPortWidth,fabricPortHeight;	
+	float fabricBoardWidth,fabricSwitchWidth,fabricSwitchDepth,fabricPortWidth,fabricPortHeight;
+	GLText *label;
 }
 -(id)populateGraph: (Graph *)g nodeMap: (NSDictionary *)map;
--(NSString *)getLinePortKeyX: (int)x Y: (int)y nodeMap: (NSDictionary *)map;
--(NSString *)getFabricPortKey: (int)x Y: (int)y Port: (int)p nodeMap: (NSDictionary *)map;
 -(flts *)getGLRef;
 @end
 
@@ -282,12 +282,15 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	fabricPortWidth = fabricSwitchWidth/nFabricChipPorts;
 	fabricPortHeight = switchPortHeight;	
 
+	label = [[GLText alloc] initWithString: name andFont: @"LinLibertine_Re.ttf"];
+	//[label bestFitForWidth: chassisWidth andHeight: chassisHeight]; 
+	[label setRotationOnX: 90.0 Y: 180.0 Z: 0.0];
 	return self;
 }
 
 -(NSArray *)attributeKeys {
 	//isVisible comes from the DrawableObject
-	return [NSArray arrayWithObjects: @"locx",@"locy",@"locz",@"rotx",@"roty",@"rotz",nil];
+	return [NSArray arrayWithObjects: @"locx",@"locy",@"locz",@"rotx",@"roty",@"rotz",@"label",nil];
 }
 
 -(void)dealloc {
@@ -302,57 +305,6 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	IBPort * port;
 	NSString *s;
 	
-	/*
-	if ([type compare: @"ISR2012" ] == NSOrderedSame) {
-		pw = 300.0/12;
-		ph = 300.0/24;
-		spw = 100.0/12;
-
-		//fabric ports
-		for (i=0;i<12;i++)
-			for (j=0;j<24;j++) {
-				//Front Port
-				port = [[[IBPort alloc] init] autorelease];
-				port->x = i*pw+0.5;
-				port->y = (23-j)*ph+0.5;
-				port->z = 0;
-				port->w = pw-1;
-				port->h = ph-1;
-				[port setChassis: self];
-				s = [self getLinePortKeyX: i Y: j nodeMap: map];
-				[g addVertex: s withInfo: port];
-				//switch back port
-				port = [[[IBPort alloc] init] autorelease];
-				port->x = 100+i*spw+0.5;
-				port->y = (23-j)*ph+0.5;
-				port->z = 90.5;
-				port->w = spw-1;
-				port->h = 4;
-				[port setChassis: self];
-				s = [self getLinePortKeyX: i+12 Y: j nodeMap: map];
-				[g addVertex: s withInfo: port];
-			}
-			
-		//Fabric Switches
-		fpw=65.0/24;
-		for (i=0;i<4;i++)
-			for (j=0;j<3;j++) {
-				for (p=0;p<24;p++) {
-					port = [[[IBPort alloc] init] autorelease];
-					port->x = 5+i*75+fpw*p+0.5;
-					port->y = 50+j*100+0.5;
-					port->z = 210;
-					port->w = fpw-1;
-					port->h = 4;
-					[port setChassis: self];
-					s = [self getFabricPortKey: i Y: j Port: p nodeMap: map];
-					[g addVertex: s withInfo: port];
-				}
-			}
-	}
-	
-	if ([type compare: @"TEST040208" ] == NSOrderedSame) {
-*/
 		for (i=0;i<nLineExtPorts;i++)
 			for (j=0;j<nLineBoards;j++) {
 				//Front Port
@@ -364,7 +316,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 				port->h = portHeight-1;
 				[port setChassis: self];
 				//NSLog([NSString stringWithFormat: @"%@-L%d",name,j+1]);
-				s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@-L%d",name,j+1]],i+nLineIntPorts+1];
+				s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@-L%d",name,j+1]],nLineExtPorts+nLineIntPorts-i];
 				//NSLog(@"FP: %@ %@",s,port);
 				[g addVertex: s withInfo: port];
 			}
@@ -405,26 +357,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	//[g dumpToLog];
 	return self;
 }
-/*
--(NSString *)getLinePortKeyX: (int)x Y: (int)y  nodeMap: (NSDictionary *)map {
-    NSString *s;
-    int line,chip,port;
-    //	"CU1 IB Switch - Spine 1 Chip 1"
-    port = 24-x;
-    line = 1+y/2;
-    chip = (y&0x1)+1;
-    
-    s = [NSString stringWithFormat: @"%@ - Line %d Chip %d", name, line, chip];
-    return [NSString stringWithFormat: @"%@-%d",[map objectForKey: s],port];
-}
 
--(NSString *)getFabricPortKey: (int)x Y: (int)y Port: (int)p nodeMap: (NSDictionary *)map {
-	NSString *s;
-	// "CU1 IB Switch - Spine 1 Chip 3"
-    s = [NSString stringWithFormat: @"%@ - Spine %d Chip %d", name, x+1, y+1];
-	return [NSString stringWithFormat: @"%@-%d",[map objectForKey: s],p+1];
-}
-*/
 -(id) glDraw {
 	int l,i,j;
 	float pw,ph,sn,sf,sl,sr,sh;
@@ -438,57 +371,6 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	glGetFloatv(GL_MODELVIEW_MATRIX,(GLfloat *)reference);
 
 
-	/*
-	//Line switches
-	if ([type compare: @"ISR2012" ] == NSOrderedSame) {
-		// bounding box 
-		for (l=0;l<60;l+=12) {
-			if (l==0)
-				glColor3f(1.0,0.0,0.0);
-			else
-				glColor3f(0.5,0.5,0.5);
-
-			glBegin(GL_LINE_LOOP);		
-			for (i=l;i<l+12;i+=3)
-				glVertex3f(box_quads[i]*300,box_quads[i+1]*300,box_quads[i+2]*300);
-			glEnd();
-		}
-		//end bounding
-
-		pw = 300.0/12;
-		ph = 300.0/24;
-		for (i=0;i<24;i++) {
-			glColor3f(0.0,0.0,0.7);
-			glBegin(GL_LINE_LOOP);
-			glVertex3f(100,i*ph,60);
-			glVertex3f(200,i*ph,60);
-			glVertex3f(200,i*ph,90);
-			glVertex3f(100,i*ph,90);
-			glEnd();
-			glColor3f(0.0,0.0,0.4);
-			glBegin(GL_LINES);
-			for (l=0;l<12;l++) {
-				glVertex3f(pw*l+pw/2,i*ph,0);
-				glVertex3f(100+l*(100.0/12.0),i*ph,60);
-			}
-			glEnd();
-		}
-		
-		//Fabric Switches
-		for (i=0;i<4;i++)
-			for (j=0;j<3;j++) {
-				glColor3f(0.0,0.0,0.7);
-				glBegin(GL_LINE_LOOP);
-				glVertex3f(5+i*75,50+j*100.0,210);
-				glVertex3f(70+i*75,50+j*100.0,210);
-				glVertex3f(70+i*75,50+j*100.0,240);
-				glVertex3f(5+i*75,50+j*100.0,240);
-				glEnd();
-			}
-	}
-	
-	if ([type compare: @"TEST040208" ] == NSOrderedSame) {
-	*/
 		/// bounding box 
 		for (l=0;l<60;l+=12) {
 			if (l==0)
@@ -543,8 +425,9 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 				glEnd();
 			}
 		}
-//	}
-	
+
+	glTranslatef(chassisWidth,chassisHeight+0.3,chassisDepth-[label height]-1);
+	[label glDraw];
 	glPopMatrix();	
 	return self;
 }
