@@ -110,7 +110,7 @@ test.o: test.m /usr/include/GNUstep/Foundation/Foundation.h \
  /usr/include/GNUstep/Foundation/NSXMLDTD.h \
  /usr/include/GNUstep/Foundation/NSXMLDTDNode.h \
  /usr/include/GNUstep/Foundation/NSXMLElement.h \
- /usr/include/GNUstep/Foundation/NSXMLParser.h
+ /usr/include/GNUstep/Foundation/NSXMLParser.h MYClass.h
 
 /usr/include/GNUstep/Foundation/Foundation.h:
 
@@ -337,3 +337,5 @@ test.o: test.m /usr/include/GNUstep/Foundation/Foundation.h \
 /usr/include/GNUstep/Foundation/NSXMLElement.h:
 
 /usr/include/GNUstep/Foundation/NSXMLParser.h:
+
+MYClass.h:

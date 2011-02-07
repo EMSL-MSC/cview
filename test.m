@@ -2,13 +2,7 @@
  *
  */
 #import <Foundation/Foundation.h>
-
-@interface MYClass : NSObject {
-	int an_integer;
-}
-@end
-@implementation MYClass
-@end
+#import "MYClass.h"
 
 int main(int argc, char *argv[], char *env[]) {
 
