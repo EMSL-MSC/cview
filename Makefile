@@ -3,12 +3,14 @@ CFLAGS= -I/usr/include/GNUstep -I/GNUstep/System/Library/Headers -L/GNUstep/Syst
 
 all:
 	gcc -shared -Wl,-soname,libMYClass.so -o libMYClass.so MYClass.m $(CFLAGS)
+	cp libMYClass.so libMYClass.dll
 	gcc -c -o test.o test.m $(CFLAGS)
 	gcc test.o -L. -lMYClass $(CFLAGS)
 
 
 clean:
 	rm *.so
+	rm *.dll
 	rm *.o 
 	rm a.out
 
