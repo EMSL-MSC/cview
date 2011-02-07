@@ -1,0 +1,20 @@
+This source tree has been created to highlight a bug which I have submitted to
+the gnustep bugzilla.  Here's the bug description:
+
+
+This bug only manifests itself on a GNUstep MinGW windows installation.
+I am testing on a Windows 7 system, and I installed GNUstep MSYS System,
+GNUstep Core, and GNUstep Devel from http://www.gnustep.org/experience/Windows.html.
+
+Here's the problem:
+
+NSClassFromString(@"RandomClass") returns nil if "RandomClass" resides in
+a Dynamically Linked Library (DLL), AND "RandomClass" has not yet been used.
+If however I make a call like this:
+
+Class foo = [RandomClass class];
+
+right before I make my NSClassFromString(@"RandomClass") call then I no
+longer notice the bug.  I have created a quick example code with a Makefile
+that is attached, so just untar the code and try it out to verify this is
+not working.
