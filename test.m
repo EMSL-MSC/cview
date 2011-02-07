@@ -9,11 +9,8 @@ int main(int argc, char *argv[], char *env[]) {
 	Class c;
 	c = NSClassFromString(@"MYClass");
 
-	Class foo = [MYClass class];
-
-
 	if ( c == nil )
-		NSLog(@" c was nil ! ");
+		NSLog(@" NSClassFromString returned nil -- this is broken ! ");
 	else
 		NSLog(@" c = %@ ", c);
 
