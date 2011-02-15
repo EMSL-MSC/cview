@@ -590,6 +590,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 			NSLog(@"colorMax is lower than data max, continuing anyway: %d > %d",max,colorMax);
 		max = colorMax;
 	}
+	NSLog(@"Weight Max: %d",max);
 	colorMap = [[ColorMap mapWithMax: max] retain];
 	return YES;
 }
