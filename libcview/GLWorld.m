@@ -385,6 +385,7 @@ All rights reserved.
 	MagickConstituteImage(wand,width,height,"RGBA",CharPixel,[pixels mutableBytes]);
 
 	MagickFlipImage(wand);
+	MagickSetImageFormat(wand,"PNG32");
 	MagickWriteImage(wand,[filename UTF8String]);
 
 	DestroyMagickWand(wand);

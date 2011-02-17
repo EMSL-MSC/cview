@@ -14,14 +14,14 @@ EXTRA_PROGRAMS=oscview
 
 EXTRA_DIST = $(wildcard *.h)
 
-cview_SOURCES = ObjectTracker.m cview.m CViewScreenDelegate.m
+cview_SOURCES = ObjectTracker.m cview.m CViewScreenDelegate.m LoadClasses.m
 
 if COMPILE_GLDATACENTER
 cview_SOURCES += DataCenterCViewScreenDelegate.m
 endif
 
 cview_LDFLAGS = $(OPENGL_LDFLAGS) $(BASELDFLAGS)
-cviewall_SOURCES = cviewall.m CViewScreenDelegate.m
+cviewall_SOURCES = cviewall.m CViewScreenDelegate.m LoadClasses.m
 if COMPILE_GLDATACENTER
 cviewall_SOURCES += DataCenterCViewScreenDelegate.m
 endif

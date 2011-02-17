@@ -113,7 +113,7 @@ int main(int argc,char *argv[], char *env[]) {
 		setEye: [[[Eye alloc] init] setX: 1050.0 Y: 2700.0 Z: 2700.0 Hangle:-4.72 Vangle: -2.45]
 	];
 	
-	NSLog(@"%@",[gw1 getPList]);
+	NSLog(@"%@",[g getPList]);
 	
 	[g run];
 
