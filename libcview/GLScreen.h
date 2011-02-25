@@ -1,6 +1,6 @@
 /*
 
-This file is port of the CVIEW graphics system, which is goverened by the following License
+This file is part of the CVIEW graphics system, which is goverened by the following License
 
 Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
@@ -140,6 +140,9 @@ Return an AScreen which is itentified by the glut window id
 -mouseButton: (int)button withState: (int)state atX: (int)x andY: (int)y withWindow: (int)window;
 -mouseActiveMoveAtX: (int)x andY: (int)y withWindow: (int)window;
 -mousePassiveMoveAtX: (int)x andY: (int)y withWindow: (int)window;
+
+/** which window is on top at passed (x,y) coordinates */
+-(int)getWindowAtX: (int)x andY: (int)y;
 
 /** do the actual work of telling glut to re-draw every window */
 -postRedrawAll;

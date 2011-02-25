@@ -237,13 +237,13 @@ static NSMutableDictionary *fontCache=nil;
 ///@todo store the bounding box infos
 	float bounds[6];
     if(string == nil) {
-        NSLog(@"in GLText::glDraw() string is nill! cannot draw this....");
+        NSLog(@"in GLText::glDraw() string is nil! cannot draw this....");
         return self;
     }
 	if (theFont == NULL)
 		[self doFontSet];
     if (theFont == NULL) {
-        NSLog(@"in GLText::glDraw() theFont is nill! please initialize before attempting to draw....");
+        NSLog(@"in GLText::glDraw() theFont is nil! please initialize before attempting to draw....");
         return self;
     }
 	ftglGetFontBBox(theFont,[string UTF8String],[string length],bounds);

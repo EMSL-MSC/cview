@@ -645,7 +645,7 @@ extern GLuint g_textureID;
 	glLoadIdentity();
 //	NSLog(@"width = %f, height = %f", width, height);
 
-	float posX,posY;
+	float posX=0,posY=0;
 	float leg_width = 100,leg_height = 175;
 	switch(self->legend_location) {
 		case 0:
@@ -665,6 +665,8 @@ extern GLuint g_textureID;
 			posY = height - leg_height - legend_padd_top;
 			break;
 		default:
+			[NSException raise: @"Invalid GLDataCenter.legend_location value"
+				format: @"GLDataCenter.legend_location = %d", self->legend_location];
 			break;
 	}
 	glTranslatef(posX, posY, 0.0);

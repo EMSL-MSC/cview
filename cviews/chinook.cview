@@ -1,157 +1,307 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//GNUstep//DTD plist 0.9//EN" "http://www.gnustep.org/plist-0_9.xml">
-<plist version="0.9">
-<dict>
-    <key>height</key>
-    <integer>1132</integer>
-    <key>name</key>
-    <string>Chinook NWperf</string>
-    <key>width</key>
-    <integer>1592</integer>
-    <key>worlds</key>
-    <array>
-	<dict>
-	    <key>col</key>
-	    <integer>0</integer>
-	    <key>colp</key>
-	    <integer>50</integer>
-	    <key>name</key>
-	    <string>MAIN</string>
-	    <key>row</key>
-	    <integer>0</integer>
-	    <key>rowp</key>
-	    <integer>50</integer>
-	    <key>world</key>
-	    <dict>
-		<key>eye</key>
-		<dict>
-		    <key>hangle</key>
-		    <real>-4.72</real>
-		    <key>vangle</key>
-		    <real>-2.45</real>
-		    <key>x</key>
-		    <real>623.8766</real>
-		    <key>y</key>
-		    <real>2173.948</real>
-		    <key>z</key>
-		    <real>1600.384</real>
-		</dict>
-		<key>scene</key>
-		<dict>
-		    <key>objects</key>
-		    <array>
-			<dict>
-			    <key>object</key>
-			    <dict>
-				<key>dataSet</key>
-				<dict>
-				    <key>baseURL</key>
-				    <string>http://chumbucket.emsl.pnl.gov/cluster/chinook/</string>				    <key>key</key>
-				    <string>cpu_user</string>
-				</dict>
-				<key>dataSetClass</key>
-				<string>WebDataSet</string>				<key>fontScale</key>
-				<real>1.2</real>
-				<key>isVisible</key>
-				<true/>
-				<key>xTicks</key>
-				<integer>50</integer>
-				<key>yTicks</key>
-				<integer>32</integer>
-			    </dict>
-			    <key>objectclass</key>
-			    <string>GLGrid</string>			    <key>x</key>
-			    <real>0</real>
-			    <key>y</key>
-			    <real>0</real>
-			    <key>z</key>
-			    <real>0</real>
-			</dict>
-			<dict>
-			    <key>object</key>
-			    <dict>
-				<key>dataSet</key>
-				<dict>
-				    <key>baseURL</key>
-				    <string>http://chumbucket.emsl.pnl.gov/cluster/chinook/</string>				    <key>key</key>
-				    <string>md0_write</string>
-				</dict>
-				<key>dataSetClass</key>
-				<string>WebDataSet</string>				<key>fontScale</key>
-				<real>1.2</real>
-				<key>isVisible</key>
-				<true/>
-				<key>xTicks</key>
-				<integer>50</integer>
-				<key>yTicks</key>
-				<integer>32</integer>
-			    </dict>
-			    <key>objectclass</key>
-			    <string>GLGrid</string>			    <key>x</key>
-			    <real>0</real>
-			    <key>y</key>
-			    <real>0</real>
-			    <key>z</key>
-			    <real>-300</real>
-			</dict>
-			<dict>
-			    <key>object</key>
-			    <dict>
-				<key>dataSet</key>
-				<dict>
-				    <key>baseURL</key>
-				    <string>http://chumbucket.emsl.pnl.gov/cluster/chinook/</string>				    <key>key</key>
-				    <string>md0_read</string>
-				</dict>
-				<key>dataSetClass</key>
-				<string>WebDataSet</string>				<key>fontScale</key>
-				<real>1.2</real>
-				<key>isVisible</key>
-				<true/>
-				<key>xTicks</key>
-				<integer>50</integer>
-				<key>yTicks</key>
-				<integer>32</integer>
-			    </dict>
-			    <key>objectclass</key>
-			    <string>GLGrid</string>			    <key>x</key>
-			    <real>0</real>
-			    <key>y</key>
-			    <real>0</real>
-			    <key>z</key>
-			    <real>-600</real>
-			</dict>
-			<dict>
-			    <key>object</key>
-			    <dict>
-				<key>dataSet</key>
-				<dict>
-				    <key>baseURL</key>
-				    <string>http://chumbucket.emsl.pnl.gov/cluster/chinook/</string>				    <key>key</key>
-				    <string>power_ambient</string>
-				</dict>
-				<key>dataSetClass</key>
-				<string>WebDataSet</string>				<key>fontScale</key>
-				<real>1.2</real>
-				<key>isVisible</key>
-				<true/>
-				<key>xTicks</key>
-				<integer>50</integer>
-				<key>yTicks</key>
-				<integer>32</integer>
-			    </dict>
-			    <key>objectclass</key>
-			    <string>GLGrid</string>			    <key>x</key>
-			    <real>0</real>
-			    <key>y</key>
-			    <real>0</real>
-			    <key>z</key>
-			    <real>-900</real>
-			</dict>
-		    </array>
-		</dict>
-	    </dict>
-	</dict>
-    </array>
-</dict>
-</plist>
+{
+    height = 1123;
+    name = "Chinook Graphs";
+    width = 1920;
+    worlds = (
+	{
+	    col = 0;
+	    colp = 200;
+	    name = Chinook;
+	    row = 0;
+	    rowp = 50;
+	    world = {
+		backgroundColorB = 0;
+		backgroundColorG = 0;
+		backgroundColorR = 0;
+		eye = {
+		    hangle = "-4.711666";
+		    move_speed = 10;
+		    rotate_speed = 0.025;
+		    strafe_speed = 10;
+		    vangle = "-2.441667";
+		    x = 1231.202;
+		    y = 6678.599;
+		    z = 6056.02;
+		};
+		imageCycleTime = 0;
+		imageDailyDir = YES;
+		imageDir = "/home/efelix/images";
+		imagePrefix = chinook;
+		overlay = {
+		    objects = (
+		    );
+		};
+		scene = {
+		    objects = (
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = cputotals.user;
+				    name = cputotals.user;
+				    rateSuffix = percent;
+				};
+				dataSetClass = WebDataSet;
+				fontColorB = 1;
+				fontColorG = 1;
+				fontColorR = 1;
+				fontScale = 1;
+				gridType = 0;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 750;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = meminfo.used;
+				    name = meminfo.used;
+				    rateSuffix = kb;
+				};
+				dataSetClass = WebDataSet;
+				fontColorB = 1;
+				fontColorG = 1;
+				fontColorR = 1;
+				fontScale = 1;
+				gridType = 0;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 500;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = iconnect.kbin;
+				    name = iconnect.kbin;
+				    rateSuffix = kb/sec;
+				};
+				dataSetClass = WebDataSet;
+				fontColorB = 1;
+				fontColorG = 1;
+				fontColorR = 1;
+				fontScale = 1;
+				gridType = 0;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 250;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = iconnect.kbout;
+				    name = iconnect.kbout;
+				    rateSuffix = kb/sec;
+				};
+				dataSetClass = WebDataSet;
+				fontColorB = 1;
+				fontColorG = 1;
+				fontColorR = 1;
+				fontScale = 1;
+				gridType = 0;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			}
+		    );
+		};
+	    };
+	},
+	{
+	    col = 1;
+	    colp = 200;
+	    name = Chinook;
+	    row = 0;
+	    rowp = 50;
+	    world = {
+		backgroundColorB = 0;
+		backgroundColorG = 0;
+		backgroundColorR = 0;
+		eye = {
+		    hangle = "-4.72";
+		    move_speed = 10;
+		    rotate_speed = 0.025;
+		    strafe_speed = 10;
+		    vangle = "-2.441667";
+		    x = 1225.838;
+		    y = 6356.004;
+		    z = 5797.673;
+		};
+		imageCycleTime = 0;
+		imageDailyDir = NO;
+		imageDir = .;
+		imagePrefix = glworld;
+		overlay = {
+		    objects = (
+		    );
+		};
+		scene = {
+		    objects = (
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = lusclt.readkbs;
+				    name = lusclt.readkbs;
+				    rateSuffix = kB/s;
+				};
+				dataSetClass = WebDataSet;
+				fontColorB = 1;
+				fontColorG = 1;
+				fontColorR = 1;
+				fontScale = 1;
+				gridType = 0;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 750;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = lusclt.writekbs;
+				    name = lusclt.writekbs;
+				    rateSuffix = kB/s;
+				};
+				dataSetClass = WebDataSet;
+				fontColorB = 1;
+				fontColorG = 1;
+				fontColorR = 1;
+				fontScale = 1;
+				gridType = 0;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 500;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = disktotals.writekbs;
+				    name = disktotals.writekbs;
+				    rateSuffix = writekbs/sec;
+				};
+				dataSetClass = WebDataSet;
+				fontColorB = 1;
+				fontColorG = 1;
+				fontColorR = 1;
+				fontScale = 1;
+				gridType = 0;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 250;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = disktotals.readkbs;
+				    name = disktotals.readkbs;
+				    rateSuffix = readkbs/sec;
+				};
+				dataSetClass = WebDataSet;
+				fontColorB = 1;
+				fontColorG = 1;
+				fontColorR = 1;
+				fontScale = 1;
+				gridType = 0;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			}
+		    );
+		};
+	    };
+	}
+    );
+}

@@ -1,6 +1,6 @@
 /*
 
-This file is port of the CVIEW graphics system, which is goverened by the following License
+This file is part of the CVIEW graphics system, which is goverened by the following License
 
 Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
@@ -69,7 +69,7 @@ This class provides a basic data store, with associated information.  It is orga
 //I wish there was magic to stringify into
 #define S(x) @ #x
 #define DS_DEFAULT_LIMIT_S S(DS_DEFAULT_LIMIT)
-#ifdef __APPLE__
+#if defined(__APPLE__) || defined(_WIN32)
   #define DS_DEFAULT_LABEL_FORMAT @"%.0f %@"
 #else
   #define DS_DEFAULT_LABEL_FORMAT @"%'.0f %@"

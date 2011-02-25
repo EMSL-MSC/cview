@@ -1,6 +1,6 @@
 /*
 
-This file is port of the CVIEW graphics system, which is goverened by the following License
+This file is part of the CVIEW graphics system, which is goverened by the following License
 
 Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
@@ -76,7 +76,7 @@ typedef enum { G_LINES=0,G_RIBBON,G_SURFACE,G_POINTS,G_COUNT } GridTypesEnum;
 	DataSet *dataSet;
 	ColorMap *colorMap;
 	int xTicks,yTicks;
-	double currentMax;
+	int currentMax;
 	NSMutableData *dataRow;
 	NSMutableData *colorRow;
 	GLText *descText;

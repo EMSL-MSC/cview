@@ -86,12 +86,37 @@ void drawString3D(float x,float y,float z,void *font,NSString *string,float offs
 	ftglRenderFont(theFont,[string UTF8String], FTGL_RENDER_ALL);
 }
 
+NSString *dirname(NSString* path) {
+	NSString *basename = [[NSFileManager defaultManager] displayNameAtPath: path];
+	int index = [path length] - [basename length];
+	return [path substringToIndex: index];
+}
+
+#if defined ON_MINGW_WIN32
+#include <windows.h>
+#include <stdio.h>
+#include <tchar.h>
+#include <psapi.h>
+NSString *getProcessPath() {
+	DWORD ProcessesID = [[NSProcessInfo processInfo] processIdentifier];
+	TCHAR szProcessName[2048] = TEXT("<unknown>");
+	HANDLE hProcess = OpenProcess( PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, ProcessesID);
+	if (NULL != hProcess ) {
+		GetModuleFileNameEx( hProcess, NULL, szProcessName, sizeof(szProcessName)/sizeof(TCHAR) );
+		CloseHandle( hProcess );
+		return [NSString stringWithCString: szProcessName];
+	} else
+		return nil;
+}
+#endif
 
 /**
 Find a resource, looking in:
 	sourcetree
 	pkgdatadir
 	current directory(should handle passed in full path)
+	--added by berwin on 2011-02-23--
+
 */
 NSFileHandle *find_resource(NSString *filename) {
 	NSString *file = find_resource_path(filename);
@@ -105,8 +130,19 @@ NSString *find_resource_path(NSString *filename) {
 
 	NSFileManager *mgr = [NSFileManager defaultManager];
 	NSString *file=nil;
-	///@todo Should we have the data paths here
-	NSMutableArray *paths = [NSMutableArray arrayWithObjects: @"",PKG_DATA_DIR,@"../data/",@"./data/",nil];
+
+	NSString *exeDir = nil, *exeDataDir = nil;
+#if defined ON_MINGW_WIN32
+	NSString *fullPath = getProcessPath();
+	NSLog(@"EXECUTABLE PATH  = %@", fullPath);
+	if (fullPath != nil) {
+		exeDir =     [NSString stringWithFormat: @"%@", dirname(fullPath)];
+		exeDataDir = [NSString stringWithFormat: @"%@data\\", dirname(fullPath)];
+	}
+#endif
+
+	NSMutableArray *paths = [NSMutableArray arrayWithObjects: @"",PKG_DATA_DIR,@"../data/",@"./data/",
+				   exeDir,exeDataDir,nil];
 	#if CVIEW_TEST_BUILD
 		[paths addObject: @"../tests/"];
 		[paths addObject: @"./tests/"];
@@ -115,7 +151,7 @@ NSString *find_resource_path(NSString *filename) {
 	NSEnumerator *e = [paths objectEnumerator];
 	id o;
 	NSString *path;
-	
+
 	while ((o = [e nextObject])) {
 		path = [NSString stringWithFormat: @"%@%@",(NSString *)o,filename];
 		if ( [mgr isReadableFileAtPath: path] ) {
@@ -125,3 +161,28 @@ NSString *find_resource_path(NSString *filename) {
 	return file;
 }
 
+/** @todo check to see if this needs a configure check, and ifdef it.*/
+
+//this used column major matricies.
+flts multQbyV(const flts *m,const flts v) {
+	flts t,x,y,z,w;
+	int i;
+	for (i=0;i<4;i++) {
+		x.f[i]=v.f[0];
+		y.f[i]=v.f[1];
+		z.f[i]=v.f[2];
+		w.f[i]=v.f[3];
+	}
+	t.v = __builtin_ia32_mulps(m[0].v,x.v);
+	t.v += __builtin_ia32_mulps(m[1].v,y.v);
+	t.v += __builtin_ia32_mulps(m[2].v,z.v);
+	t.v += __builtin_ia32_mulps(m[3].v,w.v);
+	return t;
+}
+
+void dumpV(flts f) {
+	int i;
+	for (i=0;i<4;i++)
+		printf("% 8.2f ",f.f[i]);
+	printf("\n");
+}

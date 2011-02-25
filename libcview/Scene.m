@@ -66,6 +66,7 @@ All rights reserved.
 @public
 	DrawableObject *object;
 	float x,y,z;
+	float rotx,roty,rotz;
 	int halign,valign;
 	BOOL align;
 }
@@ -82,6 +83,9 @@ All rights reserved.
 			[NSNumber numberWithFloat: x],@"x",
 			[NSNumber numberWithFloat: y],@"y",
 			[NSNumber numberWithFloat: z],@"z",
+			[NSNumber numberWithFloat: rotx],@"rotx",
+			[NSNumber numberWithFloat: roty],@"roty",
+			[NSNumber numberWithFloat: rotz],@"rotz",
 			[NSNumber numberWithInt: halign],@"halign",
 			[NSNumber numberWithInt: valign],@"valign",
 			[NSNumber numberWithBool: align],@"align",
@@ -97,6 +101,9 @@ All rights reserved.
 	x = [[list objectForKey: @"x" missing: @"0.0"] floatValue];
 	y = [[list objectForKey: @"y" missing: @"0.0"] floatValue];
 	z = [[list objectForKey: @"z" missing: @"0.0"] floatValue];
+	rotx = [[list objectForKey: @"rotx" missing: @"0.0"] floatValue];
+	roty = [[list objectForKey: @"roty" missing: @"0.0"] floatValue];
+	rotz = [[list objectForKey: @"rotz" missing: @"0.0"] floatValue];
 	halign = [[list objectForKey: @"halign" missing: @"0"] intValue];
 	valign = [[list objectForKey: @"valign" missing: @"0"] intValue];
 	align = [[list objectForKey: @"align" missing: @"NO"] boolValue];	
@@ -118,11 +125,14 @@ All rights reserved.
 		@"help='Horizontal Alignment' min=-1 max=1 step=1",@"halign",
 		@"help='Vertical Alignment' min=-1 max=1 step=1",@"valign",
 		@"help='Use alignment Values' min=0 max=1 step=1",@"align",
+		@"min=-180 max=180 step=2 precision=0",@"rotx",
+		@"min=-180 max=180 step=2 precision=0",@"roty",
+		@"min=-180 max=180 step=2 precision=0",@"rotz",
 		nil];
 }
 
 -(NSArray *)attributeKeys {
-	return [NSArray arrayWithObjects: @"x",@"y",@"z",@"halign",@"valign",@"align",@"object",nil];
+	return [NSArray arrayWithObjects: @"x",@"y",@"z",@"rotx",@"roty",@"rotz",@"halign",@"valign",@"align",@"object",nil];
 }
 
 -(DrawableObject *)getObject {
@@ -259,6 +269,13 @@ All rights reserved.
 	return self;
 }
 
+-doRotate: (SceneObject *)o {
+	glRotatef(o->rotx,1.0,0.0,0.0);
+	glRotatef(o->roty,0.0,1.0,0.0);
+	glRotatef(o->rotz,0.0,0.0,1.0);
+	return self;
+}
+
 -glDraw {
 	SceneObject *o;
 	NSEnumerator *list;
@@ -267,6 +284,7 @@ All rights reserved.
 			if ([o->object visible]) {
 				glPushMatrix();
 				[self doTranslate: o];
+				[self doRotate: o];
 				[o->object glDraw];
 				glPopMatrix();
 			}

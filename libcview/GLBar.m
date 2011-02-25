@@ -346,7 +346,6 @@ static float bar_quads[72] = {
 
 -drawPlane {
 	float dropit=-1.5;
-	int i;
 
 	glColor3f(0.5,0.0,0.0);
 	
@@ -399,7 +398,6 @@ static float bar_quads[72] = {
 
 -drawSquares {
 	int i,j,num,l;
-	float *dl;
 	float val,sw,sl,mw,ml;
 	GLText *txt;
 	NSDictionary *meta;

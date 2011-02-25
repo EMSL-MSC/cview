@@ -1,5 +1,5 @@
 OBJC=gcc
-AM_OBJCFLAGS=-g -Wall -pg -fobjc-exceptions -O0 -DPKG_DATA_DIR=\@\"$(pkgdatadir)/\"
+AM_OBJCFLAGS=-g -Wall -fobjc-exceptions -O0 -DPKG_DATA_DIR=\@\"$(pkgdatadir)/\"
 OBJCDEPMODE = depmode=gcc
 
 # set the include path found by configure
@@ -12,7 +12,8 @@ libcview_la_SOURCES = ColorMap.m GLImage.m DrawableObject.m Eye.m \
 	GLGrid.m  GLScreen.m GLWorld.m Scene.m \
 	utils.m GLBar.m\
 	GLText.m DefaultGLScreenDelegate.m \
-    	IdDatabase.m Identifiable.m GLTooltip.m
+    IdDatabase.m Identifiable.m GLTooltip.m \
+    Graph.m GLInfinibandNetwork.m
 if HAVE_ATB
 libcview_la_SOURCES += AntTweakBarOverlay.m AntTweakBarManager.m 
 endif

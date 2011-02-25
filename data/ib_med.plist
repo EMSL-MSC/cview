@@ -1,0 +1,66 @@
+{
+	nodemapfile="ib-node-names.map";
+	nodelinksfile="ib_med.ibnetdiscover";
+	nodecountfile="ib_med.linkcounts";
+	portspeed="SDR";
+	chassis=(
+
+		{
+			name = "S1";
+			type = "TEST040208";
+			locx = 100.000000;
+			locy = 200.000000;
+			locz = 0.000000;
+			rotx = -90;
+			rotz = 90.000000;
+		},
+
+		{
+			name = "S2";
+			type = "TEST040208";
+			locx = -100.000000;
+			locy = 200.000000;
+			locz = -0.000000;
+			rotx = -90;
+			rotz = 120.000000;
+		},
+
+		{
+			name = "C1";
+			type = "TEST040208";
+			locx = 141.421356;
+			locy = 0.000000;
+			locz = 141.421356;
+			roty = 45.000000;
+		},
+
+		{
+			name = "C2";
+			type = "TEST040208";
+			locx = 141.421356;
+			locy = 0.000000;
+			locz = -141.421356;
+			roty = 75.000000;
+		},
+
+		{
+			name = "C3";
+			type = "TEST040208";
+			locx = -141.421356;
+			locy = 0.000000;
+			locz = -141.421356;
+			roty = 105.000000;
+		},
+
+		{
+			name = "C4";
+			type = "TEST040208";
+			locx = -141.421356;
+			locy = 0.000000;
+			locz = 141.421356;
+			roty = 135.000000;
+		},
+
+		);
+}
+

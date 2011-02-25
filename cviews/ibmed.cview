@@ -1,0 +1,119 @@
+{
+    height = 800;
+    name = "Infiniband Test";
+    width = 1500;
+    worlds = (
+	{
+	    col = 0;
+	    colp = 50;
+	    name = Top;
+	    row = 0;
+	    rowp = 50;
+	    world = {
+		backgroundColorB = 0;
+		backgroundColorG = 0;
+		backgroundColorR = 0;
+		eye = {
+		    hangle = "-1.15";
+		    move_speed = 10;
+		    rotate_speed = 0.025;
+		    strafe_speed = 10;
+		    vangle = "-2.42";
+		    x = 200;
+		    y = 500;
+		    z = "-400";
+		};
+		imageCycleTime = 0;
+		imageDailyDir = NO;
+		imageDir = .;
+		imagePrefix = glworld;
+		scene = {
+		    objects = (
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				chassis = (
+				    {
+					isVisible = YES;
+					locx = 100;
+					locy = 200;
+					locz = 0;
+					name = S1;
+					rotx = "-90";
+					roty = 0;
+					rotz = 90;
+					type = TEST040208;
+				    },
+				    {
+					isVisible = YES;
+					locx = "-100";
+					locy = 200;
+					locz = "-0";
+					name = S2;
+					rotx = "-90";
+					roty = 0;
+					rotz = 120;
+					type = TEST040208;
+				    },
+				    {
+					isVisible = YES;
+					locx = 141.4214;
+					locy = 0;
+					locz = 141.4214;
+					name = C1;
+					rotx = 0;
+					roty = 45;
+					rotz = 0;
+					type = TEST040208;
+				    },
+				    {
+					isVisible = YES;
+					locx = 141.4214;
+					locy = 0;
+					locz = "-141.4214";
+					name = C2;
+					rotx = 0;
+					roty = 75;
+					rotz = 0;
+					type = TEST040208;
+				    },
+				    {
+					isVisible = YES;
+					locx = "-141.4214";
+					locy = 0;
+					locz = "-141.4214";
+					name = C3;
+					rotx = 0;
+					roty = 105;
+					rotz = 0;
+					type = TEST040208;
+				    },
+				    {
+					isVisible = YES;
+					locx = "-141.4214";
+					locy = 0;
+					locz = 141.4214;
+					name = C4;
+					rotx = 0;
+					roty = 135;
+					rotz = 0;
+					type = TEST040208;
+				    }
+				);
+				isVisible = YES;
+				nodemapfile = "ib-node-names.map";
+				portspeed = SDR;
+			    };
+			    objectclass = GLInfinibandNetwork;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			}
+		    );
+		};
+	    };
+	}
+    );
+}
