@@ -56,6 +56,7 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
+#include <math.h>
 #import <Foundation/Foundation.h>
 #import <gl.h>
 #import <glut.h>
@@ -94,7 +95,7 @@ static const char *gridTypeSelectors[] =	{
 -init {
 	[super init];
 	dataSetLock = [[NSRecursiveLock alloc] init];
-	currentMax = 0.0;
+	currentMax = 0;
 	xTicks = 0;
 	yTicks = 0;
 	fontScale = 1.0;
@@ -263,10 +264,10 @@ static const char *gridTypeSelectors[] =	{
 }
 
 -glDraw {
-	float max = [dataSet getScaledMax];
+	int max = roundf([dataSet getScaledMax]);
 	
 	if (currentMax != max) {
-		NSLog(@"New Max: %.2f %.2f",max,currentMax);
+		NSLog(@"New Max: %d %d",max,currentMax);
 		currentMax = max;
 		[colorMap autorelease];
 		colorMap = [ColorMap mapWithMax: currentMax];

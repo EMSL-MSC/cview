@@ -62,16 +62,6 @@ All rights reserved.
 #import "DictionaryExtra.h"
 #import "math.h"
 
-#define DS_DEFAULT_LIMIT 100.0
-//I wish there was magic to stringify into
-#define S(x) @ #x
-#define DS_DEFAULT_LIMIT_S S(DS_DEFAULT_LIMIT)
-#ifdef __APPLE__
-  #define DS_DEFAULT_LABEL_FORMAT @"%.0f %@"
-#else
-  #define DS_DEFAULT_LABEL_FORMAT @"%'.0f %@"
-#endif
-
 
 @implementation DataSet
 

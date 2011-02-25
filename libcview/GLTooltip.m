@@ -235,7 +235,7 @@ NSString *find_resource_path(NSString *filename);
 	/*	First, scale (if necessary) and draw the title of the tooltip:
 	 *  The scaling is necessary so that the text fits inside of the tooltip window
 	 */
-	float max_height_scale,txtHeight;
+	float max_height_scale,txtHeight=0;
 	[glText setString: title];
 	if(self->title != nil && [glText width] != 0 && [glText height] != 0) {	// prevent against divide by zero
 		max_height_scale = self->max_text_height / [glText height];
@@ -246,7 +246,7 @@ NSString *find_resource_path(NSString *filename);
 		}
 		//[glText setScale: max_height_scale];
 		//NSLog(@"max_height_scale = %f", max_height_scale);
-		float xOffset,txtWidth=[glText width]*max_height_scale;
+		float xOffset=0,txtWidth=[glText width]*max_height_scale;
 		txtHeight=[glText height]*max_height_scale;
 		switch(self->title_halign) {
 		case -1:
@@ -258,6 +258,10 @@ NSString *find_resource_path(NSString *filename);
 		case 1:
 			xOffset = 0.5*self->width-txtWidth;
 			break;
+		default:
+			[NSException raise: @"Invalid GLTooltip.title_halign value"
+				format: @"GLTooltip.title_halign = %d", self->title_halign];
+
 		}
 		glPushMatrix();
 		glTranslatef(xOffset,-0.5*self->height,0.0);

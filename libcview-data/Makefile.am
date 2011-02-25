@@ -1,5 +1,5 @@
 OBJC=gcc
-AM_OBJCFLAGS=-g -Wall -pg  -fobjc-exceptions -O0 
+AM_OBJCFLAGS=-g -Wall  -fobjc-exceptions -O0 
 OBJCDEPMODE = depmode=gcc
 
 # set the include path found by configure

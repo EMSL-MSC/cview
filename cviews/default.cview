@@ -1,7 +1,7 @@
 {
-    height = 949;
+    height = 473;
     name = "MSCF Data Center";
-    width = 1278;
+    width = 580;
     worlds = (
 	{
 	    col = 0;
@@ -10,6 +10,9 @@
 	    row = 0;
 	    rowp = 50;
 	    world = {
+		backgroundColorB = 0;
+		backgroundColorG = 0;
+		backgroundColorR = 0;
 		eye = {
 		    hangle = "-7.058319";
 		    move_speed = 10;
@@ -57,16 +60,27 @@
 			    align = NO;
 			    halign = 0;
 			    object = {
+				blue = 0.38;
 				dataSet = {
 				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
 				    key = env.ATemp;
+				    name = env.ATemp;
+				    rateSuffix = "\U00B0C";
 				};
 				dataSetClass = WebDataSet;
+				drawLegend = YES;
+				gendersFilePath = data/genders;
+				green = 0.38;
 				isVisible = YES;
 				jobIDDataSet = {
 				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
 				    key = job_id;
+				    name = job_id;
+				    rateSuffix = "None!";
 				};
+				legend_padd_side = 53;
+				legend_padd_top = 36;
+				red = 0.38;
 			    };
 			    objectclass = GLDataCenter;
 			    valign = 0;
@@ -75,6 +89,23 @@
 			    z = 750;
 			}
 		    );
+		};
+		tooltip = {
+		    blue = 0.1803922;
+		    borderblue = 0.09803922;
+		    bordergreen = 0.5843138;
+		    borderred = 0.9137255;
+		    bordersize = 10;
+		    fontblue = 1;
+		    fontgreen = 1;
+		    fontred = 1;
+		    green = 0.6352941;
+		    height = 144;
+		    isVisible = NO;
+		    max_text_height = 23;
+		    red = 0.4705882;
+		    title_halign = 0;
+		    width = 294;
 		};
 	    };
 	}

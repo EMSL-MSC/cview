@@ -2,6 +2,11 @@ define([svnversion], esyscmd([sh -c "svnversion|tr -d '\n'"]))dnl
 AC_INIT([cview],[0.2.svnversion],[evan.felix@pnl.gov])
 AC_CONFIG_SRCDIR([configure.in])
 
+CFLAGS+="  -g -O0  "
+CXXFLAGS+=" -g -O0 "
+CPPFLAGS+="   -g -O0   "
+OBJCFLAGS+="  -g -O0   "
+
 AC_CANONICAL_TARGET
 
 AC_CONFIG_HEADERS([config.h])
@@ -41,6 +46,7 @@ AC_ARG_WITH([genders],AS_HELP_STRING([--with-genders=PATH],[Compile With genders
 
 
 if [[ "x$target_vendor" = "xapple" ]]; then
+	ON_MINGW="no"
 	FOUNDATION_LDFLAGS="-framework Foundation"
 	FOUNDATION_OBJCFLAGS=""
 	OPENGL_LDFLAGS="-framework OpenGL -framework GLUT"
@@ -58,25 +64,43 @@ OBJCFLAGS+=" $OPENGL_OBJCFLAGS "
 else
 	AC_PATH_PROG(GNUSTEP_CONFIG,gnustep-config)
 	FOUNDATION_LDFLAGS=" `$GNUSTEP_CONFIG --base-libs` "
-	FOUNDATION_OBJCFLAGS=" `$GNUSTEP_CONFIG --objc-flags` "
-	dnl Test to see if we're on mingw (windows ... yuck!)
+	dnl gnustep-config always returns -O2, and there seems to be a bug in the optimizer in gcc on mingw
+	FOUNDATION_OBJCFLAGS=" `$GNUSTEP_CONFIG --objc-flags | sed 's+-O2++g'` "
+	dnl Test to see if we're on mingw, a windows platform
 	case "$host" in
 	*mingw*)
+		ON_MINGW="yes"
 		dnl Maybe shouldn't default to freeglut....
 		AC_MSG_NOTICE("host is $host therefore linking against opengl32 and freeglut instead of GL and GLUT")
-		OPENGL_LDFLAGS="-lopengl32 -lglu32 -lfreeglut"
+		OPENGL_LIBNAME="opengl32"
+		OPENGL_LIBRARY="-l$OPENGL_LIBNAME"
+		OPENGL_LOCATION=" -L/mingw/lib "
+		GLUT_LIBRARY="-lfreeglut"
+		GLU_LIBRARY="-lglu32"
+		AC_MSG_NOTICE("adding CPPFLAGS+=-I/mingw/include and LDDFLAGS+=-L/mingw/lib")
+		OPENGL_OBJCFLAGS=" -I/mingw/include/GL  "
+		AC_DEFINE([ON_MINGW_WIN32], [], [The platform you are compiling on is MinGW - a Microsoft Windows OS])
 		;;
 	*)
-		OPENGL_LDFLAGS="-lGL -lglut"
+		ON_MINGW="no"
+		OPENGL_LOCATION=""
+		OPENGL_OBJCFLAGS=" -I/usr/include/GL "
+		OPENGL_LIBNAME="GL"
+		OPENGL_LIBRARY="-l$OPENGL_LIBNAME"
+		GLUT_LIBRARY="-lglut"
 		;;
 	esac
-	OPENGL_OBJCFLAGS="-I/usr/include/GL "
+	OPENGL_LDFLAGS=" $OPENGL_LOCATION $OPENGL_LIBRARY $GLU_LIBRARY  $GLUT_LIBRARY"
 	CPPFLAGS+=" $OPENGL_OBJCFLAGS "
 	OBJCFLAGS+=" $OPENGL_OBJCFLAGS "
 	AC_CHECK_HEADERS("gl.h",,[AC_MSG_ERROR([cannot find gl.h])])
-	AC_CHECK_LIB(GL,glColor4f,,[AC_MSG_ERROR([cannot link with libGL])])
+	if [[ "$ON_MINGW" = "no" ]]; then
+		AC_CHECK_LIB($OPENGL_LIBNAME,glColor4f,,[AC_MSG_ERROR([cannot link with lib$OPENGL_LIBNAME])])
+	fi
 	AC_CHECK_HEADERS("glut.h",,[AC_MSG_ERROR([cannot find glut.h])])
-	AC_CHECK_LIB(glut,glutGet,,[AC_MSG_ERROR([cannot link with libglut])])
+	if [[ "$ON_MINGW" = "no" ]]; then
+		AC_CHECK_LIB(glut,glutGet,,[AC_MSG_ERROR([cannot link with libglut])])
+	fi
 fi
 
 AC_SUBST(FOUNDATION_LDFLAGS)
@@ -85,11 +109,19 @@ AC_SUBST(OPENGL_LDFLAGS)
 AC_SUBST(OPENGL_CFLAGS)
 
 PKG_CHECK_MODULES([WAND],[Wand])
-AC_CHECK_LIB(MagickWand,NewMagickWand,[echo -n],,[-lMagickCore])
-AC_CHECK_FUNCS(MagickExportImagePixels)
+if [[ "$ON_MINGW" = "no" ]]; then
+	AC_CHECK_LIB(MagickWand,NewMagickWand,[echo -n],,[-lMagickCore])
+	AC_CHECK_FUNCS(MagickExportImagePixels)
+else
+	LDFLAGS+=" -lMagickWand -lMagickCore "
+fi
 
 PKG_CHECK_MODULES([FTGL],[ftgl > 2.1.2])
-AC_CHECK_LIB(ftgl,ftglCreateExtrudeFont,[echo -n])
+if [[ "$ON_MINGW" = "no" ]]; then
+	AC_CHECK_LIB(ftgl,ftglCreateExtrudeFont,[echo -n])
+else
+	LDFLAGS+=" -lftgl "
+fi
 AC_SUBST(OPTBUILD)
 
 AC_CHECK_HEADERS([limits.h stdlib.h string.h unistd.h])
@@ -100,7 +132,7 @@ AC_COMPILE_IFELSE(
 	[AC_DEFINE([HAVE_OPENGL_1_4], [1], [Have OpenGL Version 1.4 or greater]) 
 		AC_MSG_RESULT(yes) 
 	],
-	[AC_DEFINE([HAVE_OPENGL_1_4], [0], [Have OpenGL Version 1.4 or greater]) AC_MSG_RESULT(no)]
+	[AC_DEFINE([HAVE_OPENGL_1_4], [0], [Do NOT Have OpenGL Version 1.4 or greater]) AC_MSG_RESULT(no)]
 	)
 
 
@@ -122,18 +154,24 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#define GLAPIENTRY\n #include <GL/osmesa.h>
 				[AC_DEFINE([HAVE_OSMESA], [0],[Have OSMesa library]) AC_MSG_RESULT(no) ]
 				)
 
-AC_MSG_CHECKING(for AntTweakBar)
-AC_COMPILE_IFELSE(
-	[AC_LANG_PROGRAM([[#include <AntTweakBar.h>]], [[TwDraw()]])],
-	[AC_MSG_RESULT(yes)
-	   AC_CHECK_LIB(AntTweakBar,TwDraw,
-	       [AC_DEFINE([HAVE_ANTTWEAKBAR], [1], [Have AntTweakBar]) TRIGGER_ATB="y" ATB_LDFLAGS+=" -lAntTweakBar " ],
-	       [AC_DEFINE([HAVE_ANTTWEAKBAR], [0], [Have AntTweakBar])],
-	       [-lstdc++]
-	   )
-	],
-	[AC_DEFINE([HAVE_ANTTWEAKBAR], [0], [Have AntTweakBar]) AC_MSG_RESULT(no)]
-	)
+if [[ "$ON_MINGW" = "no" ]]; then
+	AC_MSG_CHECKING(for AntTweakBar)
+	AC_COMPILE_IFELSE(
+		[AC_LANG_PROGRAM([[#include <AntTweakBar.h>]], [[TwDraw()]])],
+		[AC_MSG_RESULT(yes)
+		   AC_CHECK_LIB(AntTweakBar,TwDraw,
+			   [AC_DEFINE([HAVE_ANTTWEAKBAR], [1], [Have AntTweakBar]) TRIGGER_ATB="y" ATB_LDFLAGS+=" -lAntTweakBar " ],
+			   [AC_DEFINE([HAVE_ANTTWEAKBAR], [0], [Have AntTweakBar])],
+			   [-lstdc++]
+		   )
+		],
+		[AC_DEFINE([HAVE_ANTTWEAKBAR], [0], [Have AntTweakBar]) AC_MSG_RESULT(no)]
+		)
+else
+	AC_DEFINE([HAVE_ANTTWEAKBAR], [1], [Have AntTweakBar])
+	TRIGGER_ATB="y"
+	ATB_LDFLAGS+=" -lAntTweakBar "
+fi
 AM_CONDITIONAL([HAVE_ATB],[test "x$TRIGGER_ATB" != "x"])
 
 GENDERS_FOUND_TRIGGER=""
