@@ -64,11 +64,14 @@ All rights reserved.
 
 @implementation CalculatedDataSet
 -init {
+	NSLog(@"init: %@",[self class]);
 	dataPlanes = [[NSMutableArray arrayWithCapacity: 5] retain]; //guess number
+	newData = [[NSMutableData alloc] initWithLength: width*height*sizeof(float)];
 	updatedCount = 0;
 	return self;
 }
 -initWithName: (NSString *)n usingFormula: (NSString *)c onPlanes: (id)first, ... {
+	NSLog(@"initWithName: %@",[self class]);
 	id object;
 	va_list argList;
 
@@ -80,7 +83,7 @@ All rights reserved.
 	va_start(argList, first);
 	object = first;
 	while (object) {
-		NSLog(@"DataSet: %p %p",object);
+		NSLog(@"DataSet: %p",object);
 		DataSet *ds = (DataSet *)object;
 		if (width == [ds width] && height == [ds height]) {
 			//[ds disableScaling];
@@ -99,6 +102,8 @@ All rights reserved.
 	formula = [c retain];
 	[self setCalculation: calc_data_set];
 	[super initWithName: n Width: width Height: height];
+	[self registerForNotifications];
+	newData = [[NSMutableData alloc] initWithLength: width*height*sizeof(float)];
 	return self;
 }
 -initWithPList: (id)list {
@@ -141,6 +146,7 @@ All rights reserved.
 		[self setCalculation: calc_data_set];
 		NSLog(@"%@'s name is: %@", self, myName);
 		[super initWithName: myName Width: [ds width] Height: [ds height]];
+		newData = [[NSMutableData alloc] initWithLength: width*height*sizeof(float)];
 		rateSuffix = [myRateSuffix copy];
 		[rateSuffix retain];
 		[myRateSuffix autorelease];

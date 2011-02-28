@@ -200,7 +200,9 @@ int compareScreenColumns(id one,id two,void *context) {
 		[GLScreen setMaster: self];
 	else
 		return nil;
-	int c=0;
+	int c=1;
+	char *bogus_args[1];
+	bogus_args[0] = strdup("GLScreen");
 
 	isFullscreen = NO;
 
@@ -210,7 +212,8 @@ int compareScreenColumns(id one,id two,void *context) {
 
 	logDrawClocks = [defs boolForKey:@"GLScreenLogDrawClocks"];
 
-	glutInit(&c,NULL);
+	glutInit(&c,bogus_args);
+	free(bogus_args[0]);
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA );
 	glutInitWindowSize(w,h);
 	width = w;
