@@ -91,11 +91,11 @@ HOTKEYS\n\
        Mouse Wheel-Drag  Move the mouse while holding down the mouse wheel to adjust the zoom\n\
     AUXILARY\n");
 #if HAVE_ANTTWEAKBAR
-    printf("\
+	printf("\
        t  Brings up the AntTweakBar display which allows you to adjust certain things about\n\
           camera angle and position as well as position of scene objects\n");
 #endif
-    printf("\
+	printf("\
        ~  Saves Eye attributes (camera angle and position) as well as the position of scene\n\
           objects to the current *.cview file (this is very useful)\n\
        f  Toggle fullscreen\n\
@@ -122,17 +122,17 @@ OPTIONS\n\
        decide what to do with them. This probably shouldn't be changed by the standard user\n\
        and defaults to ");
 #if HAVE_GENDERS
-       printf("DataCenterCViewScreenDelegate");
+	printf("DataCenterCViewScreenDelegate");
 #else
-       printf("CViewScreenDelegate");
+	printf("CViewScreenDelegate");
 #endif
-       printf(".\n\
+	printf(".\n\
     -h\n\
     -help\n\
     -?\n\
        Print this help message and exit.\n\
 	\n\n");
-    exit(0);
+	exit(0);
 }
 extern int aninteger;
 extern int nsarray_integer;
@@ -154,43 +154,71 @@ int main(int argc,char *argv[], char *env[]) {
 	//needed for NSLog
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
-//	@try {
+	//@try {
 		/** @objcdef 
 			- dataUpdateInterval - time in seconds that the URL reload code will delay between reads
 			- dumpclasses - startup a ObjectTracker thread if >0, the number how often in seconds to dump the class counts: file is cview.classes
 			- c The PList formatted config file to load 
 		*/
 		NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
-	#if HAVE_GENDERS
+#if defined ON_MINGW_WIN32
+		#include <windows.h>
+		if([args stringForKey: @"c"] == nil) {
+			if(MessageBox(NULL, "CVIEW Requires a \".cview\" file to run.  After you click OK you will be prompted to select one.  If you would like to know how to make your own .cview files take a look at the README.txt, or you can look at the example .cview files inside of the \"cviews\" folder in the installation directory.", "CVIEW Needs .cview file", MB_OKCANCEL) == IDCANCEL)
+				exit(0);
+			char szFile[2000];
+			OPENFILENAME ofn ;
+			// open a file name
+			ZeroMemory( &ofn , sizeof( ofn));
+			ofn.lStructSize = sizeof ( ofn );
+			ofn.hwndOwner = NULL  ;
+			ofn.lpstrFile = szFile ;
+			ofn.lpstrFile[0] = '\0';
+			ofn.nMaxFile = sizeof( szFile );
+			ofn.lpstrFilter = ".cview property list files\0*.cview\0All\0*.*\0";
+			ofn.nFilterIndex =1;
+			ofn.lpstrFileTitle = NULL ;
+			ofn.nMaxFileTitle = 0 ;
+			ofn.lpstrInitialDir=NULL ;
+			ofn.Flags = OFN_PATHMUSTEXIST|OFN_FILEMUSTEXIST;
+			if(GetOpenFileName( &ofn ) == 0)
+				exit(0);
+			NSString *path = [NSString stringWithCString: szFile];
+			NSLog(@" the path was = %@", path);
+			[args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
+				path, @"c", nil]];
+		}
+#endif
+#if HAVE_GENDERS
 		[args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
-				@"cviews/default.cview", @"c",
-				@"30.0",@"dataUpdateInterval",
-				@"0",@"dumpclasses",
-		        @"DataCenterCViewScreenDelegate",@"ScreenDelegate", // use DataCenter since we have genders
-				nil]];
-	#else
+			@"cviews/default.cview", @"c",
+			@"30.0",@"dataUpdateInterval",
+			@"0",@"dumpclasses",
+			@"DataCenterCViewScreenDelegate",@"ScreenDelegate", // use DataCenter since we have genders
+			nil]];
+#else
 		[args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
-				@"cviews/default.cview", @"c",
-				@"30.0",@"dataUpdateInterval",
-				@"0",@"dumpclasses",
-		        @"CViewScreenDelegate",@"ScreenDelegate",
-				nil]];
-	#endif
+			@"cviews/default.cview", @"c",
+			@"30.0",@"dataUpdateInterval",
+			@"0",@"dumpclasses",
+			@"CViewScreenDelegate",@"ScreenDelegate",
+			nil]];
+#endif
 		NSLog(@"aninteger = %d", aninteger);
-    NSLog(@"nsarray_integer = %d", nsarray_integer);
+		NSLog(@"nsarray_integer = %d", nsarray_integer);
 
 		// Print usage and exit if user passed -h, -?, or -help
 		if([args stringForKey: @"h"] != nil ||
-		   [args stringForKey: @"?"] != nil ||
-		   [args stringForKey: @"help"] != nil)
-		    usage();
+			[args stringForKey: @"?"] != nil ||
+			[args stringForKey: @"help"] != nil)
+			usage();
 		config = [args stringForKey: @"c"];
 		updateInterval = [args floatForKey: @"dataUpdateInterval"];
 		dumpclasses = [args integerForKey: @"dumpclasses"];
 
 		if (dumpclasses > 0) 
 			[[[ObjectTracker alloc] initWithFile: @"cview.classes" andInterval: dumpclasses] retain];
-	
+
 		MagickWandGenesis();
 
 		NSData *file = [NSData dataWithContentsOfFile: config];
@@ -202,6 +230,9 @@ int main(int argc,char *argv[], char *env[]) {
 					];
 		//NSLog(@"plist: %@ %d %@",plist,fmt,err);
 		if (plist==nil) {
+#if defined ON_MINGW_WIN32
+			MessageBox(NULL, "Error loading property list file \"%@\".  CVIEW will now exit.", "Error loading PList file", MB_OK);
+#endif
 			printf("Error loading PList: %s. Exiting\n",[config UTF8String]);
 			exit(4);
 		}
@@ -222,7 +253,6 @@ int main(int argc,char *argv[], char *env[]) {
 		GLScreen * g = [[GLScreen alloc] initWithPList:plist];
 		CViewScreenDelegate *delegate = [[c alloc] initWithScreen: g];
 		[delegate setOutputFile: config];
-
 		[g setDelegate: delegate];
 
 		NSLog(@"Setup done");
