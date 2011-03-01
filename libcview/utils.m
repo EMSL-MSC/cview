@@ -162,7 +162,7 @@ NSString *find_resource_path(NSString *filename) {
 }
 
 /** @todo check to see if this needs a configure check, and ifdef it.*/
-
+#ifdef __SSE__
 //this used column major matricies.
 flts multQbyV(const flts *m,const flts v) {
 	flts t,x,y,z,w;
@@ -179,6 +179,18 @@ flts multQbyV(const flts *m,const flts v) {
 	t.v += __builtin_ia32_mulps(m[3].v,w.v);
 	return t;
 }
+#else
+
+flts multQbyV(const flts *m,const flts v) {
+	flts t;
+    int i;
+
+	for (i=0;i<4;i++)
+		t.f[i] = m[0].f[i]*v.f[0] + m[1].f[i]*v.f[1] + m[2].f[i]*v.f[2] + m[3].f[i]*v.f[3];
+
+	return t;
+}
+#endif
 
 void dumpV(flts f) {
 	int i;

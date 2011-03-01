@@ -301,7 +301,6 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 -(id)populateGraph: (Graph *)g nodeMap: (NSDictionary *)map {
 	//add all the ports..
 	int i,j,p;
-	float pw,ph,spw,fpw,cw;
 	IBPort * port;
 	NSString *s;
 	
@@ -360,7 +359,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 
 -(id) glDraw {
 	int l,i,j;
-	float pw,ph,sn,sf,sl,sr,sh;
+	float sn,sf,sl,sr,sh;
 	glPushMatrix();
 	glTranslatef(locx,locy,locz);
 	glRotatef(rotx,1.0,0.0,0.0);

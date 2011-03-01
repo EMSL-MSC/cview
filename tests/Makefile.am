@@ -1,6 +1,6 @@
 OBJC=gcc
 AM_OBJCFLAGS=-g -Wall $(WAND_CFLAGS) $(FTGL_CFLAGS)
-AM_LDFLAGS=$(FOUNDATION_LDFLAGS) $(OPENGL_LDFLAGS) $(WAND_LIBS) $(top_builddir)/libcview/libcview.la $(top_builddir)/libcview-data/libcview-data.la $(ATB_LDFLAGS)
+AM_LDFLAGS= $(OPENGL_LDFLAGS) $(WAND_LIBS) $(top_builddir)/libcview/libcview.la $(top_builddir)/libcview-data/libcview-data.la $(ATB_LDFLAGS) $(FOUNDATION_LDFLAGS)
 OBJCDEPMODE = depmode=gcc
 
 # set the include path found by configure
