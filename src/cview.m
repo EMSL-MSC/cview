@@ -146,7 +146,7 @@ int main(int argc,char *argv[], char *env[]) {
 	float updateInterval;
 	int dumpclasses;
 	
-	NSString *config;
+	NSString *config = nil;
 	NSString *err;
 
 	[LoadClasses loadAllClasses];
@@ -183,10 +183,8 @@ int main(int argc,char *argv[], char *env[]) {
 			ofn.Flags = OFN_PATHMUSTEXIST|OFN_FILEMUSTEXIST;
 			if(GetOpenFileName( &ofn ) == 0)
 				exit(0);
-			NSString *path = [NSString stringWithCString: szFile];
-			NSLog(@" the path was = %@", path);
-			[args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
-				path, @"c", nil]];
+			config = [NSString stringWithCString: szFile];
+			NSLog(@"File Chooser result = %@", config);
 		}
 #endif
 #if HAVE_GENDERS
@@ -212,7 +210,8 @@ int main(int argc,char *argv[], char *env[]) {
 			[args stringForKey: @"?"] != nil ||
 			[args stringForKey: @"help"] != nil)
 			usage();
-		config = [args stringForKey: @"c"];
+		if(config == nil)
+			config = [args stringForKey: @"c"];
 		updateInterval = [args floatForKey: @"dataUpdateInterval"];
 		dumpclasses = [args integerForKey: @"dumpclasses"];
 
