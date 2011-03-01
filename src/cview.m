@@ -231,7 +231,10 @@ int main(int argc,char *argv[], char *env[]) {
 		//NSLog(@"plist: %@ %d %@",plist,fmt,err);
 		if (plist==nil) {
 #if defined ON_MINGW_WIN32
-			MessageBox(NULL, "Error loading property list file \"%@\".  CVIEW will now exit.", "Error loading PList file", MB_OK);
+			NSString *error = [NSString stringWithFormat:
+				"Error loading property list file \"%@\".  CVIEW will now exit.",
+				config];
+			MessageBox(NULL, [error UTF8String], "Error loading PList file", MB_OK);
 #endif
 			printf("Error loading PList: %s. Exiting\n",[config UTF8String]);
 			exit(4);
