@@ -1,0 +1,113 @@
+{
+    height = 473;
+    name = "MSCF Data Center";
+    width = 580;
+    worlds = (
+	{
+	    col = 0;
+	    colp = 200;
+	    name = Chinook;
+	    row = 0;
+	    rowp = 50;
+	    world = {
+		backgroundColorB = 0;
+		backgroundColorG = 0;
+		backgroundColorR = 0;
+		eye = {
+		    hangle = "-7.058319";
+		    move_speed = 10;
+		    rotate_speed = 0.025;
+		    strafe_speed = 10;
+		    vangle = "-2.158336";
+		    x = 1159.947;
+		    y = 1356.332;
+		    z = "-173.7875";
+		};
+		imageCycleTime = 0;
+		imageDailyDir = YES;
+		imageDir = "/tmp";
+		imagePrefix = chinook;
+		overlay = {
+		    objects = (
+			{
+			    align = YES;
+			    halign = "-1";
+			    object = {
+				colorB = 1;
+				colorG = 1;
+				colorR = 1;
+				fontfile = ./data/LinLibertine_Re.ttf;
+				isVisible = YES;
+				rotX = 0;
+				rotY = 0;
+				rotZ = 0;
+				scaleX = 1;
+				scaleY = 1;
+				scaleZ = 1;
+				string = "Ambient Temperature Data - Chinook";
+			    };
+			    objectclass = GLText;
+			    valign = 1;
+			    x = 0;
+			    y = 100;
+			    z = 0;
+			}
+		    );
+		};
+		scene = {
+		    objects = (
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				blue = 0.38;
+				dataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = env.ATemp;
+				    name = env.ATemp;
+				    rateSuffix = "\U00B0C";
+				};
+				dataSetClass = WebDataSet;
+				drawLegend = YES;
+				gendersFilePath = data/genders;
+				green = 0.38;
+				isVisible = YES;
+				jobIDDataSet = {
+				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    key = job_id;
+				    name = job_id;
+				    rateSuffix = "None!";
+				};
+				legend_padd_side = 53;
+				legend_padd_top = 36;
+				red = 0.38;
+			    };
+			    objectclass = GLDataCenter;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 750;
+			}
+		    );
+		};
+		tooltip = {
+		    blue = 0.1803922;
+		    borderblue = 0.09803922;
+		    bordergreen = 0.5843138;
+		    borderred = 0.9137255;
+		    bordersize = 10;
+		    fontblue = 1;
+		    fontgreen = 1;
+		    fontred = 1;
+		    green = 0.6352941;
+		    height = 144;
+		    isVisible = NO;
+		    max_text_height = 23;
+		    red = 0.4705882;
+		    title_halign = 0;
+		    width = 294;
+		};
+	    };
+	}
+    );
+}
