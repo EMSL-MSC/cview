@@ -80,6 +80,7 @@ All rights reserved.
 	backgroundColorR = 0.0;
 	backgroundColorG = 0.0;
 	backgroundColorB = 0.0;
+	lineWidth = 1.0;
     doPickDraw = NO;
 
 	NSLog(@"%@",[self attributeKeys]);
@@ -117,6 +118,7 @@ All rights reserved.
 	backgroundColorR = [[list objectForKey: @"backgroundColorR" missing: @"0.0"] floatValue];
 	backgroundColorG = [[list objectForKey: @"backgroundColorG" missing: @"0.0"] floatValue];
 	backgroundColorB = [[list objectForKey: @"backgroundColorB" missing: @"0.0"] floatValue];
+	lineWidth = [[list objectForKey: @"lineWidth" missing: @"1.0"] floatValue];
 
 	return self;
 }
@@ -143,15 +145,19 @@ All rights reserved.
 	[plist setObject: [NSNumber numberWithFloat: backgroundColorR] forKey: @"backgroundColorR"];
 	[plist setObject: [NSNumber numberWithFloat: backgroundColorG] forKey: @"backgroundColorG"];
 	[plist setObject: [NSNumber numberWithFloat: backgroundColorB] forKey: @"backgroundColorB"];
+	[plist setObject: [NSNumber numberWithFloat: lineWidth] forKey: @"lineWidth"];
 	return plist;
 }
 
 -(NSArray *)attributeKeys {
 	//return [NSArray arrayWithObjects: @"eye",@"scene",@"imageDir",@"imagePrefix",@"imageDailyDir",@"imageCycleTime",@"overlay",nil];
-	return [NSArray arrayWithObjects: @"eye",@"scene",@"overlay",@"backgroundColorR",@"backgroundColorG",@"backgroundColorB",@"tooltip",nil];
+	return [NSArray arrayWithObjects: @"eye",@"scene",@"overlay",@"backgroundColorR",@"backgroundColorG",@"backgroundColorB",@"tooltip",@"lineWidth",nil];
 }
 
 -(NSDictionary *)tweaksettings {
+	float glstep,glm[2];
+	glGetFloatv(GL_LINE_WIDTH_RANGE,glm);
+	glGetFloatv(GL_LINE_WIDTH_GRANULARITY,&glstep);
 	return [NSDictionary dictionaryWithObjectsAndKeys:
 		@"help='Create Daily Directories for images' min=0 max=1",@"imageDailyDir",
 		@"help='Time Interval to Dump Images,0=never dump' min=0 max=86400",@"imageCycleTime",
@@ -161,6 +167,7 @@ All rights reserved.
 		@"min=0.0 step=0.01 max=1.0",@"backgroundColorR",
 		@"min=0.0 step=0.01 max=1.0",@"backgroundColorG",
 		@"min=0.0 step=0.01 max=1.0",@"backgroundColorB",
+		[NSString stringWithFormat: @"min=%f max=%f step=%f label='GL Line Width'",glm[0],glm[1],glstep],@"lineWidth",
 		nil];
 }
 
@@ -188,6 +195,8 @@ All rights reserved.
 	glPushMatrix();
 	[eye lookAt];
 
+	glLineWidth(lineWidth);
+	
 	if (scene && [scene visible])
 		[scene glDraw];
 	
