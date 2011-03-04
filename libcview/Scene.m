@@ -210,14 +210,24 @@ All rights reserved.
 	e = [objects objectEnumerator];
 	while ((obj = [e nextObject])) {
 		if (obj->object == o) {
-			[obj->object release];
+			[obj->object autorelease];
 			[objects removeObject: obj];
 			break;
 		}
 	}
 	return self;
 }
-
+-removeAllObjects {
+	NSEnumerator *e;
+	SceneObject *obj;
+	e = [objects objectEnumerator];
+	while ((obj = [e nextObject])) {
+			[obj->object autorelease];
+			break;
+	}
+	[objects removeAllObjects];
+	return self;
+}
 -(int)objectCount {
 	return [objects count];
 }

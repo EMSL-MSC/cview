@@ -21,7 +21,7 @@ cview_SOURCES += DataCenterCViewScreenDelegate.m
 endif
 
 cview_LDFLAGS = $(OPENGL_LDFLAGS) $(BASELDFLAGS)
-cviewall_SOURCES = cviewall.m CViewScreenDelegate.m LoadClasses.m
+cviewall_SOURCES = cviewall.m CViewScreenDelegate.m LoadClasses.m CViewAllScreenDelegate.m
 if COMPILE_GLDATACENTER
 cviewall_SOURCES += DataCenterCViewScreenDelegate.m
 endif

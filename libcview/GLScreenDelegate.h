@@ -68,6 +68,7 @@ All rights reserved.
 	@ingroup cview3d
 */
 @protocol GLScreenDelegate
+-screenHasStarted;
 -(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world;
 -(BOOL)specialKeyPress: (int)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world;
 -(BOOL)mouseButton: (int)button withState: (int)state atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world;

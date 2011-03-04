@@ -60,39 +60,12 @@ All rights reserved.
 #import "WebDataSet.h"
 #import "debug.h"
 #import "cview.h"
-#import "CViewScreenDelegate.h"
+#import "CViewAllScreenDelegate.h"
 
 /** 
 	@author Evan Felix <e@pnl.gov>
 	@ingroup cviewapp
 */
-
-
-@interface NSMutableArray (Toggler)
--doToggle: (NSNotification *)notification;
-@end
-
-@implementation NSMutableArray (Toggler) 
--doToggle: (NSNotification *)notification {
-	int index=0;
-	//NSLog(@"Toggle: %@",notification);
-	if ([[notification name] compare: @"keyPress"]==NSOrderedSame) 
-		if ([[[notification userInfo] objectForKey: @"key"] unsignedCharValue] == 't') {
-					NSEnumerator *list;
-					DrawableObject *obj;
-					list = [self objectEnumerator];
-					while ( (obj = [list nextObject]) )
-						if ([obj visible]) {
-							index = [self indexOfObject: obj];
-							[obj hide];
-						}
-					obj = [self objectAtIndex: (index+1)%[self count]];
-					//NSLog(@"%@",obj);
-					[obj show];
-		}
-	return self;
-}
-@end
 
 #define NEWLINE @"\n"
 
@@ -119,21 +92,15 @@ cviewall -url <url> [optional defaults] [-c <file>]\n\
        dataUpdateInterval  Float        30          How often in seconds to update the data from the given URL\n\
 	\n\n");
 
-    exit(ecode);
+	exit(ecode);
 }
 
 
 int main(int argc,char *argv[], char *env[]) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	ENABLEDEBUGALLOC;
-
-	//	NSArray *oclasses = [NSArray arrayWithObjects: [GLGrid class],[GLGridSurface class],[GLRibbonGrid class],[GLPointGrid class],nil];
-	DrawableObject *o;
 	NSString *configfile;
-	float updateInterval;
-	int posy=0,posx=0,w,x=0;
-
-	//NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+	int w;
 	
 #ifndef __APPLE__
 	//needed for NSLog
@@ -155,13 +122,14 @@ int main(int argc,char *argv[], char *env[]) {
 	NSLog(@"metrics=%@",[args arrayForKey: @"metrics"]);
 	w = [args integerForKey: @"gridw"];
 	NSLog(@"gridw=%d",w);
-	updateInterval = [args floatForKey: @"dataUpdateInterval"];
+	
 	configfile = [args stringForKey: @"c"];
 
-	GLScreen * g = [[GLScreen alloc] initName: @"Chinook NWperf" withWidth: 1200 andHeight: 600];
-	CViewScreenDelegate *cvsd = [[CViewScreenDelegate alloc] initWithScreen:g];
-	[cvsd setOutputFile: configfile];
-	[g setDelegate: cvsd];
+	GLScreen * g = [[GLScreen alloc] initName: @"Cview All" withWidth: 1200 andHeight: 600];
+	CViewAllScreenDelegate *cvasd = [[CViewAllScreenDelegate alloc] initWithScreen:g];
+	[cvasd setOutputFile: configfile];
+	[cvasd setGridWidth: w];
+	[g setDelegate: cvasd];
 
 	Scene * scene1 = [[Scene alloc] init];
 
@@ -169,70 +137,34 @@ int main(int argc,char *argv[], char *env[]) {
 	NSString *index = [NSString stringWithContentsOfURL: [NSURL URLWithString: @"index" relativeToURL: baseurl]];
 	if (index == nil) 
 		usage([NSString stringWithFormat: @"Index file not found at given URL:%@",baseurl],-2);
+	[cvasd setURL: baseurl];
 
 	NSScanner *scanner = [NSScanner scannerWithString: index];
-	NSMutableSet *indexes = [NSMutableSet setWithCapacity: 10];
 
 	NSString *str;
-
+	NSMutableDictionary *mf = [NSMutableDictionary dictionary];
+	NSNumber *n;
+	NSArray *arr = [args arrayForKey: @"metrics"];
+	
 	while ([scanner scanUpToString: NEWLINE intoString: &str] == YES) {
-		NSLog(@"string: %@",str);
-		[indexes addObject: str];		
-
-		NSArray *arr = [args arrayForKey: @"metrics"];
-		if ([arr containsObject: str] || [arr containsObject: @"all"] ) {
-
-		WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: baseurl andKey: str];
-		UpdateThread *t = [[UpdateThread alloc] initWithUpdatable: d];
-		if ([str isEqual: @"mem"])
-			[d lockMax: 12.0];
-		if ([str isEqual: @"flop"])
-			[d lockMax: 100.0];
-		
-		[d autoScale: 100];	
-		[t startUpdateThread: updateInterval];
-		o=[[[[[GLGrid alloc] initWithDataSet: d] setXTicks: 50] setYTicks: 32] show];
-		//NSLog(@"%@",o);
-		[scene1 addObject: o atX: posx Y: 0 Z: -posy];
-		
-		x++;
-		if (x >= w) {
-			x=0;
-			posy += [d height]+80;
-			posx = 0;
-		}
-		else {
-			posx += [d width]+120;
-		}
-
-		[d autorelease];
-		/// This would be bad. how to fix... [t autorelease];
-		[o autorelease];
-		}
-
+		//NSLog(@"string: %@",str);
+		//[indexes addObject: str];
+		n = [NSNumber numberWithBool: [arr containsObject: str] || [arr containsObject: @"all"]];
+		[mf setObject: n forKey: str];		
 	}
-		//[[toggler objectAtIndex: 0] show];
-		[[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50] 
+	
+	[cvasd setMetricFlags: mf];
+			//[[toggler objectAtIndex: 0] show];
+	GLWorld *world = [[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50] 
 			setScene: scene1] 
 		setEye: [[[Eye alloc] init] setX: 514.0 Y: 2585.0 Z: 1617.0 Hangle:-4.72 Vangle: -2.45]
 	];
+	[cvasd setWorld: world];
 	NSLog(@"Setup done");
 	
-	DUMPALLOCLIST(YES);
-
-
-	//NSString *err;
-
-	//NSDictionary *plist = [g getPList];
-	//NSLog([NSPropertyListSerialization stringFromPropertyList: plist]);
-
-	//NSData *nsd = [NSPropertyListSerialization dataFromPropertyList: (NSDictionary *)plist
-	//				format: NSPropertyListXMLFormat_v1_0 errorDescription: &err];
-	//[nsd writeToFile: @"archive.plist" atomically: YES];
-	
+	DUMPALLOCLIST(YES);	
 
 	[g run];
-
 
 	[scene1 autorelease];
 	[g autorelease];

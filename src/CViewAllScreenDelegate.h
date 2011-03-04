@@ -1,6 +1,6 @@
 /*
 
-This file is part of the CVIEW graphics system, which is goverened by the following License
+This file is port of the CVIEW graphics system, which is goverened by the following License
 
 Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
@@ -56,56 +56,36 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-#import <Foundation/Foundation.h>
-#import "DataSet.h"
-#import "UpdateThread.h"
-#import "PList.h"
+#import "CViewScreenDelegate.h"
 
-#define TICK_LEN 32
-/**
-Extension of the data class to retrieve the data from a URL, implement the Updatable protocol so that it can be told to reload the data from the source
-
-The initWithPList method will start its own update thread based off the application default updateThreadInterval
-
-This class expects that for a given key there will be the following files rooted at the given URL:
- - <key>.data file with data, which should have the size == x*y*sizeof(float)
- - <key>.yticks file with row ticks, that should have size == y*32
- - xticks file with column ticks that should have size x*32
-
-The tick files are 32 byte zero-byte padded strings and should always have a file size that is a multiple of 32. This example should be 40*32 , or 1280 bytes.
-@dot
-digraph tickfile {
-	rankdir=LR;
-	edge [fontsize=10];
-	node [ shape=record fontsize=10 ];
-	ticks [ label="Tick1|<here> Tick2|...|Tick40" ];
-	onetick [label="32 bytes|{T|i|c|k|2|\\x00|\\x00|...|\\x00}"];
-	ticks:here->onetick;
-}
-
-@enddot
-@author Evan Felix
-@ingroup cviewdata
+/** 
+	@author Evan Felix <e@pnl.gov>
+	@ingroup cviewapp
 */
-@interface WebDataSet: DataSet <Updatable,PList> {
-	NSURL *dataURL,*XticksURL,*YticksURL;
-	NSString *dataKey;
-	NSMutableData *Xticks;
-	NSMutableData *Yticks;
-	BOOL allowRescale;
-	NSURL *baseURL;
-	UpdateThread *thread;
-    NSMutableDictionary *indexByString;
+
+@interface CViewAllScreenDelegate:CViewScreenDelegate {
+	NSMutableDictionary *metricFlags;
+	int gridWidth;
+	GLWorld *glWorld;
+	NSURL *url;
+	NSMutableArray *tweakObjects;
+#if HAVE_ANTTWEAKBAR
+	TwBar *metricbar;
+#endif
 }
--initWithUrlBase: (NSURL *)base andKey: (NSString *)key;
-/** returns the stored row label from the loaded data */
--(NSString *)rowTick: (int)row;
-/** returns the stored column label from the loaded data */
--(NSString *)columnTick: (int)col;
-/** return the current Data Key */
--(NSString *)getDataKey;
-/** get row of data based on xTick string **/
--(float*)dataRowByString:(NSString*)xTick;
--initializeIndexByStringDictionary;
--setThread:(UpdateThread *)t;
+/** set how many grids are in the width direction before another row is added.*/
+-setGridWidth:(int)w;
+/** setup the list of metrics, with an NSNumber-boolean that specifies what is showing*/
+-setMetricFlags:(NSMutableDictionary *)mf;
+/** set a specific metric on or off */
+-setMetric: (NSString *)metric to: (BOOL)b;
+/** read the current value for a given metric*/
+-(BOOL)getMetric: (NSString *)metric;
+/** set the current world that will be populated by metrics*/
+-setWorld:(GLWorld *)world;
+/** set the base URL that metrics will be read from */
+-setURL:(NSURL *)u;
+/** Internal function that re-build the grid of GLGrids.*/
+-populateWorld;
 @end
+

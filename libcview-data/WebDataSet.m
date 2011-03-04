@@ -270,4 +270,10 @@ All rights reserved.
     }
     return self;
 }
+-setThread:(UpdateThread *)t {
+	[t retain];
+	[thread autorelease];//Dealloc will terminate it, but should we force it?
+	thread = t;	
+	return self;
+}
 @end

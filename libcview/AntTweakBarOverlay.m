@@ -294,7 +294,12 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 }
 
 -(BOOL)setTree: (NSObject *)tree {
-	myTree = [tree retain];
+	TwRemoveAllVars(myBar);
+	[myNodes removeAllObjects];
+	
+	[tree retain];
+	[myTree autorelease];
+	myTree = tree;
 	return [self parseTree: tree withGroup:nil];
 }
 
@@ -304,6 +309,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 	[name autorelease];
 	[manager autorelease];
 	[myNodes autorelease];
+	[myTree autorelease];
 	[super dealloc];
 	return;
 }

@@ -88,6 +88,7 @@ All rights reserved.
 -addObject: (DrawableObject *)o atX: (float)x Y: (float)y Z: (float)z;
 -addObject: (DrawableObject *)o alignHoriz:(int)h Vert: (int)v;
 -removeObject: (DrawableObject *)o;
+-removeAllObjects;
 -(NSArray *)getAllObjects;
 -(int)objectCount;
 -glDraw;

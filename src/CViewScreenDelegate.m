@@ -139,6 +139,7 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 -cleanTweakers: (GLWorld *)world {
 	if (tweaker && modbar) {
 		[tweaker removeBar: modbar];
+		modbar = nil;
 	}
 	[super cleanTweakers:world];
 	return self;

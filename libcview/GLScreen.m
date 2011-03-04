@@ -491,7 +491,8 @@ int compareScreenColumns(id one,id two,void *context) {
 }
 
 -run {
-	 setlocale(LC_ALL, "");
+	setlocale(LC_ALL, "");
+	[delegate screenHasStarted];
 	glutMainLoop();
 	return self;
 }

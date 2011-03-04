@@ -71,6 +71,10 @@ All rights reserved.
 -dealloc {
 	[super dealloc];
 	return self;
+
+}
+-screenHasStarted {
+	return self;	
 }
 
 -(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world; {
