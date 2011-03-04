@@ -38,6 +38,14 @@ REQUIREMENTS
 		Ports Optional:
 			anttweakbar
 
+	FreeBSD:
+		Needed packages:
+			libglut
+			gnustep
+			ImageMagick
+			ftgl
+			
+
 OPTIONAL
 
     The genders library is required to compile the GLDataCenter to view the 3D DataCenter

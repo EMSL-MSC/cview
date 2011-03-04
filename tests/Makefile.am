@@ -2,6 +2,7 @@ OBJC=gcc
 AM_OBJCFLAGS=-g -Wall $(WAND_CFLAGS) $(FTGL_CFLAGS)
 AM_LDFLAGS= $(OPENGL_LDFLAGS) $(WAND_LIBS) $(top_builddir)/libcview/libcview.la $(top_builddir)/libcview-data/libcview-data.la $(ATB_LDFLAGS) $(FOUNDATION_LDFLAGS)
 OBJCDEPMODE = depmode=gcc
+LIBS=
 
 # set the include path found by configure
 INCLUDES = $(all_includes) -I$(top_srcdir)/libcview -I$(top_srcdir)/libcview-data
@@ -15,7 +16,9 @@ noinst_DATA = testdata.xy
 
 calcdatasettest_SOURCES = calcdatasettest.m
 
-calcdatatest_SOURCES = calcdatatest.c
+#we have to link this test strange since the gnustep portions of the libcview-data cause issues if main was not compiled with an objective C compiler on some platforms.
+calcdatatest_SOURCES = calcdatatest.c 
+calcdatatest_LDFLAGS = $(top_builddir)/libcview-data/calcdatasetkernel.o
 
 glscreentest_SOURCES = glscreentest.m
 

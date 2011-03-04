@@ -57,12 +57,16 @@ if [[ "x$target_vendor" = "xapple" ]]; then
 	fi
 	OPENGL_OBJCFLAGS="-I${base}/OpenGL.framework/Headers/ -I${base}/GLUT.framework/Headers/"
 	dnl cant check library linking on apple
-CPPFLAGS+=" $OPENGL_OBJCFLAGS "
-OBJCFLAGS+=" $OPENGL_OBJCFLAGS "
+	CPPFLAGS+=" $OPENGL_OBJCFLAGS "
+	OBJCFLAGS+=" $OPENGL_OBJCFLAGS "
 	AC_CHECK_HEADERS("gl.h",,[AC_MSG_ERROR([cannot find gl.h])])
 	AC_CHECK_HEADERS("glut.h",,[AC_MSG_ERROR([cannot find glut.h])])
 else
 	AC_PATH_PROG(GNUSTEP_CONFIG,gnustep-config)
+	if [[ "x$GNUSTEP_CONFIG" == "x" ]]
+	then
+		AC_MSG_ERROR([gnustep-config Required for this build, please install gnustep development libraries]);
+	fi
 	FOUNDATION_LDFLAGS=" `$GNUSTEP_CONFIG --base-libs` "
 	dnl gnustep-config always returns -O2, and there seems to be a bug in the optimizer in gcc on mingw
 	FOUNDATION_OBJCFLAGS=" `$GNUSTEP_CONFIG --objc-flags | sed 's+-O2++g'` "
@@ -81,10 +85,18 @@ else
 		OPENGL_OBJCFLAGS=" -I/mingw/include/GL  "
 		AC_DEFINE([ON_MINGW_WIN32], [], [The platform you are compiling on is MinGW - a Microsoft Windows OS])
 		;;
+	*freebsd*)
+		ON_MINGW="no"
+		OPENGL_LOCATION=" -L/usr/local/lib/ "
+		OPENGL_OBJCFLAGS=" -I/usr/local/include/ -I/usr/local/include/GL "
+		OPENGL_LIBNAME="GL"
+		OPENGL_LIBRARY="-l$OPENGL_LIBNAME"
+		GLUT_LIBRARY="-lglut"
+		;;
 	*)
 		ON_MINGW="no"
 		OPENGL_LOCATION=""
-		OPENGL_OBJCFLAGS=" -I/usr/include/GL -I/usr/local/include/GL "
+		OPENGL_OBJCFLAGS=" -I/usr/include/ -I/usr/include/GL "
 		OPENGL_LIBNAME="GL"
 		OPENGL_LIBRARY="-l$OPENGL_LIBNAME"
 		GLUT_LIBRARY="-lglut"
@@ -93,6 +105,8 @@ else
 	OPENGL_LDFLAGS=" $OPENGL_LOCATION $OPENGL_LIBRARY $GLU_LIBRARY  $GLUT_LIBRARY"
 	CPPFLAGS+=" $OPENGL_OBJCFLAGS "
 	OBJCFLAGS+=" $OPENGL_OBJCFLAGS "
+	SAVEDLD=$LDFLAGS
+	LDFLAGS="$OPENGL_LOCATION $OPENGL_LIBRARY $GLU_LIBRARY  $GLUT_LIBRARY"
 	AC_CHECK_HEADERS("gl.h",,[AC_MSG_ERROR([cannot find gl.h])])
 	if [[ "$ON_MINGW" = "no" ]]; then
 		AC_CHECK_LIB($OPENGL_LIBNAME,glColor4f,,[AC_MSG_ERROR([cannot link with lib$OPENGL_LIBNAME])])
@@ -101,6 +115,7 @@ else
 	if [[ "$ON_MINGW" = "no" ]]; then
 		AC_CHECK_LIB(glut,glutGet,,[AC_MSG_ERROR([cannot link with libglut])])
 	fi
+	LDFLAGS=$SAVEDLD
 fi
 
 AC_SUBST(FOUNDATION_LDFLAGS)
