@@ -60,6 +60,8 @@ All rights reserved.
 #import "WebDataSet.h"
 #import "GLGrid.h"
 
+#if HAVE_ANTTWEAKBAR
+
 static void TW_CALL CVASD_boolSetCallback(const void *value, void *clientData) {
 	NSArray *a = (NSArray *)clientData;
 	CViewAllScreenDelegate *cvasd = [a objectAtIndex: 0];
@@ -78,6 +80,7 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 	*(int *)value = [cvasd getMetric: metric];
 }
 
+#endif
 
 @implementation CViewAllScreenDelegate 
 -initWithScreen: (GLScreen *)screen; {
