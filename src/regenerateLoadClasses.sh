@@ -78,10 +78,21 @@ for x in `find . -name "*.h"`; do
 done
 
 echo "
+extern int aninteger;
+extern int nsarray_integer;
+
 @implementation LoadClasses
 +(void)loadAllClasses {
     /* How to regenerate this class:  run: ./regenerateLoadClasses.sh
      */
+
+/* These two statements do not impact how cview runs.  Rather,
+ * they are here to get the linker to pull in some extra functions
+ * that otherwise get stripped out on mingw
+ */
+aninteger++;
+nsarray_integer++;
+
 "
 
 /bin/grep -n --color=auto @implementation `find libcview libcview-data -name "*.[hm]"` | \
