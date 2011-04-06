@@ -102,11 +102,19 @@ All rights reserved.
 #import "GLScreenDelegate.h"
 #import "Eye.h"
 #import "Scene.h"
-
+extern int aninteger;
+extern int nsarray_integer;
 @implementation LoadClasses
 +(void)loadAllClasses {
     /* How to regenerate this class:  run: ./regenerateLoadClasses.sh
      */
+
+/* These two statements do not impact how cview runs.  Rather,
+ * they are here to get the linker to pull in some extra functions
+ * that otherwise get stripped out on mingw
+ */
+aninteger++;
+nsarray_integer++;
 
 [GLImage class];
 [DrawableObject class];

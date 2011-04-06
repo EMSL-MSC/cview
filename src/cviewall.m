@@ -61,6 +61,7 @@ All rights reserved.
 #import "debug.h"
 #import "cview.h"
 #import "CViewAllScreenDelegate.h"
+#import "LoadClasses.h"
 
 /** 
 	@author Evan Felix <e@pnl.gov>
@@ -102,6 +103,7 @@ int main(int argc,char *argv[], char *env[]) {
 	NSString *configfile;
 	int w;
 	
+	[LoadClasses loadAllClasses];
 #ifndef __APPLE__
 	//needed for NSLog
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
