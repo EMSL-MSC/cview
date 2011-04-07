@@ -2,6 +2,7 @@
  *
  */
 #import <Foundation/Foundation.h>
+#include <stdio.h>
 
 
 int main(int argc, char *argv[], char *env[]) {
@@ -10,5 +11,6 @@ int main(int argc, char *argv[], char *env[]) {
 	Class handlerClass = [NSURLHandle URLHandleClassForURL: dataURL];
 	NSURLHandle *X = [[handlerClass alloc] initWithURL: dataURL cached: YES];
 	NSData *Xt = [X loadInForeground];
+	fwrite([Xt bytes], [Xt length], 1, stdout);
 	return 0;
 }
