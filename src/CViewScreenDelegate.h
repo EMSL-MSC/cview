@@ -65,11 +65,15 @@ All rights reserved.
 */
 @interface CViewScreenDelegate: DefaultGLScreenDelegate {
 #if HAVE_ANTTWEAKBAR
-TwBar *modbar;
+//TwBar *modbar;
+	TwBar **modbars;
+	int barcount;
 #else
 #endif
 	NSString *PListOutputFile;
 }
 -(void)setOutputFile: (NSString *)file;
 -(NSString *)getOutputFile;
+-updateModBar: (NSNotification *)note;
+-createModBar: (GLWorld *)w;
 @end

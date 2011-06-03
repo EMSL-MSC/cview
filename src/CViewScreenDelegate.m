@@ -63,7 +63,12 @@ All rights reserved.
 
 
 #if HAVE_ANTTWEAKBAR
-
+TwEnumVal gridTypes[] = {
+	{ G_LINES,"Lines" },
+	{ G_RIBBON,"Ribbons" },
+	{ G_SURFACE,"Surface" },
+	{ G_POINTS,"Points" } 
+};
 void TW_CALL cv_setGridType(const void *value, void *clientData)
 { 
     NSLog(@"Setit: %d",*(GridTypesEnum *)value);
@@ -79,9 +84,11 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 #endif
 
 @implementation CViewScreenDelegate 
--init {
+-initWithScreen: (GLScreen *)screen {
 	PListOutputFile = nil;
-	return self;
+	barcount=2;
+	modbars = (TwBar *)malloc(barcount*sizeof(TwBar *));
+	return [super initWithScreen: screen];
 }
 
 -(void)setOutputFile: (NSString *)file {
@@ -103,45 +110,97 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 }
 #if HAVE_ANTTWEAKBAR
 
--setupTweakers: (GLWorld *)world {
-	[super setupTweakers: world];
+-updateModBar: (NSNotification *)note {
+	NSLog(@"updateModBar: %@",[note object]);
+	[self createModBar: [note object]];
+	return self;
+}
+	
+-createModBar: (GLWorld *)w {
+	id o;
+	TwType gridType;
+	TwBar *modbar;
+	
+	
+	TwSetCurrentWindow([w context]);
+	modbar = modbars[[w context]];
+	NSLog(@"modbar-p: %p",modbar);
+	TwRemoveAllVars(modbar);
+	gridType = TwDefineEnum("Grid Type",gridTypes,4);
 
-	NSLog(@"Tweaker: %@",tweaker);
-	if (tweaker) {
-		modbar = [tweaker addBar: @"modbar"];
-		
-		TwEnumVal gridTypes[] = {
-			{ G_LINES,"Lines" },
-			{ G_RIBBON,"Ribbons" },
-			{ G_SURFACE,"Surface" },
-			{ G_POINTS,"Points" } 
-		};
-		TwType gridType = TwDefineEnum("Grid Type",gridTypes,4);
-
-		id o;
-		NSEnumerator *list;
-		list = [[[world scene] getAllObjects] objectEnumerator];
-		while ( (o = [list nextObject]) ) {
-			if ([o isKindOfClass: [GLGrid class]]) {	
-				//Try to get a friendly name
-				id name = [(GLGrid *)o getDataSet];
-				//if ([name isKindOfClass: [WebDataSet class]])
-				//	name = [(WebDataSet *)name getDataKey];
-				NSString *string = [NSString stringWithFormat: @"Grid: %@",name];
-				TwAddVarCB(modbar,[string UTF8String],gridType,cv_setGridType,cv_getGridType,o,NULL);
-			}
+	NSEnumerator *list;
+	list = [[[w scene] getAllObjects] objectEnumerator];
+	while ( (o = [list nextObject]) ) {
+		if ([o isKindOfClass: [GLGrid class]]) {	
+			//Try to get a friendly name
+			id name = [(GLGrid *)o getDataSet];
+			NSString *string = [NSString stringWithFormat: @"Grid: %@",name];
+			TwAddVarCB(modbar,[string UTF8String],gridType,cv_setGridType,cv_getGridType,o,NULL);
 		}
-		TwDefine("modbar iconified=true");
+	}
+	
+	return self;
+}
+
+-setupTweakers {
+	TwBar *modbar;
+	[super setupTweakers];
+
+	NSLog(@"TweakerA: %@",tweaker);
+	if (tweaker) {
+		GLWorld *w;
+		NSArray *worlds;
+		NSEnumerator *wlist;
+	
+		worlds = [myScreen getWorlds];
+		wlist = [worlds objectEnumerator];
+		while ((w = [wlist nextObject])) {
+			TwSetCurrentWindow([w context]);
+
+					
+			modbar = [tweaker addBar: @"modbar"];		
+			TwDefine("modbar iconified=true");
+			//NSLog(@"modbar-a: %p",modbar);	
+			NSLog(@"modbars: %p",modbars);
+			
+			if (barcount<[w context]+1) {
+				while (barcount<[w context]+1)
+						barcount <<= 1;
+				modbars = realloc(modbars,barcount*sizeof(TwBar *));
+			}
+			//NSLog(@"modbarsC: %d",[modbars count]);
+			NSLog(@"modbars: %p",modbars);
+			modbars[[w context]]=modbar;
+			//NSLog(@"modbars: %p",[modbars pointerAtIndex:[w context]]);
+			//NSLog(@"modbars: %@",modbars);
+			
+			[self createModBar: w];
+			[[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(updateModBar:) name: @"DataModelModified" object: w];
+		}
 	}
 	return self;
 }
 
 -cleanTweakers: (GLWorld *)world {
-	if (tweaker && modbar) {
-		[tweaker removeBar: modbar];
-		modbar = nil;
+/*	GLWorld *w;
+	NSArray *a;
+	NSArray *worlds;
+	NSEnumerator *wlist;*/
+/*
+	worlds = [myScreen getWorldsWithContext];
+	wlist = [worlds objectEnumerator];
+	while ((a = [wlist nextObject])) {
+		w = [a objectAtIndex:0];
+		ctx = [(NSNumber *)[a objectAtIndex:1] intValue];
+		TwSetCurrentWindow(ctx);
+	
+		if (tweaker && modbar) {
+			[tweaker removeBar: modbar];
+			modbar = nil;
+		}
 	}
-	[super cleanTweakers:world];
+	*/
+	[super cleanTweakers];
 	return self;
 }
 #endif

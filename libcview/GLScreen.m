@@ -81,6 +81,7 @@ All rights reserved.
 	int x,y,w,h; //calculated by layout
 }
 -setDelegate:(id)_delegate;
+-(GLWorld *)getWorld;
 @end
 
 @implementation AScreen
@@ -112,6 +113,9 @@ All rights reserved.
 -setDelegate:(id)_delegate {
     [world setDelegate: _delegate];
     return self;
+}
+-(GLWorld *)getWorld {
+	return world;
 }
 @end
 
@@ -390,7 +394,14 @@ int compareScreenColumns(id one,id two,void *context) {
 	[self doLayout];
 	//Create Sub Window
 	s->window = [self makeGLWindow: s];
+	[gw setContext: s->window];
 	return gw;
+}
+
+-(NSArray *)getWorlds {
+	NSArray *ws = [[worlds allObjects] arrayObjectsFromPerformedSelector: @selector(getWorld)];
+	NSLog(@"getWorlds: %@",ws);
+	return ws;
 }
 
 /** Internal function that calculated relative position of each window based on the requests made by each world for row and colum position
@@ -475,6 +486,7 @@ int compareScreenColumns(id one,id two,void *context) {
 		}
 		row_place += rowh;
 	}
+	[self dumpScreens];
 	return self;
 }
 
@@ -571,6 +583,7 @@ double mysecond()
 
 -mouseButton: (int)button withState: (int)state atX: (int)x andY: (int)y withWindow: (int)window {
 	AScreen *s;
+	
 	if (( s=[self findWindow: window] )) {
 		//	NSLog(@"Delegate: %@ %d",delegate, [delegate respondsToSelector:@selector(mouseButton:withState:atX:andY:inGLWorld:)]);
 		if (delegate && [delegate respondsToSelector:@selector(mouseButton:withState:atX:andY:inGLWorld:)])
@@ -599,6 +612,39 @@ double mysecond()
 	}
 	glutPostRedisplay();
 	return self;
+}
+
+-moveWorld: (GLWorld *)world Row: (int)rowchange Col: (int)colchange {
+	NSEnumerator *list;
+	AScreen *s;
+	
+	list = [worlds objectEnumerator];
+	while ((s = [list nextObject])) 
+		if (s->world == world) {
+			s->row = MAX(0,s->row+rowchange);
+			s->col = MAX(0,s->col+colchange);
+			[self doLayout];
+			[self resizeWidth:width Height:height];
+			[self postRedrawAll];
+		}
+	
+	return self;
+}
+
+-resizeWorld:(GLWorld *)world Width: (int)widthchange Height: (int)heightchange {
+	NSEnumerator *list;
+	AScreen *s;
+	
+	list = [worlds objectEnumerator];
+	while ((s = [list nextObject])) 
+		if (s->world == world) {
+			s->rowp = MAX(0,s->rowp+heightchange);
+			s->colp = MAX(0,s->colp+widthchange);
+			[self doLayout];
+			[self postRedrawAll];
+		}
+	return self;
+
 }
 
 /** which window is on top at passed (x,y) coordinates */

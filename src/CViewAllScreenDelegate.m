@@ -189,16 +189,25 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 	}
 	
 	//we changed stuff, update the other tweakbar.
-	[tweakoverlay setTree: glWorld];
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataModelModified" object: glWorld];
 	return self;
 }
 
 #if HAVE_ANTTWEAKBAR
--setupTweakers: (GLWorld *)world {
-	[super setupTweakers:world];
+-setupTweakers {
+	GLWorld *w;
+
+	[super setupTweakers];
 	tweakObjects = [[NSMutableArray arrayWithCapacity: [metricFlags count]] retain];
 	
 	if (tweaker) {
+		NSArray *worlds = [myScreen getWorlds];
+		NSEnumerator *wlist;
+		wlist = [worlds objectEnumerator];
+		/* there should only be one... */
+		w = [wlist nextObject];
+		TwSetCurrentWindow([w context]);
+
 		NSString *key;
 		NSNumber *n;	
 		NSEnumerator *list;
@@ -210,21 +219,33 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 			n = [metricFlags objectForKey: key];
 			arr = [NSArray arrayWithObjects: self,key,nil];
 			[tweakObjects addObject: arr];
-			NSLog(@"metric: %s %p",[key UTF8String],arr);
+			//NSLog(@"metric: %s %p",[key UTF8String],arr);
 			TwAddVarCB(metricbar,[key UTF8String],TW_TYPE_BOOL32,CVASD_boolSetCallback,CVASD_boolGetCallback,
 						arr,"true='Show' false='Hide'");
 		}
 		TwDefine("metricbar label='Metric Selection'");
+		
 	}
 	return self;
 }
 
--cleanTweakers: (GLWorld *)world {
+-cleanTweakers {
+	GLWorld *w;
+/*
 	if (tweaker && metricbar) {
+		NSArray *worlds = [myScreen getWorldsWithContext];
+		NSEnumerator *list;
+		list = [worlds objectEnumerator];
+		// there should only be one... 
+		a = [list nextObject];	
+		w = [a objectAtIndex:0];
+		ctx = [(NSNumber *)[a objectAtIndex:1] intValue];
+		TwSetCurrentWindow(ctx);
+		
 		[tweaker removeBar: metricbar];
 		metricbar = NULL;
-	}
-	[super cleanTweakers:world];
+	}*/
+	[super cleanTweakers];
 	return self;
 }
 #endif

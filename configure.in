@@ -11,7 +11,8 @@ AC_CANONICAL_TARGET
 
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE
-
+AM_MAINTAINER_MODE
+AM_SILENT_RULES
 AC_LANG([Objective C])
 AC_PROG_CXX
 AC_PROG_CC
@@ -172,9 +173,9 @@ AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[#define GLAPIENTRY\n #include <GL/osmesa.h>
 if [[ "$ON_MINGW" = "no" ]]; then
 	AC_MSG_CHECKING(for AntTweakBar)
 	AC_COMPILE_IFELSE(
-		[AC_LANG_PROGRAM([[#include <AntTweakBar.h>]], [[TwDraw()]])],
+		[AC_LANG_PROGRAM([[#include <AntTweakBar.h>]], [[TwSetCurrentWindow(1)]])],
 		[AC_MSG_RESULT(yes)
-		   AC_CHECK_LIB(AntTweakBar,TwDraw,
+		   AC_CHECK_LIB(AntTweakBar,TwSetCurrentWindow,
 			   [AC_DEFINE([HAVE_ANTTWEAKBAR], [1], [Have AntTweakBar]) TRIGGER_ATB="y" ATB_LDFLAGS+=" -lAntTweakBar " ],
 			   [AC_DEFINE([HAVE_ANTTWEAKBAR], [0], [Have AntTweakBar])],
 			   [-lstdc++]

@@ -112,7 +112,10 @@ Add a world into a new window specified by the layout parameters
 @return returns a newly allocated GLWorld that can then be used for adding objects to
 */
 -(GLWorld *)addWorld: (NSString *)name row: (int)_row col: (int)_col rowPercent: (int)_rowp colPercent: (int)_colp; -dumpScreens;
-
+/**
+ Return a list of all currently managed worlds
+ */
+-(NSArray *)getWorlds;
 /** Run the Screen system. Not expected to return */
 -run;
 
@@ -140,6 +143,11 @@ Return an AScreen which is itentified by the glut window id
 -mouseButton: (int)button withState: (int)state atX: (int)x andY: (int)y withWindow: (int)window;
 -mouseActiveMoveAtX: (int)x andY: (int)y withWindow: (int)window;
 -mousePassiveMoveAtX: (int)x andY: (int)y withWindow: (int)window;
+
+/** adjust world location */
+-moveWorld: (GLWorld *)world Row: (int)rowchange Col: (int)colchange;
+/** adjust world view size: these changes will be added to the row and column percentages */
+-resizeWorld:(GLWorld *)world Width: (int)widthchange Height: (int)heightchange;
 
 /** which window is on top at passed (x,y) coordinates */
 -(int)getWindowAtX: (int)x andY: (int)y;

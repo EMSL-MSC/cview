@@ -64,7 +64,8 @@ All rights reserved.
 @implementation DefaultGLScreenDelegate 
 -initWithScreen: (GLScreen *)screen {
 	myScreen = screen; //dont retain... we should be retained by the screen, and we dont want a recursive retainingnesses
-	tweaker = nil;
+	tweaker=nil;
+	tweakoverlays = [[NSMutableSet setWithCapacity: 4] retain];
 	return self;
 }
 
@@ -80,7 +81,7 @@ All rights reserved.
 -(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world; {
 	BOOL handled = YES;
 
-	if ( ! (tweaker && [tweaker keyPress: key atX: x andY: y])) {
+	if ( ! (tweaker && [tweaker visible] && [tweaker keyPress: key atX: x andY: y])) {
 		switch (key) {
 			case 'w':
 			case 'W':
@@ -107,16 +108,21 @@ All rights reserved.
 			case 't':
 				#if HAVE_ANTTWEAKBAR
 					NSLog(@"tweaker:%@",tweaker);
-					if (tweaker) {
-						[self cleanTweakers: world];
+					if (tweaker==nil) {
+						[self setupTweakers];
+					}
+					//could add a toggle visible to DrawableObject...
+					else if ([tweaker visible]) {
+						[tweaker hide];
 					}
 					else {
-						[self setupTweakers: world];
+						[tweaker show];
 					}
+					[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
 				#endif
 				break;
 			case 'c':
-				NSLog(@"Retain Count: %d %d",[tweaker retainCount],[tweakoverlay retainCount]);
+				NSLog(@"Retain Count: %d %d",[tweaker retainCount],[tweakoverlays retainCount]);
 				break;
 			case 'q':
 				DUMPALLOCLIST(NO);
@@ -124,6 +130,18 @@ All rights reserved.
 				break;
 			case 'f':
 				[myScreen toggleFullscreen];
+				break;
+			case 'h':
+				[myScreen moveWorld: world Row: 0 Col: -1];
+				break;
+			case 'j':
+				[myScreen moveWorld: world Row: 1 Col: 0];
+				break;
+			case 'k':
+				[myScreen moveWorld: world Row: -1 Col: 0];
+				break;
+			case 'l':
+				[myScreen moveWorld: world Row: 0 Col: 1];
 				break;
 			default:
 				[[NSNotificationCenter defaultCenter] postNotificationName: @"keyPress" object: self userInfo:
@@ -140,7 +158,7 @@ All rights reserved.
 -(BOOL)specialKeyPress: (int)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
 	BOOL handled = YES;
 
-	if ( ! (tweaker && [tweaker specialKeyPress: key atX: x andY: y])) {
+	if ( ! (tweaker && [tweaker visible] && [tweaker specialKeyPress: key atX: x andY: y])) {
 		switch (key) {
 			case GLUT_KEY_RIGHT:
 				[[world eye] hrotate: 1];
@@ -174,7 +192,7 @@ All rights reserved.
 
 //use the movement speeds for keys for now ... ???
 -(BOOL)mouseButton: (int)button withState: (int)state atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
-	if ( ! (tweaker && [tweaker mouseButton: button withState: state atX: x andY: y])) {		
+	if ( ! (tweaker && [tweaker visible] && [tweaker mouseButton: button withState: state atX: x andY: y])) {		
 		if (state == GLUT_DOWN) {
 			mouseX = x;
 			mouseY = y;
@@ -211,7 +229,7 @@ All rights reserved.
 
 -(BOOL)mouseActiveMoveAtX: (int)x andY: (int)y inGLWorld: (GLWorld *)world; {
 	int xd,yd;
-	if ( ! (tweaker && [tweaker mouseActiveMoveAtX: x andY: y])) {
+	if ( ! (tweaker && [tweaker visible] && [tweaker mouseActiveMoveAtX: x andY: y])) {
 		xd = mouseX-x;
 		yd = mouseY-y;
 		if (mouseSlide) {
@@ -232,41 +250,79 @@ All rights reserved.
 }
 
 -(BOOL)mousePassiveMoveAtX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
-	if ( ! (tweaker && [tweaker mousePassiveMoveAtX: x andY: y])) 
+	if ( ! (tweaker && [tweaker visible] && [tweaker mousePassiveMoveAtX: x andY: y])) 
 		return NO;
 	else
 		return YES;
 }
 
 #if HAVE_ANTTWEAKBAR
--setupTweakers: (GLWorld *)world {
+-setupTweakers {
+	GLWorld *w;
+	Scene *s;
 	tweaker = [[AntTweakBarManager alloc] init];
-
+	
 	if (tweaker) {
-		tweakoverlay = [[AntTweakBarOverlay alloc] initWithName: @"GLWorld" andManager: tweaker];
-		[tweakoverlay setTree: world];
-		// find the overlay and add ourselfs..
+		NSArray *worlds = [myScreen getWorlds];
+		NSEnumerator *list;
+		list = [worlds objectEnumerator];
+		while ((w = [list nextObject])) {
+			TwSetCurrentWindow([w context]);
+			NSLog(@"add tweak: %@ %d",w,[w context]);
+			AntTweakBarOverlay *tweakoverlay = [[AntTweakBarOverlay alloc] initWithName: @"GLWorld" andManager: tweaker];
+			TwDefine("GLWorld iconified=true label='World Config'");
+			[tweakoverlay setTree: w];
+			[tweakoverlays addObject: tweakoverlay];
+			// find the overlay and add ourselfs..
 		
-		Scene *s = [world overlay];
-		if (!s) {
-			//NSLog(@"Creating Scene For Overlay");
-			s=[[Scene alloc] init];
-			[world setOverlay: s];
+			s = [w overlay];
+			if (!s) {
+				//NSLog(@"Creating Scene For Overlay");
+				s=[[Scene alloc] init];
+				[w setOverlay: s];
+			}
+			[s addObject: tweaker atX: 0.0 Y:0.0 Z:0.0];
 		}
-		[s addObject: tweaker atX: 0.0 Y:0.0 Z:0.0];
+		[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
 	}
+	
 	return self;
 }
 
--cleanTweakers: (GLWorld *)world {
-	Scene *s = [world overlay];
-	[s removeObject: tweaker];
-	if ([s objectCount] == 0)
-		[world setOverlay: nil];
-	[tweakoverlay release];
-	tweakoverlay = nil;
+-cleanTweakers {
+	GLWorld *w;
+	int ctx;
+	NSArray *a;
+	Scene *s;
+	NSArray *worlds;
+	NSEnumerator *list;
+	/*
+	NSLog(@"tweak release:%d",[tweaker retainCount]);	
+	
+	worlds = [myScreen getWorldsWithContext];
+	list = [worlds objectEnumerator];
+	while ((a = [list nextObject])) {	
+		w = [a objectAtIndex:0];
+		ctx = [(NSNumber *)[a objectAtIndex:1] intValue];
+		TwSetCurrentWindow(ctx);
+
+		s = [w overlay];
+		[s removeObject: tweaker];
+		if ([s objectCount] == 0)
+			[w setOverlay: nil];
+	}
+	
+	[tweakoverlays makeObjectsPerform: @selector(release)];
+	[tweakoverlays release];
+	tweakoverlays = nil;
+
+	NSLog(@"tweak release:%d",[tweaker retainCount]);	
 	[tweaker release];
-	tweaker = nil;
+	NSLog(@"tweak release:%d",[tweaker retainCount]);	
+
+	tweaker = nil;*/
+	[tweaker setVisible: NO];
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
 	return self;
 }
 #endif

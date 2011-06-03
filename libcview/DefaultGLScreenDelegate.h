@@ -91,16 +91,15 @@ digraph keymap {
 	BOOL mouseRotate;
 #if HAVE_ANTTWEAKBAR
 	AntTweakBarManager *tweaker;
-	AntTweakBarOverlay *tweakoverlay;
 #else
 	id tweaker;
-	id tweakoverlay;
 #endif
+	NSMutableSet *tweakoverlays;
 }
 -initWithScreen: (GLScreen *)screen;
 #if HAVE_ANTTWEAKBAR
--setupTweakers: (GLWorld *)world;
--cleanTweakers: (GLWorld *)world;
+-setupTweakers;
+-cleanTweakers;
 #endif
 /**
     This selector is called from [GLWorld glPickDraw] to allow the 

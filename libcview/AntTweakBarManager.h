@@ -74,7 +74,7 @@ All rights reserved.
 @interface AntTweakBarManager:DrawableObject {
 	TwBar *myBar;
 	NSMutableSet *bars;
-	BOOL sizeChanged;
+	NSMutableSet *sizeChanged;
 }
 -init;
 -setSizeChanged;

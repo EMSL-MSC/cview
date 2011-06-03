@@ -425,4 +425,14 @@ All rights reserved.
 -(id)delegate {
     return self->delegate;
 }
+-setContext:(int)ident {
+	context = ident;
+}
+
+-(int)context {
+	return context;
+}
+-(NSString *)description {
+	return [NSString stringWithFormat: @"GLWorld: context=%d",context];
+}
 @end

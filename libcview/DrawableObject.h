@@ -78,7 +78,7 @@ All rights reserved.
 -(id) show;
 -(id) hide;
 -(BOOL) visible;
-/// a 2d object should provide its witdh
+/// a 2d object should provide its width
 -(int) width;
 /// a 2d object should provide its height
 -(int) height;

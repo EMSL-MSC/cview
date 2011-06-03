@@ -192,6 +192,8 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 	NSDictionary *settings;			
 	NSString *keybase;
 
+
+
 	if (grp)
 		keybase=[NSString stringWithFormat:@"%@.",grp];
 	else	
@@ -293,13 +295,27 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 	return NO;//nothing in the tree had attributes
 }
 
+-treeChanged: (NSNotification *)note {
+	if ([note object] == myTree) {// should alwasy happen, but check anyway.
+	NSLog(@"Tree change Notification: %@",note);
+		TwRemoveAllVars(myBar);
+		[self parseTree: myTree withGroup:nil];
+	}
+	else {
+		NSLog(@"Strange notification: %@",note);
+	}
+
+}
+
 -(BOOL)setTree: (NSObject *)tree {
 	TwRemoveAllVars(myBar);
 	[myNodes removeAllObjects];
 	
 	[tree retain];
+	[[NSNotificationCenter defaultCenter] removeObserver: self name: @"DataModelModified" object: myTree];
 	[myTree autorelease];
 	myTree = tree;
+	[[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(treeChanged:) name: @"DataModelModified" object: myTree];
 	return [self parseTree: tree withGroup:nil];
 }
 
@@ -309,6 +325,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 	[name autorelease];
 	[manager autorelease];
 	[myNodes autorelease];
+	[[NSNotificationCenter defaultCenter] removeObserver: self name: @"DataModelModified" object: myTree];
 	[myTree autorelease];
 	[super dealloc];
 	return;
