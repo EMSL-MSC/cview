@@ -71,7 +71,7 @@ All rights reserved.
 
 typedef struct {
     float x,y,z;
-} Point;
+} _PointStruct;
 typedef struct
 {
     float tu, tv;
@@ -90,8 +90,8 @@ typedef struct
     NSData *boundingBox;
     NSData *wireframeBox;
 }
-+(void)drawGLQuad: (Point) p1 andP2: (Point) p2
-            andP3: (Point) p3 andP4: (Point) p4;
++(void)drawGLQuad: (_PointStruct) p1 andP2: (_PointStruct) p2
+            andP3: (_PointStruct) p3 andP4: (_PointStruct) p4;
 -setName: (NSString *) name;
 -(NSString*) name;
 -setLocation: (Vector*) _location;
