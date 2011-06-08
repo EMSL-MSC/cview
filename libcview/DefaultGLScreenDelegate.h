@@ -59,12 +59,15 @@ All rights reserved.
 /**
 	Default Delegate for basic FPS like viewing of the world.  Supports an AntTweakBarManager if the library is available.
 
+	Move World commands move the GLWorld under the cursor by rows or columns. These keys will probably change focus, so subsequent keys may be passed to whatever window is now under the cursor.
+
 	Keys:
 @dot
 digraph keymap {
 	node [shape=record]
 	dir [ label="{w|a|s|d}|{Strafe Up|Strafe Down|Strafe Left|Strafe Right}" ];
 	rot [ label="{PageUp|PageDown|UpArrow|DownArrow|LeftArrow|RightArrow}|{Pitch Upward|Pitch Downward|Move Forward|Move Backward|Turn Left|Turn Right}"];
+	win [ label="{h|j|k|l}|{Move World Left|Move World Down|Move World Up|Move World Right}"];
 	extra [ label="{q|z|f|p|t}|{Quit Program|Dump Screen to file|Full Screen toggle|Print Current Eye|toggle AntTweakBar}"];
 }
 @enddot		
