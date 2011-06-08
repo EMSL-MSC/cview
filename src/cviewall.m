@@ -103,8 +103,8 @@ int main(int argc,char *argv[], char *env[]) {
 	NSString *configfile;
 	int w;
 	
-	[LoadClasses loadAllClasses];
 #ifndef __APPLE__
+	[LoadClasses loadAllClasses];
 	//needed for NSLog
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif

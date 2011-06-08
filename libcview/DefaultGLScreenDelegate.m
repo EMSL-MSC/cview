@@ -69,7 +69,7 @@ All rights reserved.
 	return self;
 }
 
--dealloc {
+-(void)dealloc {
 	[super dealloc];
 	return self;
 

@@ -67,13 +67,15 @@ All rights reserved.
 #if HAVE_ANTTWEAKBAR
 //TwBar *modbar;
 	TwBar **modbars;
-	int barcount;
+	int	barcount;
 #else
 #endif
 	NSString *PListOutputFile;
 }
 -(void)setOutputFile: (NSString *)file;
 -(NSString *)getOutputFile;
+#if HAVE_ANTTWEAKBAR
 -updateModBar: (NSNotification *)note;
 -createModBar: (GLWorld *)w;
+#endif
 @end

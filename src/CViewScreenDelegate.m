@@ -86,8 +86,10 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 @implementation CViewScreenDelegate 
 -initWithScreen: (GLScreen *)screen {
 	PListOutputFile = nil;
+#if HAVE_ANTTWEAKBAR
 	barcount=2;
 	modbars = (TwBar *)malloc(barcount*sizeof(TwBar *));
+#endif
 	return [super initWithScreen: screen];
 }
 
@@ -102,7 +104,7 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 	return PListOutputFile;
 }
 
--dealloc {
+-(void)dealloc {
 	NSLog(@"CViewScreenDelegate dealloc");
 	[PListOutputFile autorelease];
 	[super dealloc];

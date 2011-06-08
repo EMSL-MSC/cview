@@ -175,7 +175,7 @@ static GLScreen *_theMaster_ = nil;
 /** sort helper function that compares two AScreen objects
 	@relates AScreen
  */
-int compareScreenColumns(id one,id two,void *context) {
+NSInteger compareScreenColumns(id one,id two,void *context) {
 	AScreen *o=one;
 	AScreen *t=two;
 	if (o->col < t->col)
