@@ -76,20 +76,13 @@ All rights reserved.
     [super init];
     self->location = [[Vector alloc] initWithZeroes];
     self->rotation = [[Vector alloc] initWithZeroes];
-    self->name = nil;
+    self->myName = nil;
     width = 0;
     height = 0;
     depth = 0;
     boundingBox = NULL;
     wireframeBox = NULL;
     return self;
-}
--setName: (NSString *) _name{
-    self->name = _name;
-    return self;
-}
--(NSString*) name{
-    return self->name;
 }
 -setLocation: (Vector*) _location {
     self->location = _location;

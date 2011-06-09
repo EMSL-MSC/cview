@@ -81,7 +81,6 @@ typedef struct
 @interface Locatable : Identifiable <Pickable> {
     Vector *location;
     Vector *rotation;
-    NSString *name;
     float width;
     float height;
     float depth;
@@ -92,8 +91,6 @@ typedef struct
 }
 +(void)drawGLQuad: (_PointStruct) p1 andP2: (_PointStruct) p2
             andP3: (_PointStruct) p3 andP4: (_PointStruct) p4;
--setName: (NSString *) name;
--(NSString*) name;
 -setLocation: (Vector*) _location;
 -(Vector*) location;
 -setRotation: (Vector*) _rotation;
