@@ -170,7 +170,7 @@ All rights reserved.
     return self;
 }
 -printNode: (Node*)n withId: (float) _id {
-    NSLog(@"Node: name: %@ jobid: %f", [n name], _id);
+    NSLog(@"Node: name: %@ jobid: %f", [n getName], _id);
     return self;
 }
 -(void)sleepAndUpdate:(id) sleeptime {
@@ -232,9 +232,9 @@ All rights reserved.
 		if(self->tip != nil) {
 			if(self->sel != n) {
 				// Set up the tooltip for viewing
-				[tip setTitle: [n name]];
+				[tip setTitle: [n getName]];
 				float jobId = 0;
-				float *row = [[[n datacenter] jobIds] dataRowByString: [[n name] uppercaseString]];
+				float *row = [[[n datacenter] jobIds] dataRowByString: [[n getName] uppercaseString]];
 				if(row != NULL)
 					jobId = row[0];
 				[tip setText: [NSString stringWithFormat: @"JobId: %.0f\nAmbient Temp: %.0f%@C\nFront Panel Temp: ", jobId, [NSString stringWithCString: "\313\232"], [n getTemperature]]];

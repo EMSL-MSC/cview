@@ -141,11 +141,11 @@ All rights reserved.
 		return ROW_BLANK;
 	}
 	//2. header line
-	else if ([[arr objectAtIndex: 0] compare: @"#"] == NSOrderedSame) {
+	else if ([(NSString *)[arr objectAtIndex: 0] compare: @"#"] == NSOrderedSame) {
 		return ROW_HEADER;
 	}
 	//3. info line
-	else if ([[arr objectAtIndex: 0] compare: @"$"] == NSOrderedSame) {
+	else if ([(NSString *)[arr objectAtIndex: 0] compare: @"$"] == NSOrderedSame) {
 		return ROW_META;
 	}
 	//4. data line

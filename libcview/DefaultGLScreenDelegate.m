@@ -71,8 +71,7 @@ All rights reserved.
 
 -(void)dealloc {
 	[super dealloc];
-	return self;
-
+	return;
 }
 -screenHasStarted {
 	return self;	
@@ -290,38 +289,7 @@ All rights reserved.
 }
 
 -cleanTweakers {
-	GLWorld *w;
-	int ctx;
-	NSArray *a;
-	Scene *s;
-	NSArray *worlds;
-	NSEnumerator *list;
-	/*
-	NSLog(@"tweak release:%d",[tweaker retainCount]);	
-	
-	worlds = [myScreen getWorldsWithContext];
-	list = [worlds objectEnumerator];
-	while ((a = [list nextObject])) {	
-		w = [a objectAtIndex:0];
-		ctx = [(NSNumber *)[a objectAtIndex:1] intValue];
-		TwSetCurrentWindow(ctx);
-
-		s = [w overlay];
-		[s removeObject: tweaker];
-		if ([s objectCount] == 0)
-			[w setOverlay: nil];
-	}
-	
-	[tweakoverlays makeObjectsPerform: @selector(release)];
-	[tweakoverlays release];
-	tweakoverlays = nil;
-
-	NSLog(@"tweak release:%d",[tweaker retainCount]);	
-	[tweaker release];
-	NSLog(@"tweak release:%d",[tweaker retainCount]);	
-
-	tweaker = nil;*/
-	[tweaker setVisible: NO];
+	[tweaker hide];
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
 	return self;
 }

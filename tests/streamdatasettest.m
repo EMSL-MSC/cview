@@ -101,7 +101,7 @@ int main(int argc,char *argv[], char *env[]) {
 	o=[[[[GLGrid alloc] initWithDataSet: f] setXTicks: 4] setYTicks: 4];
 	[scene1 addObject: o atX: 0 Y: 0 Z: 0];
 	
-	GLWorld * gw1 = [[[g addWorld: @"Top" row: 0 col: 0 rowPercent: 50 colPercent:50] 
+	[[[g addWorld: @"Top" row: 0 col: 0 rowPercent: 50 colPercent:50] 
 		setScene: scene1] 
 		setEye: [[[Eye alloc] init] setX: 200.0 Y: 500.0 Z: 400.0 Hangle:1.15 Vangle: -2.45]
 	];

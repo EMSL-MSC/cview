@@ -67,7 +67,7 @@ All rights reserved.
 
 
 @implementation  GLBar
-static NSArray *barTypeStrings=nil;
+static NSArray *barTypeStrings=nil;  //these are for expansion and not used yet.
 static const char *barTypeSelectors[] =	{ 
 	"drawSquares",
 };

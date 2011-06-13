@@ -88,7 +88,7 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 	PListOutputFile = nil;
 #if HAVE_ANTTWEAKBAR
 	barcount=2;
-	modbars = (TwBar *)malloc(barcount*sizeof(TwBar *));
+	modbars = (TwBar **)malloc(barcount*sizeof(TwBar *));
 #endif
 	return [super initWithScreen: screen];
 }
@@ -108,7 +108,7 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 	NSLog(@"CViewScreenDelegate dealloc");
 	[PListOutputFile autorelease];
 	[super dealloc];
-	return self;	
+	return;	
 }
 #if HAVE_ANTTWEAKBAR
 

@@ -427,6 +427,7 @@ All rights reserved.
 }
 -setContext:(int)ident {
 	context = ident;
+	return self;
 }
 
 -(int)context {

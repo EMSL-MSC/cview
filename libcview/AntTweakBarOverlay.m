@@ -304,7 +304,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 	else {
 		NSLog(@"Strange notification: %@",note);
 	}
-
+	return self;
 }
 
 -(BOOL)setTree: (NSObject *)tree {

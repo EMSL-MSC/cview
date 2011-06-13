@@ -76,7 +76,6 @@ All rights reserved.
     [super init];
     self->location = [[Vector alloc] initWithZeroes];
     self->rotation = [[Vector alloc] initWithZeroes];
-    self->myName = nil;
     width = 0;
     height = 0;
     depth = 0;

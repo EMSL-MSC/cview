@@ -230,21 +230,7 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 }
 
 -cleanTweakers {
-	GLWorld *w;
-/*
-	if (tweaker && metricbar) {
-		NSArray *worlds = [myScreen getWorldsWithContext];
-		NSEnumerator *list;
-		list = [worlds objectEnumerator];
-		// there should only be one... 
-		a = [list nextObject];	
-		w = [a objectAtIndex:0];
-		ctx = [(NSNumber *)[a objectAtIndex:1] intValue];
-		TwSetCurrentWindow(ctx);
-		
-		[tweaker removeBar: metricbar];
-		metricbar = NULL;
-	}*/
+
 	[super cleanTweakers];
 	return self;
 }

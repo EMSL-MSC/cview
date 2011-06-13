@@ -71,7 +71,7 @@ static NSLock *ATB_lock;
 	TwBar *barp;
 	int context;
 }
-+wrap:(TwBar *)bar;
++wrap:(TwBar *)bar context: (int)i;
 -(TwBar *)bar;
 -(int)context;
 @end

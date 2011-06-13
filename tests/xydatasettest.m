@@ -97,7 +97,7 @@ int main(int argc,char *argv[], char *env[]) {
 	o=[[[[GLGrid alloc] initWithDataSet: h] setXTicks: 50] setYTicks: 50];
 	[scene1 addObject: o atX: 1300 Y: 0 Z: 0];
 	
-	GLWorld * gw1 = [[[g addWorld: @"Top" row: 0 col: 0 rowPercent: 50 colPercent:50] 
+	[[[g addWorld: @"Top" row: 0 col: 0 rowPercent: 50 colPercent:50] 
 		setScene: scene1] 
 		setEye: [[[Eye alloc] init] setX: 1050.0 Y: 2700.0 Z: 2700.0 Hangle:-4.72 Vangle: -2.45]
 	];
@@ -108,7 +108,7 @@ int main(int argc,char *argv[], char *env[]) {
 	o=[[[[GLGrid alloc] initWithDataSet: h1] setXTicks: 50] setYTicks: 50];
 	[scene2 addObject: o atX: 1300 Y: 0 Z: 0];
 	
-	GLWorld * gw2 = [[[g addWorld: @"Botom" row: 1 col: 0 rowPercent: 50 colPercent:50] 
+	[[[g addWorld: @"Botom" row: 1 col: 0 rowPercent: 50 colPercent:50] 
 		setScene: scene2] 
 		setEye: [[[Eye alloc] init] setX: 1050.0 Y: 2700.0 Z: 2700.0 Hangle:-4.72 Vangle: -2.45]
 	];

@@ -149,7 +149,7 @@ extern GLuint g_textureID;
 -(float)getJobIdFromNode:(Node*)n {
     if(n == nil)
         return 0;
-    float *row = [jobIds dataRowByString: [n name]];
+    float *row = [jobIds dataRowByString: [n getName]];
     if(row != NULL)
         return row[0];
     return 0;
@@ -321,17 +321,17 @@ extern GLuint g_textureID;
         // The location of the rack
         Vector *l = [[Vector alloc] init];
         if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"gridx"]) == -1) {
-            NSLog(@"Expected a \"gridx\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
+            NSLog(@"Expected a \"gridx\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack getName]);
             return [self cleanUp];
         }
         [l setX: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
         if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"gridy"]) == -1) {
-            NSLog(@"Expected a \"gridy\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
+            NSLog(@"Expected a \"gridy\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack getName]);
             return [self cleanUp];
         }
         [l setY: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
         if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"gridz"]) == -1) {
-            NSLog(@"Expected a \"gridz\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
+            NSLog(@"Expected a \"gridz\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack getName]);
             return [self cleanUp];
         }
         [l setZ: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
@@ -339,7 +339,7 @@ extern GLuint g_textureID;
 
         // Set the rotation of the rack
         if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"face"]) == -1) {
-            NSLog(@"Expected a \"face\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
+            NSLog(@"Expected a \"face\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack getName]);
             return [self cleanUp];
         }
         Vector *r = [[Vector alloc] init];
@@ -361,22 +361,22 @@ extern GLuint g_textureID;
         genders_getattr(handle,attrlist,vallist,attrlen,[racktype UTF8String]);
         // this is ugly and cryptic (but that's my evil plan...)
         if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"width"]) == -1) {
-            NSLog(@"Expected a \"width\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
+            NSLog(@"Expected a \"width\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack getName]);
             return [self cleanUp];
         }
         [rack setWidth: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
         if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"height"]) == -1) {
-            NSLog(@"Expected a \"height\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
+            NSLog(@"Expected a \"height\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack getName]);
             return [self cleanUp];
         }
         [rack setHeight: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
         if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"depth"]) == -1) {
-            NSLog(@"Expected a \"depth\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
+            NSLog(@"Expected a \"depth\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack getName]);
             return [self cleanUp];
         }
         [rack setDepth: [[NSString stringWithUTF8String: vallist[indexOf]] floatValue]];
 /*        if((indexOf = [self indexOfAttr:attrlist andLen:attrlen withAttr:@"color"]) == -1) {
-            NSLog(@"Expected a \"color\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack name]);
+            NSLog(@"Expected a \"color\" attribute in the genders file for rack=%@ but found none! Cannot continue loading the GLDataCenter!",[rack getName]);
             return [self cleanUp];
         }
         [rack setColor: [[NSString stringWithUTF8String: vallist[indexOf]] retain]];*/
@@ -467,7 +467,7 @@ extern GLuint g_textureID;
 
     Rack *r;
     while( (r = [e nextObject]) ) {
-        printf("%s %s\n",[[r name] UTF8String], [[r getNodeNames] UTF8String]);
+        printf("%s %s\n",[[r getName] UTF8String], [[r getNodeNames] UTF8String]);
     }*/
     return self;
 }
@@ -595,7 +595,7 @@ extern GLuint g_textureID;
 -addRack: (Rack*) rack {
     // Add the passed rack to our rackArray
     if(self->racks != nil) {
-        [self->racks setObject: rack forKey: [rack name]];
+        [self->racks setObject: rack forKey: [rack getName]];
     }
     return self;
 }
