@@ -95,9 +95,6 @@ static const char *gridTypeSelectors[] =	{
 -init {
 	[super init];
 	dataSetLock = [[NSRecursiveLock alloc] init];
-	currentMax = 0;
-	xTicks = 0;
-	yTicks = 0;
 	fontScale = 1.0;
 	fontColorR = 1.0;
 	fontColorG = 1.0;
@@ -131,7 +128,6 @@ static const char *gridTypeSelectors[] =	{
 	[ds retain];
 	[dataSet autorelease];
 	dataSet = ds;
-	[descText setString: [dataSet getDescription]]; //assume description will not change..
 	[self resetDrawingArrays];
 	[dataSetLock unlock];
 	
@@ -147,8 +143,11 @@ static const char *gridTypeSelectors[] =	{
 	GLuint *indices;
 
 	[dataSetLock lock];	
+	[descText setString: [dataSet getDescription]]; 
 	w=[dataSet width];
 	h=[dataSet height];
+	currentWidth = w;
+	currentHeight = h;
 		
 	[dataRow autorelease];
 	[colorRow autorelease];
@@ -264,6 +263,7 @@ static const char *gridTypeSelectors[] =	{
 }
 
 -glDraw {
+	[dataSet lock];
 	int max = roundf([dataSet getScaledMax]);
 	
 	if (currentMax != max) {
@@ -273,6 +273,8 @@ static const char *gridTypeSelectors[] =	{
 		colorMap = [ColorMap mapWithMax: currentMax];
 		[colorMap retain];
 	}
+	if (currentHeight != [dataSet height] || currentWidth != [dataSet width]) 
+		[self resetDrawingArrays];
 
 	glScalef(1.0,1.0,1.0); 
 	
@@ -282,7 +284,7 @@ static const char *gridTypeSelectors[] =	{
 	[self drawAxis];
 	[self drawTitles];
 	[dataSetLock unlock];
-	
+	[dataSet unlock];
 	return self;
 }
 

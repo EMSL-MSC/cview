@@ -56,78 +56,25 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-/** 
-This class implements the gl drawing code to show a graph of lines above a lower base plane, with X and Y labels, with a z-axix tower showing the height of the data.  The data is provided by a DataSet class.  The coloring of the lines is provided by a self-created ColorMap class.
-
-The class can display 4 types of Grid: Lines, Surfaces, Ribbons and Points.
-@author Evan Felix <evan.felix@pnl.gov>, (C) 2008
-@ingroup cview3d
-*/
 #import <Foundation/Foundation.h>
-#import "DataSet.h"
-#import "ColorMap.h"
-#import "DrawableObject.h"
-#import "GLText.h"
 
-typedef enum { G_LINES=0,G_RIBBON,G_SURFACE,G_POINTS,G_COUNT } GridTypesEnum;
-#define G_LINES_STRING @"0"
 
-@interface GLGrid: DrawableObject {
-	DataSet *dataSet;
-	ColorMap *colorMap;
-	int xTicks,yTicks;
-	int currentMax,currentWidth,currentHeight;
-	NSMutableData *dataRow;
-	NSMutableData *colorRow;
-	GLText *descText;
-	float fontScale;
-	float fontColorR;
-	float fontColorG;
-	float fontColorB;
-	float xscale,yscale,zscale;
-	float dzmult,rmult;
-	GridTypesEnum gridType;
-	NSRecursiveLock *dataSetLock;
-	
-	//surface specific
-	NSMutableData *surfaceIndices;
+/**
+	Thread class that will provide a NSRunLoop for updating Datasets when needed.
+
+	@author Evan Felix
+	@ingroup cviewdata
+*/
+
+@interface UpdateRunLoop: NSObject {
+	BOOL running;
+	NSLock *runLock;
+	NSRunLoop *theLoop;
 }
--init;
-/** Create GLGrid with a dataset, using the default Line Drawing method*/ 
--initWithDataSet: (DataSet *)ds;
-/** Create GLGrid with a dataset, using the given Drawing method*/ 
--initWithDataSet: (DataSet *)ds andType: (GridTypesEnum)type;
-/** change the dataSet displayed */
--setDataSet: (DataSet *)ds;
--(void)resetDrawingArrays;
-/** get the current dataset */
--(DataSet *)getDataSet;
--glDraw;
-/** draw the overall grid description text */
--drawTitles;
-/** draw the z axis tower with appropriate ticks */
--drawAxis;
-/** draw the lower plane, with x and y axis ticks */
--drawPlane;
-/** set the delta between each tick drawing on the X axis*/
--setXTicks: (int) delta;
-/** set the delta between each tick drawing on the Y axis*/
--setYTicks: (int) delta;
--(int)xTicks;
--(int)yTicks;
-/** set the scaling of the descriptive text */
--setFontScale:(float)scale;
--(float)fontScale;
-/**Set the current type of grid to display*/
--(void)setGridType:(GridTypesEnum)code;
-/**Returns the current Type of Grid being Displayed*/
--(GridTypesEnum)getGridType;
-/** draw the data lines*/
--drawLines;
-/** draw the data lines*/
--drawSurface;
-/** draw the data lines*/
--drawPoints;
-/** draw the data lines*/
--drawRibbons;
+-(id)init;
+-(void)dealloc;
+-(void)run:(id)args;
++(NSRunLoop *)runLoop;
++(UpdateRunLoop *)singleton;
+-terminate;
 @end

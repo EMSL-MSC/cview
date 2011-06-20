@@ -67,7 +67,7 @@ All rights reserved.
 #import "DictionaryExtra.h"
 #import "ListComp.h"
 #import "SinDataSet.h"
-#import "UpdateThread.h"
+#import "UpdateRunLoop.h"
 #import "WebDataSet.h"
 #import "XYDataSet.h"
 #import "StreamDataSet.h"

@@ -163,11 +163,8 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 		n = [metricFlags objectForKey: key];
 		if ([n boolValue]) {
 			WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: url andKey: key];
-			UpdateThread *t = [[UpdateThread alloc] initWithUpdatable: d];
-			[d setThread: t];
 		
 			[d autoScale: 100];	
-			[t startUpdateThread: updateInterval];
 			o=[[[[[GLGrid alloc] initWithDataSet: d] setXTicks: 50] setYTicks: 32] show];
 			//NSLog(@"%@",o);
 			[scene addObject: o atX: posx Y: 0 Z: -posy];
@@ -183,7 +180,6 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 			}
 	
 			[d autorelease];
-			[t autorelease];
 			[o autorelease];
 		}
 	}

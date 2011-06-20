@@ -97,13 +97,9 @@ int main(int argc,char *argv[], char *env[]) {
 		NSURL *cluster = [NSURL URLWithString: @"http://chumbucket/cluster/chinook/"];
 		WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.user"];
 		WebDataSet *f = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.sys"];
-		UpdateThread *td = [[UpdateThread alloc] initWithUpdatable: d];
-		UpdateThread *tf = [[UpdateThread alloc] initWithUpdatable: f];
 		[d autoScale: 100];	
-		[td startUpdateThread: 30.0];
-		[f autoScale: 100];	
-		[tf startUpdateThread: 30.0];
-	
+		//[f autoScale: 100];	
+		
 	
 		GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test" withWidth: 1200 andHeight: 600];
 	

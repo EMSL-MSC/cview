@@ -161,6 +161,7 @@ void _renderSceneAll() {
 }
 void _periodicTimer(int value) {
 	[[GLScreen getMaster] checkState];
+	[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:nil];
 //	NSLog(@"periodic timer");
 	glutTimerFunc(100,_periodicTimer,0);
 }

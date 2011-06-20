@@ -62,15 +62,28 @@ All rights reserved.
 #import "math.h"
 
 @implementation SinDataSet
--initWithName: (NSString *)key Width: (int)w Height: (int)h {
+-initWithName: (NSString *)key Width: (int)w Height: (int)h interval: (float)timer;{
 	[super initWithName: key Width: w Height: h];
 	dx=0.0;
 	rateSuffix=@"Nums";
-	[self updateData];
+	
+	[[UpdateRunLoop runLoop] addTimer: 
+								[[NSTimer alloc] initWithFireDate: [NSDate dateWithTimeIntervalSinceNow: 1] 
+								 interval: timer 
+								 target:self 
+								 selector: @selector(fireTimer:) 
+								 userInfo:nil 
+								 repeats:YES]
+						 forMode: NSDefaultRunLoopMode];
+
 	return self;
 }
 
--(BOOL)updateData {
+- initWithWidth: (int)w Height: (int)h interval: (float)timer {
+	return [self initWithName: @"Sin()" Width: w Height:h interval: timer];
+}
+
+-fireTimer: (NSTimer *)timer {
 	int i,j;
 	float *d;
 	dx += 0.1;
@@ -95,10 +108,6 @@ All rights reserved.
 	dx = [[list objectForKey: @"dx"] intValue];
 
 	[super initWithWidth: w Height: h];
-	thread = [[UpdateThread alloc] initWithUpdatable: self];
-
-	[thread startUpdateThread: 1.0];
-
 	return self;
 }
 
@@ -118,7 +127,6 @@ All rights reserved.
 
 -(void)dealloc {
 	NSLog(@"dealloc SinDataSet:%@",name);
-	[[thread terminate] autorelease];
 	[super dealloc];
 }
 

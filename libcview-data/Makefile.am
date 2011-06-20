@@ -9,10 +9,10 @@ pkginclude_HEADERS = $(wildcard *.h)
 
 lib_LTLIBRARIES = libcview-data.la
 
-libcview_data_la_SOURCES = DataSet.m SinDataSet.m UpdateThread.m \
+libcview_data_la_SOURCES = DataSet.m SinDataSet.m \
 	DictionaryExtra.m ListComp.m WebDataSet.m JobDataSet.m \
 	calcdatasetkernel.c CalculatedDataSet.m XYDataSet.m \
-	StreamDataSet.m datautils.m
+	StreamDataSet.m datautils.m UpdateRunLoop.m
 
 libcview_data_la_OBJCFLAGS = $(AM_OBJCFLAGS)
 libcview_data_la_LDFLAGS = $(FOUNDATION_LDFLAGS) 

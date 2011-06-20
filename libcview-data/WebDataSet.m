@@ -58,28 +58,53 @@ All rights reserved.
 */
 #import <Foundation/Foundation.h>
 #import <sys/param.h>  //for max/min
+#import "UpdateRunLoop.h"
 #import "WebDataSet.h"
 
+static float blankdata[] = {
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  6, 26,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  6, 26,  0,  0,  0,
+  0,  0,  0,  6, 51,103,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 25,109, 26,  0,  0,  0,
+  0,  0,  0,  0, 25,127,110,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 25,133,104,  0,  0,  0,  0,
+  0,  0,  0,  0,  0, 25,147,136,  6,  0,  0,  2, 14, 26, 39, 50, 50, 48, 36, 24, 11,  0,  0,  0, 25,149,130, 11,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0, 25,208,155,  6,  3, 39,112,164,214,255,255,244,193,142, 87, 22,  0, 25,149,203, 44,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0, 25,208,165,104,175,255,255,255,255,255,255,255,255,233,135, 99,149,203, 44,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0, 40,238,247,255,249,211,153,127,127,134,172,229,255,250,237,225, 44,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  3, 70,230,255,254,207, 83, 26,  0,  0,  6, 44,128,234,255,254,197, 22,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  1, 39,175,255,250,255,242,107,  0,  0,  0,  0, 25,157,255,253,255,233,126, 11,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0, 14,112,255,249,198,173,255,239,107,  0,  0, 25,152,255,247,176,229,255,219, 62,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0, 26,164,255,230,103, 25,152,255,239,113, 26,156,255,246,129, 25,152,255,232,114,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0, 39,214,255,211, 26,  0, 25,152,255,243,163,255,249,130,  0,  6, 76,255,244,165,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0, 50,255,255,205,  0,  0,  0, 25,168,255,255,249,154, 11,  0,  0, 50,255,255,205,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0, 50,255,255,205,  0,  0,  0, 25,156,255,255,243,120,  1,  0,  0, 50,255,255,205,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0, 48,244,255,211, 26,  0, 25,152,255,249,187,255,243,113,  0,  6, 76,255,253,194,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0, 36,193,255,230,103, 25,152,255,246,153, 35,168,255,239,107, 25,152,255,241,143,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0, 23,142,255,249,198,173,255,246,129,  0,  0, 25,152,255,239,162,229,255,229, 92,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0, 11, 87,233,255,250,255,248,129,  0,  0,  0,  0, 25,157,255,252,255,252,194, 40,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0, 22,135,248,255,255,214, 83, 26,  0,  0,  6, 44,128,234,255,255,225, 81,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0, 65,237,254,255,249,211,153,128,128,134,172,229,255,254,252,220,  6,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0, 25,149,213,197,233,255,255,255,255,255,255,255,255,252,218,161,208,155,  6,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0, 25,149,203, 44, 22,126,219,232,244,255,255,253,241,229,194, 81,  0, 25,208,155,  6,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0, 25,133,200, 44,  0,  0, 11, 62,114,165,205,205,194,143, 92, 40,  0,  0,  0, 25,208,136,  1,  0,  0,  0,  0,
+  0,  0,  0,  0, 25,127,127, 11,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 25,147,110,  0,  0,  0,  0,
+  0,  0,  0,  6, 51,103,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 25,109, 26,  0,  0,  0,
+  0,  0,  0,  6, 26,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  6, 26,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+};
 
 @implementation WebDataSet
-/*
--(NSData *)_downloadURL: (NSURL *)url useCache: (BOOL) cachedok {
-	NSData *d;
-	NSURLHandle *handle;
 
-	d = [handle loadInForeground];
-	[handle release];
-	allowRescale = NO;
-	NSLog(@"LEN:%d",[d length]);
-	return d;
-}
-*/
 -initWithUrlBase: (NSURL *)base andKey: (NSString *)key {
     indexByString = nil;
 	int w,h,retrys;
 	Class handlerClass;
 	NSURLHandle *handle;
 	NSDate *d;
+	NSURLRequest *req;
 
     indexByString = nil;
 	baseURL = [base retain];
@@ -87,51 +112,29 @@ All rights reserved.
 	dataURL = [[NSURL URLWithString: [NSString stringWithFormat: @"%@.data",key] relativeToURL: base] retain];
 	XticksURL = [[NSURL URLWithString: @"xtick" relativeToURL: base] retain];
 	YticksURL =  [[NSURL URLWithString: [NSString stringWithFormat: @"%@.ytick",key] relativeToURL: base] retain];
+	rateURL = [[NSURL URLWithString: [NSString stringWithFormat: @"%@.rate",key] relativeToURL: base] retain];
+	descURL = [[NSURL URLWithString: [NSString stringWithFormat: @"%@.desc",key] relativeToURL: base] retain];
 
-	handlerClass = [NSURLHandle URLHandleClassForURL: dataURL];
+	/* Sane Defaults until we have actual data */
 
-	w=0;
-	h=0;
-	retrys=10;
-	while ((w==0 || h==0) && retrys-- >0) {
-		//calculate size based on downloaded data
-		handle = [[handlerClass alloc] initWithURL: XticksURL cached: NO];
-		Xticks = [[NSMutableData dataWithData: [handle loadInForeground]] retain];
-		[handle release];
-		handle = [[handlerClass alloc] initWithURL: YticksURL cached: NO];
-		Yticks = [[NSMutableData dataWithData: [handle loadInForeground]] retain];
-		[handle release];
-	
-		if (Xticks == nil || Yticks == nil) {
-			NSLog(@"Error loading URLS for dataset: %@ %s %@ %@",base,key,Xticks,Yticks);
-		}
-		else {
-			w = [Xticks length]/32;
-			h = [Yticks length]/32;
-			NSLog(@"Sizes: %d,%d",w,h);
-		}
-		if (w==0 || h==0) {
-			d=[NSDate dateWithTimeIntervalSinceNow: 2];
-			[NSThread sleepUntilDate:d];
-		}
-	}
-	if (retrys < 0 )
-		return nil;
-
-	[super initWithName: key Width: w Height: h];
-	while ([self updateData] == YES)
-		//Get a valid dataset first
-		NSLog(@"Getting a dataset");
-		;
-	NSLog(@"Loaded:%@",dataURL);
+	[super initWithName: key Width: 32 Height: 32];
+	Xticks = [NSMutableData dataWithCapacity: 32*TICK_LEN];
+	Yticks = [NSMutableData dataWithCapacity: 32*TICK_LEN];
 	allowRescale = YES;
-	rateSuffix = [NSString stringWithContentsOfURL: [NSURL URLWithString: [NSString stringWithFormat: @"%@.rate",key] relativeToURL: base]];
-	[rateSuffix retain];
-	textDescription = [NSString stringWithContentsOfURL: [NSURL URLWithString: [NSString stringWithFormat: @"%@.desc",key] relativeToURL: base]];
-	[textDescription retain];
-	NSLog(@"description: %p",textDescription);
-	NSLog(@"rateSuffix: %@",rateSuffix);
-    [self initializeIndexByStringDictionary];
+	rateSuffix = @"...";
+	textDescription = @"Blank DataSet";
+	[data setData: [NSData dataWithBytes: blankdata length: sizeof(blankdata)]];
+	
+	incomingData = [[NSMutableData data] retain];
+	stage = START;
+	timer = [[NSTimer alloc] initWithFireDate: [NSDate dateWithTimeIntervalSinceNow: 1] 
+							 interval: 30.0 
+							 target:self 
+							 selector: @selector(fireTimer:) 
+							 userInfo:nil 
+							 repeats:YES];
+	[[UpdateRunLoop runLoop] addTimer: timer forMode: NSDefaultRunLoopMode];
+	
 	return self;
 }
 /**@objcdef dataUpdateInterval specify how often the thread will reload the DataSet*/
@@ -144,13 +147,8 @@ All rights reserved.
 	NSURL *url = [NSURL URLWithString: [list objectForKey: @"baseURL"]];
 	NSString *key = [list objectForKey: @"key"];
 
-	thread = [[UpdateThread alloc] initWithUpdatable: self];
-
 	[self initWithUrlBase: url andKey: key];
 
-	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
-	[thread startUpdateThread: [args floatForKey: @"dataUpdateInterval"]];
-    [self initializeIndexByStringDictionary];
 	return self;
 }
 
@@ -171,59 +169,152 @@ All rights reserved.
 	[dataURL autorelease];
 	[XticksURL autorelease];
 	[YticksURL autorelease];
+	[timer invalidate];
+	[timer autorelease];
+	[webConn autorelease];
+	[incomingData autorelease];
 	[Xticks autorelease];
 	[Yticks autorelease];
 	[rateSuffix autorelease];
 	[baseURL autorelease];
-	[[thread terminate] autorelease];
     [indexByString autorelease];
 	[super dealloc];
 }
 
--(BOOL)updateData {
-//    NSLog(@"WebDataSet: Updating web data....");
-	BOOL abort;
-	NSData *Xt;
-	NSData *Yt;
-	NSData *Data;
-	Class handlerClass = [NSURLHandle URLHandleClassForURL: dataURL];
-	NSURLHandle *X,*Y,*D;
-	//now get the data validating size;
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
+{
+	int code;
+	//NSLog(@"Incoming Data: %d %@",stage,response);
+	if ([response respondsToSelector:@selector(statusCode)]) {
+		code = [((NSHTTPURLResponse *)response) statusCode];
+		switch (code) {
+			case 200:
+				break;
+			default:
+				NSLog(@"URL request to %@ returned %d",[response URL],code);
+				stage = ERR;
+				break;
+		}
+	}
+    [incomingData setLength:0];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)indata {
+	//NSLog(@"Data Recieved: %@ - %d - %d",connection, [indata length],stage);
+	[incomingData appendData: indata];
+}
+
+- (void)connection:(NSURLConnection *)connection
+  didFailWithError:(NSError *)error
+{
+	NSLog(@"Error Recieved: %@ %@",connection,error);
+	[connection autorelease];
+	stage = IDLE;
+}
+
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection  {
+//	NSLog(@"connection Finished: %@",connection);
+	NSURLRequest *req;	
+	int w,h;
+
+	switch (stage) {
+			
+		case DESC:
+			//NSLog(@"DESC finish");
+			[self setDescription: [NSString stringWithCString: [incomingData bytes] length: [incomingData length]]];
+			NSLog(@"desc: %@",textDescription);
+
+			stage = RATE;
+			req = [NSURLRequest requestWithURL: rateURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
+			webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];
+			break;
+
+		case RATE:
+			//NSLog(@"RATE finish");	
+			[self setRate: [NSString stringWithCString: [incomingData bytes] length: [incomingData length]]];		
+			NSLog(@"rate: %@",rateSuffix);
+			
+			stage = IDLE;
+			[self fireTimer:nil]; //Start the data download in the timer code
+			break;
+			
+		case START:
+		case IDLE:
+			NSLog(@"Should not recieve data during IDLE/START stage");
+			break;
+			
+		case XTICK:
+			//NSLog(@"XTICK finish");
+			w = [incomingData length];
+			if (w%TICK_LEN != 0) { //inproper read
+				stage = IDLE;
+				break;
+			}
+			w /= TICK_LEN;
+			if (w != width)
+				[self setWidth: w];
+			[Xticks setData: incomingData];
+			//Is this where this goes?
+		    [self initializeIndexByStringDictionary];
+
+			
+			stage = YTICK;
+			req = [NSURLRequest requestWithURL: YticksURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
+			webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];	
+			break;
+			
+		case YTICK:
+			//NSLog(@"YTICK finish");
+			h = [incomingData length];
+			if (h%TICK_LEN != 0) { //inproper read
+				stage = IDLE;
+				break;
+			}
+			h /= TICK_LEN;
+			if (h != height)
+				[self setHeight: h];
+			[Yticks setData: incomingData];
+
+			stage = DATA;
+			req = [NSURLRequest requestWithURL: dataURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
+			webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];	
+			break;
+			
+		case DATA:
+			//NSLog(@"DATA finish");
+			
+			if (width*height*sizeof(float) == [incomingData length]);		
+				[self autoScaleWithNewData: incomingData];
+			
+			stage = IDLE;
+			webConn=nil;
+			break;
+		case ERR:
+			break;
+		default:
+			NSLog(@"Invalid Stage in state machine..");
+			break;
+	}
+	[connection autorelease];
+	return;
+}
+
+-(void)fireTimer:(NSTimer*)aTimer {
+
+	NSURLRequest *req;
 	
-	//this is difficult way to do this, but needed so we dont leak sockets
-	X = [[handlerClass alloc] initWithURL: XticksURL cached: YES];
-	Xt = [X loadInForeground];
-	Y = [[handlerClass alloc] initWithURL: YticksURL cached: NO];
-	Yt = [Y loadInForeground];
-	D = [[handlerClass alloc] initWithURL: dataURL cached: NO];
-	Data = [D loadInForeground];
-
-	abort = NO;
-	if ([Data length] != width*height*sizeof(float)) {
-		NSLog(@"Data Size Invalid: %d*%d*%d != %d",width,height,sizeof(float),[Data length]);
-		abort = YES;
+	if (stage == IDLE) {
+		req = [NSURLRequest requestWithURL: XticksURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
+		stage = XTICK;
+		webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];
 	}
-	if ([Xt length] != width*TICK_LEN) {
-		NSLog(@"Xt Size Invalid: %d*%d != %d",width,TICK_LEN,[Xt length]);
-		abort = YES;
-	}
-	if ([Yt length] != height*TICK_LEN) {
-		NSLog(@"Yt Size Invalid: %d*%d != %d",height,TICK_LEN,[Yt length]);
-		abort = YES;
+	else if (stage == START) {
+		req = [NSURLRequest requestWithURL: descURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
+		stage = DESC;
+		webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];	
 	}
 
-	if ( ! abort) {
-		[Xticks setData: Xt];
-		[Yticks setData: Yt];
-	
-		[self autoScaleWithNewData: Data];
-	}
-
-	[X autorelease];
-	[Y autorelease];
-	[D autorelease];
-
-	return abort;
+	return;
 } 
 
 - (NSString *)rowTick: (int)row {
@@ -233,7 +324,6 @@ All rights reserved.
 
 - (NSString *)columnTick: (int)col {
 	char *ticks = (char *)[Xticks mutableBytes];
-//	NSLog(@"col: %d %s",col,ticks+TICK_LEN*col);
 	return [NSString stringWithCString: ticks+TICK_LEN*col];
 }
 
@@ -270,10 +360,5 @@ All rights reserved.
     }
     return self;
 }
--setThread:(UpdateThread *)t {
-	[t retain];
-	[thread autorelease];//Dealloc will terminate it, but should we force it?
-	thread = t;	
-	return self;
-}
+
 @end

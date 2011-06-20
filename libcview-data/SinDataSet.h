@@ -59,7 +59,7 @@ All rights reserved.
 #import <Foundation/NSObject.h>
 #import <Foundation/NSData.h>
 #import "DataSet.h"
-#import "UpdateThread.h"
+#import "UpdateRunLoop.h"
 
 /**
 	Simple DataSet that produces a Sine wave function within the data in the range 0 to 100, with one edge of the data always set to 50. 
@@ -67,9 +67,10 @@ All rights reserved.
 	@author Evan Felix
 	@ingroup cviewdata
 */
-@interface SinDataSet: DataSet <Updatable,PList> {
+@interface SinDataSet: DataSet <PList> {
 	float dx;
-	UpdateThread *thread;
 }
+- initWithName: (NSString *)n Width: (int)w Height: (int)h interval: (float)timer;
+- initWithWidth: (int)w Height: (int)h interval: (float)timer;
 @end
 
