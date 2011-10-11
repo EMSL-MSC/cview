@@ -118,8 +118,8 @@ static float blankdata[] = {
 	/* Sane Defaults until we have actual data */
 
 	[super initWithName: key Width: 32 Height: 32];
-	Xticks = [NSMutableData dataWithCapacity: 32*TICK_LEN];
-	Yticks = [NSMutableData dataWithCapacity: 32*TICK_LEN];
+	Xticks = [[NSMutableData dataWithCapacity: 32*TICK_LEN] retain];
+	Yticks = [[NSMutableData dataWithCapacity: 32*TICK_LEN] retain];
 	allowRescale = YES;
 	rateSuffix = @"...";
 	textDescription = @"Blank DataSet";
@@ -220,7 +220,7 @@ static float blankdata[] = {
 	switch (stage) {
 			
 		case DESC:
-			//NSLog(@"DESC finish");
+			NSLog(@"DESC finish");
 			[self setDescription: [NSString stringWithCString: [incomingData bytes] length: [incomingData length]]];
 			NSLog(@"desc: %@",textDescription);
 
@@ -230,7 +230,7 @@ static float blankdata[] = {
 			break;
 
 		case RATE:
-			//NSLog(@"RATE finish");	
+			NSLog(@"RATE finish");	
 			[self setRate: [NSString stringWithCString: [incomingData bytes] length: [incomingData length]]];		
 			NSLog(@"rate: %@",rateSuffix);
 			
@@ -244,7 +244,7 @@ static float blankdata[] = {
 			break;
 			
 		case XTICK:
-			//NSLog(@"XTICK finish");
+			NSLog(@"XTICK finish");
 			w = [incomingData length];
 			if (w%TICK_LEN != 0) { //inproper read
 				stage = IDLE;
@@ -264,7 +264,7 @@ static float blankdata[] = {
 			break;
 			
 		case YTICK:
-			//NSLog(@"YTICK finish");
+			NSLog(@"YTICK finish");
 			h = [incomingData length];
 			if (h%TICK_LEN != 0) { //inproper read
 				stage = IDLE;
@@ -281,7 +281,7 @@ static float blankdata[] = {
 			break;
 			
 		case DATA:
-			//NSLog(@"DATA finish");
+			NSLog(@"DATA finish");
 			
 			if (width*height*sizeof(float) == [incomingData length]);		
 				[self autoScaleWithNewData: incomingData];

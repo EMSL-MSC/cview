@@ -56,6 +56,6 @@ All rights reserved.
     not infringe privately owned rights.  
 
 */
-@interface LoadClasses
+@interface LoadClasses:NSObject
 +(void)loadAllClasses;
 @end
