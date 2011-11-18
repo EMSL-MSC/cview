@@ -272,7 +272,7 @@ All rights reserved.
 			TwDefine("GLWorld iconified=true label='World Config'");
 			[tweakoverlay setTree: w];
 			[tweakoverlays addObject: tweakoverlay];
-			// find the overlay and add ourselfs..
+			// find the overlay and add ourselves..
 		
 			s = [w overlay];
 			if (!s) {

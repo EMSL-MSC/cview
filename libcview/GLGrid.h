@@ -87,6 +87,7 @@ typedef enum { G_LINES=0,G_RIBBON,G_SURFACE,G_POINTS,G_COUNT } GridTypesEnum;
 	float xscale,yscale,zscale;
 	float dzmult,rmult;
 	GridTypesEnum gridType;
+	/** protect the dataSet member from being changed while we are reading it */
 	NSRecursiveLock *dataSetLock;
 	
 	//surface specific

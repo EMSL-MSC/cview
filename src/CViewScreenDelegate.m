@@ -180,6 +180,7 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 			[[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(updateModBar:) name: @"DataModelModified" object: w];
 		}
 	}
+    
 	return self;
 }
 

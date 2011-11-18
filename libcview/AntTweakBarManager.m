@@ -102,7 +102,7 @@ static AntTweakBarManager *atbmSingleton;
 		NSLog(@"Build Tweak: %d, %x",glutGetWindow(),self);
 		bars = [[NSMutableSet setWithCapacity: 4] retain];
 		
-	TwInit(TW_OPENGL, NULL);
+        TwInit(TW_OPENGL, NULL);
 
 		TwSetCurrentWindow(glutGetWindow());
 		TwWindowSize( glutGet(GLUT_WINDOW_WIDTH),glutGet(GLUT_WINDOW_HEIGHT));
@@ -178,7 +178,7 @@ static AntTweakBarManager *atbmSingleton;
 -glDraw {
 	int win = glutGetWindow();
 	NSNumber *wino = [NSNumber numberWithInt: win];
-	//NSLog(@"Tweaker Draw:%d",[bars count]);
+	//NSLog(@"Tweaker Draw:%d  win:%@",[bars count],wino);
 	TwSetCurrentWindow(win);
 	if ([sizeChanged containsObject: wino] == NO) {
 		TwWindowSize( glutGet(GLUT_WINDOW_WIDTH),glutGet(GLUT_WINDOW_HEIGHT));
@@ -186,6 +186,7 @@ static AntTweakBarManager *atbmSingleton;
 	}
 	if ([bars count]>0)
 		TwDraw();
+    
 	return self;
 }
 

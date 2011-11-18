@@ -66,8 +66,10 @@ All rights reserved.
 -init {
 	NSLog(@"init: %@",[self class]);
 	dataPlanes = [[NSMutableArray arrayWithCapacity: 5] retain]; //guess number
-	newData = [[NSMutableData alloc] initWithLength: width*height*sizeof(float)];
+	planeLock = [[NSRecursiveLock alloc] init];
+	newData = nil;//[[NSMutableData alloc] initWithLength: width*height*sizeof(float)];
 	updatedCount = 0;
+    nonCongruentPlanes = TRUE;
 	return self;
 }
 -initWithName: (NSString *)n usingFormula: (NSString *)c onPlanes: (id)first, ... {
@@ -103,7 +105,8 @@ All rights reserved.
 	[self setCalculation: calc_data_set];
 	[super initWithName: n Width: width Height: height];
 	[self registerForNotifications];
-	newData = [[NSMutableData alloc] initWithLength: width*height*sizeof(float)];
+	[self checkAndResetDataPlanes];
+	//newData = [[NSMutableData alloc] initWithLength: width*height*sizeof(float)];
 	return self;
 }
 -initWithPList: (id)list {
@@ -146,7 +149,8 @@ All rights reserved.
 		[self setCalculation: calc_data_set];
 		NSLog(@"%@'s name is: %@", self, myName);
 		[super initWithName: myName Width: [ds width] Height: [ds height]];
-		newData = [[NSMutableData alloc] initWithLength: width*height*sizeof(float)];
+		//newData = [[NSMutableData alloc] initWithLength: width*height*sizeof(float)];
+		[self checkAndResetDataPlanes];
 		rateSuffix = [myRateSuffix copy];
 		[rateSuffix retain];
 		[myRateSuffix autorelease];
@@ -248,8 +252,56 @@ All rights reserved.
 	newData = oldData;
 	return self;
 }
+
+-(void)checkAndResetDataPlanes {
+    NSEnumerator *list;
+    DataSet *ds;
+    int planew=0,planeh=0;
+    [planeLock lock];
+    [dataPlanes makeObjectsPerformSelector: @selector(lock)];
+    //NSLog(@"Checking congruence: %p %dx%d",newData,width,height);
+    //We want to detect a size change from our current plane size
+    nonCongruentPlanes=0;
+    
+    list = [dataPlanes objectEnumerator];
+    while ((ds = [list nextObject])) {
+        if ([ds width] != width || [ds height] != height)
+            nonCongruentPlanes = 1;
+        planew += [ds width];
+        planeh += [ds height];
+        //NSLog(@"plane: %@ %dx%d",ds,[ds width],[ds height]);
+    }
+    ds = [dataPlanes objectAtIndex:0];
+    //NSLog(@"plane info: %d %d %d",planew,planeh,[dataPlanes count]);
+    if (nonCongruentPlanes || newData == nil) {
+        //NSLog(@"here: %d %d %d %d",planew/[dataPlanes count], [ds width], planeh/[dataPlanes count],[ds height]);
+        //now check if th sizes were all the same.
+        if (planew/[dataPlanes count] == [ds width] && planeh/[dataPlanes count] == [ds height]) {
+            //NSLog(@"create Newdata");
+            width = [ds width];
+            height = [ds height];
+            newData = [[NSMutableData alloc] initWithLength: width*height*sizeof(float)];
+            nonCongruentPlanes = 0;
+        }
+        else {
+            NSLog(@"Planes are incongruent, waiting for congruency");
+        }
+
+    }
+    [dataPlanes makeObjectsPerformSelector: @selector(unlock)];
+    [planeLock unlock];
+}
+
 -(void)performCalculation {
 	//NSLog(@"Entering [CalculatedDataSet(%@) performCalculation] calculating to %u", self, newData);
+    [self lock];
+	[self checkAndResetDataPlanes];
+    if (nonCongruentPlanes==1) {
+        //NSLog(@"NonCongruence detected... no re-calc");
+        return;
+    }
+	[dataPlanes makeObjectsPerformSelector: @selector(lock)]; //  possible deadlock...
+	
 	NSMutableData *ptrs = [NSMutableData dataWithCapacity: sizeof( float * )*[dataPlanes count]]; //is autoreleased later
 	float const **datap = (float const **)[ptrs mutableBytes];
 	int i;
@@ -257,10 +309,10 @@ All rights reserved.
 	dataResetRange.location = 0;
 	dataResetRange.length = width*height*sizeof(float);
 
-	if (newData == nil) {
-		NSLog(@"Allocating newData %u %u", data, newData);
-		newData = [[NSMutableData alloc] initWithLength: width*height*sizeof(float)];
-	}
+	//if (newData == nil) {
+	//	NSLog(@"Allocating newData %u %u", data, newData);
+	//	newData = [[NSMutableData alloc] initWithLength: width*height*sizeof(float)];
+	//}
 	[newData resetBytesInRange: dataResetRange];
 	float *new_data_bytes = [newData mutableBytes];
 	for (i=0;i<[dataPlanes count];i++)
@@ -272,11 +324,14 @@ All rights reserved.
 			max = new_data_bytes[i];
 		}
 	}
+	[dataPlanes makeObjectsPerformSelector: @selector(unlock)];
 	[self autoScale];
+    [self unlock];
 	//NSLog(@"Exiting [CalculatedDataSet(%@:%u) performCalculation] %u %u", self,self,data, newData);
 }
 -(void)receiveNotification: (NSNotification *)notification {
 	updatedCount++;
+    //NSLog(@"Notified..  count=%d",updatedCount);
 	if ( updatedCount == [dataPlanes count] ) {
 		[self performCalculation];
 		updatedCount = 0;

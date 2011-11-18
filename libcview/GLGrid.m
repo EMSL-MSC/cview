@@ -94,6 +94,7 @@ static const char *gridTypeSelectors[] =	{
 }
 -init {
 	[super init];
+	// This lock protects the changing of the dataset.
 	dataSetLock = [[NSRecursiveLock alloc] init];
 	fontScale = 1.0;
 	fontColorR = 1.0;
@@ -103,7 +104,7 @@ static const char *gridTypeSelectors[] =	{
 	yscale=1.0;
 	zscale=1.0;
 	dzmult=0.0;
-	rmult=1.0;
+	rmult=0.25;
 	surfaceIndices=nil;
 	gridType=G_LINES;
 	descText = [[GLText alloc] initWithString: @"Unset" andFont: @"LinLibertine_Re.ttf"];

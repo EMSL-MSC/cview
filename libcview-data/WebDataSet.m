@@ -218,11 +218,10 @@ static float blankdata[] = {
 	int w,h;
 
 	switch (stage) {
-			
 		case DESC:
-			NSLog(@"DESC finish");
+			//NSLog(@"DESC finish");
 			[self setDescription: [NSString stringWithCString: [incomingData bytes] length: [incomingData length]]];
-			NSLog(@"desc: %@",textDescription);
+			//NSLog(@"desc: %@",textDescription);
 
 			stage = RATE;
 			req = [NSURLRequest requestWithURL: rateURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
@@ -230,9 +229,9 @@ static float blankdata[] = {
 			break;
 
 		case RATE:
-			NSLog(@"RATE finish");	
+			//NSLog(@"RATE finish");	
 			[self setRate: [NSString stringWithCString: [incomingData bytes] length: [incomingData length]]];		
-			NSLog(@"rate: %@",rateSuffix);
+			//NSLog(@"rate: %@",rateSuffix);
 			
 			stage = IDLE;
 			[self fireTimer:nil]; //Start the data download in the timer code
@@ -244,7 +243,7 @@ static float blankdata[] = {
 			break;
 			
 		case XTICK:
-			NSLog(@"XTICK finish");
+			//NSLog(@"XTICK finish");
 			w = [incomingData length];
 			if (w%TICK_LEN != 0) { //inproper read
 				stage = IDLE;
@@ -264,7 +263,7 @@ static float blankdata[] = {
 			break;
 			
 		case YTICK:
-			NSLog(@"YTICK finish");
+			//NSLog(@"YTICK finish");
 			h = [incomingData length];
 			if (h%TICK_LEN != 0) { //inproper read
 				stage = IDLE;
@@ -281,11 +280,11 @@ static float blankdata[] = {
 			break;
 			
 		case DATA:
-			NSLog(@"DATA finish");
+			//NSLog(@"DATA finish");
 			
 			if (width*height*sizeof(float) == [incomingData length]);		
 				[self autoScaleWithNewData: incomingData];
-			
+			[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
 			stage = IDLE;
 			webConn=nil;
 			break;
