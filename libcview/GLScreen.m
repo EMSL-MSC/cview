@@ -176,14 +176,14 @@ static GLScreen *_theMaster_ = nil;
 /** sort helper function that compares two AScreen objects
 	@relates AScreen
  */
-NSInteger compareScreenColumns(id one,id two,void *context) {
+NSComparisonResult compareScreenColumns(id one,id two,void *context) {
 	AScreen *o=one;
 	AScreen *t=two;
 	if (o->col < t->col)
-		return -1;
+		return NSOrderedAscending;
 	if (o->col > t->col)
-		return 1;
-	return 0;
+		return NSOrderedDescending;
+	return NSOrderedSame;
 }
 
 @implementation GLScreen
@@ -297,6 +297,7 @@ NSInteger compareScreenColumns(id one,id two,void *context) {
 		[worlds addObject: s];
 		[self doLayout];
 		s->window = [self makeGLWindow: s];
+		[s->world setContext: s->window];
 	}
 	return self;
 }
@@ -357,6 +358,7 @@ NSInteger compareScreenColumns(id one,id two,void *context) {
 /**Internal Function*/
 -(int)makeGLWindow: (AScreen *)s {
 	int win = glutCreateSubWindow(mainwin,s->x,s->y,s->w,s->h);
+	//NSLog(@"Created sub window: %d=(%d,%d,%d,%d,%d)",win,mainwin,s->x,s->y,s->w,s->h);
 	glutDisplayFunc(_renderScene);
 #if ! defined ON_MINGW_WIN32
 	glutKeyboardFunc(_processNormalKeys);
