@@ -69,7 +69,7 @@ All rights reserved.
 	planeLock = [[NSRecursiveLock alloc] init];
 	newData = nil;//[[NSMutableData alloc] initWithLength: width*height*sizeof(float)];
 	updatedCount = 0;
-    nonCongruentPlanes = TRUE;
+    nonCongruentPlanes = YES;
 	return self;
 }
 -initWithName: (NSString *)n usingFormula: (NSString *)c onPlanes: (id)first, ... {
@@ -104,8 +104,8 @@ All rights reserved.
 	formula = [c retain];
 	[self setCalculation: calc_data_set];
 	[super initWithName: n Width: width Height: height];
-	[self registerForNotifications];
 	[self checkAndResetDataPlanes];
+	[self registerForNotifications];
 	//newData = [[NSMutableData alloc] initWithLength: width*height*sizeof(float)];
 	return self;
 }
@@ -204,6 +204,7 @@ All rights reserved.
 	while ((plane = [planesEnum nextObject]) != nil) {
 		NSLog(@"Registering plane %@ to notification center %@", plane, [NSNotificationCenter defaultCenter]);
 		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveNotification:) name:@"DataSetUpdate" object:plane];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:plane];
 	}
 }
 - (float)resetMax {
@@ -234,7 +235,7 @@ All rights reserved.
 	float *d = (float *)[newData mutableBytes];
 	double newscale;
 	float oldmax = [self resetMax];
-        if (allowScaling) {
+	if (allowScaling) {
 		//newscale = MAX(1.0,currentLimit/oldmax);
 		if (oldmax != 0 )
 			newscale = currentLimit/oldmax;
@@ -252,54 +253,61 @@ All rights reserved.
 	newData = oldData;
 	return self;
 }
-
--(void)checkAndResetDataPlanes {
-    NSEnumerator *list;
-    DataSet *ds;
-    int planew=0,planeh=0;
-    [planeLock lock];
-    [dataPlanes makeObjectsPerformSelector: @selector(lock)];
-    //NSLog(@"Checking congruence: %p %dx%d",newData,width,height);
-    //We want to detect a size change from our current plane size
-    nonCongruentPlanes=0;
-    
-    list = [dataPlanes objectEnumerator];
-    while ((ds = [list nextObject])) {
-        if ([ds width] != width || [ds height] != height)
-            nonCongruentPlanes = 1;
-        planew += [ds width];
-        planeh += [ds height];
-        //NSLog(@"plane: %@ %dx%d",ds,[ds width],[ds height]);
-    }
-    ds = [dataPlanes objectAtIndex:0];
-    //NSLog(@"plane info: %d %d %d",planew,planeh,[dataPlanes count]);
-    if (nonCongruentPlanes || newData == nil) {
-        //NSLog(@"here: %d %d %d %d",planew/[dataPlanes count], [ds width], planeh/[dataPlanes count],[ds height]);
-        //now check if th sizes were all the same.
-        if (planew/[dataPlanes count] == [ds width] && planeh/[dataPlanes count] == [ds height]) {
-            //NSLog(@"create Newdata");
-            width = [ds width];
-            height = [ds height];
-            newData = [[NSMutableData alloc] initWithLength: width*height*sizeof(float)];
-            nonCongruentPlanes = 0;
-        }
-        else {
-            NSLog(@"Planes are incongruent, waiting for congruency");
-        }
-
-    }
-    [dataPlanes makeObjectsPerformSelector: @selector(unlock)];
-    [planeLock unlock];
-}
-
--(void)performCalculation {
-	//NSLog(@"Entering [CalculatedDataSet(%@) performCalculation] calculating to %u", self, newData);
-    [self lock];
+- autoScaleWithNewData: (NSData *)newdata {
 	[self checkAndResetDataPlanes];
-    if (nonCongruentPlanes==1) {
-        //NSLog(@"NonCongruence detected... no re-calc");
-        return;
-    }
+	[super autoScaleWithNewData: newdata];
+	return self;
+}
+-(void)checkAndResetDataPlanes {
+	NSLog(@"Entering [CalculatedDataSet(%@) checkAndResetDataPlanes]", self);
+	NSEnumerator *list;
+	DataSet *ds;
+	int planew=0,planeh=0;
+	[planeLock lock];
+	[dataPlanes makeObjectsPerformSelector: @selector(lock)];
+	//NSLog(@"Checking congruence: %p %dx%d",newData,width,height);
+	//We want to detect a size change from our current plane size
+	nonCongruentPlanes = NO;
+	
+	list = [dataPlanes objectEnumerator];
+	while ((ds = [list nextObject])) {
+		if ([ds width] != width || [ds height] != height)
+			nonCongruentPlanes = YES;
+		planew += [ds width];
+		planeh += [ds height];
+		//NSLog(@"plane: %@ %dx%d",ds,[ds width],[ds height]);
+	}
+	ds = [dataPlanes objectAtIndex:0];
+	//NSLog(@"plane info: %d %d %d",planew,planeh,[dataPlanes count]);
+	if (nonCongruentPlanes || newData == nil) {
+		//NSLog(@"here: %d %d %d %d",planew/[dataPlanes count], [ds width], planeh/[dataPlanes count],[ds height]);
+		//now check if th sizes were all the same.
+		if (planew/[dataPlanes count] == [ds width] && planeh/[dataPlanes count] == [ds height]) {
+			//NSLog(@"create Newdata");
+			width = [ds width];
+			height = [ds height];
+			newData = [[NSMutableData alloc] initWithLength: width*height*sizeof(float)];
+			nonCongruentPlanes = NO;
+		}
+		else {
+			NSLog(@"Planes are incongruent, waiting for congruency");
+		}
+
+	}
+	[dataPlanes makeObjectsPerformSelector: @selector(unlock)];
+	[planeLock unlock];
+	NSLog(@"Exiting [CalculatedDataSet(%@) checkAndResetDataPlanes]", self);
+}
+-(void)performCalculation {
+	NSLog(@"Entering [CalculatedDataSet(%@) performCalculation] calculating to %u", self, newData);
+	/*
+	[self checkAndResetDataPlanes];
+	if (nonCongruentPlanes) {
+		//NSLog(@"NonCongruence detected... no re-calc");
+		return;
+	}
+	*/
+	[self lock];
 	[dataPlanes makeObjectsPerformSelector: @selector(lock)]; //  possible deadlock...
 	
 	NSMutableData *ptrs = [NSMutableData dataWithCapacity: sizeof( float * )*[dataPlanes count]]; //is autoreleased later
@@ -326,16 +334,19 @@ All rights reserved.
 	}
 	[dataPlanes makeObjectsPerformSelector: @selector(unlock)];
 	[self autoScale];
-    [self unlock];
-	//NSLog(@"Exiting [CalculatedDataSet(%@:%u) performCalculation] %u %u", self,self,data, newData);
+	[self unlock];
+	NSLog(@"Exiting [CalculatedDataSet(%@:%u) performCalculation] %u %u", self,self,data, newData);
 }
 -(void)receiveNotification: (NSNotification *)notification {
 	updatedCount++;
-    //NSLog(@"Notified..  count=%d",updatedCount);
+	//NSLog(@"Notified..  count=%d",updatedCount);
 	if ( updatedCount == [dataPlanes count] ) {
 		[self performCalculation];
 		updatedCount = 0;
 	}
+}
+-(void)receiveResizeNotification: (NSNotification *)notification {
+	[self checkAndResetDataPlanes];
 }
 - (float *)dataRow: (int)row {
 	float *retdata;

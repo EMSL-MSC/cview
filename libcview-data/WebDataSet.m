@@ -250,8 +250,10 @@ static float blankdata[] = {
 				break;
 			}
 			w /= TICK_LEN;
-			if (w != width)
+			if (w != width) {
 				[self setWidth: w];
+				[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetResize" object: self];
+			}
 			[Xticks setData: incomingData];
 			//Is this where this goes?
 		    [self initializeIndexByStringDictionary];
@@ -270,8 +272,10 @@ static float blankdata[] = {
 				break;
 			}
 			h /= TICK_LEN;
-			if (h != height)
+			if (h != height) {
 				[self setHeight: h];
+				[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetResize" object: self];
+			}
 			[Yticks setData: incomingData];
 
 			stage = DATA;

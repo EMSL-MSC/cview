@@ -291,32 +291,35 @@ All rights reserved.
 	BOOL rescale = NO;
 	int i;
 	[dataLock lock];
-	float *frm = (float *)[newdata bytes];
-	float *to = (float *)[data mutableBytes];
-	float max = 0.001;
-		
-	for (i=0;i<width*height;i++) {
-		to[i] = frm[i]*currentScale;
-		max = MIN(currentLimit+1,MAX(max,frm[i]));
-		if (frm[i] > currentMax) {
-			//NSLog(@"bigger(%@): %6f > %6f",name,frm[i],currentMax);
+	if (allowScaling) {
+		float *frm = (float *)[newdata bytes];
+		float *to = (float *)[data mutableBytes];
+		float max = 0.001;
+
+		for (i=0;i<width*height;i++) {
+			to[i] = frm[i]*currentScale;
+			max = MIN(currentLimit+1,MAX(max,frm[i]));
+			if (frm[i] > currentMax) {
+				//NSLog(@"bigger(%@): %6f > %6f",name,frm[i],currentMax);
+				rescale = YES;
+			}	
+		}
+
+		float pct = currentMax/max;
+		if (pct > 2.0) {
+			NSLog(@"<%@>aswnd PCT: %f",name,pct);
 			rescale = YES;
 		}	
-	}
-
-	float pct = currentMax/max;
-	if (pct > 2.0) {
-		NSLog(@"<%@>aswnd PCT: %f",name,pct);
-		rescale = YES;
-	}	
-	[dataLock unlock];
-	
-	if (rescale) {
-		NSLog(@"rescale active(%@): %6f %6f",name,currentScale,currentMax);
 		
-		[self autoScale];
+		if (rescale) {
+			NSLog(@"rescale active(%@): %6f %6f",name,currentScale,currentMax);
+			
+			[self autoScale];
+		}
+	} else {
+		[data setData: newdata];
 	}
-	
+	[dataLock unlock];
 	return self;
 }
 
