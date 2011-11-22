@@ -118,8 +118,8 @@ static float blankdata[] = {
 	/* Sane Defaults until we have actual data */
 
 	[super initWithName: key Width: 32 Height: 32];
-	Xticks = [[NSMutableData dataWithCapacity: 32*TICK_LEN] retain];
-	Yticks = [[NSMutableData dataWithCapacity: 32*TICK_LEN] retain];
+	Xticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
+	Yticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
 	allowRescale = YES;
 	rateSuffix = @"...";
 	textDescription = @"Blank DataSet";
