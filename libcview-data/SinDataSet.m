@@ -96,6 +96,7 @@ All rights reserved.
 	d = [self dataRow: 0];
 	for (j=0;j<height;j++)
 			d[j]=50;
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
 	return NO;
 }
 

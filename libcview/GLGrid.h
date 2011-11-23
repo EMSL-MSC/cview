@@ -100,6 +100,7 @@ typedef enum { G_LINES=0,G_RIBBON,G_SURFACE,G_POINTS,G_COUNT } GridTypesEnum;
 -initWithDataSet: (DataSet *)ds andType: (GridTypesEnum)type;
 /** change the dataSet displayed */
 -setDataSet: (DataSet *)ds;
+-(void)receiveResizeNotification: (NSNotification *)notification;
 -(void)resetDrawingArrays;
 /** get the current dataset */
 -(DataSet *)getDataSet;

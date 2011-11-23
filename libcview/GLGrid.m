@@ -127,12 +127,19 @@ static const char *gridTypeSelectors[] =	{
 -setDataSet: (DataSet *)ds {
 	[dataSetLock lock];	
 	[ds retain];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"DataSetResize" object:dataSet];
 	[dataSet autorelease];
 	dataSet = ds;
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:dataSet];
 	[self resetDrawingArrays];
 	[dataSetLock unlock];
 	
 	return self;
+
+}
+-(void)receiveResizeNotification: (NSNotification *)notification {
+	NSLog(@"GLGridResize notification: %@",notification);
+	[self resetDrawingArrays];
 }
 
 -(void)resetDrawingArrays {
@@ -275,7 +282,7 @@ static const char *gridTypeSelectors[] =	{
 		[colorMap retain];
 	}
 	if (currentHeight != [dataSet height] || currentWidth != [dataSet width]) 
-		[self resetDrawingArrays];
+		NSLog(@"size mismatch since last time");//[self resetDrawingArrays];
 
 	glScalef(1.0,1.0,1.0); 
 	

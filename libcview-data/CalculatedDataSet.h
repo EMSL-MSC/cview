@@ -75,7 +75,6 @@ All rights reserved.
 	NSMutableData *Yticks;
 	NSMutableData *newData;
 	NSMutableData *oldData;
-	NSRecursiveLock *planeLock;
 	NSConditionLock *firstUpdateLock;
 	int updatedCount;
     BOOL nonCongruentPlanes;
@@ -87,11 +86,11 @@ All rights reserved.
 	@param first list of DataSet classes terminated by a nil
 */
 -initWithName: (NSString *)n usingFormula: (NSString *)c onPlanes: (id)first, ...;
-/** check all the planes for changes, and reset class to handle shifts. */
--(void)checkAndResetDataPlanes;
 /** @param calc C-based calculation function */
 -setCalculation: (calc_data_set_func)calc;
+-(void)checkAndResetDataPlanes;
 -(void)receiveNotification: (NSNotification *)notification;
+-(void)receiveResizeNotification: (NSNotification *)notification;
 -(void)registerForNotifications;
 /** do all the work */
 -(void)performCalculation;

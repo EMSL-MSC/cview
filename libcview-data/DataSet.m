@@ -388,6 +388,7 @@ All rights reserved.
 	width=newWidth;
 	[data setLength: width*height*sizeof(float)];
 	[dataLock unlock];
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetResize" object: self];
 	return self;
 }
 
@@ -406,6 +407,7 @@ All rights reserved.
 	}
 	height = newHeight;
 	[dataLock unlock];
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetResize" object: self];
 	return self;
 }
 @end /* DataSet */
