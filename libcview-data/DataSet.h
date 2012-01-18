@@ -85,7 +85,7 @@ This class provides a basic data store, with associated information.  It is orga
 	float currentScale;
 	float currentMax;
 	float lockedMax;
-	BOOL allowScaling;
+	BOOL allowScaling,dataValid;
 	NSString *textDescription;
 	NSString *labelFormat;
 	NSRecursiveLock *dataLock;
@@ -137,5 +137,7 @@ This class provides a basic data store, with associated information.  It is orga
 - setWidth: (int)newWidth;
 /** resize data by height */
 - setHeight: (int)newHeight;
+/** report data valid status */
+- (BOOL)dataValid;
 @end
 

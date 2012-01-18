@@ -76,6 +76,7 @@ All rights reserved.
 -initWithWidth: (int)w Height: (int)h {
 	if (name == nil)
 		name = DS_DEFAULT_NAME;
+	dataValid=YES;
 	width=w;
 	height=h;
 	data = [[NSMutableData alloc] initWithLength: w*h*sizeof(float)];
@@ -409,6 +410,9 @@ All rights reserved.
 	[dataLock unlock];
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetResize" object: self];
 	return self;
+}
+- (BOOL)dataValid {
+	return dataValid;
 }
 @end /* DataSet */
 

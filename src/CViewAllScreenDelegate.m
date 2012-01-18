@@ -142,11 +142,11 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 
 -populateWorld {
 	int posy=0,posx=0,x=0;
-	float updateInterval;
 	NSEnumerator *list;
 	NSNumber *n;	
 	DrawableObject *o;
 	NSString *key;
+	
 	
 	NSArray *metricList = [[metricFlags allKeys] sortedArrayUsingSelector: @selector(compare:)];
 	Scene *scene = [glWorld scene];
@@ -156,14 +156,24 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 	NSLog(@"count: %d",[scene objectCount]);
 	
 	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
-	updateInterval = [args floatForKey: @"dataUpdateInterval"];	
 	
+	NSMutableArray *sets = [NSMutableArray arrayWithCapacity: [metricFlags count]];
+
 	list = [metricList objectEnumerator];
 	while ( (key = (NSString *)[list nextObject]) ) {
 		n = [metricFlags objectForKey: key];
 		if ([n boolValue]) {
 			WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: url andKey: key];
-		
+			[sets addObject: d];		
+		}
+	}
+	list = [sets objectEnumerator];
+	WebDataSet *d;
+	while ( (d=(WebDataSet *)[list nextObject]) ) {
+			//wait for valid data
+			while ([d dataValid] != YES)
+				[NSThread sleepForTimeInterval: 1];
+
 			[d autoScale: 100];	
 			o=[[[[[GLGrid alloc] initWithDataSet: d] setXTicks: 50] setYTicks: 32] show];
 			//NSLog(@"%@",o);
@@ -172,7 +182,7 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 			x++;
 			if (x >= gridWidth) {
 				x=0;
-				posy += [d height]+100;
+				posy += [d height]+128;
 				posx = 0;
 			}
 			else {
@@ -181,7 +191,6 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 	
 			[d autorelease];
 			[o autorelease];
-		}
 	}
 	
 	//we changed stuff, update the other tweakbar.

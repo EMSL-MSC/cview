@@ -99,12 +99,6 @@ static float blankdata[] = {
 @implementation WebDataSet
 
 -initWithUrlBase: (NSURL *)base andKey: (NSString *)key {
-    indexByString = nil;
-	int w,h,retrys;
-	Class handlerClass;
-	NSURLHandle *handle;
-	NSDate *d;
-	NSURLRequest *req;
 
     indexByString = nil;
 	baseURL = [base retain];
@@ -118,6 +112,7 @@ static float blankdata[] = {
 	/* Sane Defaults until we have actual data */
 
 	[super initWithName: key Width: 32 Height: 32];
+	dataValid=NO;
 	Xticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
 	Yticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
 	allowRescale = YES;
@@ -286,6 +281,7 @@ static float blankdata[] = {
 			
 			if (width*height*sizeof(float) == [incomingData length]);		
 				[self autoScaleWithNewData: incomingData];
+			dataValid=YES;
 			[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
 			stage = IDLE;
 			webConn=nil;
