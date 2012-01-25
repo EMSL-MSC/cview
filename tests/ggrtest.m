@@ -56,44 +56,38 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-#import <Foundation/Foundation.h>
-#import "PList.h"
-/* useful Information on GGR's
-http://c-cpp.r3dcode.com/files/GIMP/2/7.3/devel-docs/ggr.txt
-http://nedbatchelder.com/code/modules/ggr.py
-*/
+#import "cview.h"
 
-
-/** 
-This class implements the a Gimp Gradient (ggr) interface for reading, and then generating RGBA color values fromt he gradient.
-
-We do not surrently support HSV coloring Types.
-
-@author Evan Felix <evan.felix@pnl.gov>, (C) 2012
-@ingroup cview3d
-*/
-typedef enum {FROMNONE=0, FROMFILE, FROMSTRING} GGRsource;
-@interface GimpGradient: NSObject <PList> {
-	GGRsource source;
-    NSString *name;
-	/** holds either a filename or the full GGR string depending on source type */
-	NSString *dataSource;
-	NSMutableArray *segments;
-    float lastcolor;
-    float lastRGBA[4];
+int main(int argc,char *argv[], char *env[]) {
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+#ifndef __APPLE__
+	//needed for NSLog
+	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
+#endif
+    GimpGradient *ggr;
+    NSString *testdata = find_resource_path(@"gimpgradient.ggr");
+    if (testdata == nil) {
+        NSLog(@"Error Loading Test Data");
+        exit(1);
+    }
+    
+    
+    ggr = [[GimpGradient alloc] initWithFile: testdata];
+    
+    NSLog(@"Test ggr: %@",ggr);
+    
+    ggr = [[GimpGradient alloc] initWithString: @"GIMP Gradient\n\
+Name: CviewTestString\n\
+2\n\
+0.000000 0.250000 0.500000 1.000000 0.000000 0.000000 1.000000 0.000000 1.000000 0.000000 1.000000 0 0 0 0\n\
+0.500000 0.750000 1.000000 0.000000 0.000000 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000 0 0 0 0\n\
+"];
+    
+    NSLog(@"Test ggr: %@",ggr);
+    [ggr getR: 0.5];
+    
+	
+    [pool release];
+	return 0;
 }
--init;
--initWithFile: (NSString*)filename;
--initWithString: (NSString*)string;
--parseGGR: (NSString *)ggr;
-/**return the Red component of the gradient at position from 0.0 to 1.0 */
--(float)getR: (float)i;
-/**return the Red component of the gradient at position from 0.0 to 1.0 */
--(float)getG: (float)i;
-/**return the Red component of the gradient at position from 0.0 to 1.0 */
--(float)getB: (float)i;
-/**return the Red component of the gradient at position from 0.0 to 1.0 */
--(float)getA: (float)i;
-/**return the Red,Green,Blue,Alpha component of the gradient at position from 0.0 to 1.0 into a float[4] array */
--putRGBA: (float)i into: (float*)array;
-@end
+

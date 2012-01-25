@@ -71,12 +71,47 @@ typedef enum { CT_FIXED=0, CT_FG, CT_FGT, CT_BG, CT_BGT } ColorType;
 }
 /**should be a string with 15 numbers*/
 -initWithString: (NSString *)str;
+/**is a float with the segment */
+-(BOOL)inside: (float)i;
 @end
 
 @implementation GimpSegment
 -initWithString: (NSString *)str {
+    NSScanner *scan = [NSScanner scannerWithString: str];
+    BOOL error=NO;
+    if ( ! [scan scanFloat: &left] ) error=YES;
+    if ( ! [scan scanFloat: &mid] ) error=YES;
+    if ( ! [scan scanFloat: &right] ) error=YES;
+    if ( ! [scan scanFloat: &leftRGBA[0]] ) error=YES;
+    if ( ! [scan scanFloat: &leftRGBA[1]] ) error=YES;
+    if ( ! [scan scanFloat: &leftRGBA[2]] ) error=YES;
+    if ( ! [scan scanFloat: &leftRGBA[3]] ) error=YES;
+    if ( ! [scan scanFloat: &rightRGBA[0]] ) error=YES;
+    if ( ! [scan scanFloat: &rightRGBA[1]] ) error=YES;
+    if ( ! [scan scanFloat: &rightRGBA[2]] ) error=YES;
+    if ( ! [scan scanFloat: &rightRGBA[3]] ) error=YES;
+    if ( ! [scan scanInt: (int*)&blend] ) error=YES;
+    if ( ! [scan scanInt: (int*)&colortype] ) error=YES;
+    if ( ! [scan scanInt: (int*)&leftcolortype] ) error=YES;
+    if ( ! [scan scanInt: (int*)&rightcolortype] ) error=YES;
+
+    if (error) {
+        NSLog(@"Bad Segment Parse: %@",str);
+        return nil;
+    }
 	return self;
 }
+
+-description {
+    return [NSString stringWithFormat: @"Segment: %f %f %f %f-%f-%f-%f %f-%f-%f-%f %d %d %d",
+            left,mid,right,
+            leftRGBA[0],leftRGBA[1],leftRGBA[2],leftRGBA[3],
+            rightRGBA[0],rightRGBA[1],rightRGBA[2],rightRGBA[3],
+            blend,colortype,leftcolortype,rightcolortype];
+}
+-(BOOL)inside: (float)i {
+    return (left <= i &&  i <= right);
+}  
 @end
 
 @implementation GimpGradient
@@ -84,29 +119,127 @@ typedef enum { CT_FIXED=0, CT_FG, CT_FGT, CT_BG, CT_BGT } ColorType;
 	source = FROMNONE;
 	return self;
 }
+
 -initWithFile: (NSString*)filename {
+    
 	NSFileHandle *fh = [NSFileHandle fileHandleForReadingAtPath: filename];
-	
-	return self;
+	NSData *file = [fh readDataToEndOfFile];
+    NSString *linestring = [NSString stringWithCString: [file bytes] length: [file length]];
+    
+    source = FROMFILE;
+    lastcolor = -1.0;
+    dataSource = [filename retain];
+    
+    return [self parseGGR: linestring];
 }
+
 -initWithString: (NSString*)string {
-	return self;
+    
+    source = FROMSTRING;
+    lastcolor = -1.0;
+    dataSource = [string retain];
+    
+	return [self parseGGR:string];
+}
+
+-parseGGR: (NSString *)ggr {
+    NSArray *lines = [ggr componentsSeparatedByCharactersInSet: [NSCharacterSet characterSetWithCharactersInString: @"\n"]];
+	NSString *line;
+    NSEnumerator *e;
+    GimpSegment *gs;
+    int n;
+    
+    //NSLog(@"parse: %@",lines);
+    
+    e=[lines objectEnumerator];
+    
+    line = [e nextObject];
+    if ( [line compare: @"GIMP Gradient"] != NSOrderedSame ) {
+        NSLog(@"Error reading Gimp Header string");
+        return nil;
+    }
+    
+    line = [e nextObject];
+    if ([[line substringToIndex: 6] compare: @"Name: "] != NSOrderedSame ) {
+        NSLog(@"Error reading Name of GGR");
+        return nil;
+    }
+    name = [[line substringFromIndex: 6] retain];
+    
+    line = [e nextObject];
+    n = [line intValue];
+    NSLog(@"GGR: %@ Segs: %d",name,n);
+    
+    segments = [NSMutableArray arrayWithCapacity: n];
+    while ( (line=[e nextObject]) ) {
+        if ([line length]<1)
+            continue;
+        gs = [[GimpSegment alloc] initWithString: line];
+        if (!gs) {
+            continue;
+        }
+        [segments addObject: gs];
+        [gs autorelease];
+    }
+    return self;
+}
+
+-interpolateColor: (float)i {
+    NSEnumerator *e;
+    GimpSegment *gs;
+    
+    if ( i != lastcolor ) {
+        //find segment
+        e = [segments objectEnumerator];
+        while ( (gs = [e nextObject])) {
+            if ([gs inside:i]) {
+                break;
+            }
+        }
+        if (gs == nil) {
+            NSLog(@"No segment found: %f",i);
+            memset(lastRGBA,4,sizeof(float));
+        }
+        else {  // valid segment
+            NSLog(@"Segment found: %@",gs);
+        }
+
+    }
+    return self;
 }
 
 -(float)getR: (float)i {
-	return 0.0;
+    [self interpolateColor: i];
+	return lastRGBA[0];
 }
 -(float)getG: (float)i {
-	return 0.0;
+    [self interpolateColor: i];
+	return lastRGBA[1];
 }
 -(float)getB: (float)i {
-	return 0.0;
+    [self interpolateColor: i];
+	return lastRGBA[2];
 }
 -(float)getA: (float)i {
-	return 0.0;
+    [self interpolateColor: i];
+	return lastRGBA[3];
 }
 -putRGBA: (float)i into: (float*)array {
+    [self interpolateColor: i];
+    memcpy(array,lastRGBA,sizeof(float)*4);
 	return self;
+}
+
+-(void)dealloc {
+    NSLog(@"dealloc %@:%@",[self class],name);
+    [name autorelease];
+    [segments autorelease];
+    [dataSource autorelease];
+    [super dealloc];
+}
+
+-description {
+    return [NSString stringWithFormat: @"GimpGradient: %@ -> %@",name,segments];
 }
 @end
 
