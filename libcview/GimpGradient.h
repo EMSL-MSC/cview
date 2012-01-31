@@ -73,6 +73,8 @@ We do not surrently support HSV coloring Types.
 @ingroup cview3d
 */
 typedef enum {FROMNONE=0, FROMFILE, FROMSTRING} GGRsource;
+#define FROMFILE_STRING @"file"
+#define FROMSTRING_STRING @"string"
 @interface GimpGradient: NSObject <PList> {
 	GGRsource source;
     NSString *name;

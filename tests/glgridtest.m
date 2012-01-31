@@ -65,15 +65,23 @@ int main(int argc,char *argv[], char *env[]) {
 	//needed for NSLog
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
+	GimpGradient *ggr;
+    NSString *testdata = find_resource_path(@"gimpgradient.ggr");
+    if (testdata == nil) {
+        NSLog(@"Error Loading Test Gradient");
+        exit(1);
+    }
+    
+    ggr = [[GimpGradient alloc] initWithFile: testdata];
 	SinDataSet *ds = [[SinDataSet alloc] initWithName: @"Sin()" Width: 1000 Height: 128 interval: 1.0];
 	SinDataSet *ds2 = [[SinDataSet alloc] initWithName: @"Sin()" Width: 500 Height: 128 interval: 1.0];
 	[ds autoScale: 100];
 	[ds2 autoScale: 100];
 
 	GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test"];
-	Scene * scene = [[Scene alloc] initWithObject:
-		[[[[GLGrid alloc] initWithDataSet: ds andType: G_SURFACE] setXTicks: 50] setYTicks: 16]
-		atX: 0 Y: 0 Z: 0];
+	GLGrid *grid = [[[[GLGrid alloc] initWithDataSet: ds andType: G_SURFACE] setXTicks: 50] setYTicks: 16];
+	[grid setGradient: ggr];
+	Scene * scene = [[Scene alloc] initWithObject: grid atX: 0 Y: 0 Z: 0];
 
 	[scene addObject: [[[[GLGrid alloc] initWithDataSet: ds2] setXTicks: 50] setYTicks: 16]
 		atX: 0 Y: 0 Z: 200];

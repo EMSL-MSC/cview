@@ -527,9 +527,8 @@ double mysecond()
 {
   struct timeval tp;
   struct timezone tzp;
-  int i;
 
-  i = gettimeofday(&tp,&tzp);
+  gettimeofday(&tp,&tzp);
   return ( (double) tp.tv_sec + (double) tp.tv_usec * 1.e-6 );
 }
 
@@ -562,11 +561,10 @@ double mysecond()
 
 -keyPress: (unsigned char)key atX: (int)x andY: (int)y withWindow: (int)window {
 	AScreen *s;
-	BOOL handled=NO;	
 
 	if (( s=[self findWindow: window] )) {
 		if (delegate && [delegate respondsToSelector:@selector(keyPress:atX:andY:inGLWorld:)])
-			handled = [delegate keyPress: key atX: x andY: y inGLWorld: s->world];
+			[delegate keyPress: key atX: x andY: y inGLWorld: s->world];
 		glutPostRedisplay();	
 	}
 	return self;
@@ -574,11 +572,10 @@ double mysecond()
 
 -specialKeyPress: (int)key atX: (int)x andY: (int)y withWindow: (int)window {
 	AScreen *s;
-	BOOL handled=NO;	
 
 	if (( s=[self findWindow: window] )) {
 		if (delegate && [delegate respondsToSelector:@selector(specialKeyPress:atX:andY:inGLWorld:)])
-			handled = [delegate specialKeyPress: key atX: x andY: y inGLWorld: s->world];
+			[delegate specialKeyPress: key atX: x andY: y inGLWorld: s->world];
 		glutPostRedisplay();	
 	}
 	return self;

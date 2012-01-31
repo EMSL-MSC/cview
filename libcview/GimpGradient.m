@@ -57,7 +57,7 @@ All rights reserved.
 
 */
 
-#import "GimpGradient.h"
+#import "cview.h"
 typedef enum { BLEND_LINEAR=0, BLEND_CURVED, BLEND_SINUSOIDAL,
 				BLEND_SPERICAL_INCREASING, BLEND_SPERICAL_DECREASING } BlendType;
 typedef enum { CT_FIXED=0, CT_FG, CT_FGT, CT_BG, CT_BGT } ColorType;
@@ -121,11 +121,11 @@ typedef enum { CT_FIXED=0, CT_FG, CT_FGT, CT_BG, CT_BGT } ColorType;
 }
 
 -initWithFile: (NSString*)filename {
-    
+    NSLog(@"initWithFile: %@",filename);
 	NSFileHandle *fh = [NSFileHandle fileHandleForReadingAtPath: filename];
 	NSData *file = [fh readDataToEndOfFile];
     NSString *linestring = [NSString stringWithCString: [file bytes] length: [file length]];
-    
+	
     source = FROMFILE;
     lastcolor = -1.0;
     dataSource = [filename retain];
@@ -140,6 +140,45 @@ typedef enum { CT_FIXED=0, CT_FG, CT_FGT, CT_BG, CT_BGT } ColorType;
     dataSource = [string retain];
     
 	return [self parseGGR:string];
+}
+
+-getPList {
+	NSString *from;
+	NSLog(@"getPList: %@",self);
+	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithCapacity:4];
+
+	if (source == FROMSTRING)
+		from = FROMSTRING_STRING;
+	else if (source == FROMFILE)
+		from = FROMFILE_STRING;
+	else {
+		NSLog(@"Invalid From Type: %d",source);
+		return nil;
+	}
+
+	[dict setObject: from forKey: @"source"];
+	[dict setObject: dataSource forKey: @"gradient"];
+	return dict;
+}
+
+-initWithPList: (id)list {
+	NSString *from;
+	NSLog(@"initWithPList: %@",[self class]);
+	
+	from = [list objectForKey: @"source"];
+	dataSource = [list objectForKey: @"gradient"];
+	NSLog(@"GGR: %@ %@",from,dataSource);
+	
+	if ([from compare: FROMSTRING_STRING] == NSOrderedSame) {
+		return [self initWithString: dataSource];
+	}
+	else if ([from compare: FROMFILE_STRING] == NSOrderedSame) {
+		return [self initWithFile: find_resource_path(dataSource)];
+	}
+	else {
+		NSLog(@"Bad Source in GGR:%@",from);
+		return nil;
+	}
 }
 
 -parseGGR: (NSString *)ggr {
@@ -170,7 +209,7 @@ typedef enum { CT_FIXED=0, CT_FG, CT_FGT, CT_BG, CT_BGT } ColorType;
     n = [line intValue];
     NSLog(@"GGR: %@ Segs: %d",name,n);
     
-    segments = [NSMutableArray arrayWithCapacity: n];
+    segments = [[NSMutableArray arrayWithCapacity: n] retain];
     while ( (line=[e nextObject]) ) {
         if ([line length]<1)
             continue;
@@ -187,6 +226,8 @@ typedef enum { CT_FIXED=0, CT_FG, CT_FGT, CT_BG, CT_BGT } ColorType;
 -interpolateColor: (float)i {
     NSEnumerator *e;
     GimpSegment *gs;
+    float mid,pos,f;
+    int j;
     
     if ( i != lastcolor ) {
         //find segment
@@ -198,12 +239,46 @@ typedef enum { CT_FIXED=0, CT_FG, CT_FGT, CT_BG, CT_BGT } ColorType;
         }
         if (gs == nil) {
             NSLog(@"No segment found: %f",i);
-            memset(lastRGBA,4,sizeof(float));
+            memset(lastRGBA,0,4*sizeof(float));
         }
         else {  // valid segment
-            NSLog(@"Segment found: %@",gs);
+            //NSLog(@"Segment found: %@",gs);
+            
+            mid = (gs->mid - gs->left) / (gs->right - gs->left);
+            pos = (i - gs->left) / (gs->right - gs->left);
+            
+            if (pos <= mid)
+            	f = 0.5*pos/mid;
+            else
+            	f = 0.5*(pos-mid)/(1-mid) + 0.5;
+            
+            switch (gs->blend) {
+            	case BLEND_LINEAR:
+            		break;
+            	case BLEND_CURVED:
+            		f = powf(pos,log(0.5)/log(mid));
+            		break;
+            	case BLEND_SINUSOIDAL:
+            		f = 0.5 * (sin(M_PI*(f-0.5))+1);
+            		break;
+            	case BLEND_SPERICAL_INCREASING:
+            		f -= 1;
+            		f = sqrt(1 - f*f);
+            		break;
+            	case BLEND_SPERICAL_DECREASING:
+            		f = 1 - sqrt(1 - f*f);
+            		break;
+            
+            	default:
+            		NSLog(@"Unsupported GGR blend function");
+            		break;
+            }
+            
+            //only do RGBA segment space.
+            for (j=0;j<4;j++) {
+            	lastRGBA[j] = gs->leftRGBA[j] +( gs->rightRGBA[j] - gs->leftRGBA[j] ) * f;
+            }
         }
-
     }
     return self;
 }

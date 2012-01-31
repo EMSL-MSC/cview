@@ -59,6 +59,8 @@ All rights reserved.
 #import "cview.h"
 
 int main(int argc,char *argv[], char *env[]) {
+	int i;
+	float f;
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 #ifndef __APPLE__
 	//needed for NSLog
@@ -75,18 +77,22 @@ int main(int argc,char *argv[], char *env[]) {
     ggr = [[GimpGradient alloc] initWithFile: testdata];
     
     NSLog(@"Test ggr: %@",ggr);
-    
+    NSLog(@"%@",[ggr getPList]);
+	
     ggr = [[GimpGradient alloc] initWithString: @"GIMP Gradient\n\
 Name: CviewTestString\n\
 2\n\
 0.000000 0.250000 0.500000 1.000000 0.000000 0.000000 1.000000 0.000000 1.000000 0.000000 1.000000 0 0 0 0\n\
-0.500000 0.750000 1.000000 0.000000 0.000000 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000 0 0 0 0\n\
+0.500000 0.750000 1.000000 0.000000 0.000000 1.000000 1.000000 1.000000 1.000000 1.000000 1.000000 1 0 0 0\n\
 "];
     
     NSLog(@"Test ggr: %@",ggr);
-    [ggr getR: 0.5];
-    
+    for (i=0;i<10;i++) {
+    	f=i/10.0;
+    	NSLog(@"RGB(%3.2f): %4.3f %4.3f %4.3f %4.3f", f, [ggr getR: f],[ggr getG: f],[ggr getB: f],[ggr getA: f]);
+    }
 	
+	NSLog(@"%@",[ggr getPList]);
     [pool release];
 	return 0;
 }

@@ -77,24 +77,52 @@ All rights reserved.
 	float *cm;
 	NSLog(@"initWithMax: %d",max);
 	theMax = max>32?max:100; //make sure we have enough differences..
-	colormap = [[NSMutableData alloc] initWithLength: (theMax+2)*sizeof(float)*3];
+	colormap = [[NSMutableData alloc] initWithLength: (theMax+2)*sizeof(float)*4];
 	cm = (float *)[colormap mutableBytes];
 	//NSLog(@"cm: %p",cm);
 	theMax++;
 	for (i=0;i<theMax;i++) {
 		val = ((float)i/theMax);
-		cm[i*3+0] = [self r: val];
-		cm[i*3+1] = [self g: val];
-		cm[i*3+2] = [self b: val];
+		cm[i*4+0] = [self r: val];
+		cm[i*4+1] = [self g: val];
+		cm[i*4+2] = [self b: val];
+		cm[i*4+3] = [self a: val];  
 		//NSLog(@"CM: %d:%d = (%.2f,%.2f,%.2f)",i,val,cm[i*3+0],cm[i*3+1],cm[i*3+2]);
 	}
-	cm[theMax*3+0] = 1.0;
-	cm[theMax*3+1] = 1.0;
-	cm[theMax*3+2] = 1.0;
+	cm[theMax*4+0] = 1.0;
+	cm[theMax*4+1] = 1.0;
+	cm[theMax*4+2] = 1.0;
+	cm[theMax*4+3] = 1.0;
+	
 	//for (i=0;i<=theMax;i++)
 	//	NSLog(@"CM: %d = (%.2f,%.2f,%.2f)",i,cm[i*3+0],cm[i*3+1],cm[i*3+2]);
 	return self;
 }
+
++mapWithGradient: (GimpGradient *)ggr andMax: (int)max {
+	ColorMap *map = [[ColorMap alloc] initWithGradient: ggr andMax: max];
+	return [map autorelease];
+}
+
+-initWithGradient: (GimpGradient *)ggr andMax: (int)max {
+	int i;
+	float *cm,val;
+	NSLog(@"ColorMap initWithGradient");
+	theMax = max>32?max:100; //make sure we have enough differences..
+	colormap = [[NSMutableData alloc] initWithLength: (theMax+2)*sizeof(float)*4];
+	cm = (float *)[colormap mutableBytes];
+	theMax++;
+	for (i=0;i<theMax;i++) {
+		val = ((float)i/theMax);
+		[ggr putRGBA: val into: cm + i*4];
+	}
+	cm[theMax*4+0] = 1.0;
+	cm[theMax*4+1] = 1.0;
+	cm[theMax*4+2] = 1.0;
+	cm[theMax*4+3] = 1.0;	
+	return self;
+}
+
 
 -(void)dealloc {
 	NSLog(@"ColorMap dealloc");
@@ -117,10 +145,11 @@ All rights reserved.
 		if (data < 0)
 			data = 0;
 
-		colors[i*3+0] = cm[data*3+0];
-		colors[i*3+1] = cm[data*3+1];
-		colors[i*3+2] = cm[data*3+2];
-		//memcpy(colors+i*3,cm+((int)data[i]),3*sizeof(float));
+		//colors[i*4+0] = cm[data*4+0];
+		//colors[i*4+1] = cm[data*4+1];
+		//colors[i*4+2] = cm[data*4+2];
+		//colors[i*4+3] = cm[data*4+3];
+		memcpy(colors+i*4,cm+data*4,4*sizeof(float));
 	}
 	return self;
 }
@@ -138,10 +167,11 @@ All rights reserved.
 		if (d < 0)
 			d = 0;
 
-		colors[i*3+0] = cm[d*3+0];
-		colors[i*3+1] = cm[d*3+1];
-		colors[i*3+2] = cm[d*3+2];
-		//memcpy(colors+i*3,cm+((int)data[i]),3*sizeof(float));
+		//colors[i*4+0] = cm[d*4+0];
+		//colors[i*4+1] = cm[d*4+1];
+		//colors[i*4+2] = cm[d*4+2];
+		//colors[i*4+3] = cm[d*4+3];
+		memcpy(colors+i*4,cm+d*4,4*sizeof(float));
 	}
 	return self;
 }
@@ -152,13 +182,13 @@ All rights reserved.
 	//NSLog(@"cm: %p",cm);
 	if (val >= 0 && val <= theMax) {
 		//NSLog(@"glMap: %d (%.2f,%.2f,%.2f)",val,cm[val*3+0],cm[val*3+1],cm[val*3+2]);
-		glColor3fv(cm+val*3);
+		glColor4fv(cm+val*4);
 	}
 	else
 		NSLog(@"Invalid Value in glMap: %d",val);
 	return self;
 }
-#if 0
+#if 1
 -(float)r: (float)i {
 	return MAX(0,-3.0*powf(i-1.0,2)+1);
 }
@@ -168,6 +198,10 @@ All rights reserved.
 -(float)b: (float)i {
 	return MAX(0,-3.0*powf(i,2)+1);
 }
+-(float)a: (float)i {
+	return 1.0;
+}
+
 #endif
 #if 0
  -(float)r: (float)i {
@@ -197,6 +231,7 @@ All rights reserved.
 -(float)b: (float)i {
   return MIN(1,MAX(0,((i < .125) ? (.5 + (4*i)) : ((i < .375) ? 1 : ((i<.5) ? (4-(8*i)) : 0))))); }
 #endif
+#if 0
 -(float)r: (float)i {
   return MIN(1,MAX(0,((i < .125) ? .2 + (2.4*i) : ((i < .25) ? (1-(4*i)) :
 ((i<.5) ? 0 : ((i<.75) ? ((4*i)-2) : 1)))))); }
@@ -207,7 +242,7 @@ All rights reserved.
   return MIN(1,MAX(0,((i < .125) ? (.2 + (6.4*i)) : ((i < .375) ? 1 :
 ((i<.5) ? (4-(8*i)) : 0)))));
 }
-
+#endif
 
 @end
 

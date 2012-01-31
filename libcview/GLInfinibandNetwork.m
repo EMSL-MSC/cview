@@ -524,7 +524,6 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	NSEnumerator *e;
 	NSString *from,*to,*speed;
 	int tport,fport;
-	BOOL good;
 	
 	e = [lines objectEnumerator];
 	while ( (line = [e nextObject] ) ) {
@@ -546,7 +545,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 		
 		
 		if ([from length]>0 && [to length]>0) {
-			good = [graph addEdge: 
+			[graph addEdge: 
 					[NSString stringWithFormat: @"%@-%d",from,fport] and: 
 					[NSString stringWithFormat: @"%@-%d",to,tport] withInfo:
 					[IBLink link]

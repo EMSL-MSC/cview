@@ -162,7 +162,7 @@ static const char *gridTypeSelectors[] =	{
 	if (gridType == G_RIBBON)
 		num++;
 	dataRow = [[NSMutableData alloc] initWithLength: num*3*h*sizeof(float)];
-	colorRow = [[NSMutableData alloc] initWithLength: num*3*h*sizeof(float)];
+	colorRow = [[NSMutableData alloc] initWithLength: num*4*h*sizeof(float)];
 	d = (float *)[dataRow mutableBytes];
 	// setup drawable array... (0,unknown,rownum)
 	for (i=0;i<h;i++)
@@ -191,6 +191,7 @@ static const char *gridTypeSelectors[] =	{
 }
 
 -initWithPList: (id)list {
+	id o;
 	NSLog(@"initWithPList: %@",[self class]);
 	DataSet *ds;
 	[super initWithPList: list];
@@ -205,6 +206,9 @@ static const char *gridTypeSelectors[] =	{
 	yscale = [[list objectForKey: @"yscale" missing: @"1.0"] floatValue];
 	zscale = [[list objectForKey: @"zscale" missing: @"1.0"] floatValue];
 	gridType = [[list objectForKey: @"gridType" missing: G_LINES_STRING] intValue];	
+	o = [list objectForKey: @"gradient" missing: nil];
+	if (o!=nil)
+		ggr = [[GimpGradient alloc] initWithPList: o];
 
 	Class c;
 	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
@@ -232,6 +236,8 @@ static const char *gridTypeSelectors[] =	{
 	[dict setObject: [NSNumber numberWithFloat: yscale] forKey: @"yscale"];
 	[dict setObject: [NSNumber numberWithFloat: zscale] forKey: @"zscale"];
 	[dict setObject: [NSNumber numberWithInt: gridType] forKey: @"gridType"];
+	if (ggr != nil)
+		[dict setObject: [ggr getPList] forKey: @"gradient"]; 
 	return dict;
 }
 
@@ -267,7 +273,19 @@ static const char *gridTypeSelectors[] =	{
 	[colorRow autorelease];
 	[dataSet autorelease];
 	[dataSetLock autorelease];
+	[ggr autorelease];
 	return [super dealloc];
+}
+
+/* This should be called with the dataSet Locked */
+-resetColorMap {
+	[colorMap autorelease];
+	if (ggr == nil)
+		colorMap = [ColorMap mapWithMax: currentMax];
+	else
+		colorMap = [ColorMap mapWithGradient: ggr andMax: currentMax];
+	[colorMap retain];
+	return self;
 }
 
 -glDraw {
@@ -275,11 +293,9 @@ static const char *gridTypeSelectors[] =	{
 	int max = roundf([dataSet getScaledMax]);
 	
 	if (currentMax != max) {
-		NSLog(@"New Max: %d %d",max,currentMax);
+		//NSLog(@"New Max: %d %d",max,currentMax);
 		currentMax = max;
-		[colorMap autorelease];
-		colorMap = [ColorMap mapWithMax: currentMax];
-		[colorMap retain];
+		[self resetColorMap];
 	}
 	if (currentHeight != [dataSet height] || currentWidth != [dataSet width]) 
 		NSLog(@"size mismatch since last time");//[self resetDrawingArrays];
@@ -444,6 +460,21 @@ static const char *gridTypeSelectors[] =	{
 }
 
 
+-setGradient: (GimpGradient *)gradient {
+	[gradient retain];
+	[ggr autorelease];
+	ggr = gradient;
+	//dont change while it may be in use.
+	[dataSet lock];
+	[self resetColorMap];
+	[dataSet unlock];
+	return self;
+}
+
+-getGradient {
+	return ggr;
+}
+
 -drawLines {
 	int i,j;
 	float *dl;
@@ -459,7 +490,7 @@ static const char *gridTypeSelectors[] =	{
 	glScalef(xscale,yscale,zscale);
 
 	glVertexPointer(3, GL_FLOAT, 0, verts);
-	glColorPointer(3, GL_FLOAT, 0, [colorRow mutableBytes]);
+	glColorPointer(4, GL_FLOAT, 0, [colorRow mutableBytes]);
 
 	for (i=0;i<[dataSet width];i++) {
 		dl=[dataSet dataRow: i];
@@ -513,7 +544,7 @@ static const char *gridTypeSelectors[] =	{
 	unsigned int stripLength = [surfaceIndices length]/sizeof(GLuint)/([dataSet width]-1);
 	NSMutableData *vertsObj = [[NSMutableData alloc] initWithLength: (3*[dataSet height] * [dataSet width])*sizeof(float)];
 	float *verts = (float *)[vertsObj mutableBytes];
-	NSMutableData *colorObj = [[NSMutableData alloc] initWithLength: (3 * [dataSet height] * [dataSet width]) * sizeof(float)];
+	NSMutableData *colorObj = [[NSMutableData alloc] initWithLength: (4 * [dataSet height] * [dataSet width]) * sizeof(float)];
 	float *color = (float *)[colorObj mutableBytes];
 	float *data = [dataSet data];
 
@@ -531,7 +562,7 @@ static const char *gridTypeSelectors[] =	{
 		}
 	}
 	glVertexPointer(3, GL_FLOAT, 0, verts);
-	glColorPointer(3, GL_FLOAT, 0, color);
+	glColorPointer(4, GL_FLOAT, 0, color);
 	
 	for(i=0; i < ([dataSet width]-1); i++) {
 		glDrawElements(GL_TRIANGLE_STRIP, stripLength, GL_UNSIGNED_INT, [surfaceIndices mutableBytes] + (i * stripLength) * sizeof(int));
@@ -556,7 +587,7 @@ static const char *gridTypeSelectors[] =	{
 	glScalef(xscale,yscale,zscale);
 
 	glVertexPointer(3, GL_FLOAT, 0, verts);
-	glColorPointer(3, GL_FLOAT, 0, [colorRow mutableBytes]);
+	glColorPointer(4, GL_FLOAT, 0, [colorRow mutableBytes]);
 
 	//Bigger points up close stuff
 	glPointSize(150);
@@ -602,7 +633,7 @@ static const char *gridTypeSelectors[] =	{
 	glScalef(xscale,yscale,zscale);
 
 	glVertexPointer(3, GL_FLOAT, 0, verts);
-	glColorPointer(3, GL_FLOAT, 0, [colorRow mutableBytes]);
+	glColorPointer(4, GL_FLOAT, 0, [colorRow mutableBytes]);
 	glColor3f(1.0,1.0,0.0);
 
 	for (i=0;i<[dataSet width];i++) {
