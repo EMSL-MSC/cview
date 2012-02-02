@@ -179,7 +179,7 @@ if [[ "$ON_MINGW" = "no" ]]; then
 		[AC_MSG_RESULT(yes)
 		   SAVEDLD=$LDFLAGS
            LDFLAGS+=$ATB_LDFLAGS
-		   (AntTweakBar,TwSetCurrentWindow,
+		   AC_CHECK_LIB(AntTweakBar,TwSetCurrentWindow,
 			   [AC_DEFINE([HAVE_ANTTWEAKBAR], [1], [Have AntTweakBar]) TRIGGER_ATB="y" ATB_LDFLAGS+=" -lAntTweakBar " ],
 			   [AC_DEFINE([HAVE_ANTTWEAKBAR], [0], [Have AntTweakBar])],
 			   [-lstdc++ -lGL]
