@@ -188,7 +188,7 @@ All rights reserved.
 		NSLog(@"Invalid Value in glMap: %d",val);
 	return self;
 }
-#if 1
+
 -(float)r: (float)i {
 	return MAX(0,-3.0*powf(i-1.0,2)+1);
 }
@@ -201,48 +201,6 @@ All rights reserved.
 -(float)a: (float)i {
 	return 1.0;
 }
-
-#endif
-#if 0
- -(float)r: (float)i {
-  int j;
-  j = MIN(((int)(8*i+.5)),8);
-  return ((j < 2) || (j == 5)) ? .5 : ((j < 5) ? 0 :1);
- }
--(float)g: (float)i {
-  int j;
-  j = MIN(((int)(8*i+.5)),8);
-  return ((j == 0) || (j == 7)) ? .5 : (((j < 3) || (j==8))? 0 : 1); 
-}
--(float)b: (float)i {
-  int j;
-  j = MIN(((int)(8*i+.5)),8);
-  return (j == 0) ? .5 : ((j > 3) ? 0 : 1); 
-}
-
-#endif
-#if 0
--(float)r: (float)i {
-  return MIN(1,MAX(0,((i < .125) ? .5 : ((i < .25) ? (1-(4*i)) : ((i<.5) ? 0
-: ((i<.75) ? ((4*i)-2) : 1))))));
-}
--(float)g: (float)i {
-  return MIN(1,MAX(0,((i < .125) ? (.5 - (4*i)) : ((i < .25) ? 0 : ((i<.375) ? ((8*i)-2) : ((i < .75) ? 1 : (4 -(4*i)))))))); }
--(float)b: (float)i {
-  return MIN(1,MAX(0,((i < .125) ? (.5 + (4*i)) : ((i < .375) ? 1 : ((i<.5) ? (4-(8*i)) : 0))))); }
-#endif
-#if 0
--(float)r: (float)i {
-  return MIN(1,MAX(0,((i < .125) ? .2 + (2.4*i) : ((i < .25) ? (1-(4*i)) :
-((i<.5) ? 0 : ((i<.75) ? ((4*i)-2) : 1)))))); }
--(float)g: (float)i {
-  return MIN(1,MAX(0,((i < .125) ? (.2 - (1.6*i)) : ((i < .25) ? 0 :
-((i<.375) ? ((8*i)-2) : ((i < .75) ? 1 : (4 -(4*i)))))))); }
--(float)b: (float)i {
-  return MIN(1,MAX(0,((i < .125) ? (.2 + (6.4*i)) : ((i < .375) ? 1 :
-((i<.5) ? (4-(8*i)) : 0)))));
-}
-#endif
 
 @end
 

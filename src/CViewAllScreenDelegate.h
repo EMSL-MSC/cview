@@ -65,6 +65,7 @@ All rights reserved.
 
 @interface CViewAllScreenDelegate:CViewScreenDelegate {
 	NSMutableDictionary *metricFlags;
+	NSMutableDictionary *activeSets;
 	int gridWidth;
 	GLWorld *glWorld;
 	NSURL *url;

@@ -85,6 +85,7 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 @implementation CViewAllScreenDelegate 
 -initWithScreen: (GLScreen *)screen; {
 	gridWidth=1;
+	activeSets = [[NSMutableDictionary dictionaryWithCapacity: 10] retain];
 	return [super initWithScreen: screen];	
 }
 
@@ -93,6 +94,7 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 	[metricFlags autorelease];
 	[glWorld autorelease];
 	[tweakObjects autorelease];
+	[activeSets autorelease];
 	[super dealloc];
 	return;
 }
@@ -147,28 +149,32 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 	DrawableObject *o;
 	NSString *key;
 	
-	
 	NSArray *metricList = [[metricFlags allKeys] sortedArrayUsingSelector: @selector(compare:)];
 	Scene *scene = [glWorld scene];
 	NSLog(@"%@",metricList);
-	/** @todo removing all objects is probably a bad idea in the end.. */
-	[scene removeAllObjects];
 	NSLog(@"count: %d",[scene objectCount]);
 	
-	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
-	
 	NSMutableArray *sets = [NSMutableArray arrayWithCapacity: [metricFlags count]];
+	NSArray *activeKeys = [activeSets allKeys];
 
 	list = [metricList objectEnumerator];
 	while ( (key = (NSString *)[list nextObject]) ) {
 		n = [metricFlags objectForKey: key];
 		if ([n boolValue]) {
-			WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: url andKey: key];
-			[sets addObject: d];		
+			if ( ![activeKeys containsObject: key] ) {
+				[activeSets setObject:
+					[[WebDataSet alloc] initWithUrlBase: url andKey: key]
+					forKey: key];
+			}
+			[sets addObject: [activeSets objectForKey: key]];
+		}
+		else {
+			[activeSets removeObjectForKey: key];
 		}
 	}
 	list = [sets objectEnumerator];
 	WebDataSet *d;
+	[scene removeAllObjects];
 	while ( (d=(WebDataSet *)[list nextObject]) ) {
 			//wait for valid data
 			while ([d dataValid] != YES)
@@ -214,14 +220,12 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 		TwSetCurrentWindow([w context]);
 
 		NSString *key;
-		NSNumber *n;	
 		NSEnumerator *list;
 		NSArray *arr;
 		metricbar = [tweaker addBar: @"metricbar"];
 		NSArray *metricList = [[metricFlags allKeys] sortedArrayUsingSelector: @selector(compare:)];
 		list = [metricList objectEnumerator];
 		while ( (key = (NSString *)[list nextObject]) ) {
-			n = [metricFlags objectForKey: key];
 			arr = [NSArray arrayWithObjects: self,key,nil];
 			[tweakObjects addObject: arr];
 			//NSLog(@"metric: %s %p",[key UTF8String],arr);
@@ -235,7 +239,6 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 }
 
 -cleanTweakers {
-
 	[super cleanTweakers];
 	return self;
 }
