@@ -92,6 +92,7 @@ GLWorld is an encapsulation of a 3d world managed as a Scene of Objects.  It als
 	GLTooltip *tooltip;
 	float lineWidth;
 	int context;
+	float glstep,glm[2];
 }
 -init;
 /// called to draw the entire world

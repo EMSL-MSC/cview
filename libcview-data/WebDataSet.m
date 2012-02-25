@@ -245,6 +245,7 @@ static float blankdata[] = {
 				break;
 			}
 			w /= TICK_LEN;
+			[dataLock lock];
 			if (w != width)
 				[self setWidth: w];
 
@@ -252,7 +253,7 @@ static float blankdata[] = {
 			//Is this where this goes?
 		    [self initializeIndexByStringDictionary];
 
-			
+			[dataLock unlock];
 			stage = YTICK;
 			req = [NSURLRequest requestWithURL: YticksURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
 			webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];	
@@ -266,11 +267,12 @@ static float blankdata[] = {
 				break;
 			}
 			h /= TICK_LEN;
+			[dataLock lock];
 			if (h != height)
 				[self setHeight: h];
 				
 			[Yticks setData: incomingData];
-
+			[dataLock unlock];
 			stage = DATA;
 			req = [NSURLRequest requestWithURL: dataURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
 			webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];	

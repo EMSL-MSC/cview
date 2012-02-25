@@ -82,6 +82,8 @@ All rights reserved.
 	backgroundColorB = 0.0;
 	lineWidth = 1.0;
     doPickDraw = NO;
+	glGetFloatv(GL_LINE_WIDTH_RANGE,glm);
+	glGetFloatv(GL_LINE_WIDTH_GRANULARITY,&glstep);
 
 	NSLog(@"%@",[self attributeKeys]);
 	//[NSClassDescription registerClassDescription: self forClass: [self class]];
@@ -155,9 +157,6 @@ All rights reserved.
 }
 
 -(NSDictionary *)tweaksettings {
-	float glstep,glm[2];
-	glGetFloatv(GL_LINE_WIDTH_RANGE,glm);
-	glGetFloatv(GL_LINE_WIDTH_GRANULARITY,&glstep);
 	return [NSDictionary dictionaryWithObjectsAndKeys:
 		@"help='Create Daily Directories for images' min=0 max=1",@"imageDailyDir",
 		@"help='Time Interval to Dump Images,0=never dump' min=0 max=86400",@"imageCycleTime",

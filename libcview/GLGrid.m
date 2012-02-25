@@ -127,9 +127,10 @@ static const char *gridTypeSelectors[] =	{
 -setDataSet: (DataSet *)ds {
 	[dataSetLock lock];	
 	[ds retain];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"DataSetResize" object:dataSet];
+	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"DataSetResize" object: nil];
 	[dataSet autorelease];
 	dataSet = ds;
+	NSLog(@"register notify for: %@ %@",self,dataSet);
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:dataSet];
 	[self resetDrawingArrays];
 	[dataSetLock unlock];
@@ -271,6 +272,7 @@ static const char *gridTypeSelectors[] =	{
 	[colorMap autorelease];
 	[dataRow autorelease];
 	[colorRow autorelease];
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
 	[dataSet autorelease];
 	[dataSetLock autorelease];
 	[ggr autorelease];

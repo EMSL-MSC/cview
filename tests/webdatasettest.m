@@ -98,7 +98,7 @@ int main(int argc,char *argv[], char *env[]) {
 		WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.user"];
 		WebDataSet *f = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.sys"];
 		[d autoScale: 100];	
-		//[f autoScale: 100];	
+		[f autoScale: 100];	
 		
 	
 		GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test" withWidth: 1200 andHeight: 600];

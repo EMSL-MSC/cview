@@ -65,7 +65,6 @@ All rights reserved.
 */
 @interface CViewScreenDelegate: DefaultGLScreenDelegate {
 #if HAVE_ANTTWEAKBAR
-//TwBar *modbar;
 	TwBar **modbars;
 	int	barcount;
 #else

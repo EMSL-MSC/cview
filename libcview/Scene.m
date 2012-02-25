@@ -177,7 +177,7 @@ All rights reserved.
 }
 
 -addObject: (DrawableObject *) o atX: (float)x Y: (float)y Z: (float)z {
-	SceneObject *obj = [SceneObject alloc];
+	SceneObject *obj = [[SceneObject alloc] init];
 	[o retain];
 	obj->object = o;
 	obj->x=x;
@@ -191,7 +191,7 @@ All rights reserved.
 }
 
 -addObject: (DrawableObject *)o alignHoriz:(int)h Vert: (int)v {
-	SceneObject *obj = [SceneObject alloc];
+	SceneObject *obj = [[SceneObject alloc] init];
 	[o retain];
 	obj->object = o;
 	obj->x=0.0;
@@ -212,6 +212,7 @@ All rights reserved.
 		if (obj->object == o) {
 			[obj->object autorelease];
 			[objects removeObject: obj];
+			[obj release];
 			break;
 		}
 	}
@@ -223,6 +224,7 @@ All rights reserved.
 	e = [objects objectEnumerator];
 	while ((obj = [e nextObject])) {
 			[obj->object autorelease];
+			[obj release];
 			break;
 	}
 	[objects removeAllObjects];
