@@ -4,6 +4,7 @@ OBJCDEPMODE = depmode=gcc
 
 # set the include path found by configure
 INCLUDES = $(all_includes) -I$(top_srcdir)/libcview -I$(top_srcdir)/libcview-data
+
 pkginclude_HEADERS = $(wildcard *.h) $(wildcard DataCenter/*.h)
 
 lib_LTLIBRARIES = libcview.la 
@@ -26,3 +27,7 @@ endif
 
 libcview_la_OBJCFLAGS = $(WAND_CFLAGS) $(AM_OBJCFLAGS) $(FTGL_CFLAGS)
 libcview_la_LDFLAGS = $(FOUNDATION_LDFLAGS) $(OPENGL_LDFLAGS) $(WAND_LIBS) $(FTGL_LIBS) $(GENDERS_LDFLAGS)
+
+pkgconfigdir = $(datarootdir)/pkgconfig
+pkgconfig_DATA = cview.pc
+

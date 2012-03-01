@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: cview-data
+Description: Library for working with cview data formats
+URL: http://svn.pnnl.gov/esp
+Version: @VERSION@
+#Requires: 
+Libs: -L${libdir} -lcview-data
+Cflags: -I${includedir}/cview

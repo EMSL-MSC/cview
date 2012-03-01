@@ -218,6 +218,6 @@ AC_SUBST(SRC_COND_COMPILES)
 AC_SUBST(ATB_LDFLAGS)
 AC_SUBST(GENDERS_LDFLAGS)
 
-AC_CONFIG_FILES([Makefile src/Makefile libcview/Makefile libcview-data/Makefile tests/Makefile data/Makefile cview.spec Doxyfile])
+AC_CONFIG_FILES([Makefile src/Makefile libcview/Makefile libcview-data/Makefile tests/Makefile data/Makefile cview.spec Doxyfile libcview-data/cview-data.pc libcview/cview.pc])
 AC_OUTPUT
 
