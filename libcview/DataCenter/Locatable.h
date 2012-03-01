@@ -71,7 +71,7 @@ All rights reserved.
 
 typedef struct {
     float x,y,z;
-} Point;
+} _PointStruct;
 typedef struct
 {
     float tu, tv;
@@ -81,7 +81,6 @@ typedef struct
 @interface Locatable : Identifiable <Pickable> {
     Vector *location;
     Vector *rotation;
-    NSString *name;
     float width;
     float height;
     float depth;
@@ -90,10 +89,8 @@ typedef struct
     NSData *boundingBox;
     NSData *wireframeBox;
 }
-+(void)drawGLQuad: (Point) p1 andP2: (Point) p2
-            andP3: (Point) p3 andP4: (Point) p4;
--setName: (NSString *) name;
--(NSString*) name;
++(void)drawGLQuad: (_PointStruct) p1 andP2: (_PointStruct) p2
+            andP3: (_PointStruct) p3 andP4: (_PointStruct) p4;
 -setLocation: (Vector*) _location;
 -(Vector*) location;
 -setRotation: (Vector*) _rotation;

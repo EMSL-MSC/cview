@@ -97,13 +97,9 @@ int main(int argc,char *argv[], char *env[]) {
 		NSURL *cluster = [NSURL URLWithString: @"http://chumbucket/cluster/chinook/"];
 		WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.user"];
 		WebDataSet *f = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.sys"];
-		UpdateThread *td = [[UpdateThread alloc] initWithUpdatable: d];
-		UpdateThread *tf = [[UpdateThread alloc] initWithUpdatable: f];
 		[d autoScale: 100];	
-		[td startUpdateThread: 30.0];
 		[f autoScale: 100];	
-		[tf startUpdateThread: 30.0];
-	
+		
 	
 		GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test" withWidth: 1200 andHeight: 600];
 	
@@ -113,7 +109,7 @@ int main(int argc,char *argv[], char *env[]) {
 		o=[[[[GLGrid alloc] initWithDataSet: d] setXTicks: 50] setYTicks: 32];
 		[scene1 addObject: o atX: 0 Y: 0 Z: 0];
 	
-		GLWorld * gw1 = [[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50] 
+		[[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50] 
 			setScene: scene1] 
 			setEye: [[[Eye alloc] init] setX: 56.0 Y: 1250.0 Z: 1000.0 Hangle:-4.72 Vangle: -2.45]
 		];
@@ -123,7 +119,7 @@ int main(int argc,char *argv[], char *env[]) {
 		o=[[[[GLGrid alloc] initWithDataSet: f] setXTicks: 50] setYTicks: 32];
 		[scene2 addObject: o atX: 0 Y: 0 Z: 0];
 	
-		GLWorld * gw2 = [[[g addWorld: @"TR" row: 0 col: 2 rowPercent: 50 colPercent:50] 
+		[[[g addWorld: @"TR" row: 0 col: 2 rowPercent: 50 colPercent:50] 
 			setScene: scene2] 
 			setEye: [[[Eye alloc] init] setX: 56.0 Y: 1250.0 Z: 1000.0 Hangle:-4.72 Vangle: -2.45]
 		];

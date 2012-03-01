@@ -65,12 +65,14 @@ All rights reserved.
 
 @interface CViewAllScreenDelegate:CViewScreenDelegate {
 	NSMutableDictionary *metricFlags;
+	NSMutableDictionary *activeGrids;
 	int gridWidth;
 	GLWorld *glWorld;
 	NSURL *url;
 	NSMutableArray *tweakObjects;
+	int heightPadding,widthPadding;
 #if HAVE_ANTTWEAKBAR
-	TwBar *metricbar;
+	TwBar *metricbar,*settingsBar;
 #endif
 }
 /** set how many grids are in the width direction before another row is added.*/
@@ -85,7 +87,9 @@ All rights reserved.
 -setWorld:(GLWorld *)world;
 /** set the base URL that metrics will be read from */
 -setURL:(NSURL *)u;
+/** Recieve Notification of datasets resizing */
+-(void)receiveResizeNotification: (NSNotification *)notification;
 /** Internal function that re-build the grid of GLGrids.*/
--populateWorld;
+-populateWorld: (BOOL)repopultate;
 @end
 

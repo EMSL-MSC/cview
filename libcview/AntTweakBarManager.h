@@ -59,8 +59,6 @@ All rights reserved.
 /**
 	A DrawableObject that manages a set of Tweak Bars, These build upon a library from http://www.antisphere.com/Wiki/tools:anttweakbar that provides a GUI system for 'tweaking' things.
 	This should be added to the GLWorld Overlay. 
-	
-	There can be only one tweakbar manager enabled at any one time, since the underlying library currently only supports one context.
 
 	@author Evan Felix
 	@ingroup cview3d
@@ -74,7 +72,7 @@ All rights reserved.
 @interface AntTweakBarManager:DrawableObject {
 	TwBar *myBar;
 	NSMutableSet *bars;
-	BOOL sizeChanged;
+	NSMutableSet *sizeChanged;
 }
 -init;
 -setSizeChanged;

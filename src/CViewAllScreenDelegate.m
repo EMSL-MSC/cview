@@ -68,7 +68,7 @@ static void TW_CALL CVASD_boolSetCallback(const void *value, void *clientData) {
 	NSString *metric = [a objectAtIndex:1];
 	
 	[cvasd setMetric: metric to: (*(const int *)value)!=0];
-	[cvasd populateWorld];
+	[cvasd populateWorld: YES];
 	return;
 }
 
@@ -80,11 +80,32 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 	*(int *)value = [cvasd getMetric: metric];
 }
 
+static void TW_CALL CVASD_intSetCallback(const void *value, void *clientData) {
+	NSArray *a = (NSArray *)clientData;
+	CViewAllScreenDelegate *cvasd = [a objectAtIndex: 0];
+	NSString *name = [a objectAtIndex:1];
+
+	[cvasd setValue: [NSNumber numberWithInt: *(const int *)value] forKeyPath: name];
+	[cvasd populateWorld: NO];
+}
+
+static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
+	NSArray *a = (NSArray *)clientData;
+	CViewAllScreenDelegate *cvasd = [a objectAtIndex: 0];
+	NSString *name = [a objectAtIndex:1];
+
+	NSNumber *i=[cvasd valueForKeyPath: name];
+	*(int *)value = [i intValue];
+}
+
 #endif
 
 @implementation CViewAllScreenDelegate 
 -initWithScreen: (GLScreen *)screen; {
 	gridWidth=1;
+	heightPadding=128;
+	widthPadding=200;
+	activeGrids = [[NSMutableDictionary dictionaryWithCapacity: 10] retain];
 	return [super initWithScreen: screen];	
 }
 
@@ -93,6 +114,7 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 	[metricFlags autorelease];
 	[glWorld autorelease];
 	[tweakObjects autorelease];
+	[activeGrids autorelease];
 	[super dealloc];
 	return;
 }
@@ -136,95 +158,138 @@ static void TW_CALL CVASD_boolGetCallback(void *value, void *clientData) {
 
 -screenHasStarted {
 	NSLog(@"Screen has started");
-	[self populateWorld];
+	[self populateWorld: YES];
 	return self;	
 }
 
--populateWorld {
+-(void)receiveResizeNotification: (NSNotification *)notification {
+       NSLog(@"CViewAllDataSetResize notification: %@",notification);
+       [self populateWorld: YES];
+}
+
+-populateWorld: (BOOL)repopulate {
 	int posy=0,posx=0,x=0;
-	float updateInterval;
 	NSEnumerator *list;
 	NSNumber *n;	
-	DrawableObject *o;
+	GLGrid *grid;
 	NSString *key;
+	WebDataSet *wds;
 	
 	NSArray *metricList = [[metricFlags allKeys] sortedArrayUsingSelector: @selector(compare:)];
 	Scene *scene = [glWorld scene];
-	NSLog(@"%@",metricList);
-	/** @todo removing all objects is probably a bad idea in the end.. */
-	[scene removeAllObjects];
 	NSLog(@"count: %d",[scene objectCount]);
 	
-	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
-	updateInterval = [args floatForKey: @"dataUpdateInterval"];	
-	
+	//NSMutableArray *sets = [NSMutableArray arrayWithCapacity: [metricFlags count]];
+	NSArray *activeKeys = [activeGrids allKeys];
+
 	list = [metricList objectEnumerator];
 	while ( (key = (NSString *)[list nextObject]) ) {
 		n = [metricFlags objectForKey: key];
 		if ([n boolValue]) {
-			WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: url andKey: key];
-			UpdateThread *t = [[UpdateThread alloc] initWithUpdatable: d];
-			[d setThread: t];
-		
-			[d autoScale: 100];	
-			[t startUpdateThread: updateInterval];
-			o=[[[[[GLGrid alloc] initWithDataSet: d] setXTicks: 50] setYTicks: 32] show];
-			//NSLog(@"%@",o);
-			[scene addObject: o atX: posx Y: 0 Z: -posy];
+			if ( ![activeKeys containsObject: key] ) {
+				wds = [[WebDataSet alloc] initWithUrlBase: url andKey: key];
+				[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:wds];
+				[wds autoScale: 100];	
+				grid=[[[[[GLGrid alloc] initWithDataSet: wds] setXTicks: 50] setYTicks: 32] show];
+				
+				[activeGrids setObject: grid forKey: key];
+				[wds autorelease];
+				[grid autorelease];
+			}
+			//[sets addObject: [activeSets objectForKey: key]];
+		}
+		else {
+			[activeGrids removeObjectForKey: key];
+		}
+	}
+	list = [[activeGrids allKeys] objectEnumerator];
+	//WebDataSet *d;
+	[scene removeAllObjects];
+	while ( (key = (NSString *)[list nextObject]) ) {
+			//wait for valid data
+			//while ([d dataValid] != YES)
+			//	[NSThread sleepForTimeInterval: 0.1];
+
+			grid = [activeGrids objectForKey: key];
+			//NSLog(@"%@",grid);
+			[scene addObject: grid atX: posx Y: 0 Z: -posy];
 	
 			x++;
 			if (x >= gridWidth) {
 				x=0;
-				posy += [d height]+100;
+				posy += [[grid getDataSet] height]+heightPadding;
 				posx = 0;
 			}
 			else {
-				posx += [d width]+200;
+				posx += [[grid getDataSet] width]+widthPadding;
 			}
 	
-			[d autorelease];
-			[t autorelease];
-			[o autorelease];
-		}
+			//[grid autorelease];
+			//[o autorelease];
 	}
 	
-	//we changed stuff, update the other tweakbar.
-	[tweakoverlay setTree: glWorld];
+	if (repopulate)
+		//we changed stuff, update the other tweakbar.
+		[[NSNotificationCenter defaultCenter] postNotificationName: @"DataModelModified" object: glWorld];
 	return self;
 }
 
 #if HAVE_ANTTWEAKBAR
--setupTweakers: (GLWorld *)world {
-	[super setupTweakers:world];
+-setupTweakers {
+	GLWorld *w;
+
+	[super setupTweakers];
 	tweakObjects = [[NSMutableArray arrayWithCapacity: [metricFlags count]] retain];
 	
 	if (tweaker) {
+		NSArray *worlds = [myScreen getWorlds];
+		NSEnumerator *wlist;
+		wlist = [worlds objectEnumerator];
+		/* there should only be one... */
+		w = [wlist nextObject];
+		TwSetCurrentWindow([w context]);
+
 		NSString *key;
-		NSNumber *n;	
 		NSEnumerator *list;
 		NSArray *arr;
 		metricbar = [tweaker addBar: @"metricbar"];
 		NSArray *metricList = [[metricFlags allKeys] sortedArrayUsingSelector: @selector(compare:)];
 		list = [metricList objectEnumerator];
 		while ( (key = (NSString *)[list nextObject]) ) {
-			n = [metricFlags objectForKey: key];
 			arr = [NSArray arrayWithObjects: self,key,nil];
 			[tweakObjects addObject: arr];
-			NSLog(@"metric: %s %p",[key UTF8String],arr);
+			//NSLog(@"metric: %s %p",[key UTF8String],arr);
 			TwAddVarCB(metricbar,[key UTF8String],TW_TYPE_BOOL32,CVASD_boolSetCallback,CVASD_boolGetCallback,
 						arr,"true='Show' false='Hide'");
 		}
 		TwDefine("metricbar label='Metric Selection'");
+		
+		settingsBar = [tweaker addBar: @"settingsbar"];
+
+		arr=[NSArray arrayWithObjects: self,@"heightPadding",nil];
+		[tweakObjects addObject: arr];
+		TwAddVarCB(settingsBar,"heightPadding",TW_TYPE_INT32,
+					CVASD_intSetCallback,CVASD_intGetCallback,
+					arr,"label='Height Padding'");
+		
+		arr=[NSArray arrayWithObjects: self,@"widthPadding",nil];
+		[tweakObjects addObject: arr];
+		TwAddVarCB(settingsBar,"widthPadding",TW_TYPE_INT32,
+					CVASD_intSetCallback,CVASD_intGetCallback,
+					arr,"label='Width Padding'");
+
+
+		arr=[NSArray arrayWithObjects: self,@"gridWidth",nil];
+		[tweakObjects addObject: arr];
+		TwAddVarCB(settingsBar,"gridWidth",TW_TYPE_INT32,
+					CVASD_intSetCallback,CVASD_intGetCallback,
+					arr,"label='GridWidth' min=1");
 	}
 	return self;
 }
 
--cleanTweakers: (GLWorld *)world {
-	if (tweaker && metricbar) {
-		[tweaker removeBar: metricbar];
-		metricbar = NULL;
-	}
-	[super cleanTweakers:world];
+-cleanTweakers {
+	[super cleanTweakers];
 	return self;
 }
 #endif

@@ -91,6 +91,8 @@ GLWorld is an encapsulation of a 3d world managed as a Scene of Objects.  It als
     float backgroundColorB;
 	GLTooltip *tooltip;
 	float lineWidth;
+	int context;
+	float glstep,glm[2];
 }
 -init;
 /// called to draw the entire world
@@ -147,5 +149,9 @@ GLWorld is an encapsulation of a 3d world managed as a Scene of Objects.  It als
 -(id)delegate;
 -(GLTooltip*)tooltip;
 -setTooltip:(GLTooltip*)_tooltip;
+/// set a simple id for the word in its context, usually set to the GLUT window ID.
+-setContext:(int)ident;
+///get the context id for this world
+-(int)context;
 @end
 #endif

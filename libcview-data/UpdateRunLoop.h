@@ -56,61 +56,25 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-/**
-	Default Delegate for basic FPS like viewing of the world.  Supports an AntTweakBarManager if the library is available.
-
-	Move World commands move the GLWorld under the cursor by rows or columns. These keys will probably change focus, so subsequent keys may be passed to whatever window is now under the cursor.
-
-	Keys:
-@dot
-digraph keymap {
-	node [shape=record]
-	dir [ label="{w|a|s|d}|{Strafe Up|Strafe Down|Strafe Left|Strafe Right}" ];
-	rot [ label="{PageUp|PageDown|UpArrow|DownArrow|LeftArrow|RightArrow}|{Pitch Upward|Pitch Downward|Move Forward|Move Backward|Turn Left|Turn Right}"];
-	win [ label="{h|j|k|l}|{Move World Left|Move World Down|Move World Up|Move World Right}"];
-	extra [ label="{q|z|f|p|t}|{Quit Program|Dump Screen to file|Full Screen toggle|Print Current Eye|toggle AntTweakBar}"];
-}
-@enddot		
-	@author Evan Felix
-	@ingroup cview3d
-*/
-#ifndef DEFAULTGLSCREENDELEGATE_H
-#define DEFAULTGLSCREENDELEGATE_H
 #import <Foundation/Foundation.h>
-#import "GLScreenDelegate.h"
-#import "GLWorld.h"
-#import "GLScreen.h"
 
-#if HAVE_ANTTWEAKBAR
-#import "AntTweakBarManager.h"
-#import "AntTweakBarOverlay.h"
-#endif
 
-@interface DefaultGLScreenDelegate: NSObject <GLScreenDelegate> {
-	GLScreen *myScreen;
-	float mouseX,mouseY;
-	BOOL mouseSlide;
-	BOOL mouseZoom;
-	BOOL mouseRotate;
-#if HAVE_ANTTWEAKBAR
-	AntTweakBarManager *tweaker;
-#else
-	id tweaker;
-#endif
-	NSMutableSet *tweakoverlays;
-}
--initWithScreen: (GLScreen *)screen;
-#if HAVE_ANTTWEAKBAR
--setupTweakers;
--cleanTweakers;
-#endif
 /**
-    This selector is called from [GLWorld glPickDraw] to allow the 
-    screen delegate to decide what to do with the selections that were made
-    @param hitCount the number of selections returned by glRenderMode()
-    @param selectBuf an OpenGL selection buffer (see gl docs for more info)
-    @param buffSize is the size of the selectBuf array
-  */
--processHits: (GLint) hitCount buffer: (GLuint*) selectBuf andSize: (GLint) buffSize inWorld: (GLWorld*) world;
+	Thread class that will provide a NSRunLoop for updating Datasets when needed.
+
+	@author Evan Felix
+	@ingroup cviewdata
+*/
+
+@interface UpdateRunLoop: NSObject {
+	BOOL running;
+	NSLock *runLock;
+	NSRunLoop *theLoop;
+}
+-(id)init;
+-(void)dealloc;
+-(void)run:(id)args;
++(NSRunLoop *)runLoop;
++(UpdateRunLoop *)singleton;
+-terminate;
 @end
-#endif

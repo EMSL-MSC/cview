@@ -1,6 +1,6 @@
 /*
 
-This file is part of the CVIEW graphics system, which is goverened by the following License
+This file is port of the CVIEW graphics system, which is goverened by the following License
 
 Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
@@ -56,61 +56,46 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-/**
-	Default Delegate for basic FPS like viewing of the world.  Supports an AntTweakBarManager if the library is available.
-
-	Move World commands move the GLWorld under the cursor by rows or columns. These keys will probably change focus, so subsequent keys may be passed to whatever window is now under the cursor.
-
-	Keys:
-@dot
-digraph keymap {
-	node [shape=record]
-	dir [ label="{w|a|s|d}|{Strafe Up|Strafe Down|Strafe Left|Strafe Right}" ];
-	rot [ label="{PageUp|PageDown|UpArrow|DownArrow|LeftArrow|RightArrow}|{Pitch Upward|Pitch Downward|Move Forward|Move Backward|Turn Left|Turn Right}"];
-	win [ label="{h|j|k|l}|{Move World Left|Move World Down|Move World Up|Move World Right}"];
-	extra [ label="{q|z|f|p|t}|{Quit Program|Dump Screen to file|Full Screen toggle|Print Current Eye|toggle AntTweakBar}"];
-}
-@enddot		
-	@author Evan Felix
-	@ingroup cview3d
-*/
-#ifndef DEFAULTGLSCREENDELEGATE_H
-#define DEFAULTGLSCREENDELEGATE_H
 #import <Foundation/Foundation.h>
-#import "GLScreenDelegate.h"
-#import "GLWorld.h"
-#import "GLScreen.h"
+#import "PList.h"
+/* useful Information on GGR's
+http://c-cpp.r3dcode.com/files/GIMP/2/7.3/devel-docs/ggr.txt
+http://nedbatchelder.com/code/modules/ggr.py
+*/
 
-#if HAVE_ANTTWEAKBAR
-#import "AntTweakBarManager.h"
-#import "AntTweakBarOverlay.h"
-#endif
 
-@interface DefaultGLScreenDelegate: NSObject <GLScreenDelegate> {
-	GLScreen *myScreen;
-	float mouseX,mouseY;
-	BOOL mouseSlide;
-	BOOL mouseZoom;
-	BOOL mouseRotate;
-#if HAVE_ANTTWEAKBAR
-	AntTweakBarManager *tweaker;
-#else
-	id tweaker;
-#endif
-	NSMutableSet *tweakoverlays;
+/** 
+This class implements the a Gimp Gradient (ggr) interface for reading, and then generating RGBA color values fromt he gradient.
+
+We do not surrently support HSV coloring Types.
+
+@author Evan Felix <evan.felix@pnl.gov>, (C) 2012
+@ingroup cview3d
+*/
+typedef enum {FROMNONE=0, FROMFILE, FROMSTRING} GGRsource;
+#define FROMFILE_STRING @"file"
+#define FROMSTRING_STRING @"string"
+@interface GimpGradient: NSObject <PList> {
+	GGRsource source;
+    NSString *name;
+	/** holds either a filename or the full GGR string depending on source type */
+	NSString *dataSource;
+	NSMutableArray *segments;
+    float lastcolor;
+    float lastRGBA[4];
 }
--initWithScreen: (GLScreen *)screen;
-#if HAVE_ANTTWEAKBAR
--setupTweakers;
--cleanTweakers;
-#endif
-/**
-    This selector is called from [GLWorld glPickDraw] to allow the 
-    screen delegate to decide what to do with the selections that were made
-    @param hitCount the number of selections returned by glRenderMode()
-    @param selectBuf an OpenGL selection buffer (see gl docs for more info)
-    @param buffSize is the size of the selectBuf array
-  */
--processHits: (GLint) hitCount buffer: (GLuint*) selectBuf andSize: (GLint) buffSize inWorld: (GLWorld*) world;
+-init;
+-initWithFile: (NSString*)filename;
+-initWithString: (NSString*)string;
+-parseGGR: (NSString *)ggr;
+/**return the Red component of the gradient at position from 0.0 to 1.0 */
+-(float)getR: (float)i;
+/**return the Red component of the gradient at position from 0.0 to 1.0 */
+-(float)getG: (float)i;
+/**return the Red component of the gradient at position from 0.0 to 1.0 */
+-(float)getB: (float)i;
+/**return the Red component of the gradient at position from 0.0 to 1.0 */
+-(float)getA: (float)i;
+/**return the Red,Green,Blue,Alpha component of the gradient at position from 0.0 to 1.0 into a float[4] array */
+-putRGBA: (float)i into: (float*)array;
 @end
-#endif

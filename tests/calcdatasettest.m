@@ -66,15 +66,11 @@ int main(int argc,char *argv[], char *env[]) {
 	//needed for NSLog
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
-	SinDataSet *ds = [[SinDataSet alloc] initWithWidth: 500 Height: 128];
-	SinDataSet *ds2 = [[SinDataSet alloc] initWithWidth: 500 Height: 128];
-	UpdateThread *t = [[UpdateThread alloc] initWithUpdatable: ds];
-	UpdateThread *t2 = [[UpdateThread alloc] initWithUpdatable: ds2];
+	SinDataSet *ds = [[SinDataSet alloc] initWithWidth: 500 Height: 128 interval: 1.0];
+	SinDataSet *ds2 = [[SinDataSet alloc] initWithWidth: 500 Height: 128 interval: 1.0];
 	CalculatedDataSet *cds = [[CalculatedDataSet alloc] initWithName: @"test" usingFormula: @"$0:2:/:50:+" onPlanes: ds, nil];
 	[cds autoScale: 100];
 	[ds2 autoScale: 100];
-	[t startUpdateThread: 1.0];
-	[t2 startUpdateThread: 1.0];
 
 	Scene * scene = [[Scene alloc] initWithObject:
 		[[[[GLGrid alloc] initWithDataSet: cds andType: G_SURFACE] setXTicks: 50] setYTicks: 16]

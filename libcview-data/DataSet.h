@@ -85,9 +85,10 @@ This class provides a basic data store, with associated information.  It is orga
 	float currentScale;
 	float currentMax;
 	float lockedMax;
-	BOOL allowScaling;
+	BOOL allowScaling,dataValid;
 	NSString *textDescription;
 	NSString *labelFormat;
+	NSRecursiveLock *dataLock;
 }
 - initWithName: (NSString *)n Width: (int)w Height: (int)h;
 - initWithWidth: (int)w Height: (int)h;
@@ -128,5 +129,15 @@ This class provides a basic data store, with associated information.  It is orga
 - setRate:(NSString *)r;
 -(NSString *)getRate;
 - description;
+/** lock the dataset such that the dataset sizes cannot change until unlocked. */
+- lock;
+/** unlock a previously locked dataset allowing possible size changes */
+- unlock;
+/** resize data by width */
+- setWidth: (int)newWidth;
+/** resize data by height */
+- setHeight: (int)newHeight;
+/** report data valid status */
+- (BOOL)dataValid;
 @end
 

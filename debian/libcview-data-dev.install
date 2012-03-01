@@ -6,9 +6,11 @@ usr/include/cview/DictionaryExtra.h
 usr/include/cview/ListComp.h
 usr/include/cview/PList.h
 usr/include/cview/SinDataSet.h
+usr/include/cview/StreamDataSet.h
 usr/include/cview/UpdateThread.h
 usr/include/cview/WebDataSet.h
+usr/include/cview/XYDataSet.h
 usr/lib/libcview-data.so
 usr/lib/libcview-data.a
 usr/lib/libcview-data.la
-
+usr/share/pkgconfig/cview-data.pc

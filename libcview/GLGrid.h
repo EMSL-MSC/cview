@@ -68,6 +68,7 @@ The class can display 4 types of Grid: Lines, Surfaces, Ribbons and Points.
 #import "ColorMap.h"
 #import "DrawableObject.h"
 #import "GLText.h"
+#import "GimpGradient.h"
 
 typedef enum { G_LINES=0,G_RIBBON,G_SURFACE,G_POINTS,G_COUNT } GridTypesEnum;
 #define G_LINES_STRING @"0"
@@ -76,7 +77,7 @@ typedef enum { G_LINES=0,G_RIBBON,G_SURFACE,G_POINTS,G_COUNT } GridTypesEnum;
 	DataSet *dataSet;
 	ColorMap *colorMap;
 	int xTicks,yTicks;
-	int currentMax;
+	int currentMax,currentWidth,currentHeight;
 	NSMutableData *dataRow;
 	NSMutableData *colorRow;
 	GLText *descText;
@@ -86,7 +87,10 @@ typedef enum { G_LINES=0,G_RIBBON,G_SURFACE,G_POINTS,G_COUNT } GridTypesEnum;
 	float fontColorB;
 	float xscale,yscale,zscale;
 	float dzmult,rmult;
+	/**a gradient for the color map, a nil value means use the default map.*/
+	GimpGradient *ggr;
 	GridTypesEnum gridType;
+	/** protect the dataSet member from being changed while we are reading it */
 	NSRecursiveLock *dataSetLock;
 	
 	//surface specific
@@ -99,6 +103,7 @@ typedef enum { G_LINES=0,G_RIBBON,G_SURFACE,G_POINTS,G_COUNT } GridTypesEnum;
 -initWithDataSet: (DataSet *)ds andType: (GridTypesEnum)type;
 /** change the dataSet displayed */
 -setDataSet: (DataSet *)ds;
+-(void)receiveResizeNotification: (NSNotification *)notification;
 -(void)resetDrawingArrays;
 /** get the current dataset */
 -(DataSet *)getDataSet;
@@ -130,4 +135,8 @@ typedef enum { G_LINES=0,G_RIBBON,G_SURFACE,G_POINTS,G_COUNT } GridTypesEnum;
 -drawPoints;
 /** draw the data lines*/
 -drawRibbons;
+/** set the Gradient for color mapping */
+-setGradient: (GimpGradient *)gradient;
+/** retrieve the current gradient */
+-getGradient;
 @end

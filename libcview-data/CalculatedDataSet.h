@@ -77,6 +77,7 @@ All rights reserved.
 	NSMutableData *oldData;
 	NSConditionLock *firstUpdateLock;
 	int updatedCount;
+    BOOL nonCongruentPlanes;
 	calc_data_set_func calculation;
 }
 /**
@@ -87,7 +88,9 @@ All rights reserved.
 -initWithName: (NSString *)n usingFormula: (NSString *)c onPlanes: (id)first, ...;
 /** @param calc C-based calculation function */
 -setCalculation: (calc_data_set_func)calc;
+-(void)checkAndResetDataPlanes;
 -(void)receiveNotification: (NSNotification *)notification;
+-(void)receiveResizeNotification: (NSNotification *)notification;
 -(void)registerForNotifications;
 /** do all the work */
 -(void)performCalculation;

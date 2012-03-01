@@ -1,6 +1,6 @@
 /*
 
-This file is part of the CVIEW graphics system, which is goverened by the following License
+This file is port of the CVIEW graphics system, which is goverened by the following License
 
 Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
@@ -56,61 +56,69 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-/**
-	Default Delegate for basic FPS like viewing of the world.  Supports an AntTweakBarManager if the library is available.
-
-	Move World commands move the GLWorld under the cursor by rows or columns. These keys will probably change focus, so subsequent keys may be passed to whatever window is now under the cursor.
-
-	Keys:
-@dot
-digraph keymap {
-	node [shape=record]
-	dir [ label="{w|a|s|d}|{Strafe Up|Strafe Down|Strafe Left|Strafe Right}" ];
-	rot [ label="{PageUp|PageDown|UpArrow|DownArrow|LeftArrow|RightArrow}|{Pitch Upward|Pitch Downward|Move Forward|Move Backward|Turn Left|Turn Right}"];
-	win [ label="{h|j|k|l}|{Move World Left|Move World Down|Move World Up|Move World Right}"];
-	extra [ label="{q|z|f|p|t}|{Quit Program|Dump Screen to file|Full Screen toggle|Print Current Eye|toggle AntTweakBar}"];
-}
-@enddot		
-	@author Evan Felix
-	@ingroup cview3d
-*/
-#ifndef DEFAULTGLSCREENDELEGATE_H
-#define DEFAULTGLSCREENDELEGATE_H
 #import <Foundation/Foundation.h>
-#import "GLScreenDelegate.h"
-#import "GLWorld.h"
-#import "GLScreen.h"
+#import "debug.h"
+#import "UpdateRunLoop.h"
 
-#if HAVE_ANTTWEAKBAR
-#import "AntTweakBarManager.h"
-#import "AntTweakBarOverlay.h"
-#endif
-
-@interface DefaultGLScreenDelegate: NSObject <GLScreenDelegate> {
-	GLScreen *myScreen;
-	float mouseX,mouseY;
-	BOOL mouseSlide;
-	BOOL mouseZoom;
-	BOOL mouseRotate;
-#if HAVE_ANTTWEAKBAR
-	AntTweakBarManager *tweaker;
-#else
-	id tweaker;
-#endif
-	NSMutableSet *tweakoverlays;
+@implementation UpdateRunLoop
+static UpdateRunLoop *singletonUpdater;
++(void)initialize {
+	if ([UpdateRunLoop class] == self) {
+		singletonUpdater = [[self alloc] init];
+	}
 }
--initWithScreen: (GLScreen *)screen;
-#if HAVE_ANTTWEAKBAR
--setupTweakers;
--cleanTweakers;
-#endif
-/**
-    This selector is called from [GLWorld glPickDraw] to allow the 
-    screen delegate to decide what to do with the selections that were made
-    @param hitCount the number of selections returned by glRenderMode()
-    @param selectBuf an OpenGL selection buffer (see gl docs for more info)
-    @param buffSize is the size of the selectBuf array
-  */
--processHits: (GLint) hitCount buffer: (GLuint*) selectBuf andSize: (GLint) buffSize inWorld: (GLWorld*) world;
+
+-(id)init {
+	[super init];
+	runLock = [[NSLock alloc] init];
+	[NSThread detachNewThreadSelector: @selector(run:) toTarget: self withObject: nil];
+	NSLog(@"initialize it baby!");
+	return self;
+}
+
+-(void)dealloc {
+	[runLock autorelease];
+	[super dealloc];
+}
+
+-(void)run: (id)args {
+	NSAutoreleasePool *tpool = [[NSAutoreleasePool alloc] init];
+
+	theLoop = [NSRunLoop currentRunLoop];
+	NSLog(@"loop: %@",theLoop);
+	[runLock lock];
+	running = YES;
+	[runLock unlock];
+	while (running) {
+		//NSLog(@"Top of loop====================");
+		//NSLog(@"limitDate: %@",[theLoop limitDateForMode: NSDefaultRunLoopMode]);
+		[theLoop runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 60]];
+		[tpool release];
+		tpool = [[NSAutoreleasePool alloc] init];
+		DUMPALLOCLIST(YES);
+	}
+	[tpool release];
+	return;
+}
+
++(NSRunLoop *)runLoop {
+	while (!singletonUpdater->running) {
+		[NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 1]];
+	}	
+
+	return singletonUpdater->theLoop;
+}
+
++(UpdateRunLoop *)singleton {
+	return singletonUpdater;
+}
+
+-terminate {
+	NSLog(@"Terminating Thread");
+	[runLock lock];
+	running = NO;
+	[runLock unlock];
+	return self;
+}
+
 @end
-#endif

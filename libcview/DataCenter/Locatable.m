@@ -63,8 +63,8 @@ All rights reserved.
 
 #import "Node.h"
 @implementation Locatable
-+(void)drawGLQuad: (Point) p1 andP2: (Point) p2
-            andP3: (Point) p3 andP4: (Point) p4 {
++(void)drawGLQuad: (_PointStruct) p1 andP2: (_PointStruct) p2
+            andP3: (_PointStruct) p3 andP4: (_PointStruct) p4 {
     glBegin(GL_QUADS);
     glTexCoord2f(0.0,0.0);    glVertex3f(p1.x, p1.y, p1.z);
     glTexCoord2f(0.0,1.0);    glVertex3f(p2.x, p2.y, p2.z);
@@ -76,20 +76,12 @@ All rights reserved.
     [super init];
     self->location = [[Vector alloc] initWithZeroes];
     self->rotation = [[Vector alloc] initWithZeroes];
-    self->name = nil;
     width = 0;
     height = 0;
     depth = 0;
     boundingBox = NULL;
     wireframeBox = NULL;
     return self;
-}
--setName: (NSString *) _name{
-    self->name = _name;
-    return self;
-}
--(NSString*) name{
-    return self->name;
 }
 -setLocation: (Vector*) _location {
     self->location = _location;
@@ -126,9 +118,9 @@ All rights reserved.
 -(float) depth; {
     return self->depth;
 }
-void initQuad(Vertex* v, Point *p1, Point *p2, Point *p3, Point *p4) {
+void initQuad(Vertex* v, _PointStruct *p1, _PointStruct *p2, _PointStruct *p3, _PointStruct *p4) {
     int i;
-    Point *pX;
+    _PointStruct *pX;
     for(i=0;i<4;++i) {
         if(i==0) {
             v[i].tu = 0.0f;
@@ -152,7 +144,7 @@ void initQuad(Vertex* v, Point *p1, Point *p2, Point *p3, Point *p4) {
         v[i].z = pX->z;
     }
 }
-void initLine(Vertex* v, Point* p1, Point* p2) {
+void initLine(Vertex* v, _PointStruct* p1, _PointStruct* p2) {
     v[0].x = p1->x;
     v[0].y = p1->y;
     v[0].z = p1->z;
@@ -161,7 +153,7 @@ void initLine(Vertex* v, Point* p1, Point* p2) {
     v[1].z = p2->z;
 }
 NSData* createWireframeBox(float w, float h, float d) {
-    Point p1,p2,p3,p4,p5,p6,p7,p8;
+    _PointStruct p1,p2,p3,p4,p5,p6,p7,p8;
     p1.x = -0.5*w; p1.y = -0.5*h; p1.z = -0.5*d;
     p2.x = -0.5*w; p2.y =  0.5*h; p2.z = -0.5*d;
     p3.x =  0.5*w; p3.y =  0.5*h; p3.z = -0.5*d;
@@ -192,7 +184,7 @@ NSData* createWireframeBox(float w, float h, float d) {
 // Will create and initialize an array of verteces needed
 // to draw a BOX in openGL...this will be very handy! (width, height, depth)
 NSData* createBox(float w, float h, float d) {
-    Point p1,p2,p3,p4,p5,p6,p7,p8;
+    _PointStruct p1,p2,p3,p4,p5,p6,p7,p8;
     p1.x = -0.5*w; p1.y = -0.5*h; p1.z = -0.5*d;
     p2.x = -0.5*w; p2.y =  0.5*h; p2.z = -0.5*d;
     p3.x =  0.5*w; p3.y =  0.5*h; p3.z = -0.5*d;

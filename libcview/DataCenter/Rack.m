@@ -84,7 +84,7 @@ static GLText *gltName;
     Node *n;
     NSString *rtval = [NSString string];
     while( (n = [e nextObject]) )
-        rtval = [[rtval stringByAppendingString: @" "] stringByAppendingString: [n name]];
+        rtval = [[rtval stringByAppendingString: @" "] stringByAppendingString: [n getName]];
     return rtval;
 }
 -cleanUp{
@@ -149,10 +149,10 @@ static GLText *gltName;
 
         if(drawname == YES) {   // Draw the rack name
             if(gltName == nil) {
-                gltName = [[GLText alloc] initWithString: [self name] andFont: @"LinLibertine_Re.ttf"];
+                gltName = [[GLText alloc] initWithString: [self getName] andFont: @"LinLibertine_Re.ttf"];
       //          [gltName setRotationOnX: 90 Y: 180 Z: 0];
             }
-            [gltName setString: [self name]];
+            [gltName setString: [self getName]];
             [gltName bestFitForWidth: [self width] andHeight: [self height]];
 
             glTranslatef(11.2,.5001*[self height],.75*[self depth]);

@@ -65,14 +65,10 @@ int main(int argc,char *argv[], char *env[]) {
 	//needed for NSLog
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
-	SinDataSet *ds = [[SinDataSet alloc] initWithName: @"Sin()" Width: 1000 Height: 128];
-	SinDataSet *ds2 = [[SinDataSet alloc] initWithName: @"Sin()" Width: 500 Height: 128];
-	UpdateThread *t = [[UpdateThread alloc] initWithUpdatable: ds];
-	UpdateThread *t2 = [[UpdateThread alloc] initWithUpdatable: ds2];
+	SinDataSet *ds = [[SinDataSet alloc] initWithName: @"Sin()" Width: 1000 Height: 128 interval:1.0];
+	SinDataSet *ds2 = [[SinDataSet alloc] initWithName: @"Sin()" Width: 500 Height: 128 interval:1.0];
 	[ds autoScale: 100];
 	[ds2 autoScale: 100];
-	[t startUpdateThread: 1.0];
-	[t2 startUpdateThread: 1.0];
 
 	GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test"];
 	Scene * scene = [[Scene alloc] initWithObject:

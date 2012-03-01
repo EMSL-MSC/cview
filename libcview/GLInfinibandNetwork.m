@@ -253,6 +253,17 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 		nFabricChipPorts = 8;
 	}
 
+	if ([type compare: @"ISR9024D-M" ] == NSOrderedSame) {
+		//This switch really has two rows of ports on thr front..  need to deal with that
+		/**@todo deal with dual row switches */
+		nLineBoards      = 1;
+		nLineExtPorts    = 24;
+		nLineIntPorts    = 0;
+		nFabricBoards    = 0;
+		nFabricChips     = 0;
+		nFabricChipPorts = 0;
+	}
+
 	if ([type compare: @"ISR2012" ] == NSOrderedSame) {
 		nLineBoards      = 24;
 		nLineExtPorts    = 12;
@@ -385,10 +396,10 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 		/// end bounding
 
 		//line board switches
-		sl=(chassisWidth-switchWidth)/2;
-		sr=sl+switchWidth;
-		sf=chassisDepth*0.25 - switchDepth/2.0;
-		sn=sf-switchDepth;
+		sl=(chassisWidth-switchWidth)/2; //Switch Left
+		sr=sl+switchWidth;               //Switch Right
+		sf=chassisDepth*(nFabricBoards==0?0.50:0.25) - switchDepth/2.0; //switch Far
+		sn=sf-switchDepth; //switch Near
 		for (i=0;i<nLineBoards;i++) {
 			sh=i*(chassisHeight/nLineBoards);
 			glColor3f(0.0,0.0,0.7);
@@ -513,7 +524,6 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	NSEnumerator *e;
 	NSString *from,*to,*speed;
 	int tport,fport;
-	BOOL good;
 	
 	e = [lines objectEnumerator];
 	while ( (line = [e nextObject] ) ) {
@@ -535,7 +545,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 		
 		
 		if ([from length]>0 && [to length]>0) {
-			good = [graph addEdge: 
+			[graph addEdge: 
 					[NSString stringWithFormat: @"%@-%d",from,fport] and: 
 					[NSString stringWithFormat: @"%@-%d",to,tport] withInfo:
 					[IBLink link]

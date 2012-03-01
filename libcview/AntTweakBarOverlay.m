@@ -64,7 +64,7 @@ All rights reserved.
 #define MAX_STRING 255
 
 /**
-	Internal node to store arepresentation of the users tweakable tree for the AntTweakBarOverlay
+	Internal node to store a representation of the users tweakable tree for the AntTweakBarOverlay
 
 	@author Evan Felix
 	@ingroup cview3d
@@ -192,6 +192,8 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 	NSDictionary *settings;			
 	NSString *keybase;
 
+
+
 	if (grp)
 		keybase=[NSString stringWithFormat:@"%@.",grp];
 	else	
@@ -201,7 +203,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 	if (att) {
 		
 		if ([tree respondsToSelector: @selector(tweaksettings)])
-			settings = [tree valueForKey: @"tweaksettings"];	
+			settings = [tree valueForKey: @"tweaksettings"];
 		else
 			settings = [NSDictionary dictionary];
 
@@ -210,7 +212,9 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 		while ((key = [list nextObject])) {
 			NSObject *o = [tree valueForKey: key];
 			//NSLog(@"O:%p key=%@",o,key);
-			NSString *keypath = [[NSString stringWithFormat:@"%@%@",keybase,key] retain];
+			/** @fixme probably leaking keypath */
+			//NSString *keypath = [[NSString stringWithFormat:@"%@%@",keybase,key] retain];
+			NSString *keypath = [NSString stringWithFormat:@"%@%@",keybase,key];
 			ATB_Node *atb = [self addNodeNamed: key andObject: tree];
 			NSString *setting = [settings objectForKey: key];
 			
@@ -293,13 +297,27 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 	return NO;//nothing in the tree had attributes
 }
 
+-treeChanged: (NSNotification *)note {
+	if ([note object] == myTree) {// should alwasy happen, but check anyway.
+	NSLog(@"Tree change Notification: %@",note);
+		TwRemoveAllVars(myBar);
+		[self parseTree: myTree withGroup:nil];
+	}
+	else {
+		NSLog(@"Strange notification: %@",note);
+	}
+	return self;
+}
+
 -(BOOL)setTree: (NSObject *)tree {
 	TwRemoveAllVars(myBar);
 	[myNodes removeAllObjects];
 	
 	[tree retain];
+	[[NSNotificationCenter defaultCenter] removeObserver: self name: @"DataModelModified" object: myTree];
 	[myTree autorelease];
 	myTree = tree;
+	[[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(treeChanged:) name: @"DataModelModified" object: myTree];
 	return [self parseTree: tree withGroup:nil];
 }
 
@@ -309,6 +327,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 	[name autorelease];
 	[manager autorelease];
 	[myNodes autorelease];
+	[[NSNotificationCenter defaultCenter] removeObserver: self name: @"DataModelModified" object: myTree];
 	[myTree autorelease];
 	[super dealloc];
 	return;

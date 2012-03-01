@@ -10,9 +10,9 @@ INCLUDES = $(all_includes) -I$(top_srcdir)/libcview -I$(top_srcdir)/libcview-dat
 # the library search path.
 noinst_PROGRAMS = datasettest glgridtest glscreentest webdatasettest \
                   calcdatasettest calcdatatest xydatasettest iddatabasetest \
-                  glimagetest streamdatasettest glbartest ibtest graphtest
+                  glimagetest streamdatasettest glbartest ibtest graphtest ggrtest
 EXTRA_DIST = funcdata
-noinst_DATA = testdata.xy
+noinst_DATA = testdata.xy gimpgradient.ggr
 
 calcdatasettest_SOURCES = calcdatasettest.m
 
@@ -44,3 +44,5 @@ iddatabasetest_SOURCES = iddatabasetest.m
 ibtest_SOURCES = ibtest.m
 
 graphtest_SOURCES = graphtest.m
+
+ggrtest_SOURCES = ggrtest.m

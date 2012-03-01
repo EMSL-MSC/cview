@@ -64,7 +64,7 @@ All rights reserved.
 */
 
 #import <Foundation/Foundation.h>
-
+#import "GimpGradient.h"
 
 @interface ColorMap: NSObject {
 	NSMutableData *colormap; //formatted as 3 floats per color]
@@ -72,11 +72,14 @@ All rights reserved.
 }
 +mapWithMax: (int)max;
 -initWithMax: (int)max;
++mapWithGradient: (GimpGradient *)ggr andMax: (int)max;
+-initWithGradient: (GimpGradient *)ggr andMax: (int)max;
 -doMapWithData: (float *)data thatHasLength: (int)len toColors: (float *)colors;
 -doMapWithPoints: (float *)Points thatHasLength: (int)len toColors: (float *)colors;
 -glMap: (int)val;
 -(float)r: (float)i;
 -(float)g: (float)i;
 -(float)b: (float)i;
+-(float)a: (float)i;
 @end
 

@@ -594,6 +594,8 @@
 # Test cluster
 0x8f10400412a00 "cut0ibsw1sw - Spine 1 Chip 1"
 0x8f1040041192a "cut0ibsw2sw - Spine 1 Chip 1"
+0x8f10400412a00 "TestS1-L1"
+0x8f1040041192a "TestS2-L1"
 
 # Medium simulation cluster
 0x8f104003f2682 "C1-L1"                                                                                                                                                                  

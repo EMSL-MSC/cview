@@ -81,6 +81,7 @@ All rights reserved.
 	int x,y,w,h; //calculated by layout
 }
 -setDelegate:(id)_delegate;
+-(GLWorld *)getWorld;
 @end
 
 @implementation AScreen
@@ -112,6 +113,9 @@ All rights reserved.
 -setDelegate:(id)_delegate {
     [world setDelegate: _delegate];
     return self;
+}
+-(GLWorld *)getWorld {
+	return world;
 }
 @end
 
@@ -157,6 +161,7 @@ void _renderSceneAll() {
 }
 void _periodicTimer(int value) {
 	[[GLScreen getMaster] checkState];
+	[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:nil];
 //	NSLog(@"periodic timer");
 	glutTimerFunc(100,_periodicTimer,0);
 }
@@ -171,14 +176,14 @@ static GLScreen *_theMaster_ = nil;
 /** sort helper function that compares two AScreen objects
 	@relates AScreen
  */
-int compareScreenColumns(id one,id two,void *context) {
+NSComparisonResult compareScreenColumns(id one,id two,void *context) {
 	AScreen *o=one;
 	AScreen *t=two;
 	if (o->col < t->col)
-		return -1;
+		return NSOrderedAscending;
 	if (o->col > t->col)
-		return 1;
-	return 0;
+		return NSOrderedDescending;
+	return NSOrderedSame;
 }
 
 @implementation GLScreen
@@ -292,6 +297,7 @@ int compareScreenColumns(id one,id two,void *context) {
 		[worlds addObject: s];
 		[self doLayout];
 		s->window = [self makeGLWindow: s];
+		[s->world setContext: s->window];
 	}
 	return self;
 }
@@ -352,6 +358,7 @@ int compareScreenColumns(id one,id two,void *context) {
 /**Internal Function*/
 -(int)makeGLWindow: (AScreen *)s {
 	int win = glutCreateSubWindow(mainwin,s->x,s->y,s->w,s->h);
+	//NSLog(@"Created sub window: %d=(%d,%d,%d,%d,%d)",win,mainwin,s->x,s->y,s->w,s->h);
 	glutDisplayFunc(_renderScene);
 #if ! defined ON_MINGW_WIN32
 	glutKeyboardFunc(_processNormalKeys);
@@ -390,7 +397,14 @@ int compareScreenColumns(id one,id two,void *context) {
 	[self doLayout];
 	//Create Sub Window
 	s->window = [self makeGLWindow: s];
+	[gw setContext: s->window];
 	return gw;
+}
+
+-(NSArray *)getWorlds {
+	NSArray *ws = [[worlds allObjects] arrayObjectsFromPerformedSelector: @selector(getWorld)];
+	NSLog(@"getWorlds: %@",ws);
+	return ws;
 }
 
 /** Internal function that calculated relative position of each window based on the requests made by each world for row and colum position
@@ -475,6 +489,7 @@ int compareScreenColumns(id one,id two,void *context) {
 		}
 		row_place += rowh;
 	}
+	[self dumpScreens];
 	return self;
 }
 
@@ -512,9 +527,8 @@ double mysecond()
 {
   struct timeval tp;
   struct timezone tzp;
-  int i;
 
-  i = gettimeofday(&tp,&tzp);
+  gettimeofday(&tp,&tzp);
   return ( (double) tp.tv_sec + (double) tp.tv_usec * 1.e-6 );
 }
 
@@ -547,11 +561,10 @@ double mysecond()
 
 -keyPress: (unsigned char)key atX: (int)x andY: (int)y withWindow: (int)window {
 	AScreen *s;
-	BOOL handled=NO;	
 
 	if (( s=[self findWindow: window] )) {
 		if (delegate && [delegate respondsToSelector:@selector(keyPress:atX:andY:inGLWorld:)])
-			handled = [delegate keyPress: key atX: x andY: y inGLWorld: s->world];
+			[delegate keyPress: key atX: x andY: y inGLWorld: s->world];
 		glutPostRedisplay();	
 	}
 	return self;
@@ -559,11 +572,10 @@ double mysecond()
 
 -specialKeyPress: (int)key atX: (int)x andY: (int)y withWindow: (int)window {
 	AScreen *s;
-	BOOL handled=NO;	
 
 	if (( s=[self findWindow: window] )) {
 		if (delegate && [delegate respondsToSelector:@selector(specialKeyPress:atX:andY:inGLWorld:)])
-			handled = [delegate specialKeyPress: key atX: x andY: y inGLWorld: s->world];
+			[delegate specialKeyPress: key atX: x andY: y inGLWorld: s->world];
 		glutPostRedisplay();	
 	}
 	return self;
@@ -571,6 +583,7 @@ double mysecond()
 
 -mouseButton: (int)button withState: (int)state atX: (int)x andY: (int)y withWindow: (int)window {
 	AScreen *s;
+	
 	if (( s=[self findWindow: window] )) {
 		//	NSLog(@"Delegate: %@ %d",delegate, [delegate respondsToSelector:@selector(mouseButton:withState:atX:andY:inGLWorld:)]);
 		if (delegate && [delegate respondsToSelector:@selector(mouseButton:withState:atX:andY:inGLWorld:)])
@@ -599,6 +612,39 @@ double mysecond()
 	}
 	glutPostRedisplay();
 	return self;
+}
+
+-moveWorld: (GLWorld *)world Row: (int)rowchange Col: (int)colchange {
+	NSEnumerator *list;
+	AScreen *s;
+	
+	list = [worlds objectEnumerator];
+	while ((s = [list nextObject])) 
+		if (s->world == world) {
+			s->row = MAX(0,s->row+rowchange);
+			s->col = MAX(0,s->col+colchange);
+			[self doLayout];
+			[self resizeWidth:width Height:height];
+			[self postRedrawAll];
+		}
+	
+	return self;
+}
+
+-resizeWorld:(GLWorld *)world Width: (int)widthchange Height: (int)heightchange {
+	NSEnumerator *list;
+	AScreen *s;
+	
+	list = [worlds objectEnumerator];
+	while ((s = [list nextObject])) 
+		if (s->world == world) {
+			s->rowp = MAX(0,s->rowp+heightchange);
+			s->colp = MAX(0,s->colp+widthchange);
+			[self doLayout];
+			[self postRedrawAll];
+		}
+	return self;
+
 }
 
 /** which window is on top at passed (x,y) coordinates */

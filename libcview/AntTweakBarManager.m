@@ -69,21 +69,28 @@ static NSLock *ATB_lock;
 
 @interface BarWrapper:NSObject {
 	TwBar *barp;
+	int context;
 }
-+wrap:(TwBar *)bar;
++wrap:(TwBar *)bar context: (int)i;
 -(TwBar *)bar;
+-(int)context;
 @end
 @implementation BarWrapper
-+wrap:(TwBar *)bar {
++wrap:(TwBar *)bar context: (int)i {
 	BarWrapper *bw = [[[BarWrapper alloc] init] autorelease];
 	bw->barp = bar;
+	bw->context = i;
 	return bw;
 }
 -(TwBar *)bar {
 	return barp;
 }
+-(int)context {
+	return context;
+}
 @end
 
+static AntTweakBarManager *atbmSingleton;
 @implementation AntTweakBarManager
 
 +(void)initialize {
@@ -92,17 +99,22 @@ static NSLock *ATB_lock;
 -init {
 	[super init];
 	if ([ATB_lock tryLock]) {
+		NSLog(@"Build Tweak: %d, %x",glutGetWindow(),self);
 		bars = [[NSMutableSet setWithCapacity: 4] retain];
-		TwInit(TW_OPENGL, NULL);
+		
+        TwInit(TW_OPENGL, NULL);
+
+		TwSetCurrentWindow(glutGetWindow());
 		TwWindowSize( glutGet(GLUT_WINDOW_WIDTH),glutGet(GLUT_WINDOW_HEIGHT));
-		sizeChanged=NO;
+		sizeChanged=[[NSMutableSet setWithCapacity: 4] retain];
 		
 		[[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(setSizeChanged) name: @"GLScreenWindowSizeChanged" object: nil];
 		TwGLUTModifiersFunc(glutGetModifiers);
+		atbmSingleton = self;
 		return self;
 	}
 	else
-		return nil;
+		return atbmSingleton;
 }
 
 -initWithPList: (id)list {
@@ -119,21 +131,26 @@ static NSLock *ATB_lock;
 */
 }
 
+/**
+	for size changing we need to call the size changed on each world possible
+	so we make an empty set, and add them in as we set it.
+*/
 -setSizeChanged {
-	sizeChanged=YES;
+	[sizeChanged removeAllObjects];
 	return self;
 }
 
 -(TwBar *)addBar: (NSString *)_name {
 	TwBar *newBar = TwNewBar([_name UTF8String]);
 	TwDefine([[NSString stringWithFormat:@"%@ iconpos=topleft alpha=192",_name] UTF8String]);
-	[bars addObject: [BarWrapper wrap: newBar]];
+	[bars addObject: [BarWrapper wrap: newBar context: TwGetCurrentWindow()]];
 	return newBar;
 }
 
 -removeBar: (TwBar *)bar {
 	NSEnumerator *e;
 	BarWrapper *bw;
+	
 	e = [bars objectEnumerator];
 	while ((bw = [e nextObject])) {
 		if ([bw bar] == bar) {
@@ -148,8 +165,10 @@ static NSLock *ATB_lock;
 -removeAllBars {
 	NSEnumerator *e;
 	BarWrapper *bw;
+
 	e = [bars objectEnumerator];
 	while ((bw = [e nextObject])) {
+		TwSetCurrentWindow([bw context]);
 		TwDeleteBar([bw bar]);
 	}
 	[bars removeAllObjects];
@@ -157,17 +176,23 @@ static NSLock *ATB_lock;
 }
 
 -glDraw {
-	//NSLog(@"Tweaker Draw:%d",[bars count]);
-	if (sizeChanged) {
+	int win = glutGetWindow();
+	NSNumber *wino = [NSNumber numberWithInt: win];
+	//NSLog(@"Tweaker Draw:%d  win:%@",[bars count],wino);
+	TwSetCurrentWindow(win);
+	if ([sizeChanged containsObject: wino] == NO) {
 		TwWindowSize( glutGet(GLUT_WINDOW_WIDTH),glutGet(GLUT_WINDOW_HEIGHT));
-		sizeChanged = NO;
+		[sizeChanged addObject: wino];
 	}
 	if ([bars count]>0)
 		TwDraw();
+    
 	return self;
 }
 
 -(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y {
+	TwSetCurrentWindow(glutGetWindow());
+
 	if([bars count] && TwEventKeyboardGLUT(key, x, y) ) 
     	return YES;
 	else
@@ -175,6 +200,8 @@ static NSLock *ATB_lock;
 }
 
 -(BOOL)specialKeyPress: (int)key atX: (int)x andY: (int)y {
+	TwSetCurrentWindow(glutGetWindow());
+
 	if ( [bars count] &&  TwEventSpecialGLUT(key, x, y) ) 
     	return YES;
 	else
@@ -182,6 +209,8 @@ static NSLock *ATB_lock;
 }
 
 -(BOOL)mouseButton: (int)button withState: (int)state atX: (int)x andY: (int)y {
+	TwSetCurrentWindow(glutGetWindow());
+
 	if ( [bars count] && TwEventMouseButtonGLUT(button, state, x, y) ) {
     	return YES;
 	}
@@ -191,6 +220,7 @@ static NSLock *ATB_lock;
 }
 
 -(BOOL)mouseActiveMoveAtX: (int)x andY: (int)y  {
+	TwSetCurrentWindow(glutGetWindow());
 	if ( [bars count] && TwEventMouseMotionGLUT(x, y) ) 
     	return YES;
 	else
@@ -198,21 +228,19 @@ static NSLock *ATB_lock;
 }
 
 -(BOOL)mousePassiveMoveAtX: (int)x andY: (int)y  {
+	TwSetCurrentWindow(glutGetWindow());
 	if ( [bars count] && TwEventMouseMotionGLUT(x, y) ) 
     	return YES;
 	else
 		return NO;
 }
-- (id) retain{
-	int i=4;
-	i++;
-	return [super retain];
-};
+
 -(void)dealloc {
 	NSLog(@"%@ dealloc",[self class]);
 	[self removeAllBars];
-	TwTerminate();
+		TwTerminate();
 	[bars autorelease];
+	[sizeChanged autorelease];
 	[ATB_lock unlock];
 	[super dealloc];
 	return;

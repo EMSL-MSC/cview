@@ -176,7 +176,7 @@ All rights reserved.
 -initWithData {
 	int x,y,i;
 	int MaxX=1,MaxY=1;
-	float val,junk;
+	float val;
 	char *ptr,*end,*sptr;
 
 	x=-1;
@@ -206,7 +206,7 @@ All rights reserved.
 			else if (i==colIndex) 
 				val = strtod(ptr,&ptr);
 			else
-				junk=strtod(ptr,&ptr);
+				strtod(ptr,&ptr);
 			if (sptr==ptr) {
 				//NSLog(@"eat bad: %p '%x'",ptr,*ptr);
 				ptr++; //eat bad input
@@ -234,9 +234,6 @@ All rights reserved.
 	int nw,nh;
 	int r;
 	float *d=NULL;
-	int sw,sh;
-	sw=width;
-	sh=height;
 	
 	nw=width;
 	while (w>nw)

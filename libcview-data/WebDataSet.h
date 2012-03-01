@@ -87,15 +87,20 @@ digraph tickfile {
 @author Evan Felix
 @ingroup cviewdata
 */
-@interface WebDataSet: DataSet <Updatable,PList> {
-	NSURL *dataURL,*XticksURL,*YticksURL;
+
+enum DownloadStage { IDLE=0,XTICK,YTICK,DATA,DESC,RATE,START,ERR };
+@interface WebDataSet: DataSet <PList> {
+	NSURL *dataURL,*XticksURL,*YticksURL,*rateURL,*descURL;
+	NSURLConnection *webConn;
+	NSMutableData *incomingData;
 	NSString *dataKey;
 	NSMutableData *Xticks;
 	NSMutableData *Yticks;
 	BOOL allowRescale;
 	NSURL *baseURL;
-	UpdateThread *thread;
-    NSMutableDictionary *indexByString;
+	NSMutableDictionary *indexByString;
+	enum DownloadStage stage;
+	NSTimer *timer;
 }
 -initWithUrlBase: (NSURL *)base andKey: (NSString *)key;
 /** returns the stored row label from the loaded data */
@@ -107,5 +112,5 @@ digraph tickfile {
 /** get row of data based on xTick string **/
 -(float*)dataRowByString:(NSString*)xTick;
 -initializeIndexByStringDictionary;
--setThread:(UpdateThread *)t;
+-(void)fireTimer:(NSTimer*)aTimer;
 @end

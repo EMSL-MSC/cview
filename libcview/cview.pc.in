@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: cview
+Description: 3D graphical environment for visualizing data
+URL: http://svn.pnnl.gov/esp
+Version: @VERSION@
+#Requires: 
+Libs: -L${libdir} -lcview
+Cflags: -I${includedir}/cview

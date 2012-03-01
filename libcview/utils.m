@@ -86,11 +86,13 @@ void drawString3D(float x,float y,float z,void *font,NSString *string,float offs
 	ftglRenderFont(theFont,[string UTF8String], FTGL_RENDER_ALL);
 }
 
+#if defined ON_MINGW_WIN32
 NSString *dirname(NSString* path) {
 	NSString *basename = [[NSFileManager defaultManager] displayNameAtPath: path];
 	int index = [path length] - [basename length];
 	return [path substringToIndex: index];
 }
+#endif
 
 #if defined ON_MINGW_WIN32
 #include <windows.h>

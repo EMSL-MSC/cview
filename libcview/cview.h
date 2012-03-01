@@ -73,6 +73,7 @@ All rights reserved.
 #import "GLText.h"
 #import "GLImage.h"
 #import "Graph.h"
+#import "GimpGradient.h"
 #import "GLInfinibandNetwork.h"
 
 /*This ties us to gcc, though intell compilers have _mm_* instruction 
