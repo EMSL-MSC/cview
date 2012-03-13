@@ -518,7 +518,7 @@ static const char *gridTypeSelectors[] =	{
 				prevValue = dl[j];
 				prevPoint = j;
 			}
-		}	
+		}
 		if(j-1 != prevPoint) {
 			verts[countPoints*3+2] = (float)j-1;
 			verts[countPoints*3+1] = dl[j-1];
@@ -614,7 +614,7 @@ static const char *gridTypeSelectors[] =	{
 		for (j=0;j<[dataSet height];j++) {
 			verts[j*3+1] = dl[j];
 			verts[j*3+0] = (float)i;
-		}	
+		}
 		glDrawArrays(GL_POINTS,0,[dataSet height]);
 	}
 
@@ -631,7 +631,7 @@ static const char *gridTypeSelectors[] =	{
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
-	glPushMatrix();	
+	glPushMatrix();
 	glScalef(xscale,yscale,zscale);
 
 	glVertexPointer(3, GL_FLOAT, 0, verts);
@@ -647,8 +647,8 @@ static const char *gridTypeSelectors[] =	{
 			newdl[j*2+1]=dl[j];
 		}
 
-		[colorMap doMapWithData: newdl 
-			thatHasLength: [dataSet height]*2 
+		[colorMap doMapWithData: newdl
+			thatHasLength: [dataSet height]*2
 			toColors: [colorRow mutableBytes]];
 		//is there a gooder way? FIXME
 		for (j=0;j<[dataSet height];j++) {

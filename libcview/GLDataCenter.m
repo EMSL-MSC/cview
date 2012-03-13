@@ -5,55 +5,55 @@ This file is part of the CVIEW graphics system, which is goverened by the follow
 Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
 
-1.	Battelle Memorial Institute (hereinafter Battelle) hereby grants permission
-	to any person or entity lawfully obtaining a copy of this software and
-	associated documentation files (hereinafter “the Software”) to redistribute
-	and use the Software in source and binary forms, with or without
-	modification.  Such person or entity may use, copy, modify, merge, publish,
-	distribute, sublicense, and/or sell copies of the Software, and may permit
-	others to do so, subject to the following conditions:
+1.  Battelle Memorial Institute (hereinafter Battelle) hereby grants permission
+    to any person or entity lawfully obtaining a copy of this software and
+    associated documentation files (hereinafter “the Software”) to redistribute
+    and use the Software in source and binary forms, with or without
+    modification.  Such person or entity may use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and may permit
+    others to do so, subject to the following conditions:
 
-	•	Redistributions of source code must retain the above copyright
-		notice, this list of conditions and the following disclaimers. 
-	•	Redistributions in binary form must reproduce the above copyright
-		notice, this list of conditions and the following disclaimer in the
-		documentation and/or other materials provided with the distribution.
-	•	Other than as used herein, neither the name Battelle Memorial
-		Institute or Battelle may be used in any form whatsoever without the
-		express written consent of Battelle.  
-	•	Redistributions of the software in any form, and publications based
-		on work performed using the software should include the following
-		citation as a reference:
+    •    Redistributions of source code must retain the above copyright
+        notice, this list of conditions and the following disclaimers. 
+    •    Redistributions in binary form must reproduce the above copyright
+        notice, this list of conditions and the following disclaimer in the
+        documentation and/or other materials provided with the distribution.
+    •    Other than as used herein, neither the name Battelle Memorial
+        Institute or Battelle may be used in any form whatsoever without the
+        express written consent of Battelle.  
+    •    Redistributions of the software in any form, and publications based
+        on work performed using the software should include the following
+        citation as a reference:
 
-			(A portion of) The research was performed using EMSL, a
-			national scientific user facility sponsored by the
-			Department of Energy's Office of Biological and
-			Environmental Research and located at Pacific Northwest
-			National Laboratory.
+            (A portion of) The research was performed using EMSL, a
+            national scientific user facility sponsored by the
+            Department of Energy's Office of Biological and
+            Environmental Research and located at Pacific Northwest
+            National Laboratory.
 
-2.	THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-	AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-	IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-	ARE DISCLAIMED. IN NO EVENT SHALL BATTELLE OR CONTRIBUTORS BE LIABLE FOR ANY
-	DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-	(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-	LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-	ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-	(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
-	THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+2.  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+    ARE DISCLAIMED. IN NO EVENT SHALL BATTELLE OR CONTRIBUTORS BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+    THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-3.	The Software was produced by Battelle under Contract No. DE-AC05-76RL01830
-	with the Department of Energy.  The U.S. Government is granted for itself
-	and others acting on its behalf a nonexclusive, paid-up, irrevocable
-	worldwide license in this data to reproduce, prepare derivative works,
-	distribute copies to the public, perform publicly and display publicly, and
-	to permit others to do so.  The specific term of the license can be
-	identified by inquiry made to Battelle or DOE.  Neither the United States
-	nor the United States Department of Energy, nor any of their employees,
-	makes any warranty, express or implied, or assumes any legal liability or
-	responsibility for the accuracy, completeness or usefulness of any data,
-	apparatus, product or process disclosed, or represents that its use would
-	not infringe privately owned rights.  
+3.  The Software was produced by Battelle under Contract No. DE-AC05-76RL01830
+    with the Department of Energy.  The U.S. Government is granted for itself
+    and others acting on its behalf a nonexclusive, paid-up, irrevocable
+    worldwide license in this data to reproduce, prepare derivative works,
+    distribute copies to the public, perform publicly and display publicly, and
+    to permit others to do so.  The specific term of the license can be
+    identified by inquiry made to Battelle or DOE.  Neither the United States
+    nor the United States Department of Energy, nor any of their employees,
+    makes any warranty, express or implied, or assumes any legal liability or
+    responsibility for the accuracy, completeness or usefulness of any data,
+    apparatus, product or process disclosed, or represents that its use would
+    not infringe privately owned rights.  
 
 */
 #include <string.h>
@@ -66,29 +66,30 @@ All rights reserved.
 #import "DictionaryExtra.h"
 #include <genders.h>
 #import "DataCenter/Node.h"
+#import <math.h>
 void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
 extern GLuint g_textureID;
 @implementation  GLDataCenter
 -init {
     [super init];
-	self->drawLegend = YES;
-	self->legend_location = 1;
-	self->legend_padd_side = 50;
-	self->legend_padd_top = 50;
-	self->scale = 1.0;
-	self->selectedNode = nil;
-	self->red = 0.38;
-	self->green = 0.38;
-	self->blue = 0.38;
+    self->drawLegend = YES;
+    self->legend_location = 1;
+    self->legend_padd_side = 50;
+    self->legend_padd_top = 50;
+    self->scale = 1.0;
+    self->selectedNode = nil;
+    self->red = 0.38;
+    self->green = 0.38;
+    self->blue = 0.38;
     self->floor = nil;
     self->floorVertCount = 0;
     self->gendersFilePath = nil;
     self->jobIds = nil;
     self->jobIdIndex = 0;
-	self->dataSet = nil;
-	self->gltName = nil;
-	self->colorMap = nil;
-	self->currentMax = 0;
+    self->dataSet = nil;
+    self->gltName = nil;
+    self->colorMap = nil;
+    self->currentMax = 0;
 
     [Rack setGLTName: nil];
     //[Node setGLTName: nil];
@@ -462,7 +463,7 @@ extern GLuint g_textureID;
     if(genders_vallist_destroy(handle, vallist) == -1) NSLog(@"There was an error when calling 'genders_vallist_destroy(handle,vallist)'");
     
     /* print to std out */
-	/*
+    /*
     NSEnumerator *e = [racks objectEnumerator];
 
     Rack *r;
@@ -472,83 +473,91 @@ extern GLuint g_textureID;
     return self;
 }
 -initWithPList: (id)list {
-	NSLog(@"initWithPList: %@",[self class]);
-	[super initWithPList: list];
-	/// @todo error checking or exception handling.
-	Class c;
-	DataSet *ds;
-	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
-	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
-		ds=[c alloc];
-		[[ds initWithPList: [list objectForKey: @"dataSet"]] disableScaling];
+    NSLog(@"initWithPList: %@",[self class]);
+    [super initWithPList: list];
+    /// @todo error checking or exception handling.
+    ggr = nil;
+
+    Class c;
+    DataSet *ds;
+    c = NSClassFromString([list objectForKey: @"dataSetClass"]);
+    if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
+        ds=[c alloc];
+        [[ds initWithPList: [list objectForKey: @"dataSet"]] disableScaling];
         self->dataSet = ds;
-	}
+    }
     self->gendersFilePath = [[list objectForKey: @"gendersFilePath" missing: @"/etc/genders"] retain];
 
     NSLog(@"gendersFilePath = %@", self->gendersFilePath);
-	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
-	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
-		ds=[c alloc];
-		[ds initWithPList: [list objectForKey: @"jobIDDataSet"]];
+    c = NSClassFromString([list objectForKey: @"dataSetClass"]);
+    if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
+        ds=[c alloc];
+        [ds initWithPList: [list objectForKey: @"jobIDDataSet"]];
         jobIds = [[ds retain] disableScaling];
-	}
-	self->drawLegend = [[list objectForKey: @"drawLegend"] boolValue];
-	self->legend_padd_side = [[list objectForKey: @"legend_padd_side"] floatValue];
-	self->legend_padd_top = [[list objectForKey: @"legend_padd_top"] floatValue];
-	self->red = [[list objectForKey: @"red" missing: [NSNumber numberWithFloat: self->red]] floatValue];
-	self->green = [[list objectForKey: @"green" missing: [NSNumber numberWithFloat: self->green]] floatValue];
-	self->blue = [[list objectForKey: @"blue" missing: [NSNumber numberWithFloat: self->blue]] floatValue];
+    }
+    self->drawLegend = [[list objectForKey: @"drawLegend"] boolValue];
+    self->legend_padd_side = [[list objectForKey: @"legend_padd_side"] floatValue];
+    self->legend_padd_top = [[list objectForKey: @"legend_padd_top"] floatValue];
+    self->red = [[list objectForKey: @"red" missing: [NSNumber numberWithFloat: self->red]] floatValue];
+    self->green = [[list objectForKey: @"green" missing: [NSNumber numberWithFloat: self->green]] floatValue];
+    self->blue = [[list objectForKey: @"blue" missing: [NSNumber numberWithFloat: self->blue]] floatValue];
     [self doInit];
     //[Node setWebDataSet: (WebDataSet*)self->dataSet];
     return self;
 }
 -getPList {
-	NSLog(@"getPList: %@",self);
-	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary: [super getPList]];
-	[dict setObject: [dataSet getPList] forKey: @"dataSet"];
-	[dict setObject: [jobIds getPList] forKey: @"jobIDDataSet"];
-	[dict setObject: [dataSet class] forKey: @"dataSetClass"];
-	[dict setObject: self->gendersFilePath forKey: @"gendersFilePath"];
-	[dict setObject: [NSNumber numberWithBool: self->drawLegend] forKey: @"drawLegend"];
-	[dict setObject: [NSNumber numberWithFloat: self->legend_padd_side] forKey: @"legend_padd_side"];
-	[dict setObject: [NSNumber numberWithFloat: self->legend_padd_top] forKey: @"legend_padd_top"];
-	[dict setObject: [NSNumber numberWithFloat: self->red] forKey: @"red"];
-	[dict setObject: [NSNumber numberWithFloat: self->green] forKey: @"green"];
-	[dict setObject: [NSNumber numberWithFloat: self->blue] forKey: @"blue"];
+    NSLog(@"getPList: %@",self);
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary: [super getPList]];
+    [dict setObject: [dataSet getPList] forKey: @"dataSet"];
+    [dict setObject: [jobIds getPList] forKey: @"jobIDDataSet"];
+    [dict setObject: [dataSet class] forKey: @"dataSetClass"];
+    [dict setObject: self->gendersFilePath forKey: @"gendersFilePath"];
+    [dict setObject: [NSNumber numberWithBool: self->drawLegend] forKey: @"drawLegend"];
+    [dict setObject: [NSNumber numberWithFloat: self->legend_padd_side] forKey: @"legend_padd_side"];
+    [dict setObject: [NSNumber numberWithFloat: self->legend_padd_top] forKey: @"legend_padd_top"];
+    [dict setObject: [NSNumber numberWithFloat: self->red] forKey: @"red"];
+    [dict setObject: [NSNumber numberWithFloat: self->green] forKey: @"green"];
+    [dict setObject: [NSNumber numberWithFloat: self->blue] forKey: @"blue"];
 
-	return dict;
+    return dict;
 }
 -(void)dealloc {
     [self->gendersFilePath autorelease];
     [self->floor autorelease];
     [super dealloc];
+    if(dataSet != nil)
+        [dataSet autorelease];
+    if(dataSetLock != nil)
+        [dataSetLock autorelease];
+    if(ggr != nil)
+        [ggr autorelease];
 }
 -(DataSet*)dataSet {
-	return dataSet;
+    return dataSet;
 }
 -(WebDataSet*)jobIds {
-	return self->jobIds;
+    return self->jobIds;
 }
 -(GLText*)gltName {
-	return gltName;
+    return gltName;
 }
 -setGltName:(GLText*)_gltName{
-	self->gltName = _gltName;
-	return self;
+    self->gltName = _gltName;
+    return self;
 }
 -(ColorMap*)colorMap {
-	return colorMap;
+    return colorMap;
 }
 -setColorMap:(ColorMap*) _colorMap{
-	self->colorMap = _colorMap;
-	return self;
+    self->colorMap = _colorMap;
+    return self;
 }
--(double)currentMax {
-	return currentMax;
+-(float)currentMax {
+    return currentMax;
 }
--setCurrentMax:(double) _currentMax {
-	self->currentMax = _currentMax;
-	return self;
+-setCurrentMax:(float) _currentMax {
+    self->currentMax = _currentMax;
+    return self;
 }
 
 // Used for debugging purposes only
@@ -616,151 +625,181 @@ extern GLuint g_textureID;
     return self;
 }
 -glDrawLegend {
-	float width,height;
-	
-//	NSLog(@"currentMax = %f", currentMax);
-//	return self;
+    float width,height;
+    
+//  NSLog(@"currentMax = %f", currentMax);
+//  return self;
 /*
-	if(currentMax < .0000001 && currentMax > -.000000001) {
-		NSLog(@"currentMax = 0.0: drawing the legend would cause a divide by zero! not drawing it.");
-		return self;
-	}*/
-//	NSLog(@"width = %f, height = %f", [dataSet width], [dataSet height]);
-	GLint viewport[4];
-	glGetIntegerv(GL_VIEWPORT, viewport);
-	width=viewport[2];
-	height=viewport[3];
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	gluOrtho2D(0, width, 0, height);
-	glScalef(1.0, -1.0, 1.0);
-	glTranslatef(0.0, -height, 0.0);
-	glMatrixMode(GL_MODELVIEW);
-	glEnable(GL_BLEND);
-	glPushMatrix();
-	glClear(GL_DEPTH_BUFFER_BIT);
-	//glScalef(xscale,yscale,zscale); 	
-//	glClear (GL_COLOR_BUFFER_BIT);
-	glLoadIdentity();
-//	NSLog(@"width = %f, height = %f", width, height);
+    if(currentMax < .0000001 && currentMax > -.000000001) {
+        NSLog(@"currentMax = 0.0: drawing the legend would cause a divide by zero! not drawing it.");
+        return self;
+    }*/
+//  NSLog(@"width = %f, height = %f", [dataSet width], [dataSet height]);
+    GLint viewport[4];
+    glGetIntegerv(GL_VIEWPORT, viewport);
+    width=viewport[2];
+    height=viewport[3];
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix();
+    glLoadIdentity();
+    gluOrtho2D(0, width, 0, height);
+    glScalef(1.0, -1.0, 1.0);
+    glTranslatef(0.0, -height, 0.0);
+    glMatrixMode(GL_MODELVIEW);
+    glEnable(GL_BLEND);
+    glPushMatrix();
+    glClear(GL_DEPTH_BUFFER_BIT);
+    //glScalef(xscale,yscale,zscale);   
+//  glClear (GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
+//  NSLog(@"width = %f, height = %f", width, height);
 
-	float posX=0,posY=0;
-	float leg_width = 100,leg_height = 175;
-	switch(self->legend_location) {
-		case 0:
-			posX = legend_padd_side;
-			posY = legend_padd_top;
-			break;
-		case 1:
-			posX = width - leg_width - legend_padd_side;
-			posY = legend_padd_top;
-			break;
-		case 2:
-			posX = width - leg_width - legend_padd_side;
-			posY = height - leg_height - legend_padd_top;
-			break;
-		case 3:
-			posX = legend_padd_side;
-			posY = height - leg_height - legend_padd_top;
-			break;
-		default:
-			[NSException raise: @"Invalid GLDataCenter.legend_location value"
-				format: @"GLDataCenter.legend_location = %d", self->legend_location];
-			break;
-	}
-	glTranslatef(posX, posY, 0.0);
-	glPushMatrix();
-	//	glTranslatef(s/4, 0.0, 0.0);
-		glBegin(GL_POLYGON);
-			glColor3f(red,green,blue);
-			glVertex2f(0,0); 
-			glVertex2f(leg_width,0); // The top right corner  
-			glVertex2f(leg_width,leg_height); // The bottom right corner  
-			glVertex2f(0,leg_height); // The bottom left corner
-		glEnd( );
-		glFlush( );
-	glPopMatrix();
+    float posX=0,posY=0;
+    float leg_width = 100,leg_height = 175;
+    switch(self->legend_location) {
+        case 0:
+            posX = legend_padd_side;
+            posY = legend_padd_top;
+            break;
+        case 1:
+            posX = width - leg_width - legend_padd_side;
+            posY = legend_padd_top;
+            break;
+        case 2:
+            posX = width - leg_width - legend_padd_side;
+            posY = height - leg_height - legend_padd_top;
+            break;
+        case 3:
+            posX = legend_padd_side;
+            posY = height - leg_height - legend_padd_top;
+            break;
+        default:
+            [NSException raise: @"Invalid GLDataCenter.legend_location value"
+                format: @"GLDataCenter.legend_location = %d", self->legend_location];
+            break;
+    }
+    glTranslatef(posX, posY, 0.0);
+    glPushMatrix();
+    //  glTranslatef(s/4, 0.0, 0.0);
+        glBegin(GL_POLYGON);
+            glColor3f(red,green,blue);
+            glVertex2f(0,0); 
+            glVertex2f(leg_width,0); // The top right corner  
+            glVertex2f(leg_width,leg_height); // The bottom right corner  
+            glVertex2f(0,leg_height); // The bottom left corner
+        glEnd( );
+        glFlush( );
+    glPopMatrix();
 
-	
+    
 
-	int b = 20;
-	glTranslatef(.3*leg_width, leg_height-b, 0.0);
-	glBegin(GL_LINES);
-	//for (i=1;i<currentMax+1;i++) {
-	
-	int i;
-	for (i=1;i<leg_height-2*b;i++) {
-		[colorMap glMap: i * currentMax / (leg_height - 2*b)];
-		//glColor3f(1.0,1.0,1.0);
-		glVertex2f(-7,-i);
-		glVertex2f(0,-i);
-	}
-	//NSLog(@"i = %d, scaled = %f", i, i * currentMax / (leg_height - 2*b));
-	glEnd();
-	glColor3f(1.0,1.0,1.0);
+    int b = 20;
+    glTranslatef(.3*leg_width, leg_height-b, 0.0);
+    glBegin(GL_LINES);
+    //for (i=1;i<currentMax+1;i++) {
+    
+    int i;
+    for (i=1;i<leg_height-2*b;i++) {
+        [colorMap glMap: i * currentMax / (leg_height - 2*b)];
+        //glColor3f(1.0,1.0,1.0);
+        glVertex2f(-7,-i);
+        glVertex2f(0,-i);
+    }
+    //NSLog(@"i = %d, scaled = %f", i, i * currentMax / (leg_height - 2*b));
+    glEnd();
+    glColor3f(1.0,1.0,1.0);
 
-	glBegin(GL_LINES);
-	//for (i=0;i<currentMax+1;i+=(int)MAX(4,currentMax/5)) {
-	//for (i=0;i<leg_height-2*b+1;i+=(int)(MAX(4,currentMax/5) * (leg_height - 2*b) / currentMax )) {
-	for (i=0;i<leg_height-2*b+1;i+=(int)(MAX(4, (leg_height - 2*b)/5))) {
-		glVertex2f(-9,-i);
-		glVertex2f(2,-i);
-	}
-	glEnd();
+    glBegin(GL_LINES);
+    //for (i=0;i<currentMax+1;i+=(int)MAX(4,currentMax/5)) {
+    //for (i=0;i<leg_height-2*b+1;i+=(int)(MAX(4,currentMax/5) * (leg_height - 2*b) / currentMax )) {
+    for (i=0;i<leg_height-2*b+1;i+=(int)(MAX(4, (leg_height - 2*b)/5))) {
+        glVertex2f(-9,-i);
+        glVertex2f(2,-i);
+    }
+    glEnd();
 
-	float xscale = 1.0;
-//	for (i=0;i<currentMax+1;i+=(int)MAX(4,currentMax/5)) {
-	//for (i=0;i<leg_height-2*b+1;i+=(int) ( MAX(4,currentMax/5) * (leg_height - 2*b) / currentMax ) ) {
-	for (i=0;i<leg_height-2*b+1;i+=(int)(MAX(4, (leg_height - 2*b)/5))) {
-		//NSLog(@"drawing a string *** i = %d, currentMax = %f",i,currentMax);
-		drawString3D(4.0/xscale,-i,0,GLUT_BITMAP_HELVETICA_12,[dataSet getLabel: i * currentMax / (leg_height - 2*b)],1.0);
-	}
+    float xscale = 1.0;
+//  for (i=0;i<currentMax+1;i+=(int)MAX(4,currentMax/5)) {
+    //for (i=0;i<leg_height-2*b+1;i+=(int) ( MAX(4,currentMax/5) * (leg_height - 2*b) / currentMax ) ) {
+    for (i=0;i<leg_height-2*b+1;i+=(int)(MAX(4, (leg_height - 2*b)/5))) {
+        //NSLog(@"drawing a string *** i = %d, currentMax = %f",i,currentMax);
+        drawString3D(4.0/xscale,-i,0,GLUT_BITMAP_HELVETICA_12,[dataSet getLabel: i * currentMax / (leg_height - 2*b)],1.0);
+    }
 
-	glPopMatrix();
+    glPopMatrix();
 
-	glDisable(GL_BLEND);
-	glMatrixMode(GL_PROJECTION);
-	glPopMatrix();
-	glMatrixMode(GL_MODELVIEW);
-	return self;
+    glDisable(GL_BLEND);
+    glMatrixMode(GL_PROJECTION);
+    glPopMatrix();
+    glMatrixMode(GL_MODELVIEW);
+    return self;
 }
 -(NSArray *)attributeKeys {
-	//isVisible comes from the DrawableObject
-	return [NSArray arrayWithObjects: @"isVisible",@"drawLegend",@"legend_location",@"legend_padd_side",@"legend_padd_top",@"scale",@"red",@"green",@"blue",nil];
+    //isVisible comes from the DrawableObject
+    return [NSArray arrayWithObjects: @"isVisible",@"drawLegend",@"legend_location",@"legend_padd_side",@"legend_padd_top",@"scale",@"red",@"green",@"blue",nil];
 }
 -(NSDictionary *)tweaksettings {
-	return [NSDictionary dictionaryWithObjectsAndKeys:
-		@"min=0 max=1 step=1",@"isVisible",
-		@"min=0 max=1 step=1",@"drawLegend",
-		@"min=0 max=3 step=1",@"legend_location",
-		@"min=0 step=1",@"legend_padd_side",
-		@"min=0 step=1",@"legend_padd_top",
-		@"min=0 max=1000 step=.001",@"scale",
-		@"min=0.0 max=1.0 step=0.001",@"red",
-		@"min=0.0 max=1.0 step=0.001",@"green",
-		@"min=0.0 max=1.0 step=0.001",@"blue",
-		nil];
+    return [NSDictionary dictionaryWithObjectsAndKeys:
+        @"min=0 max=1 step=1",@"isVisible",
+        @"min=0 max=1 step=1",@"drawLegend",
+        @"min=0 max=3 step=1",@"legend_location",
+        @"min=0 step=1",@"legend_padd_side",
+        @"min=0 step=1",@"legend_padd_top",
+        @"min=0 max=1000 step=.001",@"scale",
+        @"min=0.0 max=1.0 step=0.001",@"red",
+        @"min=0.0 max=1.0 step=0.001",@"green",
+        @"min=0.0 max=1.0 step=0.001",@"blue",
+        nil];
 }
 -(Node*)selectedNode {
-	return self->selectedNode;
+    return self->selectedNode;
 }
 -setSelectedNode:(Node*)_selectedNode {
-	self->selectedNode = _selectedNode;
-	return self;
+    self->selectedNode = _selectedNode;
+    return self;
 }
+
+/* This should be called with the dataSet Locked */
+-resetColorMap {
+    [colorMap autorelease];
+    if (ggr == nil)
+        colorMap = [ColorMap mapWithMax: currentMax];
+    else
+        colorMap = [ColorMap mapWithGradient: ggr andMax: currentMax];
+    [colorMap retain];
+    return self;
+}
+
+
 -glDraw {
+    /**
+     * Determine if we need a new max
+     */
+    [dataSet lock];
+    float max = [dataSet getMax];
+    if (currentMax != max) {
+        //NSLog(@"New Max: %d %d",max,currentMax);
+        currentMax = max;
+        [self resetColorMap];
+    }
+    if (currentHeight != [dataSet height] || currentWidth != [dataSet width]) 
+        NSLog(@"size mismatch since last time");//[self resetDrawingArrays];
+    [dataSetLock lock];
+//    NSLog(@"GLDataCenter::currentMax: %f %f", currentMax, NAN);
+
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,  GL_NEAREST);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,  GL_NEAREST);
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
     [self drawFloor];
     [[self->racks allValues] makeObjectsPerformSelector:@selector(glDraw)]; // draw the racks
-	if(self->drawLegend)
-		[self glDrawLegend];
+    if(self->drawLegend)
+        [self glDrawLegend];
 
     GLenum err = glGetError();
     if(err != GL_NO_ERROR)
         NSLog(@"There was a glError, error number: %x", err);
+    [dataSetLock unlock];
+    [dataSet unlock];
     return self;
 }
 -(NSEnumerator*) getEnumerator {
@@ -768,6 +807,6 @@ extern GLuint g_textureID;
     return enumerator;
 }
 -description {
-	return @"GLDataCenter";
+    return @"GLDataCenter";
 }
 @end
