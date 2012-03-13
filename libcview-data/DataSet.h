@@ -59,12 +59,6 @@ All rights reserved.
 #import <Foundation/Foundation.h>
 #import "PList.h"
 
-/**
-This class provides a basic data store, with associated information.  It is organized as a 2 dimensional array of floating point values.  A set of row and column names is provided, along with some averaging and total functions.  The data may be stored pre-scaled so that it fits within a specific range for display.
-
-@author Evan Felix
-@ingroup cviewdata
-*/
 #define DS_DEFAULT_LIMIT 100.0
 //I wish there was magic to stringify into
 #define S(x) @ #x
@@ -76,6 +70,12 @@ This class provides a basic data store, with associated information.  It is orga
 #endif
 #define DS_DEFAULT_NAME @"NoName"
 #define DS_DEFAULT_RATE_SUFFIX @"NoRate"
+/**
+This class provides a basic data store, with associated information.  It is organized as a 2 dimensional array of floating point values.  A set of row and column names is provided, along with some averaging and total functions.  The data may be stored pre-scaled so that it fits within a specific range for display.
+
+@author Evan Felix
+@ingroup cviewdata
+*/
 @interface DataSet: NSObject <PList> {
 	NSString *name;
 	NSMutableData *data; ///< float based 2d array, data is stored prescaled by the currentScale scale.  so a datapoint of 100.0 and a currentScale of .25 is stored as 25.0

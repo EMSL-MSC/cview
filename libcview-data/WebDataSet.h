@@ -62,6 +62,7 @@ All rights reserved.
 #import "PList.h"
 
 #define TICK_LEN 32
+enum DownloadStage { IDLE=0,XTICK,YTICK,DATA,DESC,RATE,START,ERR };
 /**
 Extension of the data class to retrieve the data from a URL, implement the Updatable protocol so that it can be told to reload the data from the source
 
@@ -87,8 +88,6 @@ digraph tickfile {
 @author Evan Felix
 @ingroup cviewdata
 */
-
-enum DownloadStage { IDLE=0,XTICK,YTICK,DATA,DESC,RATE,START,ERR };
 @interface WebDataSet: DataSet <PList> {
 	NSURL *dataURL,*XticksURL,*YticksURL,*rateURL,*descURL;
 	NSURLConnection *webConn;
