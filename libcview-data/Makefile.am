@@ -17,6 +17,6 @@ libcview_data_la_SOURCES = DataSet.m SinDataSet.m \
 libcview_data_la_OBJCFLAGS = $(AM_OBJCFLAGS)
 libcview_data_la_LDFLAGS = $(FOUNDATION_LDFLAGS) 
 
-pkgconfigdir = $(datarootdir)/pkgconfig
+pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = cview-data.pc
 

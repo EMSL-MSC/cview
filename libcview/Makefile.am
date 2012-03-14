@@ -28,6 +28,6 @@ endif
 libcview_la_OBJCFLAGS = $(WAND_CFLAGS) $(AM_OBJCFLAGS) $(FTGL_CFLAGS)
 libcview_la_LDFLAGS = $(FOUNDATION_LDFLAGS) $(OPENGL_LDFLAGS) $(WAND_LIBS) $(FTGL_LIBS) $(GENDERS_LDFLAGS)
 
-pkgconfigdir = $(datarootdir)/pkgconfig
+pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = cview.pc
 
