@@ -13,6 +13,14 @@ BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
 %description
 PNL Waterfall Visualization Tool
 
+%package docs
+Summary: PNL cview documentation
+Group: System Environment/Documentation
+License: Private
+
+%description docs
+PNL cview doxygen generated documentation.
+
 %package -n libcview
 Summary: PNL common cview library
 Group: System Environment/Libraries
@@ -51,6 +59,7 @@ PNL development data management library for cview packages
 %build
 %configure 
 %{__make} %{_smp_mflags}
+%{__make} docs
 
 %install
 DESTDIR="$RPM_BUILD_ROOT" make install
@@ -76,6 +85,10 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/%{name}/*.svg
 %{_datadir}/%{name}/*.ggr
 %{_datadir}/%{name}/LICENSE.txt
+
+%files docs
+%defattr(0644,root,root)
+%doc docs/html/*
 
 %files -n libcview
 %defattr(-,root,root)
