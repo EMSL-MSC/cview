@@ -74,6 +74,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/oscview
 %{_datadir}/%{name}/tests
 %{_datadir}/%{name}/*.svg
+%{_datadir}/%{name}/*.ggr
 %{_datadir}/%{name}/LICENSE.txt
 
 %files -n libcview
@@ -87,6 +88,7 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libcview.a
 %{_libdir}/libcview.so
 %{_libdir}/libcview.la
+%{_libdir}/pkgconfig/cview.pc
 %{_datadir}/libcview-devel/LICENSE.txt
 
 %files -n libcview-data
@@ -99,5 +101,6 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libcview-data.so
 %{_libdir}/libcview-data.la
 %{_libdir}/libcview-data.a
+%{_libdir}/pkgconfig/cview-data.pc
 %{_includedir}/%{name}/*
 %{_datadir}/libcview-data-devel/LICENSE.txt
