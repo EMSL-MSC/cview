@@ -7,7 +7,7 @@ Group: System Environment/Base
 License: Private
 Source: %{name}-%{version}.tar.gz
 Requires: gnustep-base, AntTweakBar, ImageMagick, mesa-libGL, mesa-libGLU, freeglut, ftgl, genders
-BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel, mesa-libOSMesa-devel, freeglut-devel, genders, doxygen ftgl-devel
+BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel, mesa-libOSMesa-devel, freeglut-devel, genders, ftgl-devel
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
 
 %description
@@ -17,6 +17,7 @@ PNL Waterfall Visualization Tool
 Summary: PNL cview documentation
 Group: System Environment/Documentation
 License: Private
+BuildRequires: doxygen
 
 %description docs
 PNL cview doxygen generated documentation.
