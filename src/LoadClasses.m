@@ -70,7 +70,6 @@ All rights reserved.
 #import "SinDataSet.h"
 #import "calcdataset.h"
 #import "ListComp.h"
-#import "UpdateThread.h"
 #import "XYDataSet.h"
 #import "PList.h"
 #import "config.h"
