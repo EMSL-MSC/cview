@@ -66,6 +66,7 @@ All rights reserved.
 	myScreen = screen; //dont retain... we should be retained by the screen, and we dont want a recursive retainingnesses
 	tweaker=nil;
 	tweakoverlays = [[NSMutableSet setWithCapacity: 4] retain];
+//	[self toggleTweakersVisibility];
 	return self;
 }
 
@@ -75,6 +76,23 @@ All rights reserved.
 }
 -screenHasStarted {
 	return self;	
+}
+
+-toggleTweakersVisibility {
+#if HAVE_ANTTWEAKBAR
+	NSLog(@"tweaker:%@",tweaker);
+	if (tweaker==nil) {
+		[self setupTweakers];
+	}
+	//could add a toggle visible to DrawableObject...
+	else if ([tweaker visible]) {
+		[tweaker hide];
+	}
+	else {
+		[tweaker show];
+	}
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
+#endif
 }
 
 -(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world; {
@@ -105,20 +123,7 @@ All rights reserved.
 				[world dumpImage: @"cview" withBaseDir: @"." dailySubDirs: NO];
 				break;
 			case 't':
-				#if HAVE_ANTTWEAKBAR
-					NSLog(@"tweaker:%@",tweaker);
-					if (tweaker==nil) {
-						[self setupTweakers];
-					}
-					//could add a toggle visible to DrawableObject...
-					else if ([tweaker visible]) {
-						[tweaker hide];
-					}
-					else {
-						[tweaker show];
-					}
-					[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
-				#endif
+				[self toggleTweakersVisibility];
 				break;
 			case 'c':
 				NSLog(@"Retain Count: %d %d",[tweaker retainCount],[tweakoverlays retainCount]);

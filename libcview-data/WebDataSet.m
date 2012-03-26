@@ -281,8 +281,11 @@ static float blankdata[] = {
 		case DATA:
 			//NSLog(@"DATA finish");
 			
-			if (width*height*sizeof(float) == [incomingData length]);		
+			if (width*height*sizeof(float) == [incomingData length]) {
 				[self autoScaleWithNewData: incomingData];
+			} else
+				NSLog(@"Very BAD! Incoming data was not the correct size. Width = %d Height = %d Width * Height = %d DataSet Size = %d", width, height, width * height, [incomingData length] / sizeof(float));
+
 			dataValid=YES;
 			[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
 			stage = IDLE;

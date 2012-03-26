@@ -72,7 +72,6 @@ static UpdateRunLoop *singletonUpdater;
 	[super init];
 	runLock = [[NSLock alloc] init];
 	[NSThread detachNewThreadSelector: @selector(run:) toTarget: self withObject: nil];
-	NSLog(@"initialize it baby!");
 	return self;
 }
 
