@@ -78,7 +78,7 @@ All rights reserved.
 	return self;	
 }
 
--toggleTweakersVisibility {
+-(void)toggleTweakersVisibility {
 #if HAVE_ANTTWEAKBAR
 	NSLog(@"tweaker:%@",tweaker);
 	if (tweaker==nil) {
@@ -196,7 +196,7 @@ All rights reserved.
 
 //use the movement speeds for keys for now ... ???
 -(BOOL)mouseButton: (int)button withState: (int)state atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world {
-	if ( ! (tweaker && [tweaker visible] && [tweaker mouseButton: button withState: state atX: x andY: y])) {		
+	if ( ! (tweaker && [tweaker visible] && [tweaker mouseButton: button withState: state atX: x andY: y])) {
 		if (state == GLUT_DOWN) {
 			mouseX = x;
 			mouseY = y;

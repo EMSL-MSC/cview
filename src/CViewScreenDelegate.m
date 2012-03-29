@@ -70,20 +70,20 @@ TwEnumVal gridTypes[] = {
 	{ G_POINTS,"Points" } 
 };
 void TW_CALL cv_setGridType(const void *value, void *clientData)
-{ 
+{
     NSLog(@"Setit: %d",*(GridTypesEnum *)value);
 	GLGrid *grid = (GLGrid *)clientData;
 	[grid setGridType: *(GridTypesEnum *)value];
 }
 
 void TW_CALL cv_getGridType(void *value, void *clientData)
-{ 
+{
 	GLGrid *grid = (GLGrid *)clientData;
     *(GridTypesEnum *)value = [grid getGridType];
 }
 #endif
 
-@implementation CViewScreenDelegate 
+@implementation CViewScreenDelegate
 -initWithScreen: (GLScreen *)screen {
 	PListOutputFile = nil;
 #if HAVE_ANTTWEAKBAR
@@ -108,7 +108,7 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 	NSLog(@"CViewScreenDelegate dealloc");
 	[PListOutputFile autorelease];
 	[super dealloc];
-	return;	
+	return;
 }
 #if HAVE_ANTTWEAKBAR
 
@@ -133,7 +133,7 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 	NSEnumerator *list;
 	list = [[[w scene] getAllObjects] objectEnumerator];
 	while ( (o = [list nextObject]) ) {
-		if ([o isKindOfClass: [GLGrid class]]) {	
+		if ([o isKindOfClass: [GLGrid class]]) {
 			//Try to get a friendly name
 			id name = [(GLGrid *)o getDataSet];
 			NSString *string = [NSString stringWithFormat: @"Grid: %@",name];
@@ -160,9 +160,9 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 			TwSetCurrentWindow([w context]);
 
 					
-			modbar = [tweaker addBar: @"modbar"];		
+			modbar = [tweaker addBar: @"modbar"];
 			TwDefine("modbar iconified=true");
-			//NSLog(@"modbar-a: %p",modbar);	
+			//NSLog(@"modbar-a: %p",modbar);
 			NSLog(@"modbars: %p",modbars);
 			
 			if (barcount<[w context]+1) {

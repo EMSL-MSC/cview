@@ -189,14 +189,14 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 	NSArray *att = [tree attributeKeys];
 	NSString *key;
 	NSEnumerator *list;
-	NSDictionary *settings;			
+	NSDictionary *settings;
 	NSString *keybase;
 
 
 
 	if (grp)
 		keybase=[NSString stringWithFormat:@"%@.",grp];
-	else	
+	else
 		keybase=@"";
 
 	NSLog(@"Node props: %@",att);
@@ -267,7 +267,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 			}
 */
  			else if ([o isKindOfClass: [NSArray class]]) {
- 				NSArray *a = (NSArray *)o;				
+ 				NSArray *a = (NSArray *)o;
 				int i;
  
  				for (i=0;i<[a count];i++) {
