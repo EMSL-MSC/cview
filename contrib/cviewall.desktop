@@ -6,4 +6,5 @@ Exec=cviewall -url %U
 TryExec=cviewall
 Icon=cview
 Terminal=false
+Type=Application
 Categories=Graphics;

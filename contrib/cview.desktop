@@ -6,4 +6,5 @@ Exec=cview %U
 TryExec=cview
 Icon=cview
 Terminal=false
+Type=Application
 Categories=Graphics;
