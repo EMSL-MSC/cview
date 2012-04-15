@@ -9,7 +9,7 @@ Summary: PNL Waterfall Visualization Tool
 Group: System Environment/Base
 License: Private
 Source: %{name}-%{version}.tar.gz
-BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel, mesa-libOSMesa-devel, freeglut-devel, genders, ftgl-devel
+BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel, mesa-libOSMesa-devel, freeglut-devel, libgenders-devel, ftgl-devel
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
 
 %description
@@ -65,21 +65,21 @@ PNL development data management library for cview packages
 %{__make} docs
 
 %install
-DESTDIR="$RPM_BUILD_ROOT" make install
+DESTDIR="%{buildroot}" make install
 # install tests to sharedir
-mkdir -p "$RPM_BUILD_ROOT/%{_datadir}/%{name}/tests"
-cp tests/* "$RPM_BUILD_ROOT/%{_datadir}/%{name}/tests"
+mkdir -p "%{buildroot}/%{_datadir}/%{name}/tests"
+cp tests/* "%{buildroot}/%{_datadir}/%{name}/tests"
 for name in cview libcview libcview-devel libcview-data libcview-data-devel
 do
-mkdir -p "$RPM_BUILD_ROOT/%{_datadir}/$name"
-cp data/LICENSE.txt "$RPM_BUILD_ROOT/%{_datadir}/$name"
+mkdir -p "%{buildroot}/%{_datadir}/$name"
+cp data/LICENSE.txt "%{buildroot}/%{_datadir}/$name"
 done
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %doc README
 %{_bindir}/cviewall
 %{_bindir}/cview
@@ -90,17 +90,17 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/%{name}/LICENSE.txt
 
 %files docs
-%defattr(0644,root,root)
+%defattr(0644,root,root,-)
 %doc docs/html/*
 
 %files -n libcview
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %{_libdir}/libcview.so.0*
 %{_datadir}/%{name}/*.ttf*
 %{_datadir}/libcview/LICENSE.txt
 
 %files -n libcview-devel
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %{_libdir}/libcview.a
 %{_libdir}/libcview.so
 %{_libdir}/libcview.la
@@ -108,12 +108,12 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/libcview-devel/LICENSE.txt
 
 %files -n libcview-data
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %{_libdir}/libcview-data.so.0*
 %{_datadir}/libcview-data/LICENSE.txt
 
 %files -n libcview-data-devel
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %{_libdir}/libcview-data.so
 %{_libdir}/libcview-data.la
 %{_libdir}/libcview-data.a
