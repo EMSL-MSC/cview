@@ -83,6 +83,7 @@ rm -rf %{buildroot}
 %{_datadir}/%{name}/tests
 %{_datadir}/%{name}/*.svg
 %{_datadir}/%{name}/*.ggr
+%{_datadir}/%{name}/LICENSE.txt
 
 %files docs
 %defattr(0644,root,root,-)
