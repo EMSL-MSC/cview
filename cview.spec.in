@@ -1,5 +1,5 @@
 %if 0%(test -d .git && echo 1) == 1
-%define git_suffix %(git show | grep '^index' | head -n 1 | sed 's/index \(.*\)\.\..*/\1/'|tr -d '\n')
+%define git_suffix .git%(git show | grep '^index' | head -n 1 | sed 's/index \\\(\.*\\\)\\\.\\\.\.*/\\1/'|tr -d '\n')
 %endif
 
 Name: @PACKAGE_NAME@
@@ -9,9 +9,9 @@ Summary: PNL Waterfall Visualization Tool
 Group: System Environment/Base
 License: Private
 Source: %{name}-%{version}.tar.gz
+URL: https://github.com/EMSL-MSC/cview
 BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel, mesa-libOSMesa-devel, freeglut-devel, libgenders-devel, ftgl-devel
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}
-
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %description
 PNL Waterfall Visualization Tool for viewing performance data from jobs on the Super Computers.
 
@@ -69,18 +69,13 @@ DESTDIR="%{buildroot}" make install
 # install tests to sharedir
 mkdir -p "%{buildroot}/%{_datadir}/%{name}/tests"
 cp tests/* "%{buildroot}/%{_datadir}/%{name}/tests"
-for name in cview libcview libcview-devel libcview-data libcview-data-devel
-do
-mkdir -p "%{buildroot}/%{_datadir}/$name"
-cp data/LICENSE.txt "%{buildroot}/%{_datadir}/$name"
-done
 
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc README
+%doc README COPYING
 %{_bindir}/cviewall
 %{_bindir}/cview
 %{_bindir}/oscview
@@ -91,16 +86,19 @@ rm -rf %{buildroot}
 
 %files docs
 %defattr(0644,root,root,-)
+%doc README COPYING
 %doc docs/html/*
 
 %files -n libcview
 %defattr(-,root,root,-)
+%doc README COPYING
 %{_libdir}/libcview.so.0*
 %{_datadir}/%{name}/*.ttf*
 %{_datadir}/libcview/LICENSE.txt
 
 %files -n libcview-devel
 %defattr(-,root,root,-)
+%doc README COPYING
 %{_libdir}/libcview.a
 %{_libdir}/libcview.so
 %{_libdir}/libcview.la
@@ -109,11 +107,13 @@ rm -rf %{buildroot}
 
 %files -n libcview-data
 %defattr(-,root,root,-)
+%doc README COPYING
 %{_libdir}/libcview-data.so.0*
 %{_datadir}/libcview-data/LICENSE.txt
 
 %files -n libcview-data-devel
 %defattr(-,root,root,-)
+%doc README COPYING
 %{_libdir}/libcview-data.so
 %{_libdir}/libcview-data.la
 %{_libdir}/libcview-data.a
