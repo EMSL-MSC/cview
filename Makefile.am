@@ -5,7 +5,7 @@ AM_OBJCFLAGS=-pg
 AUTOMAKE_OPTIONS = foreign 1.4
 
 SUBDIRS = libcview libcview-data data src man $(OPTBUILD)
-DIST_SUBDIRS = libcview libcview-data data src tests
+DIST_SUBDIRS = libcview libcview-data data src man tests
 
 EXTRA_DIST = autogen.sh contrib/*.desktop \
              docs/cview.dox docs/copying.txt docs/images/sample.png \
