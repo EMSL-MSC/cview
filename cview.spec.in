@@ -99,8 +99,11 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %doc README COPYING
 %{_bindir}/cviewall
+%{_mandir}/man1/cviewall.1.*
 %{_bindir}/cview
+%{_mandir}/man1/cview.1.*
 %{_bindir}/oscview
+%{_mandir}/man1/oscview.1.*
 %{_datadir}/%{name}/*.svg
 %{_datadir}/%{name}/*.ggr
 %{_datadir}/%{name}/LICENSE.txt
