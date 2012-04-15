@@ -65,6 +65,7 @@ PNL development data management library for cview packages
 %{__make} docs
 
 %install
+rm -rf %{buildroot}
 DESTDIR="%{buildroot}" make install
 # install tests to sharedir
 mkdir -p "%{buildroot}/%{_datadir}/%{name}/tests"
@@ -82,7 +83,6 @@ rm -rf %{buildroot}
 %{_datadir}/%{name}/tests
 %{_datadir}/%{name}/*.svg
 %{_datadir}/%{name}/*.ggr
-%{_datadir}/%{name}/LICENSE.txt
 
 %files docs
 %defattr(0644,root,root,-)
@@ -94,7 +94,6 @@ rm -rf %{buildroot}
 %doc README COPYING
 %{_libdir}/libcview.so.0*
 %{_datadir}/%{name}/*.ttf*
-%{_datadir}/libcview/LICENSE.txt
 
 %files -n libcview-devel
 %defattr(-,root,root,-)
@@ -103,13 +102,11 @@ rm -rf %{buildroot}
 %{_libdir}/libcview.so
 %{_libdir}/libcview.la
 %{_libdir}/pkgconfig/cview.pc
-%{_datadir}/libcview-devel/LICENSE.txt
 
 %files -n libcview-data
 %defattr(-,root,root,-)
 %doc README COPYING
 %{_libdir}/libcview-data.so.0*
-%{_datadir}/libcview-data/LICENSE.txt
 
 %files -n libcview-data-devel
 %defattr(-,root,root,-)
@@ -119,7 +116,6 @@ rm -rf %{buildroot}
 %{_libdir}/libcview-data.a
 %{_libdir}/pkgconfig/cview-data.pc
 %{_includedir}/%{name}/*
-%{_datadir}/libcview-data-devel/LICENSE.txt
 
 %changelog
 * Fri Apr 13 2012 David Brown <david.brown@pnnl.gov> - @VERSION@-1
