@@ -20,7 +20,7 @@ jobs on the Super Computers.
 
 %package docs
 Summary: PNL cview documentation
-Group: System Environment/Documentation
+Group: System Environment/Libraries
 License: BSD with advertising
 BuildRequires: doxygen
 
