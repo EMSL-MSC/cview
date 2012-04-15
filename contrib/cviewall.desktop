@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=CViewAll
+GenericName=Cluster View All
+Comment=Open urls and cview data sets
+Exec=cviewall -url %U
+TryExec=cviewall
+Icon=cview
+Terminal=false
+Categories=Graphics;

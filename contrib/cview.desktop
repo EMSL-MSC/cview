@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=CView
+GenericName=Cluster View
+Comment=Open .cview files
+Exec=cview %U
+TryExec=cview
+Icon=cview
+Terminal=false
+Categories=Graphics;
