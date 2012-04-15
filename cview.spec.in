@@ -39,6 +39,7 @@ PNL common library for cview packages
 Summary: PNL common cview library development files
 Group: System Environment/Libraries
 License: BSD with advertising
+Requires: libcview%{?_isa} == %{version}-%{release}
 
 %description -n libcview-devel
 PNL development library and files for cview packages
@@ -55,9 +56,19 @@ PNL common data management library for cview packages
 Summary: PNL common cview data management library development files
 Group: System Environment/Libraries
 License: BSD with advertising
+Requires: libcview-data%{?_isa} == %{version}-%{release}
 
 %description -n libcview-data-devel
 PNL development data management library for cview packages
+
+%package tests
+Summary: PNL tests for cview internals
+Group: System Environment/Libraries
+License: BSD with advertising
+Requires: cview%{?_isa} == %{version}-%{release}
+
+%description tests
+PNL tests for cview libraries and data sets.
 
 %prep
 %setup  -q 
@@ -70,6 +81,8 @@ PNL development data management library for cview packages
 %install
 rm -rf %{buildroot}
 DESTDIR="%{buildroot}" make install
+rm -f %{buildroot}/%{_libdir}/*.la
+rm -f %{buildroot}/%{_libdir}/*.a
 # install tests to sharedir
 mkdir -p "%{buildroot}/%{_datadir}/%{name}/tests"
 cp tests/* "%{buildroot}/%{_datadir}/%{name}/tests"
@@ -77,16 +90,25 @@ cp tests/* "%{buildroot}/%{_datadir}/%{name}/tests"
 %clean
 rm -rf %{buildroot}
 
+%post -n libcview -p /sbin/ldconfig
+%postun -n libcview -p /sbin/ldconfig
+%post -n libcview-data -p /sbin/ldconfig
+%postun -n libcview-data -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root,-)
 %doc README COPYING
 %{_bindir}/cviewall
 %{_bindir}/cview
 %{_bindir}/oscview
-%{_datadir}/%{name}/tests
 %{_datadir}/%{name}/*.svg
 %{_datadir}/%{name}/*.ggr
 %{_datadir}/%{name}/LICENSE.txt
+
+%files tests
+%defattr(-,root,root,-)
+%doc README COPYING
+%{_datadir}/%{name}/tests
 
 %files docs
 %defattr(0644,root,root,-)
@@ -102,9 +124,7 @@ rm -rf %{buildroot}
 %files -n libcview-devel
 %defattr(-,root,root,-)
 %doc README COPYING
-%{_libdir}/libcview.a
 %{_libdir}/libcview.so
-%{_libdir}/libcview.la
 %{_libdir}/pkgconfig/cview.pc
 
 %files -n libcview-data
@@ -116,8 +136,6 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %doc README COPYING
 %{_libdir}/libcview-data.so
-%{_libdir}/libcview-data.la
-%{_libdir}/libcview-data.a
 %{_libdir}/pkgconfig/cview-data.pc
 %{_includedir}/%{name}/*
 
