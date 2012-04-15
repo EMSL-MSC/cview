@@ -7,18 +7,21 @@ Version: @VERSION@
 Release: 1%{?dist}%{?git_suffix}
 Summary: PNL Waterfall Visualization Tool
 Group: System Environment/Base
-License: Private
+License: BSD with advertising
 Source: %{name}-%{version}.tar.gz
 URL: https://github.com/EMSL-MSC/cview
-BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel, mesa-libOSMesa-devel, freeglut-devel, libgenders-devel, ftgl-devel
+BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel,
+BuildRequires: mesa-libOSMesa-devel, freeglut-devel, libgenders-devel,
+BuildRequires: ftgl-devel
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %description
-PNL Waterfall Visualization Tool for viewing performance data from jobs on the Super Computers.
+PNL Waterfall Visualization Tool for viewing performance data from 
+jobs on the Super Computers.
 
 %package docs
 Summary: PNL cview documentation
 Group: System Environment/Documentation
-License: Private
+License: BSD with advertising
 BuildRequires: doxygen
 
 %description docs
@@ -27,7 +30,7 @@ PNL cview doxygen generated documentation.
 %package -n libcview
 Summary: PNL common cview library
 Group: System Environment/Libraries
-License: Private
+License: BSD with advertising
 
 %description -n libcview
 PNL common library for cview packages
@@ -35,7 +38,7 @@ PNL common library for cview packages
 %package -n libcview-devel
 Summary: PNL common cview library development files
 Group: System Environment/Libraries
-License: Private
+License: BSD with advertising
 
 %description -n libcview-devel
 PNL development library and files for cview packages
@@ -43,7 +46,7 @@ PNL development library and files for cview packages
 %package -n libcview-data
 Summary: PNL common cview data management library
 Group: System Environment/Libraries
-License: Private
+License: BSD with advertising
 
 %description -n libcview-data
 PNL common data management library for cview packages
@@ -51,7 +54,7 @@ PNL common data management library for cview packages
 %package -n libcview-data-devel
 Summary: PNL common cview data management library development files
 Group: System Environment/Libraries
-License: Private
+License: BSD with advertising
 
 %description -n libcview-data-devel
 PNL development data management library for cview packages
