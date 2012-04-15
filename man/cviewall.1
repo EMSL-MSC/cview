@@ -1,0 +1,24 @@
+.TH CVIEWALL 1 "April 2012" "PNL" "CVIEWALL"
+.SH NAME
+cviewall \- cluster viewing application
+.SH SYNOPSIS
+.B cviewall
+.I "[-url foo] [-metrics '(m1,m2)']"
+.br
+.SH DESCRIPTION
+When invoked with the
+.I "-url"
+.B cviewall
+reads the cview data set from url.
+file and loads the associated data sets from the file.
+.LP
+When invoked with the
+.I "-metrics"
+.B cviewall
+only displays the metrics given on the command line.
+.SH EXAMPLES
+.LP run cviewall
+.IP
+cviewall -url http://example.com/cluster/ -metrics '(cputotals.user)'
+.SH "SEE ALSO"
+cview(1), oscview(1)
