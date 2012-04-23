@@ -86,6 +86,11 @@ rm -f %{buildroot}/%{_libdir}/*.a
 # install tests to sharedir
 mkdir -p "%{buildroot}/%{_datadir}/%{name}/tests"
 cp tests/* "%{buildroot}/%{_datadir}/%{name}/tests"
+mkdir -p "%{buildroot}/%{_datadir}/%{name}/icons"
+install -m 644 contrib/icon64.png "%{buildroot}/%{_icons64dir}/%{name}.png"
+mkdir -p "%{buildroot}/%{_datadir}/%{name}/filetypes"
+install -m 644 contrib/cview-filetype.xml "%{buildroot}/%{_datadir}/%{name}/filetypes"
+install -m 644 contrib/cviewall-filetype.xml "%{buildroot}/%{_datadir}/%{name}/filetypes"
 desktop-file-install \
     --dir=%{buildroot}%{_datadir}/applications \
     contrib/%{name}.desktop \
@@ -98,6 +103,32 @@ rm -rf %{buildroot}
 %postun -n libcview -p /sbin/ldconfig
 %post -n libcview-data -p /sbin/ldconfig
 %postun -n libcview-data -p /sbin/ldconfig
+
+%post
+xdg-mime install --mode system %{_datadir}/%{name}/filetypes/cview-filetype.xml
+xdg-mime install --mode system %{_datadir}/%{name}/filetypes/cviewall-filetype.xml
+xdg-icon-resource install --mode system --size 64 %{_icons64dir}/%{name}.png application-x-cview
+xdg-icon-resource install --mode system --size 64 %{_icons64dir}/%{name}.png application-x-cviewall
+
+# This is a poor way, but for now I can't think of a better way to add these items into the defaults.list file
+TMPFILE=`mktemp`
+cat /usr/share/applications/defaults.list > $TMPFILE
+grep -q 'application/x-cview=cview.desktop' || echo 'application/x-cview=cview.desktop' >> $TMPFILE
+grep -q 'application/x-cviewall=cviewall.desktop' || echo 'application/x-cviewall=cviewall.desktop' >> $TMPFILE
+sort $TMPFILE > /usr/share/applications/defaults.list
+rm $TMPFILE
+
+%postun
+xdg-mime uninstall --mode system %{_datadir}/%{name}/filetypes/cview-filetype.xml
+xdg-mime uninstall --mode system %{_datadir}/%{name}/filetypes/cviewall-filetype.xml
+xdg-icon-resource uninstall --mode system --size 64 %{_icons64dir}/%{name}.png application-x-cview
+xdg-icon-resource uninstall --mode system --size 64 %{_icons64dir}/%{name}.png application-x-cviewall
+
+TMPFILE=`mktemp`
+cat /usr/share/applications/defaults.list > $TMPFILE
+grep -v -e '^application/x-cview=cview\.desktop$' -e '^application/x-cviewall=cviewall\.desktop$' $TMPFILE > /usr/share/applications/defaults.list
+rm $TMPFILE
+
 
 %files
 %defattr(-,root,root,-)

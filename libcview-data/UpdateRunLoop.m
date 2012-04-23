@@ -82,19 +82,23 @@ static UpdateRunLoop *singletonUpdater;
 
 -(void)run: (id)args {
 	NSAutoreleasePool *tpool = [[NSAutoreleasePool alloc] init];
-
-	theLoop = [NSRunLoop currentRunLoop];
-	NSLog(@"loop: %@",theLoop);
-	[runLock lock];
-	running = YES;
-	[runLock unlock];
-	while (running) {
-		//NSLog(@"Top of loop====================");
-		//NSLog(@"limitDate: %@",[theLoop limitDateForMode: NSDefaultRunLoopMode]);
-		[theLoop runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 60]];
-		[tpool release];
-		tpool = [[NSAutoreleasePool alloc] init];
-		DUMPALLOCLIST(YES);
+	@try {
+		theLoop = [NSRunLoop currentRunLoop];
+		NSLog(@"loop: %@",theLoop);
+		[runLock lock];
+		running = YES;
+		[runLock unlock];
+		while (running) {
+			//NSLog(@"Top of loop====================");
+			//NSLog(@"limitDate: %@",[theLoop limitDateForMode: NSDefaultRunLoopMode]);
+			[theLoop runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 60]];
+			[tpool release];
+			tpool = [[NSAutoreleasePool alloc] init];
+			DUMPALLOCLIST(YES);
+		}
+	}@catch(NSException *localException) {
+		NSLog(@"Error in UpdateRunLoop: %@", localException);
+		running = NO;
 	}
 	[tpool release];
 	return;
