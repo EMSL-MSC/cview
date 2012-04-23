@@ -11,7 +11,7 @@ License: BSD with advertising
 Source: %{name}-%{version}.tar.gz
 URL: https://github.com/EMSL-MSC/cview
 BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel,
-BuildRequires: mesa-libOSMesa-devel, freeglut-devel, libgenders-devel,
+BuildRequires: mesa-libOSMesa-devel, freeglut-devel, genders,
 BuildRequires: ftgl-devel
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 %description
@@ -87,12 +87,13 @@ rm -f %{buildroot}/%{_libdir}/*.a
 mkdir -p "%{buildroot}/%{_datadir}/%{name}/tests"
 cp tests/* "%{buildroot}/%{_datadir}/%{name}/tests"
 mkdir -p "%{buildroot}/%{_datadir}/%{name}/icons"
-install -m 644 contrib/icon64.png "%{buildroot}/%{_icons64dir}/%{name}.png"
+install -m 644 contrib/icon64.png "%{buildroot}/%{_datadir}/%{name}.png"
 mkdir -p "%{buildroot}/%{_datadir}/%{name}/filetypes"
 install -m 644 contrib/cview-filetype.xml "%{buildroot}/%{_datadir}/%{name}/filetypes"
 install -m 644 contrib/cviewall-filetype.xml "%{buildroot}/%{_datadir}/%{name}/filetypes"
 desktop-file-install \
     --dir=%{buildroot}%{_datadir}/applications \
+    --vendor=cview \
     contrib/%{name}.desktop \
     contrib/%{name}all.desktop
 
@@ -107,8 +108,8 @@ rm -rf %{buildroot}
 %post
 xdg-mime install --mode system %{_datadir}/%{name}/filetypes/cview-filetype.xml
 xdg-mime install --mode system %{_datadir}/%{name}/filetypes/cviewall-filetype.xml
-xdg-icon-resource install --mode system --size 64 %{_icons64dir}/%{name}.png application-x-cview
-xdg-icon-resource install --mode system --size 64 %{_icons64dir}/%{name}.png application-x-cviewall
+xdg-icon-resource install --mode system --size 64 %{_datadir}/%{name}.png application-x-cview
+xdg-icon-resource install --mode system --size 64 %{_datadir}/%{name}.png application-x-cviewall
 
 # This is a poor way, but for now I can't think of a better way to add these items into the defaults.list file
 TMPFILE=`mktemp`
@@ -121,8 +122,8 @@ rm $TMPFILE
 %postun
 xdg-mime uninstall --mode system %{_datadir}/%{name}/filetypes/cview-filetype.xml
 xdg-mime uninstall --mode system %{_datadir}/%{name}/filetypes/cviewall-filetype.xml
-xdg-icon-resource uninstall --mode system --size 64 %{_icons64dir}/%{name}.png application-x-cview
-xdg-icon-resource uninstall --mode system --size 64 %{_icons64dir}/%{name}.png application-x-cviewall
+xdg-icon-resource uninstall --mode system --size 64 %{_datadir}/%{name}.png application-x-cview
+xdg-icon-resource uninstall --mode system --size 64 %{_datadir}/%{name}.png application-x-cviewall
 
 TMPFILE=`mktemp`
 cat /usr/share/applications/defaults.list > $TMPFILE
@@ -144,6 +145,9 @@ rm $TMPFILE
 %{_datadir}/%{name}/*.svg
 %{_datadir}/%{name}/*.ggr
 %{_datadir}/%{name}/LICENSE.txt
+%{_datadir}/cview.png
+%{_datadir}/%{name}/filetypes/cview-filetype.xml
+%{_datadir}/%{name}/filetypes/cviewall-filetype.xml
 
 %files tests
 %defattr(-,root,root,-)
