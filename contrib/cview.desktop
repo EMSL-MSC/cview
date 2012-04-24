@@ -2,9 +2,10 @@
 Name=CView
 GenericName=Cluster View
 Comment=Open .cview files
-Exec=cview %U
+Exec=cview -c %U
 TryExec=cview
 Icon=cview
 Terminal=false
 Type=Application
 Categories=Graphics;
+MimeType=application/x-cview

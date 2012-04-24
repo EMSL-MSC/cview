@@ -89,8 +89,8 @@ cp tests/* "%{buildroot}/%{_datadir}/%{name}/tests"
 mkdir -p "%{buildroot}/%{_datadir}/%{name}/icons"
 install -m 644 contrib/icon64.png "%{buildroot}/%{_datadir}/%{name}.png"
 mkdir -p "%{buildroot}/%{_datadir}/%{name}/filetypes"
-install -m 644 contrib/cview-filetype.xml "%{buildroot}/%{_datadir}/%{name}/filetypes"
-install -m 644 contrib/cviewall-filetype.xml "%{buildroot}/%{_datadir}/%{name}/filetypes"
+install -m 644 contrib/cview-mimetype.xml "%{buildroot}/%{_datadir}/mime/packages"
+install -m 644 contrib/cviewall-mimetype.xml "%{buildroot}/%{_datadir}/mime/packages"
 desktop-file-install \
     --dir=%{buildroot}%{_datadir}/applications \
     --vendor=cview \
@@ -106,10 +106,8 @@ rm -rf %{buildroot}
 %postun -n libcview-data -p /sbin/ldconfig
 
 %post
-xdg-mime install --mode system %{_datadir}/%{name}/filetypes/cview-filetype.xml
-xdg-mime install --mode system %{_datadir}/%{name}/filetypes/cviewall-filetype.xml
-xdg-icon-resource install --mode system --size 64 %{_datadir}/%{name}.png application-x-cview
-xdg-icon-resource install --mode system --size 64 %{_datadir}/%{name}.png application-x-cviewall
+update-mime-database ${_datadir}/mime
+update-desktop-database
 
 # This is a poor way, but for now I can't think of a better way to add these items into the defaults.list file
 TMPFILE=`mktemp`
@@ -120,10 +118,8 @@ sort $TMPFILE > /usr/share/applications/defaults.list
 rm $TMPFILE
 
 %postun
-xdg-mime uninstall --mode system %{_datadir}/%{name}/filetypes/cview-filetype.xml
-xdg-mime uninstall --mode system %{_datadir}/%{name}/filetypes/cviewall-filetype.xml
-xdg-icon-resource uninstall --mode system --size 64 %{_datadir}/%{name}.png application-x-cview
-xdg-icon-resource uninstall --mode system --size 64 %{_datadir}/%{name}.png application-x-cviewall
+update-mime-database ${_datadir}/mime
+update-desktop-database
 
 TMPFILE=`mktemp`
 cat /usr/share/applications/defaults.list > $TMPFILE
