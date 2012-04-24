@@ -57,7 +57,6 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
-#import <objc/runtime.h>
 #import "WebDataSet.h"
 #import "debug.h"
 #import "cview.h"
@@ -109,7 +108,12 @@ cviewall <PList file>\n\
 void tryParseFile(const char *cFilePath, NSUserDefaults *args) {
 	NSString *err;
 	NSString *filePath = [NSString stringWithCString: cFilePath];
-	NSData *file = [NSData dataWithContentsOfFile: filePath];
+	NSURL *url = [NSURL URLWithString: filePath];
+	NSData *file = [NSData dataWithContentsOfURL: url];
+	if (file == nil) {
+		file = [NSData dataWithContentsOfFile: filePath];
+	}
+
 	NSPropertyListFormat fmt;
 	id plist = [NSPropertyListSerialization propertyListFromData: file
 				mutabilityOption: NSPropertyListImmutable
