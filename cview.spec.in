@@ -86,7 +86,12 @@ rm -f %{buildroot}/%{_libdir}/*.a
 # install tests to sharedir
 mkdir -p "%{buildroot}/%{_datadir}/%{name}/tests"
 cp tests/* "%{buildroot}/%{_datadir}/%{name}/tests"
-install -m 644 contrib/icon64.png ${_datadir}/icons/hicolor/64x64/mimetypes/cview.png
+mkdir -p "%{buildroot}/%{_datadir}/icons/hicolor/64x64/apps"
+install -m 644 contrib/icon64.png "%{buildroot}/%{_datadir}/icons/hicolor/64x64/apps/application-x-cview.png"
+install -m 644 contrib/icon64.png "%{buildroot}/%{_datadir}/icons/hicolor/64x64/apps/application-x-cviewall.png"
+mkdir -p "%{buildroot}/%{_datadir}/icons/hicolor/64x64/mimetypes"
+install -m 644 contrib/icon64.png "%{buildroot}/%{_datadir}/icons/hicolor/64x64/mimetypes/application-x-cview.png"
+install -m 644 contrib/icon64.png "%{buildroot}/%{_datadir}/icons/hicolor/64x64/mimetypes/application-x-cviewall.png"
 mkdir -p "%{buildroot}/%{_datadir}/%{name}/filetypes"
 mkdir -p "%{buildroot}/%{_datadir}/mime/packages"
 install -m 644 contrib/cview-mimetype.xml "%{buildroot}/%{_datadir}/mime/packages"
@@ -143,7 +148,10 @@ rm $TMPFILE
 %{_datadir}/%{name}/LICENSE.txt
 %{_datadir}/mime/packages/cview-mimetype.xml
 %{_datadir}/mime/packages/cviewall-mimetype.xml
-%{_datadir}/icons/hicolor/64x64/mimetypes/cview.png
+%{_datadir}/icons/hicolor/64x64/apps/application-x-cview.png
+%{_datadir}/icons/hicolor/64x64/apps/application-x-cviewall.png
+%{_datadir}/icons/hicolor/64x64/mimetypes/application-x-cview.png
+%{_datadir}/icons/hicolor/64x64/mimetypes/application-x-cviewall.png
 
 %files tests
 %defattr(-,root,root,-)
