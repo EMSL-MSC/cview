@@ -4,7 +4,7 @@
 
 Name: @PACKAGE_NAME@
 Version: @VERSION@
-Release: 1%{?dist}%{?git_suffix}
+Release: 3%{?dist}%{?git_suffix}
 Summary: PNL Waterfall Visualization Tool
 Group: System Environment/Base
 License: BSD with advertising
