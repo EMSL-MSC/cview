@@ -4,7 +4,7 @@
 
 Name: @PACKAGE_NAME@
 Version: @VERSION@
-Release: 3%{?dist}%{?git_suffix}
+Release: 4%{?dist}%{?git_suffix}
 Summary: PNL Waterfall Visualization Tool
 Group: System Environment/Base
 License: BSD with advertising
@@ -89,6 +89,7 @@ cp tests/* "%{buildroot}/%{_datadir}/%{name}/tests"
 mkdir -p "%{buildroot}/%{_datadir}/%{name}/icons"
 install -m 644 contrib/icon64.png "%{buildroot}/%{_datadir}/%{name}.png"
 mkdir -p "%{buildroot}/%{_datadir}/%{name}/filetypes"
+mkdir -p "%{buildroot}/%{_datadir}/mime/packages"
 install -m 644 contrib/cview-mimetype.xml "%{buildroot}/%{_datadir}/mime/packages"
 install -m 644 contrib/cviewall-mimetype.xml "%{buildroot}/%{_datadir}/mime/packages"
 desktop-file-install \
@@ -106,7 +107,7 @@ rm -rf %{buildroot}
 %postun -n libcview-data -p /sbin/ldconfig
 
 %post
-update-mime-database ${_datadir}/mime
+update-mime-database /usr/share/mime
 update-desktop-database
 
 # This is a poor way, but for now I can't think of a better way to add these items into the defaults.list file
@@ -118,7 +119,7 @@ sort $TMPFILE > /usr/share/applications/defaults.list
 rm $TMPFILE
 
 %postun
-update-mime-database ${_datadir}/mime
+update-mime-database /usr/share/mime
 update-desktop-database
 
 TMPFILE=`mktemp`
@@ -142,8 +143,8 @@ rm $TMPFILE
 %{_datadir}/%{name}/*.ggr
 %{_datadir}/%{name}/LICENSE.txt
 %{_datadir}/cview.png
-%{_datadir}/%{name}/filetypes/cview-filetype.xml
-%{_datadir}/%{name}/filetypes/cviewall-filetype.xml
+%{_datadir}/mime/packages/cview-mimetype.xml
+%{_datadir}/mime/packages/cviewall-mimetype.xml
 
 %files tests
 %defattr(-,root,root,-)

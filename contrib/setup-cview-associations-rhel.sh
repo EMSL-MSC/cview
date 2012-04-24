@@ -33,16 +33,15 @@ echo "Performing an $MODE"
 
 set -x
 
-install -m 644 cviewall-mimetype.xml /usr/share/mime/packages
-update-mime-database /usr/share/mime
 
 if [ "$MODE" = "install" ]; then
+	install -m 644 cviewall-mimetype.xml /usr/share/mime/packages
 	desktop-file-install --dir=/usr/share/applications --vendor=cview cviewall.desktop
 else
 	echo oops
 fi
+update-mime-database /usr/share/mime
 update-desktop-database
-xdg-icon-resource $MODE $EXTRA_ARGS --size 64 icon64.png application-x-cviewall
 
 if [ "x$EXTRA_ARGS" = "x" ]; then
 	if [ "$MODE" = "install" ]; then
@@ -55,8 +54,8 @@ else
 	if [ "$MODE" = "install" ]; then
 		TMPFILE=`mktemp`
 		cat /usr/share/applications/defaults.list > $TMPFILE
-		grep -q 'application/x-cview=cview.desktop' || echo 'application/x-cview=cview.desktop' >> $TMPFILE
-		grep -q 'application/x-cviewall=cviewall.desktop' || echo 'application/x-cviewall=cviewall.desktop' >> $TMPFILE
+		grep -q 'application/x-cview=cview.desktop' $TMPFILE || echo 'application/x-cview=cview.desktop' >> $TMPFILE
+		grep -q 'application/x-cviewall=cviewall.desktop' $TMPFILE || echo 'application/x-cviewall=cviewall.desktop' >> $TMPFILE
 		sort $TMPFILE > /usr/share/applications/defaults.list
 		rm $TMPFILE
 	else
