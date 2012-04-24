@@ -86,8 +86,7 @@ rm -f %{buildroot}/%{_libdir}/*.a
 # install tests to sharedir
 mkdir -p "%{buildroot}/%{_datadir}/%{name}/tests"
 cp tests/* "%{buildroot}/%{_datadir}/%{name}/tests"
-mkdir -p "%{buildroot}/%{_datadir}/%{name}/icons"
-install -m 644 contrib/icon64.png "%{buildroot}/%{_datadir}/%{name}.png"
+install -m 644 contrib/icon64.png ${_datadir}/icons/hicolor/64x64/mimetypes/cview.png
 mkdir -p "%{buildroot}/%{_datadir}/%{name}/filetypes"
 mkdir -p "%{buildroot}/%{_datadir}/mime/packages"
 install -m 644 contrib/cview-mimetype.xml "%{buildroot}/%{_datadir}/mime/packages"
@@ -142,9 +141,9 @@ rm $TMPFILE
 %{_datadir}/%{name}/*.svg
 %{_datadir}/%{name}/*.ggr
 %{_datadir}/%{name}/LICENSE.txt
-%{_datadir}/cview.png
 %{_datadir}/mime/packages/cview-mimetype.xml
 %{_datadir}/mime/packages/cviewall-mimetype.xml
+%{_datadir}/icons/hicolor/64x64/mimetypes/cview.png
 
 %files tests
 %defattr(-,root,root,-)
