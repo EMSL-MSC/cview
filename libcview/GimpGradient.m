@@ -123,9 +123,7 @@ typedef enum { CT_FIXED=0, CT_FG, CT_FGT, CT_BG, CT_BGT } ColorType;
 
 -initWithFile: (NSString*)filename {
     NSLog(@"initWithFile: %@",filename);
-	NSFileHandle *fh = [NSFileHandle fileHandleForReadingAtPath: filename];
-	NSData *file = [fh readDataToEndOfFile];
-    NSString *linestring = [NSString stringWithCString: [file bytes] length: [file length]];
+    NSString *linestring = [NSString stringWithContentsOfFile: filename];
 	
     source = FROMFILE;
     lastcolor = -1.0;
