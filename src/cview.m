@@ -14,13 +14,13 @@ All rights reserved.
 	others to do so, subject to the following conditions:
 
 	•	Redistributions of source code must retain the above copyright
-		notice, this list of conditions and the following disclaimers. 
+		notice, this list of conditions and the following disclaimers.
 	•	Redistributions in binary form must reproduce the above copyright
 		notice, this list of conditions and the following disclaimer in the
 		documentation and/or other materials provided with the distribution.
 	•	Other than as used herein, neither the name Battelle Memorial
 		Institute or Battelle may be used in any form whatsoever without the
-		express written consent of Battelle.  
+		express written consent of Battelle.
 	•	Redistributions of the software in any form, and publications based
 		on work performed using the software should include the following
 		citation as a reference:
@@ -53,7 +53,7 @@ All rights reserved.
 	makes any warranty, express or implied, or assumes any legal liability or
 	responsibility for the accuracy, completeness or usefulness of any data,
 	apparatus, product or process disclosed, or represents that its use would
-	not infringe privately owned rights.  
+	not infringe privately owned rights.
 
 */
 #import <Foundation/Foundation.h>
@@ -70,7 +70,7 @@ All rights reserved.
 /**@file cview.m
 	@ingroup cviewapp
 */
-/// Print usage information to stdout 
+/// Print usage information to stdout
 void usage() {
 	printf("\nUsage: cview [OPTIONS] \n\
 DESCRIPTION\n\
@@ -143,7 +143,7 @@ int main(int argc,char *argv[], char *env[]) {
 
 	float updateInterval;
 	int dumpclasses;
-	
+
 	NSString *config = nil;
 	NSString *err;
 
@@ -153,10 +153,10 @@ int main(int argc,char *argv[], char *env[]) {
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
 	//@try {
-		/** @objcdef 
+		/** @objcdef
 			- dataUpdateInterval - time in seconds that the URL reload code will delay between reads
 			- dumpclasses - startup a ObjectTracker thread if >0, the number how often in seconds to dump the class counts: file is cview.classes
-			- c The PList formatted config file to load 
+			- c The PList formatted config file to load
 		*/
 		NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
 #if defined ON_MINGW_WIN32
@@ -211,15 +211,15 @@ int main(int argc,char *argv[], char *env[]) {
 		updateInterval = [args floatForKey: @"dataUpdateInterval"];
 		dumpclasses = [args integerForKey: @"dumpclasses"];
 
-		if (dumpclasses > 0) 
+		if (dumpclasses > 0)
 			[[[ObjectTracker alloc] initWithFile: @"cview.classes" andInterval: dumpclasses] retain];
 
 		MagickWandGenesis();
 
 		NSData *file = [NSData dataWithContentsOfFile: config];
 		NSPropertyListFormat fmt;
-		id plist = [NSPropertyListSerialization propertyListFromData: file 
-					mutabilityOption: NSPropertyListImmutable 
+		id plist = [NSPropertyListSerialization propertyListFromData: file
+					mutabilityOption: NSPropertyListImmutable
 					format: &fmt
 					errorDescription: &err
 					];

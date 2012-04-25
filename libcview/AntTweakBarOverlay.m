@@ -122,7 +122,7 @@ static void TW_CALL intGetCallback(void *value, void *clientData) {
 static void TW_CALL stringSetCallback(const void *value, void *clientData) {
 	ATB_Node *atb = (ATB_Node *)clientData;
 
-	[atb->object setValue: [NSString stringWithCString: (const char *)value] forKeyPath: atb->name];
+	[atb->object setValue: [NSString stringWithUTF8String: (const char *)value] forKeyPath: atb->name];
 }
 
 
@@ -130,7 +130,7 @@ static void TW_CALL mutableStringSetCallback(const void *value, void *clientData
 	ATB_Node *atb = (ATB_Node *)clientData;
 
 	NSMutableString *ms=[atb->object valueForKeyPath: atb->name];
-	[ms setString: [NSString stringWithCString: (const char *)value]];
+	[ms setString: [NSString stringWithUTF8String: (const char *)value]];
 }
 
 static void TW_CALL stringGetCallback(void *value, void *clientData) {
@@ -149,7 +149,7 @@ static void TW_CALL urlSetCallback(const void *value, void *clientData) {
 	[atb->object 
 		setValue: 
 			[NSURL URLWithString: 
-				[NSString stringWithCString: (const char *)value]]
+				[NSString stringWithUTF8String: (const char *)value]]
 		forKeyPath: atb->name
 	];
 }

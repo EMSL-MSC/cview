@@ -106,7 +106,7 @@ NSString *getProcessPath() {
 	if (NULL != hProcess ) {
 		GetModuleFileNameEx( hProcess, NULL, szProcessName, sizeof(szProcessName)/sizeof(TCHAR) );
 		CloseHandle( hProcess );
-		return [NSString stringWithCString: szProcessName];
+		return [NSString stringWithUTF8String: szProcessName];
 	} else
 		return nil;
 }

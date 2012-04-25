@@ -14,13 +14,13 @@ All rights reserved.
 	others to do so, subject to the following conditions:
 
 	•	Redistributions of source code must retain the above copyright
-		notice, this list of conditions and the following disclaimers. 
+		notice, this list of conditions and the following disclaimers.
 	•	Redistributions in binary form must reproduce the above copyright
 		notice, this list of conditions and the following disclaimer in the
 		documentation and/or other materials provided with the distribution.
 	•	Other than as used herein, neither the name Battelle Memorial
 		Institute or Battelle may be used in any form whatsoever without the
-		express written consent of Battelle.  
+		express written consent of Battelle.
 	•	Redistributions of the software in any form, and publications based
 		on work performed using the software should include the following
 		citation as a reference:
@@ -53,7 +53,7 @@ All rights reserved.
 	makes any warranty, express or implied, or assumes any legal liability or
 	responsibility for the accuracy, completeness or usefulness of any data,
 	apparatus, product or process disclosed, or represents that its use would
-	not infringe privately owned rights.  
+	not infringe privately owned rights.
 
 */
 #import <Foundation/Foundation.h>
@@ -131,7 +131,7 @@ All rights reserved.
 	[labelFormat autorelease];
 	[data autorelease];
 	[name autorelease];
-	[rateSuffix autorelease];	
+	[rateSuffix autorelease];
 	[super dealloc];
 	return;
 }
@@ -219,7 +219,7 @@ All rights reserved.
 	float pct = currentMax/max;
 	if (pct > 2.0) {
 		NSLog(@"<%@>PCT: %f",name,pct);
-	}	
+	}
 
 	currentMax=max;
 	[dataLock unlock];
@@ -255,11 +255,11 @@ All rights reserved.
 	float *d = (float *)[data mutableBytes];
 	float newscale,u;
 	float oldmax = [self resetMax];
-	
+
 	if (allowScaling) {
 		//newscale = MAX(1.0,currentLimit/oldmax);
 		newscale = currentLimit/oldmax;
-	
+
 		for (i=0;i<width*height;i++) {
 			u=(d[i]/currentScale)*newscale;
 			d[i]=MIN(currentLimit+1,MAX(u,0.0));
@@ -303,18 +303,18 @@ All rights reserved.
 			if (frm[i] > currentMax) {
 				//NSLog(@"bigger(%@): %6f > %6f",name,frm[i],currentMax);
 				rescale = YES;
-			}	
+			}
 		}
 
 		float pct = currentMax/max;
 		if (pct > 2.0) {
 			NSLog(@"<%@>aswnd PCT: %f",name,pct);
 			rescale = YES;
-		}	
-		
+		}
+
 		if (rescale) {
 			NSLog(@"rescale active(%@): %6f %6f",name,currentScale,currentMax);
-			
+
 			[self autoScale];
 		}
 	} else {
