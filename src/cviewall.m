@@ -62,6 +62,7 @@ All rights reserved.
 #import "cview.h"
 #import "CViewAllScreenDelegate.h"
 #import "LoadClasses.h"
+#import <stdio.h>
 
 /** 
 	@author Evan Felix <e@pnl.gov>
@@ -109,9 +110,21 @@ void tryParseFile(const char *cFilePath, NSUserDefaults *args) {
 	NSString *err;
 	NSString *filePath = [NSString stringWithCString: cFilePath];
 	NSURL *url = [NSURL URLWithString: filePath];
-	NSData *file = [NSData dataWithContentsOfURL: url];
+	NSMutableData *file = [NSData dataWithContentsOfURL: url];
 	if (file == nil) {
-		file = [NSData dataWithContentsOfFile: filePath];
+		FILE *fp = fopen(cFilePath, "r");
+		char byte;
+		if(fp == NULL)
+			return;
+		/** We can't rely on NSData to load our file due to the fact
+		   that NSData will seek to the end of the file to determine
+		   how big it is.  This is a problem if the file turns out
+		   to be a named pipe.
+		   */
+		file = [[NSMutableData alloc] init];
+		while(fread(&byte, 1, 1, fp) > 0)
+			[file appendBytes: &byte length: 1];
+		fclose(fp);
 	}
 
 	NSPropertyListFormat fmt;
@@ -124,12 +137,12 @@ void tryParseFile(const char *cFilePath, NSUserDefaults *args) {
 	if(plist != nil) {
 		id url = [plist objectForKey: @"url"];
 		if(url != nil) {
-			NSLog(@"url is %@", url);
+			//NSLog(@"url is %@", url);
 			[args setObject: url forKey: @"url"];
 		}
 		id metrics = [plist objectForKey: @"metrics"];
 		if(metrics != nil) {
-			NSLog(@"metrics is %@", url);
+			//NSLog(@"metrics is %@", metrics);
 			[args setObject: metrics forKey: @"metrics"];
 		}
 	} else {
