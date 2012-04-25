@@ -203,7 +203,7 @@ All rights reserved.
 
 			i=0;
 			while ((str = [e nextObject]) != nil) {
-				d[i*height+0] = [str floatValue];
+				d[i*height+0] = [str floatValue]*currentScale;
 				i++;
 			}
 			[self autoScale];
