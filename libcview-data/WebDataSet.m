@@ -211,11 +211,12 @@ static float blankdata[] = {
 //	NSLog(@"connection Finished: %@",connection);
 	NSURLRequest *req;	
 	int w,h;
-
+	[incomingData increaseLengthBy:1];
+	
 	switch (stage) {
 		case DESC:
 			//NSLog(@"DESC finish");
-			[self setDescription: [NSString stringWithCString: [incomingData bytes] length: [incomingData length]]];
+			[self setDescription: [NSString stringWithUTF8String: [incomingData bytes]]];
 			//NSLog(@"desc: %@",textDescription);
 
 			stage = RATE;
@@ -225,7 +226,7 @@ static float blankdata[] = {
 
 		case RATE:
 			//NSLog(@"RATE finish");	
-			[self setRate: [NSString stringWithCString: [incomingData bytes] length: [incomingData length]]];		
+			[self setRate: [NSString stringWithUTF8String: [incomingData bytes]]];		
 			//NSLog(@"rate: %@",rateSuffix);
 			
 			stage = IDLE;
@@ -325,12 +326,12 @@ static float blankdata[] = {
 
 - (NSString *)rowTick: (int)row {
 	char *ticks = (char *)[Yticks mutableBytes];
-	return [NSString stringWithCString: ticks+TICK_LEN*row];
+	return [NSString stringWithUTF8String: ticks+TICK_LEN*row];
 }
 
 - (NSString *)columnTick: (int)col {
 	char *ticks = (char *)[Xticks mutableBytes];
-	return [NSString stringWithCString: ticks+TICK_LEN*col];
+	return [NSString stringWithUTF8String: ticks+TICK_LEN*col];
 }
 
 -(NSString *)getDataKey {

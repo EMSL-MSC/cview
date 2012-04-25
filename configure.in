@@ -57,6 +57,9 @@ if [[ "x$target_vendor" = "xapple" ]]; then
 	if [[ $target_os = "darwin8.10.0" ]]; then
 		base="/Developer/SDKs/MacOSX10.4u.sdk/System/Library/Frameworks"
 	fi
+	if [[ $target_os = "darwin11.3.0" ]]; then
+		base="/System/Library/Frameworks"
+	fi
 	OPENGL_OBJCFLAGS="-I${base}/OpenGL.framework/Headers/ -I${base}/GLUT.framework/Headers/"
 	dnl cant check library linking on apple
 	CPPFLAGS+=" $OPENGL_OBJCFLAGS "
@@ -181,7 +184,7 @@ if [[ "$ON_MINGW" = "no" ]]; then
 		   AC_CHECK_LIB(AntTweakBar,TwSetCurrentWindow,
 			   [AC_DEFINE([HAVE_ANTTWEAKBAR], [1], [Have AntTweakBar]) TRIGGER_ATB="y" ATB_LDFLAGS+=" -lAntTweakBar " ],
 			   [AC_DEFINE([HAVE_ANTTWEAKBAR], [0], [Have AntTweakBar])],
-			   [-lstdc++ -lGL]
+			   [-lstdc++ $OPENGL_LDFLAGS]
 		   )
 			LDFLAGS=$SAVEDLD
 		],

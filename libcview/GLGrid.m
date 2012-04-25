@@ -14,13 +14,13 @@ All rights reserved.
 	others to do so, subject to the following conditions:
 
 	•	Redistributions of source code must retain the above copyright
-		notice, this list of conditions and the following disclaimers. 
+		notice, this list of conditions and the following disclaimers.
 	•	Redistributions in binary form must reproduce the above copyright
 		notice, this list of conditions and the following disclaimer in the
 		documentation and/or other materials provided with the distribution.
 	•	Other than as used herein, neither the name Battelle Memorial
 		Institute or Battelle may be used in any form whatsoever without the
-		express written consent of Battelle.  
+		express written consent of Battelle.
 	•	Redistributions of the software in any form, and publications based
 		on work performed using the software should include the following
 		citation as a reference:
@@ -53,7 +53,7 @@ All rights reserved.
 	makes any warranty, express or implied, or assumes any legal liability or
 	responsibility for the accuracy, completeness or usefulness of any data,
 	apparatus, product or process disclosed, or represents that its use would
-	not infringe privately owned rights.  
+	not infringe privately owned rights.
 
 */
 #include <math.h>
@@ -81,7 +81,7 @@ Data layout for reference:
 
 @implementation  GLGrid
 static NSArray *gridTypeStrings=nil;
-static const char *gridTypeSelectors[] =	{ 
+static const char *gridTypeSelectors[] =	{
 	"drawLines",
 	"drawRibbons",
 	"drawSurface",
@@ -115,7 +115,7 @@ static const char *gridTypeSelectors[] =	{
 	[self init];
 	[self setGridType:type];
 	[self setDataSet: ds];
-	return self; 	
+	return self;
 }
 
 -initWithDataSet: (DataSet *)ds {
@@ -125,7 +125,7 @@ static const char *gridTypeSelectors[] =	{
 }
 
 -setDataSet: (DataSet *)ds {
-	[dataSetLock lock];	
+	[dataSetLock lock];
 	[ds retain];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:@"DataSetResize" object: nil];
 	[dataSet autorelease];
@@ -134,7 +134,7 @@ static const char *gridTypeSelectors[] =	{
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:dataSet];
 	[self resetDrawingArrays];
 	[dataSetLock unlock];
-	
+
 	return self;
 
 }
@@ -151,13 +151,13 @@ static const char *gridTypeSelectors[] =	{
 	int numSurfaceVertices;
 	GLuint *indices;
 
-	[dataSetLock lock];	
-	[descText setString: [dataSet getDescription]]; 
+	[dataSetLock lock];
+	[descText setString: [dataSet getDescription]];
 	w=[dataSet width];
 	h=[dataSet height];
 	currentWidth = w;
 	currentHeight = h;
-		
+
 	[dataRow autorelease];
 	[colorRow autorelease];
 	if (gridType == G_RIBBON)
@@ -169,11 +169,11 @@ static const char *gridTypeSelectors[] =	{
 	for (i=0;i<h;i++)
 		for (j=0;j<num;j++)
 			d[i*(3*num)+2+j*3]=i;
-	
-	
+
+
 	if (gridType == G_SURFACE) {
 		numSurfaceVertices = ((w - 1) * 2) * h;
-	
+
 		surfaceIndices = [[NSMutableData alloc] initWithLength: numSurfaceVertices*sizeof(GLuint)];
 		indices = (GLuint *)[surfaceIndices mutableBytes];
 			for(i=0;i<w-1;i++)
@@ -182,8 +182,8 @@ static const char *gridTypeSelectors[] =	{
 				indices[index++] = (i+1)*h + j;
 			}
 	}
-	[dataSetLock unlock];	
-	
+	[dataSetLock unlock];
+
 	return;
 }
 
@@ -198,7 +198,7 @@ static const char *gridTypeSelectors[] =	{
 	[super initWithPList: list];
 	/// @todo error checking or exception handling.
 	xTicks = [[list objectForKey: @"xTicks"] intValue];
-	yTicks = [[list objectForKey: @"yTicks"] intValue];	
+	yTicks = [[list objectForKey: @"yTicks"] intValue];
 	fontScale = [[list objectForKey: @"fontScale" missing: @"1.0"] floatValue];
 	fontColorR = [[list objectForKey: @"fontColorR" missing: @"1.0"] floatValue];
 	fontColorG = [[list objectForKey: @"fontColorG" missing: @"1.0"] floatValue];
@@ -206,7 +206,7 @@ static const char *gridTypeSelectors[] =	{
 	xscale = [[list objectForKey: @"xscale" missing: @"1.0"] floatValue];
 	yscale = [[list objectForKey: @"yscale" missing: @"1.0"] floatValue];
 	zscale = [[list objectForKey: @"zscale" missing: @"1.0"] floatValue];
-	gridType = [[list objectForKey: @"gridType" missing: G_LINES_STRING] intValue];	
+	gridType = [[list objectForKey: @"gridType" missing: G_LINES_STRING] intValue];
 	o = [list objectForKey: @"gradient" missing: nil];
 	if (o!=nil)
 		ggr = [[GimpGradient alloc] initWithPList: o];
@@ -217,15 +217,15 @@ static const char *gridTypeSelectors[] =	{
 	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
 		ds=[c alloc];
 		[ds initWithPList: [list objectForKey: @"dataSet"]];
-		[self setDataSet: ds];		
+		[self setDataSet: ds];
 	}
 	return self;
 }
- 
+
 -getPList {
 	NSLog(@"getPList: %@",self);
 	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary: [super getPList]];
-	[dict setObject: [NSNumber numberWithInt: xTicks] forKey: @"xTicks"];	
+	[dict setObject: [NSNumber numberWithInt: xTicks] forKey: @"xTicks"];
 	[dict setObject: [NSNumber numberWithInt: yTicks] forKey: @"yTicks"];
 	[dict setObject: [dataSet getPList] forKey: @"dataSet"];
 	[dict setObject: [dataSet class] forKey: @"dataSetClass"];
@@ -238,7 +238,7 @@ static const char *gridTypeSelectors[] =	{
 	[dict setObject: [NSNumber numberWithFloat: zscale] forKey: @"zscale"];
 	[dict setObject: [NSNumber numberWithInt: gridType] forKey: @"gridType"];
 	if (ggr != nil)
-		[dict setObject: [ggr getPList] forKey: @"gradient"]; 
+		[dict setObject: [ggr getPList] forKey: @"gradient"];
 	return dict;
 }
 
@@ -293,17 +293,17 @@ static const char *gridTypeSelectors[] =	{
 -glDraw {
 	[dataSet lock];
 	int max = roundf([dataSet getScaledMax]);
-	
+
 	if (currentMax != max) {
 		//NSLog(@"New Max: %d %d",max,currentMax);
 		currentMax = max;
 		[self resetColorMap];
 	}
-	if (currentHeight != [dataSet height] || currentWidth != [dataSet width]) 
+	if (currentHeight != [dataSet height] || currentWidth != [dataSet width])
 		NSLog(@"size mismatch since last time");//[self resetDrawingArrays];
 
-	glScalef(1.0,1.0,1.0); 
-	
+	glScalef(1.0,1.0,1.0);
+
 	[dataSetLock lock];
 	[self drawPlane];
 	[self performSelector: sel_registerName(gridTypeSelectors[gridType]) ];
@@ -316,10 +316,10 @@ static const char *gridTypeSelectors[] =	{
 
 -drawTitles {
 	glPushMatrix();
-	glScalef(1.0,1.0,zscale); 
+	glScalef(1.0,1.0,zscale);
 	glTranslatef(0.0,0,[dataSet height]+15+15*fontScale);
 	glRotatef(90,1.0,0.0,0.0);
-	
+
 	glScalef(fontScale,fontScale,fontScale/zscale);
 
 	[descText setColorRed: fontColorR Green: fontColorG Blue: fontColorB];
@@ -338,7 +338,7 @@ static const char *gridTypeSelectors[] =	{
 	y=0.0;
 
 	glPushMatrix();
-	glScalef(xscale,yscale,zscale); 	
+	glScalef(xscale,yscale,zscale);
 
 	glBegin(GL_LINES);
 	for (i=1;i<currentMax+1;i++) {
@@ -348,7 +348,7 @@ static const char *gridTypeSelectors[] =	{
 		glVertex3f(x,i,y);
 	}
 	glEnd();
-	
+
 	glColor3f(fontColorR,fontColorG,fontColorB);
 	glBegin(GL_QUADS);
 	for (i=0;i<currentMax+1;i+=(int)MAX(4,currentMax/5)) {
@@ -371,7 +371,7 @@ static const char *gridTypeSelectors[] =	{
 	int i;
 
 	glColor3f(0.5,0.0,0.0);
-	
+
 	glPolygonOffset(dzmult,rmult);
 	glPushMatrix();
 	glScalef(xscale,yscale,zscale);
@@ -382,7 +382,7 @@ static const char *gridTypeSelectors[] =	{
 	glVertex3f(0, dropit, [dataSet height] );
 	glVertex3f([dataSet width], dropit, [dataSet height] );
 	glVertex3f([dataSet width], dropit, 0 );
-	
+
 	glEnd();
 
 	glColor3f(fontColorR,fontColorG,fontColorB);
@@ -458,7 +458,7 @@ static const char *gridTypeSelectors[] =	{
 }
 
 -(GridTypesEnum)getGridType {
-	return gridType; 
+	return gridType;
 }
 
 
@@ -488,7 +488,7 @@ static const char *gridTypeSelectors[] =	{
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
-	glPushMatrix();	
+	glPushMatrix();
 	glScalef(xscale,yscale,zscale);
 
 	glVertexPointer(3, GL_FLOAT, 0, verts);
@@ -527,7 +527,7 @@ static const char *gridTypeSelectors[] =	{
 		}
 
 		[colorMap doMapWithPoints: verts thatHasLength: countPoints toColors: [colorRow mutableBytes]];
-		
+
 		glDrawArrays(GL_LINE_STRIP,0,countPoints);
 	}
 
@@ -552,7 +552,7 @@ static const char *gridTypeSelectors[] =	{
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
-	glPushMatrix();	
+	glPushMatrix();
 	glScalef(xscale,yscale,zscale);
 
 	[colorMap doMapWithData: data thatHasLength: [dataSet height] * [dataSet width] toColors: color];
@@ -565,7 +565,7 @@ static const char *gridTypeSelectors[] =	{
 	}
 	glVertexPointer(3, GL_FLOAT, 0, verts);
 	glColorPointer(4, GL_FLOAT, 0, color);
-	
+
 	for(i=0; i < ([dataSet width]-1); i++) {
 		glDrawElements(GL_TRIANGLE_STRIP, stripLength, GL_UNSIGNED_INT, [surfaceIndices mutableBytes] + (i * stripLength) * sizeof(int));
 	}
@@ -585,7 +585,7 @@ static const char *gridTypeSelectors[] =	{
 
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
-	glPushMatrix();	
+	glPushMatrix();
 	glScalef(xscale,yscale,zscale);
 
 	glVertexPointer(3, GL_FLOAT, 0, verts);
