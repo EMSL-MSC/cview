@@ -211,7 +211,13 @@ static float blankdata[] = {
 //	NSLog(@"connection Finished: %@",connection);
 	NSURLRequest *req;	
 	int w,h;
+	/**
+	Evan: I didn't dig into this, but this line seems to break things.  Why
+	are you increasing the datalength by one?  There are other lines here that
+	rely on the length of this data, and I think that it is throwing that off...
+	-Brock
 	[incomingData increaseLengthBy:1];
+	*/
 	
 	switch (stage) {
 		case DESC:
