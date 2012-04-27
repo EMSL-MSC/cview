@@ -2,9 +2,9 @@
 Name=CViewAll
 GenericName=Cluster View All
 Comment=Open urls and cview data sets
-Exec=cviewall %U
+Exec=cviewall %u
 TryExec=cviewall
-Icon=cview
+Icon=application-x-cviewall
 Terminal=false
 Type=Application
 Categories=Graphics;
