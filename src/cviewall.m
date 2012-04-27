@@ -136,15 +136,11 @@ void tryParseFile(const char *cFilePath, NSUserDefaults *args) {
 	NSLog(@"plist: %@ %@ %d %@",filePath,plist,fmt,err);
 	if(plist != nil) {
 		id url = [plist objectForKey: @"url"];
-		if(url != nil) {
-			//NSLog(@"url is %@", url);
-			[args setObject: url forKey: @"url"];
-		}
 		id metrics = [plist objectForKey: @"metrics"];
-		if(metrics != nil) {
-			//NSLog(@"metrics is %@", metrics);
-			[args setObject: metrics forKey: @"metrics"];
-		}
+		[args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
+			url, @"url",
+			metrics, @"metrics",
+			nil]];
 	} else {
 		NSLog(@"Could not load the plist!");
 	}
