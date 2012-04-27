@@ -121,6 +121,7 @@ grep -q 'application/x-cview=cview.desktop' || echo 'application/x-cview=cview.d
 grep -q 'application/x-cviewall=cviewall.desktop' || echo 'application/x-cviewall=cviewall.desktop' >> $TMPFILE
 sort $TMPFILE > /usr/share/applications/defaults.list
 rm $TMPFILE
+gtk-update-icon-cache /usr/share/icons/hicolor -f
 
 %postun
 update-mime-database /usr/share/mime
@@ -130,6 +131,7 @@ TMPFILE=`mktemp`
 cat /usr/share/applications/defaults.list > $TMPFILE
 grep -v -e '^application/x-cview=cview\.desktop$' -e '^application/x-cviewall=cviewall\.desktop$' $TMPFILE > /usr/share/applications/defaults.list
 rm $TMPFILE
+gtk-update-icon-cache /usr/share/icons/hicolor -f
 
 
 %files

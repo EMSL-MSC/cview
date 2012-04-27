@@ -2,7 +2,7 @@
 <mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
   <mime-type type="application/x-cviewall">
     <sub-class-of type="text/plain" />
-    <comment>CViewall File</comment>
-    <glob pattern="*.cviewall"/>
+    <comment>CView File</comment>
+    <glob pattern="*.cview"/>
   </mime-type>
 </mime-info>
