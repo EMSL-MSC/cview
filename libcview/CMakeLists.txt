@@ -1,0 +1,42 @@
+
+SET(CVIEW_DATA_CLASSES
+	AntTweakBarManager
+	AntTweakBarOverlay
+	ColorMap
+	DefaultGLScreenDelegate
+	DrawableObject
+	Eye
+	GimpGradient
+	GLBar
+	GLDataCenter
+	GLGrid
+	GLImage
+	GLInfinibandNetwork
+	GLScreen
+	GLText
+	GLTooltip
+	GLWorld
+	Graph
+	IdDatabase
+	Identifiable
+	Scene
+)
+
+SET(CVIEW_DATA_SRCS 
+	utils.m
+)
+FOREACH (OBJ ${CVIEW_DATA_CLASSES})
+  LIST(APPEND CVIEW_DATA_SRCS "${OBJ}.m")
+  LIST(APPEND CVIEW_DATA_HDRS "${OBJ}.h")
+ENDFOREACH(OBJ)
+
+INCLUDE_DIRECTORIES(${GLUT_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
+INCLUDE_DIRECTORIES("${OPENGL_INCLUDE_DIR}/GL") # hack.. fix later..
+INCLUDE_DIRECTORIES(${FTGL_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${ImageMagick_MagickWand_INCLUDE_DIR})
+
+ADD_DEFINITIONS(${FOUNDATION_FLAGS})
+ADD_LIBRARY(cview ${CVIEW_DATA_SRCS} ${CVIEW_DATA_HDRS} )
+
+

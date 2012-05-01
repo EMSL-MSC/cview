@@ -1,0 +1,26 @@
+
+SET(CVIEW_DATA_CLASSES
+	CalculatedDataSet
+	DataSet
+	DictionaryExtra
+	JobDataSet
+	ListComp
+	SinDataSet
+	StreamDataSet
+	UpdateRunLoop
+	WebDataSet
+	XYDataSet
+)
+
+SET(CVIEW_DATA_SRCS 
+	datautils.m
+)
+FOREACH (OBJ ${CVIEW_DATA_CLASSES})
+  LIST(APPEND CVIEW_DATA_SRCS "${OBJ}.m")
+  LIST(APPEND CVIEW_DATA_HDRS "${OBJ}.h")
+ENDFOREACH(OBJ)
+
+ADD_DEFINITIONS(${FOUNDATION_FLAGS})
+ADD_LIBRARY(cview-data ${CVIEW_DATA_SRCS} ${CVIEW_DATA_HDRS} )
+
+

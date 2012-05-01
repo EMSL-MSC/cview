@@ -1,0 +1,6 @@
+#cmakedefine HAVE_ANTTWEAKBAR
+#cmakedefine HAVE_GENDERS
+#cmakedefine HAVE_MAGICKEXPORTIMAGEPIXELS
+#cmakedefine HAVE_OPENGL_1_4
+
+#define PKG_DATA_DIR @"${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}"
