@@ -73,6 +73,7 @@ All rights reserved.
 	TwBar *myBar;
 	NSMutableSet *bars;
 	NSMutableSet *sizeChanged;
+	int mouseWheelPos;
 }
 -init;
 -setSizeChanged;

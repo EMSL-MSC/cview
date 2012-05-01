@@ -14,13 +14,13 @@ All rights reserved.
 	others to do so, subject to the following conditions:
 
 	•	Redistributions of source code must retain the above copyright
-		notice, this list of conditions and the following disclaimers. 
+		notice, this list of conditions and the following disclaimers.
 	•	Redistributions in binary form must reproduce the above copyright
 		notice, this list of conditions and the following disclaimer in the
 		documentation and/or other materials provided with the distribution.
 	•	Other than as used herein, neither the name Battelle Memorial
 		Institute or Battelle may be used in any form whatsoever without the
-		express written consent of Battelle.  
+		express written consent of Battelle.
 	•	Redistributions of the software in any form, and publications based
 		on work performed using the software should include the following
 		citation as a reference:
@@ -53,7 +53,7 @@ All rights reserved.
 	makes any warranty, express or implied, or assumes any legal liability or
 	responsibility for the accuracy, completeness or usefulness of any data,
 	apparatus, product or process disclosed, or represents that its use would
-	not infringe privately owned rights.  
+	not infringe privately owned rights.
 
 */
 #import <Foundation/Foundation.h>
@@ -119,17 +119,17 @@ static float blankdata[] = {
 	rateSuffix = @"...";
 	textDescription = @"Blank DataSet";
 	[data setData: [NSData dataWithBytes: blankdata length: sizeof(blankdata)]];
-	
+
 	incomingData = [[NSMutableData data] retain];
 	stage = START;
-	timer = [[NSTimer alloc] initWithFireDate: [NSDate dateWithTimeIntervalSinceNow: 1] 
-							 interval: 30.0 
-							 target:self 
-							 selector: @selector(fireTimer:) 
-							 userInfo:nil 
+	timer = [[NSTimer alloc] initWithFireDate: [NSDate dateWithTimeIntervalSinceNow: 1]
+							 interval: 30.0
+							 target:self
+							 selector: @selector(fireTimer:)
+							 userInfo:nil
 							 repeats:YES];
 	[[UpdateRunLoop runLoop] addTimer: timer forMode: NSDefaultRunLoopMode];
-	
+
 	return self;
 }
 /**@objcdef dataUpdateInterval specify how often the thread will reload the DataSet*/
@@ -209,13 +209,20 @@ static float blankdata[] = {
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection  {
 //	NSLog(@"connection Finished: %@",connection);
-	NSURLRequest *req;	
+	NSURLRequest *req;
 	int w,h;
+	/**
+	Evan: I didn't dig into this, but this line seems to break things.  Why
+	are you increasing the datalength by one?  There are other lines here that
+	rely on the length of this data, and I think that it is throwing that off...
+	-Brock
 	[incomingData increaseLengthBy:1];
-	
+	*/
+
 	switch (stage) {
 		case DESC:
 			//NSLog(@"DESC finish");
+			[incomingData increaseLengthBy:1];
 			[self setDescription: [NSString stringWithUTF8String: [incomingData bytes]]];
 			//NSLog(@"desc: %@",textDescription);
 
@@ -225,19 +232,20 @@ static float blankdata[] = {
 			break;
 
 		case RATE:
-			//NSLog(@"RATE finish");	
-			[self setRate: [NSString stringWithUTF8String: [incomingData bytes]]];		
+			//NSLog(@"RATE finish");
+			[incomingData increaseLengthBy:1];
+			[self setRate: [NSString stringWithUTF8String: [incomingData bytes]]];
 			//NSLog(@"rate: %@",rateSuffix);
-			
+
 			stage = IDLE;
 			[self fireTimer:nil]; //Start the data download in the timer code
 			break;
-			
+
 		case START:
 		case IDLE:
 			NSLog(@"Should not recieve data during IDLE/START stage");
 			break;
-			
+
 		case XTICK:
 			//NSLog(@"XTICK finish");
 			w = [incomingData length];
@@ -257,9 +265,9 @@ static float blankdata[] = {
 			[dataLock unlock];
 			stage = YTICK;
 			req = [NSURLRequest requestWithURL: YticksURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
-			webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];	
+			webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];
 			break;
-			
+
 		case YTICK:
 			//NSLog(@"YTICK finish");
 			h = [incomingData length];
@@ -271,19 +279,22 @@ static float blankdata[] = {
 			[dataLock lock];
 			if (h != height)
 				[self setHeight: h];
-				
+
 			[Yticks setData: incomingData];
 			[dataLock unlock];
 			stage = DATA;
 			req = [NSURLRequest requestWithURL: dataURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
-			webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];	
+			webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];
 			break;
-			
+
 		case DATA:
 			//NSLog(@"DATA finish");
-			
-			if (width*height*sizeof(float) == [incomingData length]);		
+
+			if (width*height*sizeof(float) == [incomingData length]) {
 				[self autoScaleWithNewData: incomingData];
+			} else
+				NSLog(@"Very BAD! Incoming data was not the correct size. Width = %d Height = %d Width * Height = %d DataSet Size = %d", width, height, width * height, [incomingData length] / sizeof(float));
+
 			dataValid=YES;
 			[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
 			stage = IDLE;
@@ -306,7 +317,7 @@ static float blankdata[] = {
 
 
 	NSURLRequest *req;
-	
+
 	if (stage == IDLE) {
 		req = [NSURLRequest requestWithURL: XticksURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
 		stage = XTICK;
@@ -315,11 +326,11 @@ static float blankdata[] = {
 	else if (stage == START) {
 		req = [NSURLRequest requestWithURL: descURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
 		stage = DESC;
-		webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];	
+		webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];
 	}
 
 	return;
-} 
+}
 
 - (NSString *)rowTick: (int)row {
 	char *ticks = (char *)[Yticks mutableBytes];
@@ -336,7 +347,7 @@ static float blankdata[] = {
 }
 /**
 	@author: Brock Erwin
-	@description: Returns an array of data (a row) by searching the dictionary 
+	@description: Returns an array of data (a row) by searching the dictionary
 	              for the column name (xTick).
  */
 -(float*)dataRowByString:(NSString*)xTick {
@@ -344,7 +355,7 @@ static float blankdata[] = {
 //        NSLog(@"index is: %d, xTick = %@", [[indexByString objectForKey: xTick] intValue], xTick);
         id obj = [indexByString objectForKey: xTick];
         if(obj != nil)
-            return [self dataRow: [obj intValue]]; 
+            return [self dataRow: [obj intValue]];
         else {
 //			NSLog(@"Tried to find %@ but could not!", xTick);
             return NULL;

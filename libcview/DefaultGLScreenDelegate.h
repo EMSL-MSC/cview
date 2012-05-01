@@ -100,6 +100,7 @@ digraph keymap {
 	NSMutableSet *tweakoverlays;
 }
 -initWithScreen: (GLScreen *)screen;
+-(void)toggleTweakersVisibility;
 #if HAVE_ANTTWEAKBAR
 -setupTweakers;
 -cleanTweakers;

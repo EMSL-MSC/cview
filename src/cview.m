@@ -205,6 +205,7 @@ int main(int argc,char *argv[], char *env[]) {
 			[args stringForKey: @"?"] != nil ||
 			[args stringForKey: @"help"] != nil)
 			usage();
+
 		if(config == nil)
 			config = [args stringForKey: @"c"];
 		updateInterval = [args floatForKey: @"dataUpdateInterval"];
@@ -226,11 +227,11 @@ int main(int argc,char *argv[], char *env[]) {
 		if (plist==nil) {
 #if defined ON_MINGW_WIN32
 			NSString *error = [NSString stringWithFormat:
-				@"Error loading property list file \"%@\".  CVIEW will now exit.",
+				@"Error loading property list file \"%@\".  Hint: You must provide a cview (plist) file.  Try \"-h\" for help.",
 				config];
 			MessageBox(NULL, [error UTF8String], "Error loading PList file", MB_OK);
 #endif
-			printf("Error loading PList: %s. Exiting\n",[config UTF8String]);
+			fprintf(stderr, "Error loading PList: %s.  Hint: You must provide a cview (plist) file.  Try \"-h\" for help.\n",[config UTF8String]);
 			exit(4);
 		}
 		Class c;

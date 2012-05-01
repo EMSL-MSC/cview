@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=CView
+GenericName=Cluster View
+Comment=Open .cview files
+Exec=cview -c %u
+TryExec=cview
+Icon=application-x-cview
+Terminal=false
+Type=Application
+Categories=Graphics;
+MimeType=application/x-cview;

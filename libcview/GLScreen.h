@@ -83,7 +83,7 @@ digraph ascreenmanage {
 	int mainwin; /**< glut window ID of container window*/
 	id delegate; /**< GLScreenDelegate for input event handling */
 	NSMutableSet *worlds; /**< set of world or screens that managed. Should contain AScreen objects*/
-	int width,height; 
+	int width,height;
 	BOOL redrawNeeded,isFullscreen;
 	int oldWidth,oldHeight;
 	NSAutoreleasePool *pool;

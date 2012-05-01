@@ -210,13 +210,23 @@ static AntTweakBarManager *atbmSingleton;
 
 -(BOOL)mouseButton: (int)button withState: (int)state atX: (int)x andY: (int)y {
 	TwSetCurrentWindow(glutGetWindow());
+	int retVal = 0;
 
-	if ( [bars count] && TwEventMouseButtonGLUT(button, state, x, y) ) {
-    	return YES;
-	}
-	else {
-    	return NO;
-	}
+	if ( button == 3 || button == 4 ) {
+		if ( button == 3 )
+			mouseWheelPos++;
+		else
+			mouseWheelPos--;
+		 retVal = TwMouseWheel(mouseWheelPos);
+	} else
+		if ( [bars count] > 0 )
+			retVal = TwEventMouseButtonGLUT(button, state, x, y);
+
+	if ( retVal )
+		return YES;
+	else
+		return NO;
+
 }
 
 -(BOOL)mouseActiveMoveAtX: (int)x andY: (int)y  {

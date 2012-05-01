@@ -70,7 +70,6 @@ All rights reserved.
 #import "SinDataSet.h"
 #import "calcdataset.h"
 #import "ListComp.h"
-#import "UpdateThread.h"
 #import "XYDataSet.h"
 #import "PList.h"
 #import "config.h"
@@ -150,7 +149,7 @@ nsarray_integer++;
 [NSArray class];
 [CalculatedDataSet class];
 //[StreamDataSet class];
-[UpdateRunLoop class];
+//[UpdateRunLoop class];
 [WebDataSet class];
 [SinDataSet class];
 [JobDataSet class];

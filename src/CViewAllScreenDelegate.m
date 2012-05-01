@@ -106,6 +106,7 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 	heightPadding=128;
 	widthPadding=200;
 	activeGrids = [[NSMutableDictionary dictionaryWithCapacity: 10] retain];
+	[self toggleTweakersVisibility];
 	return [super initWithScreen: screen];	
 }
 
