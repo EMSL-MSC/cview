@@ -1,0 +1,41 @@
+
+
+ADD_DEFINITIONS(${FOUNDATION_FLAGS})
+INCLUDE_DIRECTORIES(${GLUT_INCLUDE_DIR})
+INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
+INCLUDE_DIRECTORIES("${OPENGL_INCLUDE_DIR}/GL") # hack.. fix later..
+INCLUDE_DIRECTORIES(${FTGL_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${ImageMagick_MagickWand_INCLUDE_DIR})
+
+MACRO(ADD_TEST name) 
+	MESSAGE("Adding Test for ${name}")
+	IF(${ARGC} EQUAL 1)
+		ADD_EXECUTABLE(${name} ${name}.m)
+	ELSE()
+		ADD_EXECUTABLE(${name} ${ARGVN})
+	ENDIF()
+	TARGET_LINK_LIBRARIES(${name} ${FOUNDATION_LIBRARIES})
+	TARGET_LINK_LIBRARIES(${name} ${GLUT_LIBRARIES})
+	TARGET_LINK_LIBRARIES(${name} ${OPENGL_LIBRARIES})
+	TARGET_LINK_LIBRARIES(${name} ${FTGL_LIBRARIES})
+	TARGET_LINK_LIBRARIES(${name} ${ImageMagick_MagickWand_LIBRARY})
+	TARGET_LINK_LIBRARIES(${name} cview cview-data)
+ENDMACRO(ADD_TEST)
+
+ADD_TEST(calcdatasettest)
+ADD_TEST(datasettest)
+ADD_TEST(ggrtest)
+ADD_TEST(glbartest)
+ADD_TEST(glgridtest)
+ADD_TEST(glimagetest)
+ADD_TEST(glscreentest)
+ADD_TEST(graphtest)
+ADD_TEST(ibtest)
+ADD_TEST(iddatabasetest)
+ADD_TEST(streamdatasettest)
+ADD_TEST(webdatasettest)
+ADD_TEST(xydatasettest)
+
+
+ADD_EXECUTABLE(calcdatatest calcdatatest.c)
+TARGET_LINK_LIBRARIES(calcdatatest cview-data)
