@@ -84,14 +84,8 @@ int main(int argc,char *argv[], char *env[]) {
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
 
-	NSString *testdata = find_resource_path(@"testdata.xy");
-	if (testdata == nil) {
-		NSLog(@"Error Loading Test Data");
-		exit(1);
-	}
-		
 
-		NSLog(@"starting");
+	NSLog(@"starting");
 	StreamDataSet *f = [[StreamDataSet alloc] initWithCommand: find_resource_path(@"slowcat") arguments: 
 		[NSArray arrayWithObjects: find_resource_path(@"streamdata.txt"),nil] depth: 64];
 	

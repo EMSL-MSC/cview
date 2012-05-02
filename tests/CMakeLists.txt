@@ -2,8 +2,7 @@
 
 ADD_DEFINITIONS(${FOUNDATION_FLAGS})
 INCLUDE_DIRECTORIES(${GLUT_INCLUDE_DIR})
-INCLUDE_DIRECTORIES(${OPENGL_INCLUDE_DIR})
-INCLUDE_DIRECTORIES("${OPENGL_INCLUDE_DIR}/GL") # hack.. fix later..
+INCLUDE_DIRECTORIES(${GL_H_INCLUDE} ${OPENGL_INCLUDE_DIR})
 INCLUDE_DIRECTORIES(${FTGL_INCLUDE_DIRS})
 INCLUDE_DIRECTORIES(${ImageMagick_MagickWand_INCLUDE_DIR})
 
@@ -36,6 +35,10 @@ ADD_TEST(streamdatasettest)
 ADD_TEST(webdatasettest)
 ADD_TEST(xydatasettest)
 
-
 ADD_EXECUTABLE(calcdatatest calcdatatest.c)
 TARGET_LINK_LIBRARIES(calcdatatest cview-data)
+
+FILE(COPY slowcat funcdata streamdata.txt gimpgradient.ggr DESTINATION "${CMAKE_BINARY_DIR}/tests")
+
+ADD_CUSTOM_COMMAND(OUTPUT testdata.xy COMMAND python funcdata xy testdata.xy COMMENT "Building Test XY Data")
+ADD_CUSTOM_TARGET(buildtestdata ALL DEPENDS testdata.xy)

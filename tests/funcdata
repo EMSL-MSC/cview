@@ -64,7 +64,7 @@ import sys
 import time
 import struct
 import math
-from Numeric import Float32,array,zeros
+from numpy import float32,array,zeros
 
 
 #Settings 
@@ -142,7 +142,7 @@ def xydata(funcs):
 			print
 
 def main(func):
-	data=zeros((xpoints,ypoints),Float32)
+	data=zeros((xpoints,ypoints),float32)
 	xd = (xmax-xmin)/xpoints
 	yd = (ymax-ymin)/ypoints
 	for i in range(xpoints):
@@ -179,6 +179,8 @@ def main(func):
 if __name__ == "__main__":
 	import sys
 	if len(sys.argv)>1 and sys.argv[1]=='xy':
+		if len(sys.argv)==3: 
+			sys.stdout=open(sys.argv[2],'w')
 		xydata((datafunc1,sombrero,mandel))
 	else:
 		main(datafunc1)
