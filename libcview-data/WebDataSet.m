@@ -372,32 +372,32 @@ static float defaultUpdateInterval = 60.0f;
 	              for the column name (xTick).
  */
 -(float*)dataRowByString:(NSString*)xTick {
-    if(indexByString != nil) {
+	if(indexByString != nil) {
 //        NSLog(@"index is: %d, xTick = %@", [[indexByString objectForKey: xTick] intValue], xTick);
-        id obj = [indexByString objectForKey: xTick];
-        if(obj != nil)
-            return [self dataRow: [obj intValue]];
-        else {
+		id obj = [indexByString objectForKey: xTick];
+		if(obj != nil)
+			return [self dataRow: [obj intValue]];
+		else {
 //			NSLog(@"Tried to find %@ but could not!", xTick);
-            return NULL;
+			return NULL;
 		}
-    }else{
-        //NSLog(@"Uh-oh, just tried to find stuff when the dictionary wasn't even instantialized!!!!");
-        return NULL;   // Hasn't been instantialized!!!
-    }
+	}else{
+		//NSLog(@"Uh-oh, just tried to find stuff when the dictionary wasn't even instantialized!!!!");
+		return NULL;   // Hasn't been instantialized!!!
+	}
 }
 -initializeIndexByStringDictionary {
-    // Must read all xTicks to determine their appropriate index
-    if(indexByString != nil)
-        [indexByString autorelease];
-    indexByString = [[NSMutableDictionary alloc] init];
-    int i;
-    for(i=0;i<[self width]; ++i) {
-        //NSLog(@"key = %@, object = %d, i = %d", [self columnTick: i], [[NSNumber numberWithInt: i] intValue], i);
-        [indexByString setObject: [NSNumber numberWithInt: i]
-            forKey: [[self columnTick: i] uppercaseString]];
-    }
-    return self;
+	// Must read all xTicks to determine their appropriate index
+	if(indexByString != nil)
+		[indexByString autorelease];
+	indexByString = [[NSMutableDictionary alloc] init];
+	int i;
+	for(i=0;i<[self width]; ++i) {
+		//NSLog(@"key = %@, object = %d, i = %d", [self columnTick: i], [[NSNumber numberWithInt: i] intValue], i);
+		[indexByString setObject: [NSNumber numberWithInt: i]
+			forKey: [[self columnTick: i] uppercaseString]];
+	}
+	return self;
 }
 
 @end
