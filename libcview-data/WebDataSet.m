@@ -58,6 +58,7 @@ All rights reserved.
 */
 #import <Foundation/Foundation.h>
 #import <sys/param.h>  //for max/min
+#import "cview-data.h"
 #import "UpdateRunLoop.h"
 #import "WebDataSet.h"
 
@@ -97,10 +98,19 @@ static float blankdata[] = {
 };
 
 @implementation WebDataSet
+/** If not specified, then this will be the default time between updates.
+  If set to zero, then no periodic updates will happen (only an initial one)
+  */
+static float defaultUpdateInterval = 60.0f;
++(void)setDefaultUpdateInterval: (float)interval {
+	defaultUpdateInterval = interval;
+	return;
+}
 
--initWithUrlBase: (NSURL *)base andKey: (NSString *)key {
-
-    indexByString = nil;
+-initWithUrlBase: (NSURL *)base andKey: (NSString *)key andUpdateInterval: (float)interval {
+	NSLog(@"WebDataSet::initWithUrlBase: %@ key: %@ updateInterval: %f", base, key, interval);
+	BOOL updateRepeats = YES;
+	indexByString = nil;
 	baseURL = [base retain];
 	dataKey = key;
 	dataURL = [[NSURL URLWithString: [NSString stringWithFormat: @"%@.data",key] relativeToURL: base] retain];
@@ -111,23 +121,29 @@ static float blankdata[] = {
 
 	/* Sane Defaults until we have actual data */
 
-	[super initWithName: key Width: 32 Height: 32];
+	if([self getDescription] == nil)
+		[super initWithName: key Width: 32 Height: 32];
+	else
+		[super initWithWidth: 32 Height: 32];
 	dataValid=NO;
 	Xticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
 	Yticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
 	allowRescale = YES;
 	rateSuffix = @"...";
-	textDescription = @"Blank DataSet";
+	if(textDescription == nil)
+		textDescription = @"Blank DataSet";
 	[data setData: [NSData dataWithBytes: blankdata length: sizeof(blankdata)]];
 
 	incomingData = [[NSMutableData data] retain];
 	stage = START;
+	if(interval == 0.0f)
+		updateRepeats = NO;
 	timer = [[NSTimer alloc] initWithFireDate: [NSDate dateWithTimeIntervalSinceNow: 1]
-							 interval: 30.0
+							 interval: interval
 							 target:self
 							 selector: @selector(fireTimer:)
 							 userInfo:nil
-							 repeats:YES];
+							 repeats:updateRepeats];
 	[[UpdateRunLoop runLoop] addTimer: timer forMode: NSDefaultRunLoopMode];
 
 	return self;
@@ -135,14 +151,16 @@ static float blankdata[] = {
 /**@objcdef dataUpdateInterval specify how often the thread will reload the DataSet*/
 -initWithPList: (id)list {
 	NSLog(@"initWithPList: %@",[self class]);
-    indexByString = nil;
+	indexByString = nil;
 
 	[super initWithPList: list];
 
 	NSURL *url = [NSURL URLWithString: [list objectForKey: @"baseURL"]];
 	NSString *key = [list objectForKey: @"key"];
 
-	[self initWithUrlBase: url andKey: key];
+	[self initWithUrlBase: url andKey: key andUpdateInterval:
+		[[list objectForKey: @"dataUpdateInterval" missing:
+			[NSString stringWithFormat: @"%f", defaultUpdateInterval]] floatValue]];
 
 	return self;
 }
@@ -152,6 +170,8 @@ static float blankdata[] = {
 	NSMutableDictionary *dict = [super getPList];
 	[dict setObject: baseURL forKey: @"baseURL"];
 	[dict setObject: dataKey forKey: @"key"];
+	if(isCustomTextDescription)
+		[dict setObject: textDescription forKey: @"textDescription"];
 	return dict;
 }
 /*
@@ -223,7 +243,8 @@ static float blankdata[] = {
 		case DESC:
 			//NSLog(@"DESC finish");
 			[incomingData increaseLengthBy:1];
-			[self setDescription: [NSString stringWithUTF8String: [incomingData bytes]]];
+			if([[self getDescription] compare: @"Blank DataSet"] == NSOrderedSame)
+				[self setDescription: [NSString stringWithUTF8String: [incomingData bytes]]];
 			//NSLog(@"desc: %@",textDescription);
 
 			stage = RATE;

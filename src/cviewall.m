@@ -137,9 +137,11 @@ void tryParseFile(const char *cFilePath, NSUserDefaults *args) {
 	if(plist != nil) {
 		id url = [plist objectForKey: @"url"];
 		id metrics = [plist objectForKey: @"metrics"];
+		id dataUpdateInterval = [plist objectForKey: @"dataUpdateInterval"];
 		[args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
 			url, @"url",
 			metrics, @"metrics",
+			dataUpdateInterval, @"dataUpdateInterval",
 			nil]];
 	} else {
 		NSLog(@"Could not load the plist!");
@@ -177,11 +179,13 @@ int main(int argc,char *argv[], char *env[]) {
 	NSLog(@"metrics=%@",[args arrayForKey: @"metrics"]);
 	w = [args integerForKey: @"gridw"];
 	NSLog(@"gridw=%d",w);
+	NSLog(@"dataUpdateIntervalurl=%f",[args floatForKey: @"dataUpdateInterval"]);
 
 	configfile = [args stringForKey: @"c"];
 
 	GLScreen * g = [[GLScreen alloc] initName: @"Cview All" withWidth: 1200 andHeight: 600];
-	CViewAllScreenDelegate *cvasd = [[CViewAllScreenDelegate alloc] initWithScreen:g];
+	CViewAllScreenDelegate *cvasd =
+		[[CViewAllScreenDelegate alloc] initWithScreen:g andUpdateInterval: [args floatForKey: @"dataUpdateInterval"]];
 	[cvasd setOutputFile: configfile];
 	[cvasd setGridWidth: w];
 	[g setDelegate: cvasd];
@@ -190,7 +194,7 @@ int main(int argc,char *argv[], char *env[]) {
 
 	NSURL *baseurl = [NSURL URLWithString: [args stringForKey: @"url"]];
 	NSString *index = [NSString stringWithContentsOfURL: [NSURL URLWithString: @"index" relativeToURL: baseurl]];
-	if (index == nil) 
+	if (index == nil)
 		usage([NSString stringWithFormat: @"Index file not found at given URL:%@",baseurl],-2);
 	[cvasd setURL: baseurl];
 
@@ -200,14 +204,14 @@ int main(int argc,char *argv[], char *env[]) {
 	NSMutableDictionary *mf = [NSMutableDictionary dictionary];
 	NSNumber *n;
 	NSArray *arr = [args arrayForKey: @"metrics"];
-	
+
 	while ([scanner scanUpToString: NEWLINE intoString: &str] == YES) {
 		//NSLog(@"string: %@",str);
 		//[indexes addObject: str];
 		n = [NSNumber numberWithBool: [arr containsObject: str] || [arr containsObject: @"all"]];
-		[mf setObject: n forKey: str];		
+		[mf setObject: n forKey: str];
 	}
-	
+
 	[cvasd setMetricFlags: mf];
 			//[[toggler objectAtIndex: 0] show];
 	GLWorld *world = [[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50] 
@@ -217,8 +221,8 @@ int main(int argc,char *argv[], char *env[]) {
 	[[cvasd setWorld: world] toggleTweakersVisibility];
 	NSLog(@"Setup done");
 
-	
-	DUMPALLOCLIST(YES);	
+
+	DUMPALLOCLIST(YES);
 
 	[g run];
 

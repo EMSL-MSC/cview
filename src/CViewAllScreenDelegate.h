@@ -64,6 +64,7 @@ All rights reserved.
 */
 
 @interface CViewAllScreenDelegate:CViewScreenDelegate {
+	float updateInterval;
 	NSMutableDictionary *metricFlags;
 	NSMutableDictionary *activeGrids;
 	int gridWidth;
@@ -75,6 +76,7 @@ All rights reserved.
 	TwBar *metricbar,*settingsBar;
 #endif
 }
+-initWithScreen: (GLScreen *)screen andUpdateInterval: (float) dataSetUpdateInterval;
 /** set how many grids are in the width direction before another row is added.*/
 -setGridWidth:(int)w;
 /** setup the list of metrics, with an NSNumber-boolean that specifies what is showing*/

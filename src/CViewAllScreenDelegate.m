@@ -100,14 +100,15 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 
 #endif
 
-@implementation CViewAllScreenDelegate 
--initWithScreen: (GLScreen *)screen; {
+@implementation CViewAllScreenDelegate
+-initWithScreen: (GLScreen *)screen andUpdateInterval: (float) dataSetUpdateInterval {
+	self->updateInterval = dataSetUpdateInterval;
 	gridWidth=1;
 	heightPadding=128;
 	widthPadding=200;
 	activeGrids = [[NSMutableDictionary dictionaryWithCapacity: 10] retain];
 	[self toggleTweakersVisibility];
-	return [super initWithScreen: screen];	
+	return [super initWithScreen: screen];
 }
 
 -(void)dealloc {
@@ -188,7 +189,8 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 		n = [metricFlags objectForKey: key];
 		if ([n boolValue]) {
 			if ( ![activeKeys containsObject: key] ) {
-				wds = [[WebDataSet alloc] initWithUrlBase: url andKey: key];
+				NSLog(@"Showing a new dataset!");
+				wds = [[WebDataSet alloc] initWithUrlBase: url andKey: key andUpdateInterval: updateInterval];
 				[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:wds];
 				[wds autoScale: 100];	
 				grid=[[[[[GLGrid alloc] initWithDataSet: wds] setXTicks: 50] setYTicks: 32] show];
