@@ -207,7 +207,6 @@ int main(int argc,char *argv[], char *env[]) {
 
 		if(config == nil)
 			config = [args stringForKey: @"c"];
-		[WebDataSet setDefaultUpdateInterval: [args floatForKey: @"dataUpdateInterval"]];
 		dumpclasses = [args integerForKey: @"dumpclasses"];
 
 		if (dumpclasses > 0)

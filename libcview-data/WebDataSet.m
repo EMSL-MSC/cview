@@ -98,18 +98,10 @@ static float blankdata[] = {
 };
 
 @implementation WebDataSet
-/** If not specified, then this will be the default time between updates.
-  If set to zero, then no periodic updates will happen (only an initial one)
-  */
-static float defaultUpdateInterval = 60.0f;
-+(void)setDefaultUpdateInterval: (float)interval {
-	defaultUpdateInterval = interval;
-	return;
-}
-
--initWithUrlBase: (NSURL *)base andKey: (NSString *)key andUpdateInterval: (float)interval {
-	NSLog(@"WebDataSet::initWithUrlBase: %@ key: %@ updateInterval: %f", base, key, interval);
+-initWithUrlBase: (NSURL *)base andKey: (NSString *)key {
+	NSLog(@"WebDataSet::initWithUrlBase: %@ key: %@", base, key);
 	BOOL updateRepeats = YES;
+	float interval = [[NSUserDefaults standardUserDefaults] floatForKey: @"dataUpdateInterval"];
 	indexByString = nil;
 	baseURL = [base retain];
 	dataKey = key;
@@ -158,9 +150,7 @@ static float defaultUpdateInterval = 60.0f;
 	NSURL *url = [NSURL URLWithString: [list objectForKey: @"baseURL"]];
 	NSString *key = [list objectForKey: @"key"];
 
-	[self initWithUrlBase: url andKey: key andUpdateInterval:
-		[[list objectForKey: @"dataUpdateInterval" missing:
-			[NSString stringWithFormat: @"%f", defaultUpdateInterval]] floatValue]];
+	[self initWithUrlBase: url andKey: key];
 
 	return self;
 }
