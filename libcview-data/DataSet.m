@@ -102,6 +102,8 @@ All rights reserved.
 	labelFormat=[list objectForKey:@"labelFormat" missing: DS_DEFAULT_LABEL_FORMAT];
 	name = [[list objectForKey:@"name" missing: DS_DEFAULT_NAME] retain];
 	rateSuffix=[list objectForKey:@"rateSuffix" missing: DS_DEFAULT_RATE_SUFFIX];
+	textDescription=[[list objectForKey:@"textDescription" missing: nil] retain];
+	isCustomTextDescription = textDescription != nil;
 	return self;
 }
 

@@ -108,7 +108,7 @@ static float defaultUpdateInterval = 60.0f;
 }
 
 -initWithUrlBase: (NSURL *)base andKey: (NSString *)key andUpdateInterval: (float)interval {
-	NSLog(@"WebDataSet: updateInterval: %f", interval);
+	NSLog(@"WebDataSet::initWithUrlBase: %@ key: %@ updateInterval: %f", base, key, interval);
 	BOOL updateRepeats = YES;
 	indexByString = nil;
 	baseURL = [base retain];
@@ -121,13 +121,17 @@ static float defaultUpdateInterval = 60.0f;
 
 	/* Sane Defaults until we have actual data */
 
-	[super initWithName: key Width: 32 Height: 32];
+	if([self getDescription] == nil)
+		[super initWithName: key Width: 32 Height: 32];
+	else
+		[super initWithWidth: 32 Height: 32];
 	dataValid=NO;
 	Xticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
 	Yticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
 	allowRescale = YES;
 	rateSuffix = @"...";
-	textDescription = @"Blank DataSet";
+	if(textDescription == nil)
+		textDescription = @"Blank DataSet";
 	[data setData: [NSData dataWithBytes: blankdata length: sizeof(blankdata)]];
 
 	incomingData = [[NSMutableData data] retain];
@@ -147,7 +151,7 @@ static float defaultUpdateInterval = 60.0f;
 /**@objcdef dataUpdateInterval specify how often the thread will reload the DataSet*/
 -initWithPList: (id)list {
 	NSLog(@"initWithPList: %@",[self class]);
-    indexByString = nil;
+	indexByString = nil;
 
 	[super initWithPList: list];
 
@@ -166,6 +170,8 @@ static float defaultUpdateInterval = 60.0f;
 	NSMutableDictionary *dict = [super getPList];
 	[dict setObject: baseURL forKey: @"baseURL"];
 	[dict setObject: dataKey forKey: @"key"];
+	if(isCustomTextDescription)
+		[dict setObject: textDescription forKey: @"textDescription"];
 	return dict;
 }
 /*
@@ -237,7 +243,8 @@ static float defaultUpdateInterval = 60.0f;
 		case DESC:
 			//NSLog(@"DESC finish");
 			[incomingData increaseLengthBy:1];
-			[self setDescription: [NSString stringWithUTF8String: [incomingData bytes]]];
+			if([[self getDescription] compare: @"Blank DataSet"] == NSOrderedSame)
+				[self setDescription: [NSString stringWithUTF8String: [incomingData bytes]]];
 			//NSLog(@"desc: %@",textDescription);
 
 			stage = RATE;

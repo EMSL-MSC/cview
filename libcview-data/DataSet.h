@@ -86,6 +86,7 @@ This class provides a basic data store, with associated information.  It is orga
 	float currentMax;
 	float lockedMax;
 	BOOL allowScaling,dataValid;
+	BOOL isCustomTextDescription;
 	NSString *textDescription;
 	NSString *labelFormat;
 	NSRecursiveLock *dataLock;
