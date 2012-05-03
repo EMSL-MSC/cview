@@ -141,7 +141,6 @@ int main(int argc,char *argv[], char *env[]) {
 	GSDebugAllocationActiveRecordingObjects(CLS_DUMP);
 #endif
 
-	float updateInterval;
 	int dumpclasses;
 
 	NSString *config = nil;
@@ -188,14 +187,14 @@ int main(int argc,char *argv[], char *env[]) {
 #if HAVE_GENDERS
 		[args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
 			@"cviews/default.cview", @"c",
-			@"30.0",@"dataUpdateInterval",
+			@"60.0",@"dataUpdateInterval",
 			@"0",@"dumpclasses",
 			@"DataCenterCViewScreenDelegate",@"ScreenDelegate", // use DataCenter since we have genders
 			nil]];
 #else
 		[args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
 			@"cviews/default.cview", @"c",
-			@"30.0",@"dataUpdateInterval",
+			@"60.0",@"dataUpdateInterval",
 			@"0",@"dumpclasses",
 			@"CViewScreenDelegate",@"ScreenDelegate",
 			nil]];
@@ -208,7 +207,7 @@ int main(int argc,char *argv[], char *env[]) {
 
 		if(config == nil)
 			config = [args stringForKey: @"c"];
-		updateInterval = [args floatForKey: @"dataUpdateInterval"];
+		[WebDataSet setDefaultUpdateInterval: [args floatForKey: @"dataUpdateInterval"]];
 		dumpclasses = [args integerForKey: @"dumpclasses"];
 
 		if (dumpclasses > 0)

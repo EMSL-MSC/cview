@@ -71,6 +71,7 @@ All rights reserved.
 #endif
 	NSString *PListOutputFile;
 }
+-initWithScreen: (GLScreen *)screen;
 -(void)setOutputFile: (NSString *)file;
 -(NSString *)getOutputFile;
 #if HAVE_ANTTWEAKBAR
