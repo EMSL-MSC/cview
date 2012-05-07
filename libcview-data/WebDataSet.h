@@ -100,8 +100,7 @@ digraph tickfile {
 	enum DownloadStage stage;
 	NSTimer *timer;
 }
-+(void)setDefaultUpdateInterval: (float)interval;
--initWithUrlBase: (NSURL *)base andKey: (NSString *)key andUpdateInterval: (float)interval;
+-initWithUrlBase: (NSURL *)base andKey: (NSString *)key;
 /** returns the stored row label from the loaded data */
 -(NSString *)rowTick: (int)row;
 /** returns the stored column label from the loaded data */

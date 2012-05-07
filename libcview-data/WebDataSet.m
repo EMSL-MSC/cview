@@ -98,18 +98,10 @@ static float blankdata[] = {
 };
 
 @implementation WebDataSet
-/** If not specified, then this will be the default time between updates.
-  If set to zero, then no periodic updates will happen (only an initial one)
-  */
-static float defaultUpdateInterval = 60.0f;
-+(void)setDefaultUpdateInterval: (float)interval {
-	defaultUpdateInterval = interval;
-	return;
-}
-
--initWithUrlBase: (NSURL *)base andKey: (NSString *)key andUpdateInterval: (float)interval {
-	NSLog(@"WebDataSet::initWithUrlBase: %@ key: %@ updateInterval: %f", base, key, interval);
+-initWithUrlBase: (NSURL *)base andKey: (NSString *)key {
+	NSLog(@"WebDataSet::initWithUrlBase: %@ key: %@", base, key);
 	BOOL updateRepeats = YES;
+	float interval = [[NSUserDefaults standardUserDefaults] floatForKey: @"dataUpdateInterval"];
 	indexByString = nil;
 	baseURL = [base retain];
 	dataKey = key;
@@ -158,9 +150,7 @@ static float defaultUpdateInterval = 60.0f;
 	NSURL *url = [NSURL URLWithString: [list objectForKey: @"baseURL"]];
 	NSString *key = [list objectForKey: @"key"];
 
-	[self initWithUrlBase: url andKey: key andUpdateInterval:
-		[[list objectForKey: @"dataUpdateInterval" missing:
-			[NSString stringWithFormat: @"%f", defaultUpdateInterval]] floatValue]];
+	[self initWithUrlBase: url andKey: key];
 
 	return self;
 }
@@ -372,32 +362,32 @@ static float defaultUpdateInterval = 60.0f;
 	              for the column name (xTick).
  */
 -(float*)dataRowByString:(NSString*)xTick {
-    if(indexByString != nil) {
+	if(indexByString != nil) {
 //        NSLog(@"index is: %d, xTick = %@", [[indexByString objectForKey: xTick] intValue], xTick);
-        id obj = [indexByString objectForKey: xTick];
-        if(obj != nil)
-            return [self dataRow: [obj intValue]];
-        else {
+		id obj = [indexByString objectForKey: xTick];
+		if(obj != nil)
+			return [self dataRow: [obj intValue]];
+		else {
 //			NSLog(@"Tried to find %@ but could not!", xTick);
-            return NULL;
+			return NULL;
 		}
-    }else{
-        //NSLog(@"Uh-oh, just tried to find stuff when the dictionary wasn't even instantialized!!!!");
-        return NULL;   // Hasn't been instantialized!!!
-    }
+	}else{
+		//NSLog(@"Uh-oh, just tried to find stuff when the dictionary wasn't even instantialized!!!!");
+		return NULL;   // Hasn't been instantialized!!!
+	}
 }
 -initializeIndexByStringDictionary {
-    // Must read all xTicks to determine their appropriate index
-    if(indexByString != nil)
-        [indexByString autorelease];
-    indexByString = [[NSMutableDictionary alloc] init];
-    int i;
-    for(i=0;i<[self width]; ++i) {
-        //NSLog(@"key = %@, object = %d, i = %d", [self columnTick: i], [[NSNumber numberWithInt: i] intValue], i);
-        [indexByString setObject: [NSNumber numberWithInt: i]
-            forKey: [[self columnTick: i] uppercaseString]];
-    }
-    return self;
+	// Must read all xTicks to determine their appropriate index
+	if(indexByString != nil)
+		[indexByString autorelease];
+	indexByString = [[NSMutableDictionary alloc] init];
+	int i;
+	for(i=0;i<[self width]; ++i) {
+		//NSLog(@"key = %@, object = %d, i = %d", [self columnTick: i], [[NSNumber numberWithInt: i] intValue], i);
+		[indexByString setObject: [NSNumber numberWithInt: i]
+			forKey: [[self columnTick: i] uppercaseString]];
+	}
+	return self;
 }
 
 @end

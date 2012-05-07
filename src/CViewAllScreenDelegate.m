@@ -190,7 +190,7 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 		if ([n boolValue]) {
 			if ( ![activeKeys containsObject: key] ) {
 				NSLog(@"Showing a new dataset!");
-				wds = [[WebDataSet alloc] initWithUrlBase: url andKey: key andUpdateInterval: updateInterval];
+				wds = [[WebDataSet alloc] initWithUrlBase: url andKey: key];
 				[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:wds];
 				[wds autoScale: 100];	
 				grid=[[[[[GLGrid alloc] initWithDataSet: wds] setXTicks: 50] setYTicks: 32] show];
