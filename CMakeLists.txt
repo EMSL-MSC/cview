@@ -85,6 +85,18 @@ FILE(COPY "${CMAKE_SOURCE_DIR}/data" DESTINATION ${CMAKE_BINARY_DIR})
 
 #this is for install
 FILE(GLOB DATA_FILES "${CMAKE_SOURCE_DIR}/data/*.ttf*" "${CMAKE_SOURCE_DIR}/data/*.svg" "${CMAKE_SOURCE_DIR}/data/*.ggr")
-INSTALL(FILES ${DATA_FILES} DESTINATION "share/${CMAKE_PROJECT_NAME}")  # should we be more specific about which files?
+INSTALL(FILES ${DATA_FILES} DESTINATION "share/${CMAKE_PROJECT_NAME}" COMPONENT "Data Files")  # should we be more specific about which files?
+FILE(GLOB MAN_FILES "${CMAKE_SOURCE_DIR}/man/*.1")
+INSTALL(FILES ${MAN_FILES} DESTINATION "man/man.1" COMPONENT "Man Pages")
 
+#-------------------------------------------------------
+#Packgaing settings for cpack
+SET(CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
+SET(CPACK_PACKAGE_VENDOR "www.emsl.pnl.gov")
+SET(CPACK_PACKAGE_DESCRIPTION "CView - Graphics engine for displaying information in a 3 dimensional interactive environment. Somewhat targeted at time series performance data, and cluster displays.")
+SET(CPACK_PACKAGE_VERSION "${VERSION}")
+SET(CPACK_PACKAGE_VERSION_MAJOR "${VERSION_MAJOR}")
+SET(CPACK_PACKAGE_VERSION_MINOR "${VERSION_MINOR}")
+SET(CPACK_PACKAGE_VERSION_PATCH "${VERSION_PATCH}")
+SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/docs/copying.txt")
 INCLUDE(CPack)
