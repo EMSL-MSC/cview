@@ -95,8 +95,8 @@ int main(int argc,char *argv[], char *env[]) {
 #endif
 	@try {
 		NSURL *cluster = [NSURL URLWithString: @"http://chumbucket/cluster/chinook/"];
-		WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.user" andUpdateInterval: 60.0];
-		WebDataSet *f = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.sys" andUpdateInterval: 60.0];
+		WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.user"];
+		WebDataSet *f = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.sys"];
 		[d autoScale: 100];	
 		[f autoScale: 100];	
 		
