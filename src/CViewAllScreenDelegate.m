@@ -98,6 +98,24 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 	*(int *)value = [i intValue];
 }
 
+static void TW_CALL CVASD_floatSetCallback(const void *value, void *clientData) {
+	NSArray *a = (NSArray *)clientData;
+	CViewAllScreenDelegate *cvasd = [a objectAtIndex: 0];
+	NSString *name = [a objectAtIndex:1];
+
+	[cvasd setValue: [NSNumber numberWithFloat: *(const float *)value] forKeyPath: name];
+	[cvasd setTweakableValues: [NSNumber numberWithFloat: *(const float *)value] forKey: name];
+}
+
+static void TW_CALL CVASD_floatGetCallback(void *value, void *clientData) {
+	NSArray *a = (NSArray *)clientData;
+	CViewAllScreenDelegate *cvasd = [a objectAtIndex: 0];
+	NSString *name = [a objectAtIndex:1];
+
+	NSNumber *i=[cvasd valueForKeyPath: name];
+	*(float *)value = [i floatValue];
+}
+
 #endif
 
 @implementation CViewAllScreenDelegate
@@ -106,6 +124,8 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 	gridWidth=1;
 	heightPadding=128;
 	widthPadding=200;
+	xscale = 1.0f;
+	yscale = 1.0f;
 	activeGrids = [[NSMutableDictionary dictionaryWithCapacity: 10] retain];
 	[self toggleTweakersVisibility];
 	return [super initWithScreen: screen];
@@ -186,6 +206,7 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 
 	list = [metricList objectEnumerator];
 	while ( (key = (NSString *)[list nextObject]) ) {
+		//NSLog(@"key is %@", key);
 		n = [metricFlags objectForKey: key];
 		if ([n boolValue]) {
 			if ( ![activeKeys containsObject: key] ) {
@@ -287,6 +308,19 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 		TwAddVarCB(settingsBar,"gridWidth",TW_TYPE_INT32,
 					CVASD_intSetCallback,CVASD_intGetCallback,
 					arr,"label='GridWidth' min=1");
+
+		arr=[NSArray arrayWithObjects: self,@"xscale",nil];
+		[tweakObjects addObject: arr];
+		TwAddVarCB(settingsBar,"xscale",TW_TYPE_FLOAT,
+					CVASD_floatSetCallback,CVASD_floatGetCallback,
+					arr,"label='XScale' step='0.1'");
+
+		arr=[NSArray arrayWithObjects: self,@"yscale",nil];
+		[tweakObjects addObject: arr];
+		TwAddVarCB(settingsBar,"yscale",TW_TYPE_FLOAT,
+					CVASD_floatSetCallback,CVASD_floatGetCallback,
+					arr,"label='YScale' step='0.1'");
+
 	}
 	return self;
 }

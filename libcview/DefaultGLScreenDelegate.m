@@ -77,6 +77,13 @@ All rights reserved.
 -screenHasStarted {
 	return self;	
 }
+-(void)setTweakableValues: (NSObject *) val forKey: (NSString *) key {
+	NSEnumerator *e = [tweakoverlays objectEnumerator];
+	AntTweakBarOverlay *o;
+	while((o = [e nextObject]) != nil) {
+		[o setValues: val forKey: key];
+	}
+}
 
 -(void)toggleTweakersVisibility {
 #if HAVE_ANTTWEAKBAR
