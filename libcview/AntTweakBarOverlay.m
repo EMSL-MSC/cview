@@ -235,7 +235,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 	else
 		keybase=@"";
 
-	NSLog(@"Node props: %@",att);
+	//NSLog(@"Node props: %@ keybase: %@",att, keybase);
 	if (att) {
 		
 		if ([tree respondsToSelector: @selector(tweaksettings)])
@@ -272,7 +272,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 						TwAddVarCB(myBar, [keypath UTF8String], TW_TYPE_INT32, intSetCallback, intGetCallback, atb, data);
 						break;
 					default:
-						NSLog(@"Unhandled Number Type: %s",[n objCType]);
+						//NSLog(@"Unhandled Number Type: %s",[n objCType]);
 						break;
 				}
 				if (grp)
@@ -309,7 +309,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
  				for (i=0;i<[a count];i++) {
 					NSString *newpath=[NSString stringWithFormat:@"%@.%d",keypath,i];
 					NSString *newkey=[NSString stringWithFormat:@"%@[%d]",key,i];
-					NSLog(@"Array Member: %@  keypath: %@",newpath,newkey);
+					//NSLog(@"Array Member: %@  keypath: %@",newpath,newkey);
 					if ([self parseTree: [a objectAtIndex: i] withGroup: newpath]) {
 						if (grp)
 							TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@ label='%@-%@' close",name,newpath,grp,newkey,[[a objectAtIndex: i] description]] UTF8String]);
@@ -319,7 +319,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
  				}
  			}
 			else {
-				NSLog(@"Class Type Unhandled: %@  keypath: %@",[o class],keypath);
+				//NSLog(@"Class Type Unhandled: %@  keypath: %@",[o class],keypath);
 				if ([self parseTree: o withGroup: keypath] ) {
 					if (grp)
 						TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@ label='%@-%@' close",name,keypath,grp,key,[o description]] UTF8String]);
@@ -335,7 +335,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 
 -treeChanged: (NSNotification *)note {
 	if ([note object] == myTree) {// should alwasy happen, but check anyway.
-	NSLog(@"Tree change Notification: %@",note);
+		//NSLog(@"Tree change Notification: %@",note);
 		TwRemoveAllVars(myBar);
 		[self parseTree: myTree withGroup:nil];
 	}

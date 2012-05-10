@@ -113,7 +113,7 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 #if HAVE_ANTTWEAKBAR
 
 -updateModBar: (NSNotification *)note {
-	NSLog(@"updateModBar: %@",[note object]);
+	//NSLog(@"updateModBar: %@",[note object]);
 	[self createModBar: [note object]];
 	return self;
 }
@@ -126,7 +126,7 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 	
 	TwSetCurrentWindow([w context]);
 	modbar = modbars[[w context]];
-	NSLog(@"modbar-p: %p",modbar);
+	//NSLog(@"modbar-p: %p",modbar);
 	TwRemoveAllVars(modbar);
 	gridType = TwDefineEnum("Grid Type",gridTypes,4);
 

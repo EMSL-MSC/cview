@@ -113,5 +113,6 @@ digraph keymap {
     @param buffSize is the size of the selectBuf array
   */
 -processHits: (GLint) hitCount buffer: (GLuint*) selectBuf andSize: (GLint) buffSize inWorld: (GLWorld*) world;
+-(void)setTweakableValues: (NSObject *) val forKey: (NSString *) key;
 @end
 #endif
