@@ -34,7 +34,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/emslfs/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/emslfs/";
 				    key = cpu_user;
 				    name = cpu_user;
 				    rateSuffix = "%";
@@ -63,7 +63,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/emslfs/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/emslfs/";
 				    key = bytes_in;
 				    name = bytes_in;
 				    rateSuffix = bytes/sec;
@@ -92,7 +92,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/emslfs/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/emslfs/";
 				    key = bytes_out;
 				    name = bytes_out;
 				    rateSuffix = bytes/sec;
