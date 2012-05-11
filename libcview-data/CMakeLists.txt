@@ -28,9 +28,8 @@ ADD_LIBRARY(cview-data SHARED ${CVIEW_DATA_SRCS} ${CVIEW_DATA_HDRS} )
 TARGET_LINK_LIBRARIES(cview-data ${FOUNDATION_LIBRARIES})
 
 SET_TARGET_PROPERTIES(cview-data PROPERTIES SOVERSION 0.1)
-INSTALL(TARGETS cview-data DESTINATION lib COMPONENT "libcview-data library")
-INSTALL(FILES ${CVIEW_DATA_HDRS} DESTINATION "include/${CMAKE_PROJECT_NAME}" COMPONENT "libcview-data Header Files")
+INSTALL(TARGETS cview-data DESTINATION lib COMPONENT "libcview-data_library")
+INSTALL(FILES ${CVIEW_DATA_HDRS} DESTINATION "include/${CMAKE_PROJECT_NAME}" COMPONENT "libcview-data_Header_Files")
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/cview-data.pc.in ${CMAKE_CURRENT_BINARY_DIR}/cview-data.pc)
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/cview-data.pc DESTINATION lib/pkgconfig COMPONENT "libcview-data pkg-config file")
-
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/cview-data.pc DESTINATION lib/pkgconfig COMPONENT "libcview-data_pkg-config_file") 
