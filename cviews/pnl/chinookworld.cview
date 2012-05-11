@@ -55,7 +55,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = cpu_user;
 				};
 				dataSetClass = WebDataSet;
@@ -75,7 +75,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = mem_used;
 				};
 				dataSetClass = WebDataSet;
@@ -95,7 +95,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = mlx4_0:1:port_rcv_data;
 				};
 				dataSetClass = WebDataSet;
@@ -115,7 +115,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = mlx4_0:1:port_xmit_data;
 				};
 				dataSetClass = WebDataSet;

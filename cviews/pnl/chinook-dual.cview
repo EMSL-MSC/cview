@@ -38,7 +38,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = cputotals.user;
 				    name = cputotals.user;
 				    rateSuffix = percent;
@@ -67,7 +67,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = meminfo.used;
 				    name = meminfo.used;
 				    rateSuffix = kb;
@@ -96,7 +96,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = iconnect.kbin;
 				    name = iconnect.kbin;
 				    rateSuffix = kb/sec;
@@ -125,7 +125,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = iconnect.kbout;
 				    name = iconnect.kbout;
 				    rateSuffix = kb/sec;
@@ -188,7 +188,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = lusclt.readkbs;
 				    name = lusclt.readkbs;
 				    rateSuffix = kB/s;
@@ -217,7 +217,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = lusclt.writekbs;
 				    name = lusclt.writekbs;
 				    rateSuffix = kB/s;
@@ -246,7 +246,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = disktotals.writekbs;
 				    name = disktotals.writekbs;
 				    rateSuffix = writekbs/sec;
@@ -275,7 +275,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = disktotals.readkbs;
 				    name = disktotals.readkbs;
 				    rateSuffix = readkbs/sec;

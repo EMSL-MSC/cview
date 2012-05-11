@@ -61,7 +61,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/hadoop/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/hadoop/";
 				    key = cpu_user;
 				    name = cpu_user;
 				    rateSuffix = "%";
@@ -90,7 +90,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/hadoop/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/hadoop/";
 				    key = pkts_in;
 				    name = pkts_in;
 				    rateSuffix = packets/sec;
@@ -119,7 +119,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/hadoop/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/hadoop/";
 				    key = pkts_out;
 				    name = pkts_out;
 				    rateSuffix = packets/sec;
@@ -148,7 +148,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/hadoop/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/hadoop/";
 				    key = bytes_in;
 				    name = bytes_in;
 				    rateSuffix = bytes/sec;
@@ -177,7 +177,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/hadoop/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/hadoop/";
 				    key = bytes_out;
 				    name = bytes_out;
 				    rateSuffix = bytes/sec;
@@ -206,7 +206,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/hadoop/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/hadoop/";
 				    key = mem_buffers;
 				    name = mem_buffers;
 				    rateSuffix = KB;
@@ -235,7 +235,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/hadoop/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/hadoop/";
 				    key = mem_cached;
 				    name = mem_cached;
 				    rateSuffix = KB;
@@ -264,7 +264,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/hadoop/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/hadoop/";
 				    key = mem_shared;
 				    name = mem_shared;
 				    rateSuffix = KB;
