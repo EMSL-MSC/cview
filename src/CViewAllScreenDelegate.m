@@ -118,6 +118,16 @@ static void TW_CALL CVASD_floatGetCallback(void *value, void *clientData) {
 	*(float *)value = [i floatValue];
 }
 
+static void TW_CALL CVASD_intGlobalSetCallback(const void *value, void *clientData) {
+	NSArray *a = (NSArray *)clientData;
+	CViewAllScreenDelegate *cvasd = [a objectAtIndex: 0];
+	NSString *name = [a objectAtIndex:1];
+
+	[cvasd setValue: [NSNumber numberWithInt: *(const int *)value] forKeyPath: name];
+	[cvasd setTweakableValues: [NSNumber numberWithInt: *(const float *)value] forKey: name];
+	if([[a objectAtIndex: 2] boolValue])
+		[cvasd populateWorld: NO];
+}
 #endif
 
 @implementation CViewAllScreenDelegate
@@ -128,6 +138,7 @@ static void TW_CALL CVASD_floatGetCallback(void *value, void *clientData) {
 	widthPadding=200;
 	xscale = 1.0f;
 	yscale = 1.0f;
+	xTicks = 1.0f;
 	populateLock = [[NSLock alloc] init];
 	activeGrids = [[NSMutableDictionary dictionaryWithCapacity: 10] retain];
 	[self toggleTweakersVisibility];
@@ -324,6 +335,11 @@ static void TW_CALL CVASD_floatGetCallback(void *value, void *clientData) {
 
 		[self addGlobalTweak: "yscale" withType: TW_TYPE_FLOAT
 			withTweakSettings: "label='YScale' step='0.1'" needingRepopulate: NO];
+
+		[self addGlobalTweak: "xTicks" withType: TW_TYPE_INT32
+			withTweakSettings: "label='XTicks' step='1' min='1' help='Tick separation in the X direction' min=1 max=%d step=1 precision=0"
+			needingRepopulate: NO];
+
 	}
 	return self;
 }
@@ -331,9 +347,22 @@ static void TW_CALL CVASD_floatGetCallback(void *value, void *clientData) {
 	NSArray *arr;
 	arr = [NSArray arrayWithObjects: self,[NSString stringWithCString: name],[NSNumber numberWithBool: needsRepopulate],nil];
 	[tweakObjects addObject: arr];
-	TwAddVarCB(settingsBar,name,TW_TYPE_FLOAT,
-				CVASD_floatGlobalSetCallback,CVASD_floatGetCallback,
-				arr,tweaksettings);
+	TwSetVarCallback setCB;
+	TwGetVarCallback getCB;
+	switch(TYPE) {
+		case TW_TYPE_INT32:
+			setCB = CVASD_intGlobalSetCallback;
+			getCB = CVASD_intGetCallback;
+			break;
+		case TW_TYPE_FLOAT:
+			setCB = CVASD_floatGlobalSetCallback;
+			getCB = CVASD_floatGetCallback;
+			break;
+		default:
+			// !@#$%?
+			assert(1 == 0);
+	}
+	TwAddVarCB(settingsBar,name,TYPE, setCB, getCB, arr,tweaksettings);
 }
 
 -cleanTweakers {

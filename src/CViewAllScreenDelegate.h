@@ -72,7 +72,7 @@ All rights reserved.
 	NSURL *url;
 	NSMutableArray *tweakObjects;
 	int heightPadding,widthPadding;
-	float xscale, yscale;
+	float xscale, yscale, xTicks;
 #if HAVE_ANTTWEAKBAR
 	TwBar *metricbar,*settingsBar;
 #endif
@@ -95,5 +95,9 @@ All rights reserved.
 -(void)receiveResizeNotification: (NSNotification *)notification;
 /** Internal function that re-build the grid of GLGrids.*/
 -populateWorld: (BOOL)repopultate;
+/** Helper function to add a new tweakable item to the tweakbar
+    that when changed, CViewAll Delegate will traverse the tree
+    and change any items with a matching name */
+-(void)addGlobalTweak: (const char *)name withType: (int)TYPE withTweakSettings: (const char *)tweaksettings needingRepopulate: (BOOL)needsRepopulate;
 @end
 
