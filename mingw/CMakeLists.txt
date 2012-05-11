@@ -71,7 +71,7 @@ ADD_CUSTOM_COMMAND(OUTPUT "ftgl-${FTGL_TVERSION}/src/makeftgl4mingw"
 					COMMAND patch -p2 -d  "ftgl-${FTGL_TVERSION}/src/" < ${CMAKE_CURRENT_SOURCE_DIR}/ftgl.patch  
 					DEPENDS ${FTGL_ZIP})
 ADD_CUSTOM_COMMAND(OUTPUT "ftgl-${FTGL_TVERSION}/lib/ftgl.dll" COMMAND ./makeftgl4mingw WORKING_DIRECTORY "ftgl-${FTGL_TVERSION}/src" DEPENDS "ftgl-${FTGL_TVERSION}/src/makeftgl4mingw")
-ADD_CUSTOM_COMMAND(OUTPUT "libs/ftgl.dll" COMMAND cp -r "ftgl-${FTGL_TVERSION}/lib/*" "libs" COMMAND ${RSYNC} -rlpgoD ftgl-${FTGL_TVERSION}/include/* include DEPENDS "ftgl-${FTGL_TVERSION}/lib/ftgl.dll")
+ADD_CUSTOM_COMMAND(OUTPUT "libs/ftgl.dll" COMMAND cp -r "ftgl-${FTGL_TVERSION}/src/lib/*" libs COMMAND ${RSYNC} -rlpgoD ftgl-${FTGL_TVERSION}/src/*.h include DEPENDS "ftgl-${FTGL_TVERSION}/lib/ftgl.dll")
 ADD_CUSTOM_TARGET(ftgl DEPENDS freetype2 "libs/ftgl.dll" )
 
 
