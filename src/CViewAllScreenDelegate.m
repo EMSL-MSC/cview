@@ -122,9 +122,9 @@ static void TW_CALL CVASD_intGlobalSetCallback(const void *value, void *clientDa
 	NSArray *a = (NSArray *)clientData;
 	CViewAllScreenDelegate *cvasd = [a objectAtIndex: 0];
 	NSString *name = [a objectAtIndex:1];
-
-	[cvasd setValue: [NSNumber numberWithInt: *(const int *)value] forKeyPath: name];
-	[cvasd setTweakableValues: [NSNumber numberWithInt: *(const float *)value] forKey: name];
+	NSNumber *intValue = [NSNumber numberWithInt: *(const int *)value];
+	[cvasd setValue: intValue forKeyPath: name];
+	[cvasd setTweakableValues: intValue forKey: name];
 	if([[a objectAtIndex: 2] boolValue])
 		[cvasd populateWorld: NO];
 }

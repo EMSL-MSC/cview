@@ -204,8 +204,9 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 			NSObject *o = [tree valueForKey: key];
 			//NSLog(@"O:%p key=%@",o,key);
 			if ([setKey compare: key] == NSOrderedSame) {
-				if ([o isKindOfClass: [setValue class]])
+				if ([o isKindOfClass: [setValue class]] || [setValue isKindOfClass: [o class]])
 					[tree setValue: setValue forKey: setKey];
+//				NSLog(@"o class: %@ <- %@ setValue class: %@ <- %@", [o class], [o superclass], [setValue class], [setValue superclass]);
 			} else if ([o isKindOfClass: [NSArray class]]) {
 				NSArray *a = (NSArray *)o;
 				int i;
