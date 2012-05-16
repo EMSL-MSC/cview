@@ -149,9 +149,6 @@ Return an AScreen which is itentified by the glut window id
 /** adjust world view size: these changes will be added to the row and column percentages */
 -resizeWorld:(GLWorld *)world Width: (int)widthchange Height: (int)heightchange;
 
-/** which window is on top at passed (x,y) coordinates */
--(int)getWindowAtX: (int)x andY: (int)y;
-
 /** do the actual work of telling glut to re-draw every window */
 -postRedrawAll;
 -checkState;
