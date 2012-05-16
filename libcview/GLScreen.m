@@ -489,7 +489,8 @@ NSComparisonResult compareScreenColumns(id one,id two,void *context) {
 		}
 		row_place += rowh;
 	}
-	[self dumpScreens];
+	// This is getting annoying
+	//[self dumpScreens];
 	return self;
 }
 
