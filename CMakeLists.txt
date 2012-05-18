@@ -128,7 +128,7 @@ FILE(COPY "${CMAKE_SOURCE_DIR}/data" DESTINATION ${CMAKE_BINARY_DIR})
 FILE(GLOB DATA_FILES "${CMAKE_SOURCE_DIR}/data/*.ttf*" "${CMAKE_SOURCE_DIR}/data/*.svg" "${CMAKE_SOURCE_DIR}/data/*.ggr")
 INSTALL(FILES ${DATA_FILES} DESTINATION "share/${CMAKE_PROJECT_NAME}" COMPONENT "Data_Files")  # should we be more specific about which files?
 FILE(GLOB MAN_FILES "${CMAKE_SOURCE_DIR}/man/*.1")
-INSTALL(FILES ${MAN_FILES} DESTINATION "man/man.1" COMPONENT "Man_Pages")
+INSTALL(FILES ${MAN_FILES} DESTINATION "share/man/man.1" COMPONENT "Man_Pages")
 
 #-------------------------------------------------------
 #Packgaing settings for cpack

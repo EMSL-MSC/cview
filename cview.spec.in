@@ -11,11 +11,11 @@ Release: 4%{git_suffix}%{?dist}
 Summary: PNL Waterfall Visualization Tool
 Group: System Environment/Base
 License: BSD with advertising
-Source: https://github.com/EMSL-MSC/%{name}/tarball/%{commit}/%{name}-%{commit}.tar.gz
+Source: https://github.com/EMSL-MSC/%{name}/tarball/%{commit}/EMSL-MSC-%{name}-%{commit}.tar.gz
 
 URL: https://github.com/EMSL-MSC/%{name}
 BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel,
-BuildRequires: mesa-libOSMesa-devel, freeglut-devel, genders,
+BuildRequires: mesa-libOSMesa-devel, freeglut-devel, libgenders-devel,
 BuildRequires: ftgl-devel, desktop-file-utils
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: shared-mime-info, desktop-file-utils, gtk2
@@ -76,16 +76,16 @@ Requires: cview%{?_isa} == %{version}-%{release}
 PNL tests for cview libraries and data sets.
 
 %prep
-%setup  -q 
+%setup  -q -n EMSL-MSC-%{name}-%{commit}
 
 %build
-%{__cmake} .
-%{__make} %{_smp_mflags}
+%cmake .
+%{__make} %{?_smp_mflags}
 %{__make} doc
 
 %install
 rm -rf %{buildroot}
-DESTDIR="%{buildroot}" make install
+make install DESTDIR=%{buildroot}
 rm -f %{buildroot}/%{_libdir}/*.la
 rm -f %{buildroot}/%{_libdir}/*.a
 # install tests to sharedir
