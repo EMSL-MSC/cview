@@ -1,7 +1,7 @@
 %if 0%(test -d .git && echo 1) == 1
-%define git_commit %(git show | grep '^index' | head -n 1 | sed 's/index \\\(\.*\\\)\\\.\\\.\.*/\\1/'|tr -d '\n')
+%define commit %(git show | grep '^index' | head -n 1 | sed 's/index \\\(\.*\\\)\\\.\\\.\.*/\\1/'|tr -d '\n')
 %else
-%define git_commit 6eca2f0
+%define commit feea61e
 %endif
 %define git_suffix .git%{git_commit}
 
