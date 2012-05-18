@@ -11,7 +11,8 @@ SET(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 #options
 OPTION(CVIEW_TEST_BUILD "Build CView Testing Applications" OFF)
 OPTION(GCOBJECTDEBUG "Enable Tracking of Object Allocations" OFF)
-#deal with tweakbar in special directory
+
+SET(LIB_TYPE SHARED)
 
 #detect libraries
 IF (APPLE)
@@ -53,12 +54,13 @@ IF (MINGW)
 	SET(CMAKE_LIBRARY_PATH ${CMAKE_BINARY_DIR}/mingw/libs)	
 	MESSAGE("PATHS: ${CMAKE_INCLUDE_PATH} ${CMAKE_LIBRARY_PATH}")
 	ADD_SUBDIRECTORY(mingw)	
+	SET(LIB_TYPE STATIC)
 ENDIF ()
 
 FIND_PACKAGE(Doxygen)
 FIND_PACKAGE(GLUT REQUIRED)
 FIND_PACKAGE(OpenGL REQUIRED)
-FIND_PACKAGE(ImageMagick COMPONENTS MagickWand REQUIRED)
+FIND_PACKAGE(ImageMagick COMPONENTS MagickWand REQUIRED MagickCore)
 MARK_AS_ADVANCED(ImageMagick_EXECUTABLE_DIR ImageMagick_MagickWand_INCLUDE_DIR ImageMagick_MagickWand_LIBRARY)
 FIND_PACKAGE(PkgConfig)
 PKG_CHECK_MODULES(FTGL REQUIRED ftgl)
@@ -75,8 +77,11 @@ ENDIF()
 
 FIND_LIBRARY(ATB AntTweakBar)
 IF(ATB)
-    MESSAGE("Using AntTweakBar Library at: ${ATB}")
     SET(HAVE_ANTTWEAKBAR YES)
+	IF(MINGW)
+		STRING(REPLACE ".dll" ".lib" ATB ${ATB})
+	ENDIF(MINGW)
+    MESSAGE("Using AntTweakBar Library at: ${ATB}")
 ELSE()
 	MESSAGE("AntTweakBar Library Not Found")
     SET(HAVE_ANTTWEAKBAR NO)

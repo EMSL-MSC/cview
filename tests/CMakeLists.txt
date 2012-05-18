@@ -13,7 +13,7 @@ MACRO(ADD_TEST name)
 	ELSE()
 		ADD_EXECUTABLE(${name} ${ARGN})
 	ENDIF()
-	TARGET_LINK_LIBRARIES(${name} cview cview-data)
+	TARGET_LINK_LIBRARIES(${name} libcview libcview-data)
 ENDMACRO(ADD_TEST)
 
 ADD_TEST(calcdatasettest)
@@ -31,7 +31,7 @@ ADD_TEST(webdatasettest)
 ADD_TEST(xydatasettest)
 
 ADD_EXECUTABLE(calcdatatest calcdatatest.c)
-TARGET_LINK_LIBRARIES(calcdatatest cview-data)
+TARGET_LINK_LIBRARIES(calcdatatest libcview-data)
 
 FILE(COPY slowcat funcdata streamdata.txt gimpgradient.ggr DESTINATION "${CMAKE_BINARY_DIR}/tests")
 

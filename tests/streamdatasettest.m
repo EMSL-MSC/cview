@@ -57,7 +57,6 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
-#include <execinfo.h>
 #import "cview-data.h"
 #import "cview.h"
 
