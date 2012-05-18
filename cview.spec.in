@@ -8,7 +8,7 @@ Release: 4%{?dist}%{?git_suffix}
 Summary: PNL Waterfall Visualization Tool
 Group: System Environment/Base
 License: BSD with advertising
-Source: %{name}-%{version}.tar.gz
+Source: %{name}-%{version}-Source.tar.gz
 URL: https://github.com/EMSL-MSC/cview
 BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel,
 BuildRequires: mesa-libOSMesa-devel, freeglut-devel, genders,
@@ -75,9 +75,9 @@ PNL tests for cview libraries and data sets.
 %setup  -q 
 
 %build
-%configure 
+%{__cmake} .
 %{__make} %{_smp_mflags}
-%{__make} docs
+%{__make} doc
 
 %install
 rm -rf %{buildroot}
