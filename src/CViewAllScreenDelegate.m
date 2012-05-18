@@ -138,7 +138,8 @@ static void TW_CALL CVASD_intGlobalSetCallback(const void *value, void *clientDa
 	widthPadding=200;
 	xscale = 1.0f;
 	yscale = 1.0f;
-	xTicks = 1.0f;
+	xTicks = 50;
+	yTicks = 32;
 	populateLock = [[NSLock alloc] init];
 	activeGrids = [[NSMutableDictionary dictionaryWithCapacity: 10] retain];
 	[self toggleTweakersVisibility];
@@ -231,8 +232,10 @@ static void TW_CALL CVASD_intGlobalSetCallback(const void *value, void *clientDa
 				wds = [[WebDataSet alloc] initWithUrlBase: url andKey: key];
 				[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:wds];
 				[wds autoScale: 100];	
-				grid=[[[[[GLGrid alloc] initWithDataSet: wds] setXTicks: 50] setYTicks: 32] show];
-				
+				grid=[[[[[GLGrid alloc] initWithDataSet: wds] setXTicks: xTicks] setYTicks: yTicks] show];
+				[grid setValue: [NSNumber numberWithFloat: xscale] forKeyPath: @"xscale"];
+				[grid setValue: [NSNumber numberWithFloat: yscale] forKeyPath: @"yscale"];
+
 				[activeGrids setObject: grid forKey: key];
 				[wds autorelease];
 				[grid autorelease];

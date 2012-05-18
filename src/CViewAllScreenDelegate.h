@@ -72,7 +72,8 @@ All rights reserved.
 	NSURL *url;
 	NSMutableArray *tweakObjects;
 	int heightPadding,widthPadding;
-	float xscale, yscale, xTicks;
+	float xscale, yscale;
+	int xTicks, yTicks;
 #if HAVE_ANTTWEAKBAR
 	TwBar *metricbar,*settingsBar;
 #endif
