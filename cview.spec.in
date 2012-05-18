@@ -194,5 +194,8 @@ gtk-update-icon-cache /usr/share/icons/hicolor -f
 %{_includedir}/%{name}/*
 
 %changelog
+* Fri May 18 2012 David Brown <david.brown@pnnl.gov> - @VERSION@-4.gitaf101b5
+- Updated build system to work with cmake
+
 * Fri Apr 13 2012 David Brown <david.brown@pnnl.gov> - @VERSION@-1
 - Initial Release
