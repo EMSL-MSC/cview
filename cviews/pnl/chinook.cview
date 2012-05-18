@@ -127,7 +127,7 @@
 			    halign = 0;
 			    object = {
 				    dataSet = {
-					baseURL = "http://chumbucket/cluster/pdu/";
+					baseURL = "http://www.emsl.pnl.gov/msc-datasets/pdu/";
 					key = total_current;
 				    };
 				    dataSetClass = WebDataSet;
