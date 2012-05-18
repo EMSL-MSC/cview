@@ -62,4 +62,4 @@ INSTALL(TARGETS libcview DESTINATION lib COMPONENT "libcview_Library")
 INSTALL(FILES ${CVIEW_DATA_HDRS} DESTINATION "include/${CMAKE_PROJECT_NAME}" COMPONENT "libcview_Header_Files")
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/cview.pc.in ${CMAKE_CURRENT_BINARY_DIR}/cview.pc)
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/cview.pc DESTINATION lib/pkgconfig COMPONENT "libcview_pkg-config_file")
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/cview.pc DESTINATION lib/pkgconfig COMPONENT "libcview_pkg_config_file")

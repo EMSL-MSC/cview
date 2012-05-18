@@ -10,7 +10,7 @@ MACRO(ADD_PROG name)
 	MESSAGE("Adding executable ${name}")
 	ADD_EXECUTABLE(${name} ${ARGN})
 	TARGET_LINK_LIBRARIES(${name} libcview libcview-data)
-	INSTALL(TARGETS ${name} DESTINATION bin)
+	INSTALL(TARGETS ${name} DESTINATION bin COMPONENT Binaries)
 ENDMACRO(ADD_PROG)
 
 IF(HAVE_GENDERS) 

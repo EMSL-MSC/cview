@@ -9,7 +9,7 @@ LICENSE
 
 REQUIREMENTS
 
-	autoconf/automake
+	cmake (http://www.cmake.org)
 	libtool
 	gcc for Objective C/C/C++
 
@@ -44,7 +44,35 @@ REQUIREMENTS
 			gnustep
 			ImageMagick
 			ftgl
-			
+
+	Windows:
+		For compilation:
+			GNUStep build envireonment: http://www.gnustep.org/experience/Windows.html
+				GNUstep MSYS System
+				GNUstep Core
+				GNUstep Devel
+
+		For Running Tests:
+			Python
+			numpy
+		For building the Installer http://nsis.sourceforge.net
+
+BUILD
+	Build a set of makefiles for your platform using cmake.  Cmake can build the binaries out of tree, and prefers to, so create an empty directory, and chane into it and run:
+		cmake -G "<Makefile Type>" <path to source dir>
+	You can also Use the Cmake gui tool to perform this step.
+	
+	Tested Makefile types:
+		Windows: MSYS Makefiles
+		OSX: XCode, Unix Makefiles
+		Linux: Unix Makefiles
+	
+	Optional Arguments:
+		You can specify these option on the command line with -D, or in the GUI, or by running cmake with the -i option:
+
+		CVIEW_TEST_BUILD=ON/OFF				Should the makefile build the test codes in the tests directory
+		CMAKE_BUILD_TYPE=DEBUG/RELEASE		What type of build, mostly turns on and off debug and optimizations
+		GCOBJECTDEBUG=ON/OFF				Should the makefile add Obj-C Object tracking code
 
 OPTIONAL
 
