@@ -164,7 +164,7 @@ NSString *find_resource_path(NSString *filename) {
 }
 
 /** @todo check to see if this needs a configure check, and ifdef it.*/
-#ifdef __SSE__
+#if defined(__SSE__) && !__APPLE__
 //this used column major matricies.
 flts multQbyV(const flts *m,const flts v) {
 	flts t,x,y,z,w;
