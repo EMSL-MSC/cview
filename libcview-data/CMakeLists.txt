@@ -29,8 +29,8 @@ SET_TARGET_PROPERTIES(libcview-data PROPERTIES OUTPUT_NAME cview-data)
 TARGET_LINK_LIBRARIES(libcview-data ${FOUNDATION_LIBRARIES})
 
 SET_TARGET_PROPERTIES(libcview-data PROPERTIES SOVERSION 0.1)
-INSTALL(TARGETS libcview-data DESTINATION lib COMPONENT "libcview-data_library")
+INSTALL(TARGETS libcview-data DESTINATION lib${LIB_SUFFIX} COMPONENT "libcview-data_library")
 INSTALL(FILES ${CVIEW_DATA_HDRS} DESTINATION "include/${CMAKE_PROJECT_NAME}" COMPONENT "libcview-data_Header_Files")
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/cview-data.pc.in ${CMAKE_CURRENT_BINARY_DIR}/cview-data.pc)
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/cview-data.pc DESTINATION lib/pkgconfig COMPONENT "libcview-data_pkg-config_file") 
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/cview-data.pc DESTINATION lib${LIB_SUFFIX}/pkgconfig COMPONENT "libcview-data_pkg-config_file") 

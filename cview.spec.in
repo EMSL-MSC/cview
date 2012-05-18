@@ -1,7 +1,7 @@
 %if 0%(test -d .git && echo 1) == 1
 %define commit %(git show | grep '^commit' | head -n 1 | sed 's/commit \\\(\.\.\.\.\.\.\.\\\)\.*/\\1/'|tr -d '\n')
 %else
-%define commit 0911fe9
+%define commit d73f142
 %endif
 %define git_suffix .git%{commit}
 
@@ -152,7 +152,6 @@ gtk-update-icon-cache /usr/share/icons/hicolor -f
 %{_datadir}/applications/%{name}all.desktop
 %{_datadir}/%{name}/*.svg
 %{_datadir}/%{name}/*.ggr
-%{_datadir}/%{name}/LICENSE.txt
 %{_datadir}/mime/packages/cview-mimetype.xml
 %{_datadir}/mime/packages/cviewall-mimetype.xml
 %{_datadir}/icons/hicolor/64x64/apps/application-x-cview.png
