@@ -1,15 +1,19 @@
 %if 0%(test -d .git && echo 1) == 1
-%define git_suffix .git%(git show | grep '^index' | head -n 1 | sed 's/index \\\(\.*\\\)\\\.\\\.\.*/\\1/'|tr -d '\n')
+%define git_commit %(git show | grep '^index' | head -n 1 | sed 's/index \\\(\.*\\\)\\\.\\\.\.*/\\1/'|tr -d '\n')
+%else
+%define git_commit 6eca2f0
 %endif
+%define git_suffix .git%{git_commit}
 
-Name: @PACKAGE_NAME@
+Name: @CMAKE_PROJECT_NAME@
 Version: @VERSION@
-Release: 4%{?dist}%{?git_suffix}
+Release: 4%{git_suffix}%{?dist}
 Summary: PNL Waterfall Visualization Tool
 Group: System Environment/Base
 License: BSD with advertising
-Source: %{name}-%{version}-Source.tar.gz
-URL: https://github.com/EMSL-MSC/cview
+Source: https://github.com/EMSL-MSC/%{name}/tarball/%{commit}/%{name}-%{commit}.tar.gz
+
+URL: https://github.com/EMSL-MSC/%{name}
 BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel,
 BuildRequires: mesa-libOSMesa-devel, freeglut-devel, genders,
 BuildRequires: ftgl-devel, desktop-file-utils
