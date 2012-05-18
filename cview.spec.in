@@ -1,7 +1,7 @@
 %if 0%(test -d .git && echo 1) == 1
 %define commit %(git show | grep '^commit' | head -n 1 | sed 's/commit \\\(\.\.\.\.\.\.\.\\\)\.*/\\1/'|tr -d '\n')
 %else
-%define commit feea61e
+%define commit b6025df
 %endif
 %define git_suffix .git%{commit}
 
