@@ -88,3 +88,5 @@ SET(ENV{PKG_CONFIG_PATH} ${CMAKE_CURRENT_BINARY_DIR}/libs/pkgconfig)
 ADD_CUSTOM_TARGET(mingw-libs DEPENDS freeglut anttweakbar imagemagick freetype2 ftgl-lib)
 FILE(GLOB WINDLLS "${CMAKE_CURRENT_BINARY_DIR}/libs/*.dll")
 INSTALL(FILES ${WINDLLS} DESTINATION bin COMPONENT Binaries)
+
+
