@@ -89,4 +89,3 @@ ADD_CUSTOM_TARGET(mingw-libs DEPENDS freeglut anttweakbar imagemagick freetype2 
 FILE(GLOB WINDLLS "${CMAKE_CURRENT_BINARY_DIR}/libs/*.dll")
 INSTALL(FILES ${WINDLLS} DESTINATION bin COMPONENT Binaries)
 
-

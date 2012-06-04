@@ -146,28 +146,42 @@ SET(CPACK_NSIS_MODIFY_PATH "ON")
 
 #Windows Installer Stuff - can we put this in the mingw/CMakeFile.txt?
 IF(MINGW)
-	SET(CPACK_PACKAGE_INSTALL_DIRECTORY "CView")
-	SET(CPACK_NSIS_DISPLAY_NAME CView)
-	SET(CPACK_NSIS_PACKAGE_NAME "CView Graphics System")
-	SET(CPACK_NSIS_URL_INFO_ABOUT https://github.com/EMSL-MSC/cview)
-	SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\cview.exe")
-	SET(CPACK_NSIS_DEFINES "!include ${CMAKE_SOURCE_DIR}\\\\mingw\\\\FileAssociation.nsh")
-	SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
-		!include ${CMAKE_SOURCE_DIR}/mingw\\\\FileAssociation.nsh
-		\\\${RegisterExtenstion} \\\"CView Config File\\\" \\\".cview\\\" \\\"\\\$INSTDIR\\\\bin\\\\cview.exe\\\"
-		\\\${RegisterExtenstion} \\\"CViewAll Config File\\\" \\\".cviewall\\\" \\\"\\\$INSTDIR\\\\bin\\\\cviewall.exe\\\"
-		!insertmacro RefreshShellIcons
-		Call RefreshShellIcons
-	")
-	SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
-		!include ${CMAKE_SOURCE_DIR}/mingw\\\\FileAssociation.nsh
-		\\\${UnregisterExtenstion} \\\".cview\\\" \\\"CView Config File\\\" 
-		\\\${UnregisterExtenstion} \\\".cviewall\\\" \\\"CViewAll Config File\\\" 
-		!insertmacro RefreshShellIcons
-		Call RefreshShellIcons
-	")
+
+SET(CPACK_PACKAGE_INSTALL_DIRECTORY "CView")
+SET(CPACK_NSIS_DISPLAY_NAME CView)
+SET(CPACK_NSIS_PACKAGE_NAME "CView Graphics System GAAG")
+SET(CPACK_NSIS_URL_INFO_ABOUT https://github.com/EMSL-MSC/cview)
+SET(CPACK_NSIS_INSTALLED_ICON_NAME "bin\\\\cview.exe")
+SET(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
+SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
+
+	WriteRegStr HKCR \\\".cview\\\" \\\"\\\" \\\"PNNL.Cview\\\"
+	WriteRegStr HKCR \\\"PNNL.Cview\\\" \\\"\\\" \\\"CVIEW Config File\\\"
+	WriteRegStr HKCR \\\"PNNL.Cview\\\\DefaultIcon\\\" \\\"\\\" \\\"\\\$INSTDIR\\\\bin\\\\cview.exe,0\\\"
+	WriteRegStr HKCR \\\"PNNL.Cview\\\\shell\\\" \\\"\\\" \\\"open\\\"
+	WriteRegStr HKCR \\\"PNNL.Cview\\\\shell\\\\open\\\\command\\\" \\\"\\\" 'cview.exe -c \\\"%1\\\"'
+	
+	WriteRegStr HKCR \\\".cviewall\\\" \\\"\\\" \\\"PNNL.Cviewall\\\"
+	WriteRegStr HKCR \\\"PNNL.Cviewall\\\" \\\"\\\" \\\"CVIEWALL Property-List File\\\"
+	WriteRegStr HKCR \\\"PNNL.Cviewall\\\\DefaultIcon\\\" \\\"\\\" \\\"$INSTDIR\\\\bin\\\\cviewall.exe,0\\\"
+	WriteRegStr HKCR \\\"PNNL.Cviewall\\\\shell\\\" \\\"\\\" \\\"open\\\"
+	WriteRegStr HKCR \\\"PNNL.Cviewall\\\\shell\\\\open\\\\command\\\" \\\"\\\" 'cviewall.exe \\\"%1\\\"'
+
+	!include FileFunc.nsh	
+	\\\${RefreshShellIcons}
+")
+SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
+	DeleteRegKey HKCR \\\"PNNL.Cview\\\"
+	DeleteRegKey HKCR \\\"PNNL.Cviewall\\\"
+	\\\${RefreshShellIcons}
+")
 ENDIF()
 
 
 SET(CPACK_SOURCE_IGNORE_FILES "/${CMAKE_PROJECT_NAME}-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.*tar.*;/_CPack_Packages/;")
 INCLUDE(CPack)
+
+#GET_CMAKE_PROPERTY(res VARIABLES)
+#FOREACH(var ${res})
+#MESSAGE("${var}=${${var}}")
+#ENDFOREACH()
