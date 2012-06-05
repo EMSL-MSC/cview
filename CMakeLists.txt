@@ -159,13 +159,13 @@ SET(CPACK_NSIS_EXTRA_INSTALL_COMMANDS "
 	WriteRegStr HKCR \\\"PNNL.Cview\\\" \\\"\\\" \\\"CVIEW Config File\\\"
 	WriteRegStr HKCR \\\"PNNL.Cview\\\\DefaultIcon\\\" \\\"\\\" \\\"\\\$INSTDIR\\\\bin\\\\cview.exe,0\\\"
 	WriteRegStr HKCR \\\"PNNL.Cview\\\\shell\\\" \\\"\\\" \\\"open\\\"
-	WriteRegStr HKCR \\\"PNNL.Cview\\\\shell\\\\open\\\\command\\\" \\\"\\\" 'cview.exe -c \\\"%1\\\"'
+	WriteRegStr HKCR \\\"PNNL.Cview\\\\shell\\\\open\\\\command\\\" \\\"\\\" '\\\"$INSTDIR\\\\bin\\\\cview.exe\\\" -c \\\"%1\\\"'
 	
 	WriteRegStr HKCR \\\".cviewall\\\" \\\"\\\" \\\"PNNL.Cviewall\\\"
 	WriteRegStr HKCR \\\"PNNL.Cviewall\\\" \\\"\\\" \\\"CVIEWALL Property-List File\\\"
 	WriteRegStr HKCR \\\"PNNL.Cviewall\\\\DefaultIcon\\\" \\\"\\\" \\\"$INSTDIR\\\\bin\\\\cviewall.exe,0\\\"
 	WriteRegStr HKCR \\\"PNNL.Cviewall\\\\shell\\\" \\\"\\\" \\\"open\\\"
-	WriteRegStr HKCR \\\"PNNL.Cviewall\\\\shell\\\\open\\\\command\\\" \\\"\\\" 'cviewall.exe \\\"%1\\\"'
+	WriteRegStr HKCR \\\"PNNL.Cviewall\\\\shell\\\\open\\\\command\\\" \\\"\\\" '\\\"$INSTDIR\\\\bin\\\\cviewall.exe\\\" \\\"%1\\\"'
 
 	!include FileFunc.nsh	
 	\\\${RefreshShellIcons}

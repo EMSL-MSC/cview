@@ -1,7 +1,7 @@
 {
-    height = 1176;
+    height = 1024;
     name = "Chinook Graphs";
-    width = 3199;
+    width = 1600;
     worlds = (
 	{
 	    col = 1;
@@ -35,7 +35,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = lusclt.readkbs;
 				};
 				dataSetClass = WebDataSet;
@@ -58,7 +58,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = lusclt.writekbs;
 				};
 				dataSetClass = WebDataSet;
@@ -81,7 +81,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = disktotals.writekbs;
 				};
 				dataSetClass = WebDataSet;
@@ -104,7 +104,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = disktotals.readkbs;
 				};
 				dataSetClass = WebDataSet;
@@ -121,30 +121,6 @@
 			    x = 0;
 			    y = 0;
 			    z = 0;
-			},
-			{
-			    align = NO;
-			    halign = 0;
-			    object = {
-				    dataSet = {
-					baseURL = "http://chumbucket/cluster/pdu/";
-					key = total_current;
-				    };
-				    dataSetClass = WebDataSet;
-				    fontScale = 1;
-				    isVisible = YES;
-				    xTicks = 1;
-				    xscale = 38.1;
-				    yTicks = 8;
-				    yscale = 1;
-				    zscale = 1;
-				isVisible = YES;
-			    };
-			    objectclass = GLGrid;
-			    valign = 0;
-			    x = 0;
-			    y = 0;
-			    z = 1000;
 			}
 		    );
 		};
