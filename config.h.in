@@ -3,5 +3,6 @@
 #cmakedefine01 HAVE_MAGICKEXPORTIMAGEPIXELS
 #cmakedefine01 HAVE_OPENGL_1_4
 #cmakedefine01 CVIEW_TEST_BUILD
+#cmakedefine ON_MINGW_WIN32
 
 #define PKG_DATA_DIR @"${CMAKE_INSTALL_PREFIX}/share/${PROJECT_NAME}"
