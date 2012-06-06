@@ -62,7 +62,7 @@
 			    object = {
 				blue = 0.38;
 				dataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = env.ATemp;
 				    name = env.ATemp;
 				    rateSuffix = "\U00B0C";
@@ -73,7 +73,7 @@
 				green = 0.38;
 				isVisible = YES;
 				jobIDDataSet = {
-				    baseURL = "http://chumbucket.emsl.pnl.gov/cluster/chinook/";
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
 				    key = job_id;
 				    name = job_id;
 				    rateSuffix = "None!";

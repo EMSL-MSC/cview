@@ -75,6 +75,7 @@ All rights reserved.
 #if HAVE_ANTTWEAKBAR
 	TwBar *metricbar,*settingsBar;
 #endif
+	NSLock *populateLock;
 }
 -initWithScreen: (GLScreen *)screen andUpdateInterval: (float) dataSetUpdateInterval;
 /** set how many grids are in the width direction before another row is added.*/

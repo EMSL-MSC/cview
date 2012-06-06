@@ -106,6 +106,7 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 	gridWidth=1;
 	heightPadding=128;
 	widthPadding=200;
+	populateLock = [[NSLock alloc] init];
 	activeGrids = [[NSMutableDictionary dictionaryWithCapacity: 10] retain];
 	[self toggleTweakersVisibility];
 	return [super initWithScreen: screen];
@@ -176,6 +177,8 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 	GLGrid *grid;
 	NSString *key;
 	WebDataSet *wds;
+
+	[populateLock lock];
 	
 	NSArray *metricList = [[metricFlags allKeys] sortedArrayUsingSelector: @selector(compare:)];
 	Scene *scene = [glWorld scene];
@@ -234,6 +237,8 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 	if (repopulate)
 		//we changed stuff, update the other tweakbar.
 		[[NSNotificationCenter defaultCenter] postNotificationName: @"DataModelModified" object: glWorld];
+
+	[populateLock unlock];
 	return self;
 }
 

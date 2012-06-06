@@ -128,7 +128,7 @@ static float blankdata[] = {
 
 	incomingData = [[NSMutableData data] retain];
 	stage = START;
-	if(interval == 0.0f)
+	if(interval <= 0.0f)
 		updateRepeats = NO;
 	timer = [[NSTimer alloc] initWithFireDate: [NSDate dateWithTimeIntervalSinceNow: 1]
 							 interval: interval

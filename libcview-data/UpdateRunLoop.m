@@ -91,7 +91,18 @@ static UpdateRunLoop *singletonUpdater;
 		while (running) {
 			//NSLog(@"Top of loop====================");
 			//NSLog(@"limitDate: %@",[theLoop limitDateForMode: NSDefaultRunLoopMode]);
-			[theLoop runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 60]];
+			NSDate *date = [NSDate dateWithTimeIntervalSinceNow: 60];
+			double ti = [date timeIntervalSinceNow];
+			BOOL mayDoMore = YES;
+			/* Positive values are in the future. */
+			while (ti > 0 && mayDoMore == YES) {
+				NSDebugMLLog(@"NSRunLoop", @"run until date %f seconds from now", ti);
+				mayDoMore = [theLoop runMode: @"NSDefaultRunLoopMode" beforeDate: date];
+				ti = [date timeIntervalSinceNow];
+			}
+			if(mayDoMore == NO)
+				[NSThread sleepForTimeInterval: 2];
+
 			[tpool release];
 			tpool = [[NSAutoreleasePool alloc] init];
 			DUMPALLOCLIST(YES);
