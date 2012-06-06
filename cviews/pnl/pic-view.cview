@@ -1,0 +1,224 @@
+{
+    height = 1200;
+    name = "PIC CView";
+    width = 1600;
+    worlds = (
+	{
+	    col = 0;
+	    colp = 50;
+	    name = TL;
+	    row = 0;
+	    rowp = 50;
+	    world = {
+		backgroundColorB = 0;
+		backgroundColorG = 0;
+		backgroundColorR = 0;
+		eye = {
+		    hangle = "-4.878325";
+		    move_speed = 10;
+		    rotate_speed = 0.025;
+		    strafe_speed = 10;
+		    vangle = "-2.274999";
+		    x = 959.9141;
+		    y = 2005.834;
+		    z = 2000.845;
+		};
+		imageCycleTime = 0;
+		imageDailyDir = NO;
+		imageDir = .;
+		imagePrefix = glworld;
+		overlay = {
+		    objects = (
+			{
+			    align = YES;
+			    halign = "-1";
+			    object = {
+				filename = PNNL_Color_Logo_Horizontal.svg;
+				h = 180;
+				hflip = 0;
+				isVisible = YES;
+				vflip = 0;
+				w = 300;
+			    };
+			    objectclass = GLImage;
+			    valign = "-1";
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			}
+		    );
+		};
+		scene = {
+		    objects = (
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://pic-view/cluster/pic/";
+				    key = cputotals.sys;
+				};
+				dataSetClass = WebDataSet;
+				fontColorB = 1;
+				fontColorG = 1;
+				fontColorR = 1;
+				fontScale = 1;
+				 gradient = {
+                    gradient = "./data/CPURainbow.ggr";
+                    source = file;
+                };
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 2;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = "-256";
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://pic-view/cluster/pic/";
+				    key = cputotals.user;
+				};
+				dataSetClass = WebDataSet;
+				fontColorB = 1;
+				fontColorG = 1;
+				fontColorR = 1;
+				fontScale = 1;
+				 gradient = {
+                    gradient = "./data/CPURainbow.ggr";
+                    source = file;
+                };
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 2;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (
+					WebDataSet,
+					WebDataSet
+				    );
+				    formula = "$0:$1:+:1024:/:1024:/";
+				    name = "Interconnect GB/s";
+				    planes = (
+					{
+					    baseURL = "http://pic-view/cluster/pic/";
+					    key = iconnect.kbout;
+					},
+					{
+					    baseURL = "http://pic-view/cluster/pic/";
+					    key = iconnect.kbin;
+					}
+				    );
+				    rateSuffix = GB/s;
+				};
+				dataSetClass = CalculatedDataSet;
+				fontColorB = 1;
+				fontColorG = 1;
+				fontColorR = 1;
+				fontScale = 1;
+				 gradient = {
+                    gradient = "./data/CPURainbow.ggr";
+                    source = file;
+                };
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 2;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = "-512";
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://pic-view/cluster/pic/";
+				    key = lusclt.readkbs;
+				};
+				dataSetClass = WebDataSet;
+				fontColorB = 1;
+				fontColorG = 1;
+				fontColorR = 1;
+				fontScale = 1;
+				 gradient = {
+                    gradient = "./data/CPURainbow.ggr";
+                    source = file;
+                };
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 2;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = "-768";
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://pic-view/cluster/pic/";
+				    key = lusclt.writekbs;
+				};
+				dataSetClass = WebDataSet;
+				fontColorB = 1;
+				fontColorG = 1;
+				fontColorR = 1;
+				fontScale = 1;
+				 gradient = {
+                    gradient = "./data/CPURainbow.ggr";
+                    source = file;
+                };
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 2;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = "-1024";
+			}
+		    );
+		};
+	    };
+	}
+    );
+}
+
