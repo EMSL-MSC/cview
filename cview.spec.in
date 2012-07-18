@@ -1,17 +1,21 @@
 %if 0%(test -d .git && echo 1) == 1
-%define git_suffix .git%(git show | grep '^index' | head -n 1 | sed 's/index \\\(\.*\\\)\\\.\\\.\.*/\\1/'|tr -d '\n')
+%define commit %(git show | grep '^commit' | head -n 1 | sed 's/commit \\\(\.\.\.\.\.\.\.\\\)\.*/\\1/'|tr -d '\n')
+%else
+%define commit d73f142
 %endif
+%define git_suffix .git%{commit}
 
-Name: @PACKAGE_NAME@
+Name: @CMAKE_PROJECT_NAME@
 Version: @VERSION@
-Release: 4%{?dist}%{?git_suffix}
+Release: 4%{git_suffix}%{?dist}
 Summary: PNL Waterfall Visualization Tool
 Group: System Environment/Base
 License: BSD with advertising
-Source: %{name}-%{version}.tar.gz
-URL: https://github.com/EMSL-MSC/cview
+Source: https://github.com/EMSL-MSC/%{name}/tarball/%{commit}/EMSL-MSC-%{name}-%{commit}.tar.gz
+
+URL: https://github.com/EMSL-MSC/%{name}
 BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel,
-BuildRequires: mesa-libOSMesa-devel, freeglut-devel, genders,
+BuildRequires: mesa-libOSMesa-devel, freeglut-devel, libgenders-devel,
 BuildRequires: ftgl-devel, desktop-file-utils
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: shared-mime-info, desktop-file-utils, gtk2
@@ -72,16 +76,16 @@ Requires: cview%{?_isa} == %{version}-%{release}
 PNL tests for cview libraries and data sets.
 
 %prep
-%setup  -q 
+%setup  -q -n EMSL-MSC-%{name}-%{commit}
 
 %build
-%configure 
-%{__make} %{_smp_mflags}
-%{__make} docs
+%cmake .
+%{__make} %{?_smp_mflags}
+%{__make} doc
 
 %install
 rm -rf %{buildroot}
-DESTDIR="%{buildroot}" make install
+make install DESTDIR=%{buildroot}
 rm -f %{buildroot}/%{_libdir}/*.la
 rm -f %{buildroot}/%{_libdir}/*.a
 # install tests to sharedir
@@ -148,7 +152,6 @@ gtk-update-icon-cache /usr/share/icons/hicolor -f
 %{_datadir}/applications/%{name}all.desktop
 %{_datadir}/%{name}/*.svg
 %{_datadir}/%{name}/*.ggr
-%{_datadir}/%{name}/LICENSE.txt
 %{_datadir}/mime/packages/cview-mimetype.xml
 %{_datadir}/mime/packages/cviewall-mimetype.xml
 %{_datadir}/icons/hicolor/64x64/apps/application-x-cview.png
@@ -191,5 +194,8 @@ gtk-update-icon-cache /usr/share/icons/hicolor -f
 %{_includedir}/%{name}/*
 
 %changelog
+* Fri May 18 2012 David Brown <david.brown@pnnl.gov> - @VERSION@-4.gitaf101b5
+- Updated build system to work with cmake
+
 * Fri Apr 13 2012 David Brown <david.brown@pnnl.gov> - @VERSION@-1
 - Initial Release

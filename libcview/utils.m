@@ -87,14 +87,6 @@ void drawString3D(float x,float y,float z,void *font,NSString *string,float offs
 }
 
 #if defined ON_MINGW_WIN32
-NSString *dirname(NSString* path) {
-	NSString *basename = [[NSFileManager defaultManager] displayNameAtPath: path];
-	int index = [path length] - [basename length];
-	return [path substringToIndex: index];
-}
-#endif
-
-#if defined ON_MINGW_WIN32
 #include <windows.h>
 #include <stdio.h>
 #include <tchar.h>
@@ -129,17 +121,19 @@ NSFileHandle *find_resource(NSString *filename) {
 }
 
 NSString *find_resource_path(NSString *filename) {
-
+	static BOOL pathdumplog = NO;
 	NSFileManager *mgr = [NSFileManager defaultManager];
 	NSString *file=nil;
 
 	NSString *exeDir = nil, *exeDataDir = nil;
 #if defined ON_MINGW_WIN32
-	NSString *fullPath = getProcessPath();
+	NSString *p,*fullPath = getProcessPath();
 	NSLog(@"EXECUTABLE PATH  = %@", fullPath);
 	if (fullPath != nil) {
-		exeDir =     [NSString stringWithFormat: @"%@", dirname(fullPath)];
-		exeDataDir = [NSString stringWithFormat: @"%@data\\", dirname(fullPath)];
+		p = [fullPath stringByDeletingLastPathComponent];
+		exeDir =     [NSString stringWithFormat: @"%@", p];
+		p = [p stringByDeletingLastPathComponent];
+		exeDataDir = [NSString stringWithFormat: @"%@\\share\\cview\\", p];
 	}
 #endif
 
@@ -149,6 +143,11 @@ NSString *find_resource_path(NSString *filename) {
 		[paths addObject: @"../tests/"];
 		[paths addObject: @"./tests/"];
 	#endif
+	
+	if (! pathdumplog) {
+		NSLog(@"Resource Search Path=%@",paths);
+		pathdumplog=YES;
+	}
 
 	NSEnumerator *e = [paths objectEnumerator];
 	id o;
@@ -164,7 +163,7 @@ NSString *find_resource_path(NSString *filename) {
 }
 
 /** @todo check to see if this needs a configure check, and ifdef it.*/
-#ifdef __SSE__
+#if defined(__SSE__) && !__APPLE__
 //this used column major matricies.
 flts multQbyV(const flts *m,const flts v) {
 	flts t,x,y,z,w;

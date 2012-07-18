@@ -1,7 +1,7 @@
 {
-    height = 1176;
+    height = 1024;
     name = "Chinook Graphs";
-    width = 3199;
+    width = 1600;
     worlds = (
 	{
 	    col = 1;
@@ -121,30 +121,6 @@
 			    x = 0;
 			    y = 0;
 			    z = 0;
-			},
-			{
-			    align = NO;
-			    halign = 0;
-			    object = {
-				    dataSet = {
-					baseURL = "http://www.emsl.pnl.gov/msc-datasets/pdu/";
-					key = total_current;
-				    };
-				    dataSetClass = WebDataSet;
-				    fontScale = 1;
-				    isVisible = YES;
-				    xTicks = 1;
-				    xscale = 38.1;
-				    yTicks = 8;
-				    yscale = 1;
-				    zscale = 1;
-				isVisible = YES;
-			    };
-			    objectclass = GLGrid;
-			    valign = 0;
-			    x = 0;
-			    y = 0;
-			    z = 1000;
 			}
 		    );
 		};

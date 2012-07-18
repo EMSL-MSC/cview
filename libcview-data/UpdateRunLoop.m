@@ -96,7 +96,6 @@ static UpdateRunLoop *singletonUpdater;
 			BOOL mayDoMore = YES;
 			/* Positive values are in the future. */
 			while (ti > 0 && mayDoMore == YES) {
-				NSDebugMLLog(@"NSRunLoop", @"run until date %f seconds from now", ti);
 				mayDoMore = [theLoop runMode: @"NSDefaultRunLoopMode" beforeDate: date];
 				ti = [date timeIntervalSinceNow];
 			}
