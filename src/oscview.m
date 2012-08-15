@@ -79,12 +79,12 @@ int main(int argc,char *argv[], char *env[]) {
 	NSString *filename;
 	NSString *config;
 	NSString *err;
+	id o;
 
 #ifndef __APPLE__
 	//needed for NSLog
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
-	
 	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
 	[args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys:
 			@"chinookworld.cview", @"c",
@@ -119,10 +119,7 @@ int main(int argc,char *argv[], char *env[]) {
 		NSLog(@"Compat list: %@",plist );
 	}
 
-	GLWorld * g = [[GLWorld alloc] initWithPList:plist];
-	NSLog(@"Setup done");
 
-	plist = [g getPList];
 //	NSLog([NSPropertyListSerialization stringFromPropertyList: plist]);
 	
 
@@ -138,8 +135,12 @@ int main(int argc,char *argv[], char *env[]) {
 		NSLog(@"OSMesaMakeCurrent failed!");
 		exit(5);
    	}
-/////////////
 	
+	GLWorld * g = [[GLWorld alloc] initWithPList:plist];
+	NSLog(@"Setup done");
+	plist = [g getPList];
+/////////////
+
 	glViewport(0, 0, width, height);
 	float ratio = 1.0f*width/height;
 	glMatrixMode(GL_PROJECTION);
@@ -162,6 +163,22 @@ int main(int argc,char *argv[], char *env[]) {
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 //////////////
+/* before we draw we need to make sure the data sets are all valid: we only look in Grids For now.. */
+/** @fixme add GLBars */
+	NSEnumerator *list;
+	list = [[[g scene] getAllObjects] objectEnumerator];
+	while ( (o = [list nextObject]) ) {
+		if ([o isKindOfClass: [GLGrid class]]) {
+			DataSet *ds;
+			ds = [(GLGrid *)o getDataSet];
+			
+			while ( [ds dataValid] == NO ) {
+				NSLog(@"Waiting for Dataset %@ to be valid %d",ds,[ds dataValid]);
+				[NSThread sleepForTimeInterval: 0.25];
+			}
+			NSLog(@"Dataset %@ is valid %d",ds,[ds dataValid]);
+		}
+	}
 	[g glDraw];
 
 	MagickWandGenesis();

@@ -95,6 +95,37 @@ All rights reserved.
 	return self;
 }
 
+- initWithFile: (NSString *)file Width: (int)w Transpose: (BOOL)inv {
+	int len,height;
+	int i,j,h;
+	float *f,*t;
+	NSFileManager *fm = [NSFileManager defaultManager];
+	NSData *dtmp = [fm contentsAtPath: file];
+	NSMutableData *md;
+	name = [[fm displayNameAtPath:file] retain];
+	//make sure its evenly divisible
+	len = [dtmp length];
+	if (!len || len%w!=0) {
+		NSLog(@"Data width is not a multiple of width: %d !*= %d",len,w);
+		return nil;
+	}
+	h=len/4/w;
+	[self setDescription: file];
+	[self initWithWidth: w Height: h];
+	
+	if (inv) {
+		md = [NSMutableData dataWithLength: len];
+		f = (float *)[dtmp bytes];
+		t = (float *)[md bytes];
+		for (i=0;i<w;i++)
+			for (j=0;j<h;j++)
+				t[i*h+j] = f[i+w*j]; 
+		dtmp=md;
+	}
+	[self autoScaleWithNewData: dtmp];
+	return self;
+}
+
 -initWithPList: (id)list {
 	NSLog(@"initWithPList: DataSet:%@",[self class]);
 	lockedMax = [[list objectForKey:@"lockedMax" missing: @"0"] floatValue];
@@ -153,6 +184,7 @@ All rights reserved.
 
 - shiftData: (int)num {
 	int i;
+	L();
 	[dataLock lock];
 	float *d = (float *)[data mutableBytes];
 	int fsa; //From adjust
@@ -179,6 +211,7 @@ All rights reserved.
 		memmove(d+i*height+tsa,d+i*height+fsa,sizeof(float)*(height-abs(num)));
 		memset(d+i*height+zero,0,sizeof(float)*abs(num));
 	}
+	U();
 	[dataLock unlock];
 	return self;
 }
@@ -205,10 +238,13 @@ All rights reserved.
 
 - (float)resetMax {
 	int i;
+	L();
 	[dataLock lock];
 	//NSLog(@"allowScaling: %d",allowScaling);
 	if (lockedMax > 0.0) {
 		currentMax=lockedMax;
+		U();
+		[dataLock unlock];
 		return lockedMax;
 	}
 	///@todo lameway to get max FIXME?
@@ -224,6 +260,7 @@ All rights reserved.
 	}
 
 	currentMax=max;
+	U();
 	[dataLock unlock];
 	return max;
 }
@@ -253,6 +290,7 @@ All rights reserved.
 - autoScale {
 	//figure out a scaling that will make the data be <limit> 'high'..  could be configuarable.
 	int i;
+	L();
 	[dataLock lock];
 	float *d = (float *)[data mutableBytes];
 	float newscale,u;
@@ -270,12 +308,14 @@ All rights reserved.
 		[self resetMax];
 		//NSLog(@"scale(%@): %.2f %6f %.2f %d",name,oldmax,newscale,currentMax,currentLimit);
 	}
+	U();
 	[dataLock unlock];
 	return self;
 }
 
 - disableScaling {
 	int i;
+	L();
 	[dataLock lock];
 	float *d = (float *)[data mutableBytes];
 	allowScaling = NO;
@@ -286,6 +326,7 @@ All rights reserved.
 		currentMax /= currentScale;
 		currentScale = 1.0;
 	}
+	U();
 	[dataLock unlock];
 	return self;
 }
@@ -293,6 +334,7 @@ All rights reserved.
 - autoScaleWithNewData: (NSData *)newdata {
 	BOOL rescale = NO;
 	int i;
+	L();
 	[dataLock lock];
 	if (allowScaling) {
 		float *frm = (float *)[newdata bytes];
@@ -322,6 +364,7 @@ All rights reserved.
 	} else {
 		[data setData: newdata];
 	}
+	U();
 	[dataLock unlock];
 	return self;
 }
@@ -376,20 +419,26 @@ All rights reserved.
 }
 
 - lock {
+	NSLog(@"%@ lock request",self);
 	[dataLock lock];
+	NSLog(@"%@ lock grant",self);
 	return self;
 }
 
 - unlock {
+	NSLog(@"%@ unlock request",self);
 	[dataLock unlock];
+	NSLog(@"%@ unlock grant",self);
 	return self;
 }
 
 
 - setWidth: (int)newWidth {
+	L();
 	[dataLock lock];
 	width=newWidth;
 	[data setLength: width*height*sizeof(float)];
+	U();
 	[dataLock unlock];
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetResize" object: self];
 	return self;
@@ -399,6 +448,7 @@ All rights reserved.
 	NSMutableData *d;
 	float *from,*to;
 	int i;
+	L();
 	[dataLock lock];
 	if (newHeight != height) {
 		d = [NSMutableData dataWithLength: width*newHeight*sizeof(float)];
@@ -409,6 +459,7 @@ All rights reserved.
 		[data setData: d];
 	}
 	height = newHeight;
+	U();
 	[dataLock unlock];
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetResize" object: self];
 	return self;

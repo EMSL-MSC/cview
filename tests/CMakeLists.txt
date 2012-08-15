@@ -29,6 +29,7 @@ ADD_TEST(iddatabasetest)
 ADD_TEST(streamdatasettest)
 ADD_TEST(webdatasettest)
 ADD_TEST(xydatasettest)
+ADD_TEST(datasetloadtest)
 
 ADD_EXECUTABLE(calcdatatest calcdatatest.c)
 TARGET_LINK_LIBRARIES(calcdatatest libcview-data)
