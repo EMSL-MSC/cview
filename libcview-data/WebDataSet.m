@@ -114,7 +114,7 @@ static float blankdata[] = {
 	/* Sane Defaults until we have actual data */
 
 	if([self getDescription] == nil)
-		[super initWithName: key Width: 32 Height: 32];
+		[super initWithName: @"Blank DataSet" Width: 32 Height: 32];
 	else
 		[super initWithWidth: 32 Height: 32];
 	dataValid=NO;
@@ -122,8 +122,6 @@ static float blankdata[] = {
 	Yticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
 	allowRescale = YES;
 	rateSuffix = @"...";
-	if(textDescription == nil)
-		textDescription = @"Blank DataSet";
 	[data setData: [NSData dataWithBytes: blankdata length: sizeof(blankdata)]];
 
 	incomingData = [[NSMutableData data] retain];
