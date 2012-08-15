@@ -14,8 +14,8 @@ License: BSD with advertising
 Source: https://github.com/EMSL-MSC/%{name}/tarball/%{commit}/EMSL-MSC-%{name}-%{commit}.tar.gz
 
 URL: https://github.com/EMSL-MSC/%{name}
-BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel,
-BuildRequires: mesa-libOSMesa-devel, freeglut-devel, libgenders-devel,
+BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel, gnustep-make
+BuildRequires: mesa-libOSMesa-devel, freeglut-devel, libgenders-devel, gnustep-base-devel
 BuildRequires: ftgl-devel, desktop-file-utils, cmake, libXi-devel, libXmu-devel, gcc-c++, gcc-objc
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: shared-mime-info, desktop-file-utils, gtk2
