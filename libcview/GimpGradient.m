@@ -58,7 +58,6 @@ All rights reserved.
 */
 
 #import "cview.h"
-#import <math.h>
 typedef enum { BLEND_LINEAR=0, BLEND_CURVED, BLEND_SINUSOIDAL,
 				BLEND_SPERICAL_INCREASING, BLEND_SPERICAL_DECREASING } BlendType;
 typedef enum { CT_FIXED=0, CT_FG, CT_FGT, CT_BG, CT_BGT } ColorType;
