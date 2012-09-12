@@ -12,7 +12,8 @@ SET(CVIEW_DATA_CLASSES
 	XYDataSet
 )
 
-SET(CVIEW_DATA_HDRS cview-data.h)
+SET(CVIEW_DATA_HDRS cview-data.h calcdataset.h debug.h PList.h)
+
 SET(CVIEW_DATA_SRCS 
 	datautils.m
 	calcdatasetkernel.c
@@ -33,4 +34,4 @@ INSTALL(TARGETS libcview-data DESTINATION lib COMPONENT "libcview_data_library")
 INSTALL(FILES ${CVIEW_DATA_HDRS} DESTINATION "include/${CMAKE_PROJECT_NAME}" COMPONENT "libcview_data_Header_Files")
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/cview-data.pc.in ${CMAKE_CURRENT_BINARY_DIR}/cview-data.pc)
-INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/cview-data.pc DESTINATION lib/pkgconfig COMPONENT "libcview_data_pkg_config_file") 
+INSTALL(FILES ${CMAKE_CURRENT_BINARY_DIR}/cview-data.pc DESTINATION share/pkgconfig COMPONENT "libcview_data_pkg_config_file") 

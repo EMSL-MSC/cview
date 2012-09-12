@@ -137,7 +137,7 @@ NSString *find_resource_path(NSString *filename) {
 	}
 #endif
 
-	NSMutableArray *paths = [NSMutableArray arrayWithObjects: @"",PKG_DATA_DIR,@"../data/",@"./data/",
+	NSMutableArray *paths = [NSMutableArray arrayWithObjects: @"",PKG_DATA_DIR@"/",@"../data/",@"./data/",
 				   exeDir,exeDataDir,nil];
 	#if CVIEW_TEST_BUILD
 		[paths addObject: @"../tests/"];

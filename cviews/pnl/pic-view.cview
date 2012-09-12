@@ -15,32 +15,36 @@
 		backgroundColorR = 0;
 		eye = {
 		    hangle = "-4.878325";
-		    move_speed = 10;
-		    rotate_speed = 0.025;
-		    strafe_speed = 10;
+		    "move_speed" = 10;
+		    "rotate_speed" = "0.025";
+		    "strafe_speed" = 10;
 		    vangle = "-2.274999";
-		    x = 959.9141;
-		    y = 2005.834;
-		    z = 2000.845;
+		    x = "959.9141";
+		    y = "2005.834";
+		    z = "2000.845";
 		};
 		imageCycleTime = 0;
-		imageDailyDir = NO;
-		imageDir = .;
+		imageDailyDir = 0;
+		imageDir = ".";
 		imagePrefix = glworld;
+		lineWidth = 1;
 		overlay = {
 		    objects = (
 			{
-			    align = YES;
+			    align = 1;
 			    halign = "-1";
 			    object = {
-				filename = PNNL_Color_Logo_Horizontal.svg;
+				filename = "PNNL_Color_Logo_Horizontal.svg";
 				h = 180;
 				hflip = 0;
-				isVisible = YES;
+				isVisible = 1;
 				vflip = 0;
 				w = 300;
 			    };
 			    objectclass = GLImage;
+			    rotx = 0;
+			    roty = 0;
+			    rotz = 0;
 			    valign = "-1";
 			    x = 0;
 			    y = 0;
@@ -51,23 +55,26 @@
 		scene = {
 		    objects = (
 			{
-			    align = NO;
+			    align = 0;
 			    halign = 0;
 			    object = {
 				dataSet = {
 				    baseURL = "http://pic-view/cluster/pic/";
-				    key = cputotals.sys;
+				    key = "cputotals.sys";
+				    name = "cputotals.sys";
+				    rateSuffix = percent;
 				};
 				dataSetClass = WebDataSet;
 				fontColorB = 1;
 				fontColorG = 1;
 				fontColorR = 1;
 				fontScale = 1;
-				 gradient = {
-                    gradient = "./data/CPURainbow.ggr";
-                    source = file;
-                };
-				isVisible = YES;
+				gradient = {
+				    gradient = "CPURainbow.ggr";
+				    source = file;
+				};
+				gridType = 0;
+				isVisible = 1;
 				xTicks = 50;
 				xscale = 2;
 				yTicks = 32;
@@ -75,29 +82,35 @@
 				zscale = 1;
 			    };
 			    objectclass = GLGrid;
+			    rotx = 0;
+			    roty = 0;
+			    rotz = 0;
 			    valign = 0;
 			    x = 0;
 			    y = 0;
 			    z = "-256";
 			},
 			{
-			    align = NO;
+			    align = 0;
 			    halign = 0;
 			    object = {
 				dataSet = {
 				    baseURL = "http://pic-view/cluster/pic/";
-				    key = cputotals.user;
+				    key = "cputotals.user";
+				    name = "cputotals.user";
+				    rateSuffix = percent;
 				};
 				dataSetClass = WebDataSet;
 				fontColorB = 1;
 				fontColorG = 1;
 				fontColorR = 1;
 				fontScale = 1;
-				 gradient = {
-                    gradient = "./data/CPURainbow.ggr";
-                    source = file;
-                };
-				isVisible = YES;
+				gradient = {
+				    gradient = "CPURainbow.ggr";
+				    source = file;
+				};
+				gridType = 0;
+				isVisible = 1;
 				xTicks = 50;
 				xscale = 2;
 				yTicks = 32;
@@ -105,13 +118,16 @@
 				zscale = 1;
 			    };
 			    objectclass = GLGrid;
+			    rotx = 0;
+			    roty = 0;
+			    rotz = 0;
 			    valign = 0;
 			    x = 0;
 			    y = 0;
 			    z = 0;
 			},
 			{
-			    align = NO;
+			    align = 0;
 			    halign = 0;
 			    object = {
 				dataSet = {
@@ -124,25 +140,30 @@
 				    planes = (
 					{
 					    baseURL = "http://pic-view/cluster/pic/";
-					    key = iconnect.kbout;
+					    key = "iconnect.kbout";
+					    name = "iconnect.kbout";
+					    rateSuffix = "kb/sec";
 					},
 					{
 					    baseURL = "http://pic-view/cluster/pic/";
-					    key = iconnect.kbin;
+					    key = "iconnect.kbin";
+					    name = "iconnect.kbin";
+					    rateSuffix = "kb/sec";
 					}
 				    );
-				    rateSuffix = GB/s;
+				    rateSuffix = "GB/s";
 				};
 				dataSetClass = CalculatedDataSet;
 				fontColorB = 1;
 				fontColorG = 1;
 				fontColorR = 1;
 				fontScale = 1;
-				 gradient = {
-                    gradient = "./data/CPURainbow.ggr";
-                    source = file;
-                };
-				isVisible = YES;
+				gradient = {
+				    gradient = "CPURainbow.ggr";
+				    source = file;
+				};
+				gridType = 0;
+				isVisible = 1;
 				xTicks = 50;
 				xscale = 2;
 				yTicks = 32;
@@ -150,29 +171,35 @@
 				zscale = 1;
 			    };
 			    objectclass = GLGrid;
+			    rotx = 0;
+			    roty = 0;
+			    rotz = 0;
 			    valign = 0;
 			    x = 0;
 			    y = 0;
 			    z = "-512";
 			},
 			{
-			    align = NO;
+			    align = 0;
 			    halign = 0;
 			    object = {
 				dataSet = {
 				    baseURL = "http://pic-view/cluster/pic/";
-				    key = lusclt.readkbs;
+				    key = "lusclt.readkbs";
+				    name = "lusclt.readkbs";
+				    rateSuffix = "readkbs/sec";
 				};
 				dataSetClass = WebDataSet;
 				fontColorB = 1;
 				fontColorG = 1;
 				fontColorR = 1;
 				fontScale = 1;
-				 gradient = {
-                    gradient = "./data/CPURainbow.ggr";
-                    source = file;
-                };
-				isVisible = YES;
+				gradient = {
+				    gradient = "CPURainbow.ggr";
+				    source = file;
+				};
+				gridType = 0;
+				isVisible = 1;
 				xTicks = 50;
 				xscale = 2;
 				yTicks = 32;
@@ -180,29 +207,35 @@
 				zscale = 1;
 			    };
 			    objectclass = GLGrid;
+			    rotx = 0;
+			    roty = 0;
+			    rotz = 0;
 			    valign = 0;
 			    x = 0;
 			    y = 0;
 			    z = "-768";
 			},
 			{
-			    align = NO;
+			    align = 0;
 			    halign = 0;
 			    object = {
 				dataSet = {
 				    baseURL = "http://pic-view/cluster/pic/";
-				    key = lusclt.writekbs;
+				    key = "lusclt.writekbs";
+				    name = "lusclt.writekbs";
+				    rateSuffix = "writekbs/sec";
 				};
 				dataSetClass = WebDataSet;
 				fontColorB = 1;
 				fontColorG = 1;
 				fontColorR = 1;
 				fontScale = 1;
-				 gradient = {
-                    gradient = "./data/CPURainbow.ggr";
-                    source = file;
-                };
-				isVisible = YES;
+				gradient = {
+				    gradient = "CPURainbow.ggr";
+				    source = file;
+				};
+				gridType = 0;
+				isVisible = 1;
 				xTicks = 50;
 				xscale = 2;
 				yTicks = 32;
@@ -210,6 +243,9 @@
 				zscale = 1;
 			    };
 			    objectclass = GLGrid;
+			    rotx = 0;
+			    roty = 0;
+			    rotz = 0;
 			    valign = 0;
 			    x = 0;
 			    y = 0;
@@ -221,4 +257,3 @@
 	}
     );
 }
-
