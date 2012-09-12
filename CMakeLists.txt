@@ -130,6 +130,8 @@ INSTALL(FILES ${DATA_FILES} DESTINATION "share/${CMAKE_PROJECT_NAME}" COMPONENT 
 FILE(GLOB MAN_FILES "${CMAKE_SOURCE_DIR}/man/*.1")
 INSTALL(FILES ${MAN_FILES} DESTINATION "share/man/man1" COMPONENT "Man_Pages")
 FILE(COPY "${CMAKE_SOURCE_DIR}/cview.ico" DESTINATION ${CMAKE_BINARY_DIR})
+FILE(GLOB CVIEW_FILES "${CMAKE_SOURCE_DIR}/cviews/pnl/pic-view.cview")
+INSTALL(FILES ${CVIEW_FILES} DESTINATION "share/cviews" COMPONENT "CVIEW_Files")
 
 #-------------------------------------------------------
 #Packgaing settings for cpack
@@ -176,6 +178,14 @@ SET(CPACK_NSIS_EXTRA_UNINSTALL_COMMANDS "
 	DeleteRegKey HKCR \\\"PNNL.Cview\\\"
 	DeleteRegKey HKCR \\\"PNNL.Cviewall\\\"
 	\\\${RefreshShellIcons}
+")
+SET(CPACK_NSIS_CREATE_ICONS_EXTRA "
+	CreateDirectory \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\cviews\\\"
+	CreateShortCut \\\"$SMPROGRAMS\\\\$STARTMENU_FOLDER\\\\cviews\\\\pic-view.lnk\\\" \\\"$INSTDIR\\\\share\\\\cviews\\\\pic-view.cview\\\"
+")
+SET(CPACK_NSIS_DELETE_ICONS_EXTRA "
+	!insertmacro MUI_STARTMENU_GETFOLDER Application $MUI_TEMP
+	DELETE \\\"$SMPROGRAMS\\\\$MUI_TEMP\\\\cviews\\\\pic-view.lnk\\\"
 ")
 ENDIF()
 
