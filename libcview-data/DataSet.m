@@ -419,16 +419,14 @@ All rights reserved.
 }
 
 - lock {
-	NSLog(@"%@ lock request",self);
+	L();
 	[dataLock lock];
-	NSLog(@"%@ lock grant",self);
 	return self;
 }
 
 - unlock {
-	NSLog(@"%@ unlock request",self);
+	U();
 	[dataLock unlock];
-	NSLog(@"%@ unlock grant",self);
 	return self;
 }
 
