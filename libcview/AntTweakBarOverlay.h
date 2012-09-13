@@ -77,6 +77,8 @@ All rights reserved.
 	NSMutableSet *myNodes;
 }
 -initWithName: (NSString *)aName andManager: (AntTweakBarManager *)theManager;
+-(void)setValues: (NSObject *)setValue forKey:(NSString *)setKey;
+-(void)setValues: (NSObject *)setValue forKey:(NSString *)setKey inTree: (NSObject *) tree;
 -(BOOL)setTree: (NSObject *)tree;
 -(void)dealloc;
 @end

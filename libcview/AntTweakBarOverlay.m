@@ -183,6 +183,43 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 	return [atb autorelease];
 }
 
+-(void)setValues: (NSObject *)setValue forKey: (NSString *)setKey {
+	[self setValues: setValue forKey: setKey inTree: myTree];
+}
+-(void)setValues: (NSObject *)setValue forKey: (NSString *)setKey inTree: (NSObject *) tree {
+	//Add all attributes from this tree
+	NSArray *att = [tree attributeKeys];
+	NSString *key;
+	NSEnumerator *list;
+	NSDictionary *settings;
+	//NSLog(@"Node props: %@",att);
+	if (att) {
+		if ([tree respondsToSelector: @selector(tweaksettings)])
+			settings = [tree valueForKey: @"tweaksettings"];
+		else
+			settings = [NSDictionary dictionary];
+		//NSLog(@"settings=%@",settings);
+		list = [att objectEnumerator];
+		while ((key = [list nextObject])) {
+			NSObject *o = [tree valueForKey: key];
+			//NSLog(@"O:%p key=%@",o,key);
+			if ([setKey compare: key] == NSOrderedSame) {
+				if ([o isKindOfClass: [setValue class]] || [setValue isKindOfClass: [o class]])
+					[tree setValue: setValue forKey: setKey];
+//				NSLog(@"o class: %@ <- %@ setValue class: %@ <- %@", [o class], [o superclass], [setValue class], [setValue superclass]);
+			} else if ([o isKindOfClass: [NSArray class]]) {
+				NSArray *a = (NSArray *)o;
+				int i;
+				for (i=0;i<[a count];i++)
+					[self setValues: setValue forKey: setKey inTree: [a objectAtIndex: i]];
+			} else {
+//				NSLog(@"Class Type Unhandled: %@  keypath: %@",[o class],keypath);
+				[self setValues: setValue forKey: setKey inTree: o];
+			}
+		}
+	}
+}
+
 -(BOOL)parseTree: (NSObject *)tree withGroup:(NSString *)grp {
 	
 	//Add all attributes from this tree
@@ -199,7 +236,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 	else
 		keybase=@"";
 
-	NSLog(@"Node props: %@",att);
+	//NSLog(@"Node props: %@ keybase: %@",att, keybase);
 	if (att) {
 		
 		if ([tree respondsToSelector: @selector(tweaksettings)])
@@ -236,7 +273,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 						TwAddVarCB(myBar, [keypath UTF8String], TW_TYPE_INT32, intSetCallback, intGetCallback, atb, data);
 						break;
 					default:
-						NSLog(@"Unhandled Number Type: %s",[n objCType]);
+						//NSLog(@"Unhandled Number Type: %s",[n objCType]);
 						break;
 				}
 				if (grp)
@@ -273,7 +310,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
  				for (i=0;i<[a count];i++) {
 					NSString *newpath=[NSString stringWithFormat:@"%@.%d",keypath,i];
 					NSString *newkey=[NSString stringWithFormat:@"%@[%d]",key,i];
-					NSLog(@"Array Member: %@  keypath: %@",newpath,newkey);
+					//NSLog(@"Array Member: %@  keypath: %@",newpath,newkey);
 					if ([self parseTree: [a objectAtIndex: i] withGroup: newpath]) {
 						if (grp)
 							TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@ label='%@-%@' close",name,newpath,grp,newkey,[[a objectAtIndex: i] description]] UTF8String]);
@@ -283,7 +320,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
  				}
  			}
 			else {
-				NSLog(@"Class Type Unhandled: %@  keypath: %@",[o class],keypath);
+				//NSLog(@"Class Type Unhandled: %@  keypath: %@",[o class],keypath);
 				if ([self parseTree: o withGroup: keypath] ) {
 					if (grp)
 						TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@ label='%@-%@' close",name,keypath,grp,key,[o description]] UTF8String]);
@@ -299,7 +336,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 
 -treeChanged: (NSNotification *)note {
 	if ([note object] == myTree) {// should alwasy happen, but check anyway.
-	NSLog(@"Tree change Notification: %@",note);
+		//NSLog(@"Tree change Notification: %@",note);
 		TwRemoveAllVars(myBar);
 		[self parseTree: myTree withGroup:nil];
 	}

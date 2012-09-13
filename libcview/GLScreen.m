@@ -124,7 +124,7 @@ void _processNormalKeys(unsigned char key, int x, int y) {
 	GLScreen *_master = [GLScreen getMaster];
 	//NSLog(@"processNormalKeys: %c (%d,%d):%d",key,x,y,[_master getWindowAtX: x andY: y]);	
 	//[[_master getWindowAtX: x andY: y] keyPress: key atX: x andY: y withWindow: [_master getWindowAtX: x andY: y]];
-	[_master keyPress: key atX: x andY: y withWindow: [_master getWindowAtX: x andY: y]];
+	[_master keyPress: key atX: x andY: y withWindow: glutGetWindow()];
 }
 void _processSpecialKeys(int key, int x, int y) {
 	//NSLog(@"processSpecialKeys: %x (%d,%d):%d",key,x,y,glutGetWindow());	
@@ -224,10 +224,8 @@ NSComparisonResult compareScreenColumns(id one,id two,void *context) {
 	width = w;
 	height = h;
 	mainwin = glutCreateWindow([myName UTF8String]);
-#if defined ON_MINGW_WIN32
 	glutKeyboardFunc(_processNormalKeys);
 	glutSpecialFunc(_processSpecialKeys);
-#endif
 	glutReshapeFunc(_changeSize);
 	glutDisplayFunc(_renderSceneBackground);
 	//glutIdleFunc(_renderSceneAll);
@@ -360,10 +358,8 @@ NSComparisonResult compareScreenColumns(id one,id two,void *context) {
 	int win = glutCreateSubWindow(mainwin,s->x,s->y,s->w,s->h);
 	//NSLog(@"Created sub window: %d=(%d,%d,%d,%d,%d)",win,mainwin,s->x,s->y,s->w,s->h);
 	glutDisplayFunc(_renderScene);
-#if ! defined ON_MINGW_WIN32
 	glutKeyboardFunc(_processNormalKeys);
 	glutSpecialFunc(_processSpecialKeys);
-#endif
 	glutMouseFunc(_processMouse);
 	glutMotionFunc(_processMouseActiveMotion);
 	glutPassiveMotionFunc(_processMousePassiveMotion);
@@ -474,15 +470,9 @@ NSComparisonResult compareScreenColumns(id one,id two,void *context) {
 			//NSLog(@"S<%@>: (%d,%d)",s->name,s->row,s->col);
 			int colw =(int)(width*s->colp/cptotal);
 			//setup actual place now
-#if defined ON_MINGW_WIN32
-			/** I have no idea why this works on MINGW....but it does 
-			    (i.e. the plus 9 pixels thingy) */
-			s->x = col_place+9;
-			s->y = row_place+9;
-#else
+			//
 			s->x = col_place+1;
 			s->y = row_place+1;
-#endif
 			s->w = colw-2;
 			s->h = rowh-2;
 			col_place += colw;
@@ -645,38 +635,6 @@ double mysecond()
 		}
 	return self;
 
-}
-
-/** which window is on top at passed (x,y) coordinates */
--(int)getWindowAtX: (int)x andY: (int)y {
-#if defined ON_MINGW_WIN32
-	/**
-	  glutGetWindow() doesn't work on MinGW -- it always returns 1 no matter what subwindow we're 
-	  actually in.  This is probably a bug in freeglut, which should be reported to the developers.
-	  Note: this applies in the callback to glutKeyboardFunc(...).  In other glut callbacks,
-	  glutGetWindow() seems to work properly (i.e. the mouse callback funcs)
-
-	  Due to this fact, we have to manually calculate what window we're really in by using the 
-	  (x,y) coordinates.
-	  */
-	AScreen *s;
-	NSEnumerator *list;
-	list = [worlds objectEnumerator];
-	int window = 0;
-	while ((s = [list nextObject])) {
-		NSLog(@"s->x = %d, s->y = %d, s->w = %d, s->h = %d", s->x, s->y, s->w, s->h);
-		if (x > s->x && x < s->x + s->w &&
-			y > s->y && y < s->y + s->h) {
-			//NSLog(@"window %d matched!", s->window);
-			window = s->window;
-		}
-	}
-	if (!window)
-		NSLog(@"Window not found");
-	return window;
-#else
-	return glutGetWindow();
-#endif
 }
 
 /** 
