@@ -75,6 +75,7 @@ All rights reserved.
 #import "Graph.h"
 #import "GimpGradient.h"
 #import "GLInfinibandNetwork.h"
+#import <math.h>
 
 /*This ties us to gcc, though intell compilers have _mm_* instruction 
   that would work, and gcc supports them, but they add ugly castings.

@@ -70,6 +70,15 @@ All rights reserved.
 #endif
 #define DS_DEFAULT_NAME @"NoName"
 #define DS_DEFAULT_RATE_SUFFIX @"NoRate"
+
+#if 0
+#define L() NSLog(@"Lock:%s",__FUNCTION__);
+#define U() NSLog(@"UnLock:%s",__FUNCTION__);
+#else
+#define L()
+#define U()
+#endif
+
 /**
 This class provides a basic data store, with associated information.  It is organized as a 2 dimensional array of floating point values.  A set of row and column names is provided, along with some averaging and total functions.  The data may be stored pre-scaled so that it fits within a specific range for display.
 
@@ -93,6 +102,8 @@ This class provides a basic data store, with associated information.  It is orga
 }
 - initWithName: (NSString *)n Width: (int)w Height: (int)h;
 - initWithWidth: (int)w Height: (int)h;
+/** Load data from a file on disk, specifying a width of the dataset. Optional row/column invert if needed.*/
+- initWithFile: (NSString *)file Width: (int)w Transpose: (BOOL)inv;
 /** retrieve a specific data row */
 - (float *)dataRow: (int)row;
 /** get the entire dataset as a float array */
