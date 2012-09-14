@@ -23,7 +23,7 @@ ADD_CUSTOM_TARGET(freeglut DEPENDS "libs/libfreeglut.a" )
 ##########################
 # AntTweakBar
 ##########################
-SET(ATB_VERSION 114)
+SET(ATB_VERSION 115)
 SET(ATB_ZIP "AntTweakBar_${ATB_VERSION}.zip")
 SET(ATB_DOWNLOAD_URL "http://www.antisphere.com/Tools/AntTweakBar/${ATB_ZIP}")
 ADD_CUSTOM_COMMAND(OUTPUT ${ATB_ZIP} COMMAND ${URL_GRAB} ${ATB_DOWNLOAD_URL})
@@ -47,7 +47,7 @@ ADD_CUSTOM_TARGET(imagemagick DEPENDS "libs/libMagickWand.a" )
 ##########################
 # freetype2
 ##########################
-SET(FT_VERSION 2.3.11)
+SET(FT_VERSION 2.4.10)
 SET(FT_ZIP "freetype-${FT_VERSION}.tar.gz")
 SET(FT_DOWNLOAD_URL "http://download.savannah.gnu.org/releases/freetype/${FT_ZIP}")
 ADD_CUSTOM_COMMAND(OUTPUT ${FT_ZIP} COMMAND ${URL_GRAB} -O ${FT_ZIP} ${FT_DOWNLOAD_URL})
