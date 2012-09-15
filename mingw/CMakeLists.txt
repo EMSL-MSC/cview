@@ -82,10 +82,16 @@ ADD_CUSTOM_COMMAND(OUTPUT "libs/ftgl.dll"
 					DEPENDS "ftgl-${FTGL_TVERSION}/src/lib/ftgl.dll")
 ADD_CUSTOM_TARGET(ftgl-lib DEPENDS freetype2 "libs/ftgl.dll" )
 
+##########################
+# Pick up any mingw dlls that we might need
+# NOTE: This is really bad, we should come up with a better way to pull in exactly what we need
+##########################
+ADD_CUSTOM_COMMAND(OUTPUT "libs/libiconv-2.dll" COMMAND cp -r "/mingw/bin/*.dll" "libs" COMMAND cp "/c/GNUstep/GNUstep/System/Tools/*.dll" "libs")
+ADD_CUSTOM_TARGET(misc-libs DEPENDS "libs/libiconv-2.dll" )
 
 
 SET(ENV{PKG_CONFIG_PATH} ${CMAKE_CURRENT_BINARY_DIR}/libs/pkgconfig)
-ADD_CUSTOM_TARGET(mingw-libs DEPENDS freeglut anttweakbar imagemagick freetype2 ftgl-lib)
+ADD_CUSTOM_TARGET(mingw-libs DEPENDS freeglut anttweakbar imagemagick freetype2 ftgl-lib misc-libs)
 FILE(GLOB WINDLLS "${CMAKE_CURRENT_BINARY_DIR}/libs/*.dll")
 INSTALL(FILES ${WINDLLS} DESTINATION bin COMPONENT Binaries)
 
