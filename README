@@ -42,6 +42,15 @@ REQUIREMENTS
 			py-numeric
 		Ports Optional:
 			anttweakbar
+	Redhat:
+		Needed packages:
+			cmake
+			ImageMagick-devel
+			ftgl-devel
+			freeglut-devel
+			libXmu-devel
+		Optional packages:
+			doxygen
 
 	FreeBSD:
 		Needed packages:
