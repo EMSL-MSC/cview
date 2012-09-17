@@ -1,0 +1,441 @@
+{
+    height = 1600;
+    name = "Chinook Graphs";
+    width = 2560;
+    worlds = (
+	{
+	    col = 0;
+	    colp = 200;
+	    name = Chinook;
+	    row = 0;
+	    rowp = 50;
+	    world = {
+		eye = {
+		    hangle = "-4.72";
+		    move_speed = 10;
+		    rotate_speed = 0.025;
+		    strafe_speed = 10;
+		    vangle = "-2.441667";
+		    x = 1194.518;
+		    y = 1979.09;
+		    z = 2120.452;
+		};
+		imageCycleTime = 0;
+		imageDailyDir = NO;
+		imageDir = .;
+		imagePrefix = glworld;
+		overlay = {
+		    objects = (
+			{
+			    align = YES;
+			    halign = 1;
+			    object = {
+				filename = chinook_small.png;
+				h = 42;
+				hflip = 0;
+				isVisible = YES;
+				vflip = 0;
+				w = 128;
+			    };
+			    objectclass = GLImage;
+			    valign = "-1";
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			},
+			{
+			    align = YES;
+			    halign = "-1";
+			    object = {
+				filename = EMSL_Header_chinook.svg;
+				h = 765;
+				hflip = 0;
+				isVisible = YES;
+				vflip = 0;
+				w = 1882;
+			    };
+			    objectclass = GLImage;
+			    valign = "-1";
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			},
+			{
+			    align = YES;
+			    halign = "-1";
+			    object = {
+				colorB = 1;
+				colorG = 1;
+				colorR = 1;
+				fontfile = LinLibertine_Re.ttf;
+				isVisible = YES;
+				rotX = 0;
+				rotY = 0;
+				rotZ = 0;
+				scaleX = 1;
+				scaleY = 1;
+				scaleZ = 1;
+				string = "Chinook Super Computer";
+			    };
+			    objectclass = GLText;
+			    valign = 1;
+			    x = 0;
+			    y = 70;
+			    z = 0;
+			}
+		    );
+		};
+		scene = {
+		    objects = (
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
+				    key = cputotals.user;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 750;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
+				    key = meminfo.used;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 1;
+				isVisible = YES;
+				xTicks = 50;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 25;
+			    z = 500;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (
+					WebDataSet,
+					WebDataSet
+				    );
+				    formula = "$0:$1:+:1024:/:1024:/";
+				    name = "Interconnect GB/s";
+				    planes = (
+					{
+					    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
+					    key = iconnect.kbout;
+					},
+					{
+					    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
+					    key = iconnect.kbin;
+					}
+				    );
+				    rateSuffix = GB/s;
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 110;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 250;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    classes = (
+					WebDataSet,
+					WebDataSet
+				    );
+				    formula = "$0:$1:+";
+				    name = "Number of Disk Reads and Writes Ops/s";
+				    planes = (
+					{
+					    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
+					    key = disktotals.reads;
+					},
+					{
+					    baseURL = "http://www.emsl.pnl.gov/msc-datasets/chinook/";
+					    key = disktotals.writes;
+					}
+				    );
+				    rateSuffix = Ops/s;
+				};
+				dataSetClass = CalculatedDataSet;
+				fontScale = 1.2;
+				isVisible = YES;
+				xTicks = 110;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 0;
+			}
+		    );
+		};
+	    };
+	},
+	{
+	    col = 3;
+	    colp = 40;
+	    name = "EMSL File System";
+	    row = 1;
+	    rowp = 50;
+	    world = {
+		eye = {
+		    hangle = "-5.103332";
+		    move_speed = 10;
+		    rotate_speed = 0.025;
+		    strafe_speed = 10;
+		    vangle = "-2.424999";
+		    x = 538.554;
+		    y = 1216.15;
+		    z = 1269.119;
+		};
+		imageCycleTime = 0;
+		imageDailyDir = NO;
+		imageDir = .;
+		imagePrefix = glworld;
+		overlay = {
+		    objects = (
+			{
+			    align = YES;
+			    halign = "-1";
+			    object = {
+				colorB = 1;
+				colorG = 1;
+				colorR = 1;
+				fontfile = LinLibertine_Re.ttf;
+				isVisible = YES;
+				rotX = 0;
+				rotY = 0;
+				rotZ = 0;
+				scaleX = 1;
+				scaleY = 1;
+				scaleZ = 1;
+				string = EMSLfs;
+			    };
+			    objectclass = GLText;
+			    valign = 1;
+			    x = 0;
+			    y = 100;
+			    z = 0;
+			}
+		    );
+		};
+		scene = {
+		    objects = (
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/emslfs/";
+				    key = cpu_user;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 0.5;
+				isVisible = YES;
+				xTicks = 2;
+				xscale = 8;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 111;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/emslfs/";
+				    key = bytes_in;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 0.5;
+				isVisible = YES;
+				xTicks = 2;
+				xscale = 8;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 189;
+			    y = 0;
+			    z = 250;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/emslfs/";
+				    key = bytes_out;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 0.5;
+				isVisible = YES;
+				xTicks = 2;
+				xscale = 8;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 433;
+			}
+		    );
+		};
+	    };
+	},
+	{
+	    col = 0;
+	    colp = 60;
+	    name = TL;
+	    row = 1;
+	    rowp = 50;
+	    world = {
+		eye = {
+		    hangle = "-5.128328";
+		    move_speed = 10;
+		    rotate_speed = 0.025;
+		    strafe_speed = 10;
+		    vangle = "-2.425001";
+		    x = 350.8991;
+		    y = 571.7939;
+		    z = 1047.629;
+		};
+		imageCycleTime = 0;
+		imageDailyDir = NO;
+		imageDir = .;
+		imagePrefix = glworld;
+		overlay = {
+		    objects = (
+			{
+			    align = YES;
+			    halign = "-1";
+			    object = {
+				colorB = 1;
+				colorG = 1;
+				colorR = 1;
+				fontfile = LinLibertine_Re.ttf;
+				isVisible = YES;
+				rotX = 0;
+				rotY = 0;
+				rotZ = 0;
+				scaleX = 1;
+				scaleY = 1;
+				scaleZ = 1;
+				string = "Chinook /dtemp";
+			    };
+			    objectclass = GLText;
+			    valign = 1;
+			    x = 0;
+			    y = 100;
+			    z = 0;
+			}
+		    );
+		};
+		scene = {
+		    objects = (
+			
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/io/";
+				    key = lusost.writekbs;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 0.5;
+				isVisible = YES;
+				xTicks = 10;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 0;
+			    y = 0;
+			    z = 556;
+			},
+			{
+			    align = NO;
+			    halign = 0;
+			    object = {
+				dataSet = {
+				    baseURL = "http://www.emsl.pnl.gov/msc-datasets/io/";
+				    key = lusost.readkbs;
+				};
+				dataSetClass = WebDataSet;
+				fontScale = 0.5;
+				isVisible = YES;
+				xTicks = 10;
+				xscale = 1;
+				yTicks = 32;
+				yscale = 1;
+				zscale = 1;
+			    };
+			    objectclass = GLGrid;
+			    valign = 0;
+			    x = 188;
+			    y = 0;
+			    z = 556;
+			}
+		    );
+		};
+	    };
+	}
+    );
+}
