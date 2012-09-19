@@ -306,7 +306,7 @@ static float blankdata[] = {
 			if (width*height*sizeof(float) == [incomingData length]) {
 				[self autoScaleWithNewData: incomingData];
 			} else
-				NSLog(@"Very BAD! Incoming data was not the correct size. Width = %d Height = %d Width * Height = %d DataSet Size = %d", width, height, width * height, [incomingData length] / sizeof(float));
+				NSLog(@"Very BAD! Incoming data was not the correct size. Width = %d Height = %d Width * Height = %d DataSet Size = %ld", width, height, width * height, [incomingData length] / sizeof(float));
 
 			dataValid=YES;
 			[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];

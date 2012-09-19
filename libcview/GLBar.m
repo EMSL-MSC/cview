@@ -67,7 +67,7 @@ All rights reserved.
 
 
 @implementation  GLBar
-static NSArray *barTypeStrings=nil;  //these are for expansion and not used yet.
+//static NSArray *barTypeStrings=nil;  //these are for expansion and not used yet.
 static const char *barTypeSelectors[] =	{ 
 	"drawSquares",
 };
@@ -387,7 +387,7 @@ static float bar_quads[72] = {
 
 
 -(void)setBarType:(BarTypesEnum)code {
-	if (code >=0 && code < B_COUNT)
+	if (code < B_COUNT)
 		barType = code;
 }
 

@@ -73,13 +73,15 @@ static float box_quads[72] = {
 // skip blank lines..
 // anything that starts with # is a comment, ignore line.
 // This really should be done with a Parser Class of some type that is not avalable in NSScanner or NSString
-NSDictionary *scanNodeMapFile(NSFileHandle *file) {
+NSDictionary *scanNodeMapFile(NSString *file) {
 	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-	NSData *data = [file readDataToEndOfFile];
-	NSString *linestring = [NSString stringWithCString: [data bytes] length: [data length]];
-	NSArray *lines = [linestring componentsSeparatedByCharactersInSet: [NSCharacterSet characterSetWithCharactersInString: @"\n"]];
+	NSError *err=nil;
+	NSString *linestring = [NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:&err];
+	NSArray *lines;
 	NSString *line,*guid,*label;
 	NSEnumerator *e;
+	
+	lines = [linestring componentsSeparatedByCharactersInSet: [NSCharacterSet characterSetWithCharactersInString: @"\n"]];
 	
 	e = [lines objectEnumerator];
 	while ( (line = [e nextObject] ) ) {
@@ -480,7 +482,7 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	netcountfile = [[list objectForKey: @"netcountfile" missing: @"ib_med.linkcounts"] retain];
 	netlinksfile = [[list objectForKey: @"netlinksfile" missing: @"ib_med.ibnetdiscover"] retain];
 	nodemapfile = [[list objectForKey: @"nodemapfile" missing: @"ib-node-names.map"] retain];
-	nodemap = [scanNodeMapFile(find_resource(nodemapfile)) retain];
+	nodemap = [scanNodeMapFile(find_resource_path(nodemapfile)) retain];
 	
 	portSpeed = [[list objectForKey: @"portspeed" missing: @"DDR"] retain];
 	
@@ -492,9 +494,9 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 		[chassis addObject: ibc];
 		[ibc populateGraph: graph nodeMap: nodemap];
 	}
-	[self loadNetLinks: find_resource(netlinksfile)];
+	[self loadNetLinks: find_resource_path(netlinksfile)];
 	//This sets up the ColorMap as well
-	[self loadNetCounts: find_resource(netcountfile)];
+	[self loadNetCounts: find_resource_path(netcountfile)];
 
 	return self;
 }
@@ -516,15 +518,20 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	return;
 }
 
--(BOOL)loadNetLinks: (NSFileHandle *)file {
-	NSData *data = [file readDataToEndOfFile];
-	NSString *linestring = [NSString stringWithCString: [data bytes] length: [data length]];
-	NSArray *lines = [linestring componentsSeparatedByCharactersInSet: [NSCharacterSet characterSetWithCharactersInString: @"\n"]];
+-(BOOL)loadNetLinks: (NSString *)file {
+	NSError *err=nil;
+	NSString *linestring = [NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:&err];
+	NSArray *lines;
 	NSString *line;
 	NSEnumerator *e;
 	NSString *from,*to,*speed;
 	int tport,fport;
 	
+	if (err) {
+		NSLog(@"Error loading Netcounts file(%@):%@",file,err);
+		return NO;
+	}
+	lines = [linestring componentsSeparatedByCharactersInSet: [NSCharacterSet characterSetWithCharactersInString: @"\n"]];
 	e = [lines objectEnumerator];
 	while ( (line = [e nextObject] ) ) {
 		if ( [line length]==0 )
@@ -563,10 +570,10 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 }
 
 
--(BOOL)loadNetCounts: (NSFileHandle *)file {
-	NSData *data = [file readDataToEndOfFile];
-	NSString *linestring = [NSString stringWithCString: [data bytes] length: [data length]];
-	NSArray *lines = [linestring componentsSeparatedByCharactersInSet: [NSCharacterSet characterSetWithCharactersInString: @"\n"]];
+-(BOOL)loadNetCounts: (NSString *)file {
+	NSError *err=nil;
+	NSString *linestring = [NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:&err];
+	NSArray *lines;
 	NSString *line;
 	NSArray *parts;
 	NSEnumerator *e;
@@ -575,6 +582,11 @@ NSDictionary *scanNodeMapFile(NSFileHandle *file) {
 	int count;
 	int max=1;
 	
+	if (err) {
+		NSLog(@"Error loading Netcounts file(%@):%@",file,err);
+		return NO;
+	}
+	lines = [linestring componentsSeparatedByCharactersInSet: [NSCharacterSet characterSetWithCharactersInString: @"\n"]];
 	
 	e = [lines objectEnumerator];
 	while ( (line = [e nextObject] ) ) {

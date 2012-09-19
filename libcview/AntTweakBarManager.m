@@ -99,7 +99,7 @@ static AntTweakBarManager *atbmSingleton;
 -init {
 	[super init];
 	if ([ATB_lock tryLock]) {
-		NSLog(@"Build Tweak: %d, %x",glutGetWindow(),self);
+		NSLog(@"Build Tweak: %d, %@",glutGetWindow(),self);
 		bars = [[NSMutableSet setWithCapacity: 4] retain];
 		
         TwInit(TW_OPENGL, NULL);

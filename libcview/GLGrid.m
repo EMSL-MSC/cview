@@ -451,7 +451,7 @@ static const char *gridTypeSelectors[] =	{
 
 
 -(void)setGridType:(GridTypesEnum)code {
-	if (code >=0 && code < G_COUNT)
+	if (code < G_COUNT)
 		gridType = code;
 	/**@todo actualy switch drawing*/
 	[self resetDrawingArrays];
@@ -580,7 +580,6 @@ static const char *gridTypeSelectors[] =	{
 	int i,j;
 	float *dl;
 	float *verts;
-	float glparm[3];
 	verts = [dataRow mutableBytes];
 
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -594,6 +593,8 @@ static const char *gridTypeSelectors[] =	{
 	//Bigger points up close stuff
 	glPointSize(150);
 #if HAVE_OPENGL_1_4
+	float glparm[3];
+
 	glparm[0]=0;
 	glPointParameterfv(GL_POINT_SIZE_MIN,glparm);
 	glparm[0]=20.0;

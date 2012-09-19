@@ -81,6 +81,7 @@ All rights reserved.
 +(id) objectForId: (unsigned int) number; 
 /// this probably won't get used, instead just call initIds to reset the whole thing
 +releaseUniqueId: (unsigned int)number ;
++print;
 +(unsigned int)count;
 @end
 #endif

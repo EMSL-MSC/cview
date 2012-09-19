@@ -96,7 +96,7 @@ All rights reserved.
 }
 
 - initWithFile: (NSString *)file Width: (int)w Transpose: (BOOL)inv {
-	int len,height;
+	int len;
 	int i,j,h;
 	float *f,*t;
 	NSFileManager *fm = [NSFileManager defaultManager];

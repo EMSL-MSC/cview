@@ -221,7 +221,7 @@ int main(int argc,char *argv[], char *env[]) {
 					format: &fmt
 					errorDescription: &err
 					];
-		NSLog(@"plist: %@ %@ %d %@",config,plist,fmt,err);
+		NSLog(@"plist: %@ %@ %lu %@",config,plist,fmt,err);
 		if (plist==nil) {
 #if defined ON_MINGW_WIN32
 			NSString *error = [NSString stringWithFormat:

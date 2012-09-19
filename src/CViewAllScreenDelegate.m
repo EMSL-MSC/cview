@@ -348,7 +348,7 @@ static void TW_CALL CVASD_intGlobalSetCallback(const void *value, void *clientDa
 }
 -(void)addGlobalTweak: (const char *)name withType: (int)TYPE withTweakSettings: (const char *)tweaksettings needingRepopulate: (BOOL)needsRepopulate {
 	NSArray *arr;
-	arr = [NSArray arrayWithObjects: self,[NSString stringWithCString: name],[NSNumber numberWithBool: needsRepopulate],nil];
+	arr = [NSArray arrayWithObjects: self,[NSString stringWithUTF8String: name],[NSNumber numberWithBool: needsRepopulate],nil];
 	[tweakObjects addObject: arr];
 	TwSetVarCallback setCB;
 	TwGetVarCallback getCB;
