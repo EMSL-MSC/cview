@@ -56,49 +56,56 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-#import "CViewScreenDelegate.h"
+#import <Foundation/Foundation.h>
+#import "DataSet.h"
+#import "cview.h"
 
-/** 
-	@author Evan Felix <e@pnl.gov>
-	@ingroup cviewapp
-*/
+int main(int argc,char *argv[], char *env[]) {
+	DrawableObject *o;
+	NSString *filename;
+	int width;
+	BOOL transpose;
 
-@interface CViewAllScreenDelegate:CViewScreenDelegate {
-	float updateInterval;
-	NSMutableDictionary *metricFlags;
-	NSMutableDictionary *activeGrids;
-	int gridWidth;
-	GLWorld *glWorld;
-	NSURL *url;
-	NSMutableArray *tweakObjects;
-	int heightPadding,widthPadding;
-	float xscale, yscale;
-	int xTicks, yTicks;
-#if HAVE_ANTTWEAKBAR
-	TwBar *metricbar,*settingsBar;
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+#ifndef __APPLE__
+	//needed for NSLog
+	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
-	NSLock *populateLock;
-}
--initWithScreen: (GLScreen *)screen andUpdateInterval: (float) dataSetUpdateInterval;
-/** set how many grids are in the width direction before another row is added.*/
--setGridWidth:(int)w;
-/** setup the list of metrics, with an NSNumber-boolean that specifies what is showing*/
--setMetricFlags:(NSMutableDictionary *)mf;
-/** set a specific metric on or off */
--setMetric: (NSString *)metric to: (BOOL)b;
-/** read the current value for a given metric*/
--(BOOL)getMetric: (NSString *)metric;
-/** set the current world that will be populated by metrics*/
--setWorld:(GLWorld *)world;
-/** set the base URL that metrics will be read from */
--setURL:(NSURL *)u;
-/** Recieve Notification of datasets resizing */
--(void)receiveResizeNotification: (NSNotification *)notification;
-/** Internal function that re-build the grid of GLGrids.*/
--populateWorld: (BOOL)repopultate;
-/** Helper function to add a new tweakable item to the tweakbar
-    that when changed, CViewAll Delegate will traverse the tree
-    and change any items with a matching name */
--(void)addGlobalTweak: (const char *)name withType: (int)TYPE withTweakSettings: (const char *)tweaksettings needingRepopulate: (BOOL)needsRepopulate;
-@end
 
+	NSUserDefaults *args = [NSUserDefaults standardUserDefaults];
+	[args registerDefaults: [NSDictionary dictionaryWithObjectsAndKeys: 
+		@"testdataset",@"f",
+		@"64",@"w",
+		@"YES",@"t",
+		nil]];
+
+	filename = [args stringForKey: @"f"];
+	width = [args integerForKey: @"w"];
+	transpose = [args boolForKey: @"t"];
+
+	DataSet *f = [[DataSet alloc] initWithFile: filename Width: width Transpose: transpose];
+//	[f autoScale:100];
+	if (!f) {
+		NSLog(@"File not loaded");
+		return 1;
+	}
+	
+	GLScreen * g = [[GLScreen alloc] initName: @"DataSet Load Test" withWidth: 1000 andHeight: 800];
+
+	Scene * scene1 = [[Scene alloc] init];
+	o=[[[[GLGrid alloc] initWithDataSet: f] setXTicks: 50] setYTicks: 50];
+	[scene1 addObject: o atX: 0 Y: 0 Z: 0];
+	
+	[[[g addWorld: @"Top" row: 0 col: 0 rowPercent: 50 colPercent:50] 
+		setScene: scene1] 
+		setEye: [[[Eye alloc] init] setX: 1050.0 Y: 2700.0 Z: 2700.0 Hangle:-4.72 Vangle: -2.45]
+	];
+
+	NSLog(@"%@",[g getPList]);
+	
+	[g run];
+
+	[pool release];
+
+	return 0;
+}

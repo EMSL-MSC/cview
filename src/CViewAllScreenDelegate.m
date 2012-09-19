@@ -98,6 +98,36 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 	*(int *)value = [i intValue];
 }
 
+static void TW_CALL CVASD_floatGlobalSetCallback(const void *value, void *clientData) {
+	NSArray *a = (NSArray *)clientData;
+	CViewAllScreenDelegate *cvasd = [a objectAtIndex: 0];
+	NSString *name = [a objectAtIndex:1];
+
+	[cvasd setValue: [NSNumber numberWithFloat: *(const float *)value] forKeyPath: name];
+	[cvasd setTweakableValues: [NSNumber numberWithFloat: *(const float *)value] forKey: name];
+	if([[a objectAtIndex: 2] boolValue])
+		[cvasd populateWorld: NO];
+}
+
+static void TW_CALL CVASD_floatGetCallback(void *value, void *clientData) {
+	NSArray *a = (NSArray *)clientData;
+	CViewAllScreenDelegate *cvasd = [a objectAtIndex: 0];
+	NSString *name = [a objectAtIndex:1];
+
+	NSNumber *i=[cvasd valueForKeyPath: name];
+	*(float *)value = [i floatValue];
+}
+
+static void TW_CALL CVASD_intGlobalSetCallback(const void *value, void *clientData) {
+	NSArray *a = (NSArray *)clientData;
+	CViewAllScreenDelegate *cvasd = [a objectAtIndex: 0];
+	NSString *name = [a objectAtIndex:1];
+	NSNumber *intValue = [NSNumber numberWithInt: *(const int *)value];
+	[cvasd setValue: intValue forKeyPath: name];
+	[cvasd setTweakableValues: intValue forKey: name];
+	if([[a objectAtIndex: 2] boolValue])
+		[cvasd populateWorld: NO];
+}
 #endif
 
 @implementation CViewAllScreenDelegate
@@ -106,6 +136,10 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 	gridWidth=1;
 	heightPadding=128;
 	widthPadding=200;
+	xscale = 1.0f;
+	yscale = 1.0f;
+	xTicks = 50;
+	yTicks = 32;
 	populateLock = [[NSLock alloc] init];
 	activeGrids = [[NSMutableDictionary dictionaryWithCapacity: 10] retain];
 	[self toggleTweakersVisibility];
@@ -166,8 +200,9 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 }
 
 -(void)receiveResizeNotification: (NSNotification *)notification {
-       NSLog(@"CViewAllDataSetResize notification: %@",notification);
-       [self populateWorld: YES];
+	//NSLog(@"CViewAllDataSetResize notification: %@",notification);
+	[self setTweakableValues: [NSNumber numberWithFloat: xscale] forKey: @"xscale"];
+	[self populateWorld: YES];
 }
 
 -populateWorld: (BOOL)repopulate {
@@ -182,13 +217,14 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 	
 	NSArray *metricList = [[metricFlags allKeys] sortedArrayUsingSelector: @selector(compare:)];
 	Scene *scene = [glWorld scene];
-	NSLog(@"count: %d",[scene objectCount]);
+//	NSLog(@"count: %d",[scene objectCount]);
 	
 	//NSMutableArray *sets = [NSMutableArray arrayWithCapacity: [metricFlags count]];
 	NSArray *activeKeys = [activeGrids allKeys];
 
 	list = [metricList objectEnumerator];
 	while ( (key = (NSString *)[list nextObject]) ) {
+		//NSLog(@"key is %@", key);
 		n = [metricFlags objectForKey: key];
 		if ([n boolValue]) {
 			if ( ![activeKeys containsObject: key] ) {
@@ -196,8 +232,10 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 				wds = [[WebDataSet alloc] initWithUrlBase: url andKey: key];
 				[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:wds];
 				[wds autoScale: 100];	
-				grid=[[[[[GLGrid alloc] initWithDataSet: wds] setXTicks: 50] setYTicks: 32] show];
-				
+				grid=[[[[[GLGrid alloc] initWithDataSet: wds] setXTicks: xTicks] setYTicks: yTicks] show];
+				[grid setValue: [NSNumber numberWithFloat: xscale] forKeyPath: @"xscale"];
+				[grid setValue: [NSNumber numberWithFloat: yscale] forKeyPath: @"yscale"];
+
 				[activeGrids setObject: grid forKey: key];
 				[wds autorelease];
 				[grid autorelease];
@@ -223,11 +261,12 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 			x++;
 			if (x >= gridWidth) {
 				x=0;
-				posy += [[grid getDataSet] height]+heightPadding;
+				//NSLog(@"xscale: %f", [[grid valueForKey: @"xscale"] floatValue]);
+				posy += [[grid getDataSet] height] + heightPadding;
 				posx = 0;
 			}
 			else {
-				posx += [[grid getDataSet] width]+widthPadding;
+				posx += [[grid getDataSet] width]* [[grid valueForKey: @"xscale"] floatValue] +widthPadding;
 			}
 	
 			//[grid autorelease];
@@ -286,14 +325,47 @@ static void TW_CALL CVASD_intGetCallback(void *value, void *clientData) {
 					CVASD_intSetCallback,CVASD_intGetCallback,
 					arr,"label='Width Padding'");
 
-
 		arr=[NSArray arrayWithObjects: self,@"gridWidth",nil];
 		[tweakObjects addObject: arr];
 		TwAddVarCB(settingsBar,"gridWidth",TW_TYPE_INT32,
 					CVASD_intSetCallback,CVASD_intGetCallback,
 					arr,"label='GridWidth' min=1");
+
+		TwAddSeparator(settingsBar, "separator", NULL);
+
+		[self addGlobalTweak: "xscale" withType: TW_TYPE_FLOAT
+			withTweakSettings: "label='XScale' step='0.1'" needingRepopulate: YES];
+
+		[self addGlobalTweak: "yscale" withType: TW_TYPE_FLOAT
+			withTweakSettings: "label='YScale' step='0.1'" needingRepopulate: NO];
+
+		[self addGlobalTweak: "xTicks" withType: TW_TYPE_INT32
+			withTweakSettings: "label='XTicks' step='1' min='1' help='Tick separation in the X direction' min=1 max=%d step=1 precision=0"
+			needingRepopulate: NO];
+
 	}
 	return self;
+}
+-(void)addGlobalTweak: (const char *)name withType: (int)TYPE withTweakSettings: (const char *)tweaksettings needingRepopulate: (BOOL)needsRepopulate {
+	NSArray *arr;
+	arr = [NSArray arrayWithObjects: self,[NSString stringWithCString: name],[NSNumber numberWithBool: needsRepopulate],nil];
+	[tweakObjects addObject: arr];
+	TwSetVarCallback setCB;
+	TwGetVarCallback getCB;
+	switch(TYPE) {
+		case TW_TYPE_INT32:
+			setCB = CVASD_intGlobalSetCallback;
+			getCB = CVASD_intGetCallback;
+			break;
+		case TW_TYPE_FLOAT:
+			setCB = CVASD_floatGlobalSetCallback;
+			getCB = CVASD_floatGetCallback;
+			break;
+		default:
+			// !@#$%?
+			assert(1 == 0);
+	}
+	TwAddVarCB(settingsBar,name,TYPE, setCB, getCB, arr,tweaksettings);
 }
 
 -cleanTweakers {

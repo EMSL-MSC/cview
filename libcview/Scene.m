@@ -250,6 +250,7 @@ All rights reserved.
 				break;
 			case 0:
 				x=(width-[o->object width])/2;
+				NSLog("Object Width: %d", [o->object width]);
 				break;
 			case 1:
 				x=(width-[o->object width]);

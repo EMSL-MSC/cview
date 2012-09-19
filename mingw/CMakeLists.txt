@@ -15,7 +15,7 @@ SET(FREEGLUT_VERSION 2.8.0-1.mp)
 SET(FREEGLUT_ZIP "freeglut-MinGW-${FREEGLUT_VERSION}.zip")
 SET(FREEGLUT_DOWNLOAD_URL "http://files.transmissionzero.co.uk/software/development/GLUT/${FREEGLUT_ZIP}")
 ADD_CUSTOM_COMMAND(OUTPUT ${FREEGLUT_ZIP} COMMAND ${URL_GRAB} ${FREEGLUT_DOWNLOAD_URL})
-ADD_CUSTOM_COMMAND(OUTPUT "freeglut/lib" COMMAND ${UNZIP} -x ${FREEGLUT_ZIP} DEPENDS ${FREEGLUT_ZIP})
+ADD_CUSTOM_COMMAND(OUTPUT "freeglut/lib" COMMAND ${UNZIP} -o ${FREEGLUT_ZIP} DEPENDS ${FREEGLUT_ZIP})
 ADD_CUSTOM_COMMAND(OUTPUT "libs/libfreeglut.a" COMMAND cp "freeglut/lib/*" "freeglut/bin/freeglut.dll" "libs" COMMAND cp -a freeglut/include/* include DEPENDS "freeglut/lib")
 ADD_CUSTOM_TARGET(freeglut DEPENDS "libs/libfreeglut.a" )
 
@@ -23,11 +23,11 @@ ADD_CUSTOM_TARGET(freeglut DEPENDS "libs/libfreeglut.a" )
 ##########################
 # AntTweakBar
 ##########################
-SET(ATB_VERSION 114)
+SET(ATB_VERSION 115)
 SET(ATB_ZIP "AntTweakBar_${ATB_VERSION}.zip")
 SET(ATB_DOWNLOAD_URL "http://www.antisphere.com/Tools/AntTweakBar/${ATB_ZIP}")
 ADD_CUSTOM_COMMAND(OUTPUT ${ATB_ZIP} COMMAND ${URL_GRAB} ${ATB_DOWNLOAD_URL})
-ADD_CUSTOM_COMMAND(OUTPUT "AntTweakBar/lib" COMMAND ${UNZIP} -x ${ATB_ZIP} DEPENDS ${ATB_ZIP})
+ADD_CUSTOM_COMMAND(OUTPUT "AntTweakBar/lib" COMMAND ${UNZIP} -o ${ATB_ZIP} DEPENDS ${ATB_ZIP})
 ADD_CUSTOM_COMMAND(OUTPUT "libs/AntTweakBar.dll" COMMAND cp "AntTweakBar/lib/*.dll" "AntTweakBar/lib/*.lib" "libs" COMMAND cp -a AntTweakBar/include/* include DEPENDS "AntTweakBar/lib")
 ADD_CUSTOM_TARGET(anttweakbar DEPENDS "libs/AntTweakBar.dll" )
 
@@ -47,7 +47,7 @@ ADD_CUSTOM_TARGET(imagemagick DEPENDS "libs/libMagickWand.a" )
 ##########################
 # freetype2
 ##########################
-SET(FT_VERSION 2.3.11)
+SET(FT_VERSION 2.4.10)
 SET(FT_ZIP "freetype-${FT_VERSION}.tar.gz")
 SET(FT_DOWNLOAD_URL "http://download.savannah.gnu.org/releases/freetype/${FT_ZIP}")
 ADD_CUSTOM_COMMAND(OUTPUT ${FT_ZIP} COMMAND ${URL_GRAB} -O ${FT_ZIP} ${FT_DOWNLOAD_URL})
@@ -82,10 +82,16 @@ ADD_CUSTOM_COMMAND(OUTPUT "libs/ftgl.dll"
 					DEPENDS "ftgl-${FTGL_TVERSION}/src/lib/ftgl.dll")
 ADD_CUSTOM_TARGET(ftgl-lib DEPENDS freetype2 "libs/ftgl.dll" )
 
+##########################
+# Pick up any mingw dlls that we might need
+# NOTE: This is really bad, we should come up with a better way to pull in exactly what we need
+##########################
+ADD_CUSTOM_COMMAND(OUTPUT "libs/libiconv-2.dll" COMMAND cp -r "/mingw/bin/*.dll" "libs" COMMAND cp "/c/GNUstep/GNUstep/System/Tools/*.dll" "libs")
+ADD_CUSTOM_TARGET(misc-libs DEPENDS "libs/libiconv-2.dll" )
 
 
 SET(ENV{PKG_CONFIG_PATH} ${CMAKE_CURRENT_BINARY_DIR}/libs/pkgconfig)
-ADD_CUSTOM_TARGET(mingw-libs DEPENDS freeglut anttweakbar imagemagick freetype2 ftgl-lib)
+ADD_CUSTOM_TARGET(mingw-libs DEPENDS freeglut anttweakbar imagemagick freetype2 ftgl-lib misc-libs)
 FILE(GLOB WINDLLS "${CMAKE_CURRENT_BINARY_DIR}/libs/*.dll")
 INSTALL(FILES ${WINDLLS} DESTINATION bin COMPONENT Binaries)
 

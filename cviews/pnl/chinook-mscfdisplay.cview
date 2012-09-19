@@ -320,7 +320,7 @@
 				colorB = 1;
 				colorG = 1;
 				colorR = 1;
-				fontfile = ./data/LinLibertine_Re.ttf;
+				fontfile = LinLibertine_Re.ttf;
 				isVisible = YES;
 				rotX = 0;
 				rotY = 0;
