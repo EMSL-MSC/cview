@@ -108,7 +108,7 @@ cviewall <PList file>\n\
 /* Attempt to load arguments from a PList file */
 void tryParseFile(const char *cFilePath, NSUserDefaults *args) {
 	NSString *err;
-	NSString *filePath = [NSString stringWithCString: cFilePath];
+	NSString *filePath = [NSString stringWithUTF8String: cFilePath];
 	NSURL *url = [NSURL URLWithString: filePath];
 	NSMutableData *file = [NSData dataWithContentsOfURL: url];
 	if (file == nil) {
@@ -133,7 +133,7 @@ void tryParseFile(const char *cFilePath, NSUserDefaults *args) {
 				format: &fmt
 				errorDescription: &err
 				];
-	NSLog(@"plist: %@ %@ %d %@",filePath,plist,fmt,err);
+	NSLog(@"plist: %@ %@ %ld %@",filePath,plist,fmt,err);
 	if(plist != nil) {
 		id url = [plist objectForKey: @"url"];
 		id metrics = [plist objectForKey: @"metrics"];
@@ -193,7 +193,8 @@ int main(int argc,char *argv[], char *env[]) {
 	Scene * scene1 = [[Scene alloc] init];
 
 	NSURL *baseurl = [NSURL URLWithString: [args stringForKey: @"url"]];
-	NSString *index = [NSString stringWithContentsOfURL: [NSURL URLWithString: @"index" relativeToURL: baseurl]];
+	NSStringEncoding enc;
+	NSString *index = [NSString stringWithContentsOfURL: [NSURL URLWithString: @"index" relativeToURL: baseurl] usedEncoding: &enc error:nil];
 	if (index == nil)
 		usage([NSString stringWithFormat: @"Index file not found at given URL:%@",baseurl],-2);
 	[cvasd setURL: baseurl];

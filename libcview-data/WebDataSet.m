@@ -114,7 +114,7 @@ static float blankdata[] = {
 	/* Sane Defaults until we have actual data */
 
 	if([self getDescription] == nil)
-		[super initWithName: key Width: 32 Height: 32];
+		[super initWithName: @"Blank DataSet" Width: 32 Height: 32];
 	else
 		[super initWithWidth: 32 Height: 32];
 	dataValid=NO;
@@ -122,8 +122,6 @@ static float blankdata[] = {
 	Yticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
 	allowRescale = YES;
 	rateSuffix = @"...";
-	if(textDescription == nil)
-		textDescription = @"Blank DataSet";
 	[data setData: [NSData dataWithBytes: blankdata length: sizeof(blankdata)]];
 
 	incomingData = [[NSMutableData data] retain];
@@ -277,7 +275,7 @@ static float blankdata[] = {
 			U();
 			[dataLock unlock];
 			stage = YTICK;
-			req = [NSURLRequest requestWithURL: YticksURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
+			req = [NSURLRequest requestWithURL: YticksURL cachePolicy: NSURLRequestReloadRevalidatingCacheData timeoutInterval: 60.0];
 			webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];
 			break;
 
@@ -298,7 +296,7 @@ static float blankdata[] = {
 			U();
 			[dataLock unlock];
 			stage = DATA;
-			req = [NSURLRequest requestWithURL: dataURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
+			req = [NSURLRequest requestWithURL: dataURL cachePolicy: NSURLRequestReloadRevalidatingCacheData timeoutInterval: 60.0];
 			webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];
 			break;
 
@@ -308,7 +306,7 @@ static float blankdata[] = {
 			if (width*height*sizeof(float) == [incomingData length]) {
 				[self autoScaleWithNewData: incomingData];
 			} else
-				NSLog(@"Very BAD! Incoming data was not the correct size. Width = %d Height = %d Width * Height = %d DataSet Size = %d", width, height, width * height, [incomingData length] / sizeof(float));
+				NSLog(@"Very BAD! Incoming data was not the correct size. Width = %d Height = %d Width * Height = %d DataSet Size = %ld", width, height, width * height, [incomingData length] / sizeof(float));
 
 			dataValid=YES;
 			[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];

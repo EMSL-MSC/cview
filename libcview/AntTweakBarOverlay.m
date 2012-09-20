@@ -83,11 +83,11 @@ All rights reserved.
 	object = [o retain];
 	return self;
 }
--dealloc {
+-(void)dealloc {
 	[name autorelease];
 	[object autorelease];
 	[super dealloc];
-	return self;
+	return;
 }
 @end
 

@@ -90,7 +90,8 @@ All rights reserved.
 		ptr=memchr(d,'\n',len);
 		if (ptr != NULL) {
 			i=ptr-d;
-			str = [NSString stringWithCString:d length: i];
+			d[i]=0;
+			str = [NSString stringWithUTF8String:d];
 			//NSLog(@"Headers String: %@",str);
 			arr = getStringFields(str);
 			columnCount = [arr count];

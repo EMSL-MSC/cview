@@ -135,7 +135,7 @@ All rights reserved.
 				[self toggleTweakersVisibility];
 				break;
 			case 'c':
-				NSLog(@"Retain Count: %d %d",[tweaker retainCount],[tweakoverlays retainCount]);
+				NSLog(@"Retain Count: %lu %lu",[tweaker retainCount],[tweakoverlays retainCount]);
 				break;
 			case 'q':
 				DUMPALLOCLIST(NO);

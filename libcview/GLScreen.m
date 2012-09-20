@@ -686,7 +686,6 @@ double mysecond()
 
 +(GLScreen *)getMaster {
 	return _theMaster_;
-	return self;
 }
 
 +setMaster: (GLScreen *)m {
