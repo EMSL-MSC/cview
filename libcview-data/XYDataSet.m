@@ -315,7 +315,7 @@ All rights reserved.
 
 	[super initWithPList: list];
 
-	dataURL = [NSURL URLWithString: [list objectForKey: @"dataURL"]];
+	dataURL = [[NSURL URLWithString: [list objectForKey: @"dataURL"]] retain] ;
 	theCol = [list objectForKey: @"column"]; //required field
 	[self readHeaders];
 	
@@ -328,13 +328,13 @@ All rights reserved.
 
 	tmp = [list objectForKey:@"X"];
 	if (tmp) {
-		theX = tmp;
+		theX = [tmp retain];
 		xIndex = [self convertTagToIndex: theX];
 	}
 
 	tmp = [list objectForKey:@"Y"];
 	if (tmp) {
-		theY = tmp;
+		theY = [tmp retain];
 		yIndex = [self convertTagToIndex: theY];
 	}
 
