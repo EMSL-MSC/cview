@@ -275,7 +275,7 @@ static float blankdata[] = {
 			U();
 			[dataLock unlock];
 			stage = YTICK;
-			req = [NSURLRequest requestWithURL: YticksURL cachePolicy: NSURLRequestReloadRevalidatingCacheData timeoutInterval: 60.0];
+			req = [NSURLRequest requestWithURL: YticksURL cachePolicy: NSURLRequestReloadIgnoringCacheData timeoutInterval: 60.0];
 			webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];
 			break;
 
@@ -296,7 +296,7 @@ static float blankdata[] = {
 			U();
 			[dataLock unlock];
 			stage = DATA;
-			req = [NSURLRequest requestWithURL: dataURL cachePolicy: NSURLRequestReloadRevalidatingCacheData timeoutInterval: 60.0];
+			req = [NSURLRequest requestWithURL: dataURL cachePolicy: NSURLRequestReloadIgnoringCacheData timeoutInterval: 60.0];
 			webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];
 			break;
 

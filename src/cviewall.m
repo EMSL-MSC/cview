@@ -194,7 +194,7 @@ int main(int argc,char *argv[], char *env[]) {
 
 	NSURL *baseurl = [NSURL URLWithString: [args stringForKey: @"url"]];
 	NSStringEncoding enc;
-	NSString *index = [NSString stringWithContentsOfURL: [NSURL URLWithString: @"index" relativeToURL: baseurl] usedEncoding: &enc error:nil];
+	NSString *index = [NSString stringWithContentsOfURL: [NSURL URLWithString: @"index" relativeToURL: baseurl] usedEncoding: &enc error:NULL];
 	if (index == nil)
 		usage([NSString stringWithFormat: @"Index file not found at given URL:%@",baseurl],-2);
 	[cvasd setURL: baseurl];
