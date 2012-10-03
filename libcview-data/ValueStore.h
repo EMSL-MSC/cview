@@ -57,21 +57,28 @@ All rights reserved.
 
 */
 /**
-	CView Data library
-	@author Evan Felix
-	@ingroup cviewdata
-*/
-#include "calcdataset.h"
-#import "ValueStore.h"
-#import "CalculatedDataSet.h"
-#import "DataSet.h"
-#import "DictionaryExtra.h"
-#import "ListComp.h"
-#import "SinDataSet.h"
-#import "UpdateRunLoop.h"
-#import "WebDataSet.h"
-#import "XYDataSet.h"
-#import "StreamDataSet.h"
+A Generic Value Store.  Implemented as a singleton, classes can store classes here using a 'key', and retrieve them later. 
 
-NSArray *getStringFields(NSString *str);
-int findStringInArray(NSArray *arr,NSString *str);
+@author Evan Felix
+@ingroup cviewdata
+*/
+#import <Foundation/Foundation.h>
+#import "PList.h"
+
+@interface ValueStore: NSObject <PList> {
+	NSMutableDictionary *values;
+}
++valueStore;
+/**Load a set of objects from an array of arrays.  Each element in the array is a triple consisting of: key,className,initData
+each class is required to comply with the PList protocol.
+*/
+-loadKeyValueArray: (NSArray*)array;
+/**Load an object as specified with a key and class name initializing it with data*/
+-loadKey: (NSString *)key withClass: (NSString *)clsName andData: (id)pListData;
+/** set a value for a specified key, if value is nil, it will remove the value */
+-(void)setKey: (NSString *)key withValue: (id)value;
+/** retrive a value from the store */
+-getValue: (NSString *)key;
+/** Return the number of objects stored in the ValueStore */
+-(NSUInteger)count;
+@end

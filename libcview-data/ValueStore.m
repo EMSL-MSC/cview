@@ -1,8 +1,8 @@
 /*
 
-This file is part of the CVIEW graphics system, which is goverened by the following License
+This file is port of the CVIEW graphics system, which is goverened by the following License
 
-Copyright © 2008-2012 Battelle Memorial Institute
+Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
 
 1.	Battelle Memorial Institute (hereinafter Battelle) hereby grants permission
@@ -56,22 +56,88 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-/**
-	CView Data library
-	@author Evan Felix
-	@ingroup cviewdata
-*/
-#include "calcdataset.h"
-#import "ValueStore.h"
-#import "CalculatedDataSet.h"
-#import "DataSet.h"
-#import "DictionaryExtra.h"
-#import "ListComp.h"
-#import "SinDataSet.h"
-#import "UpdateRunLoop.h"
-#import "WebDataSet.h"
-#import "XYDataSet.h"
-#import "StreamDataSet.h"
 
-NSArray *getStringFields(NSString *str);
-int findStringInArray(NSArray *arr,NSString *str);
+#import <Foundation/Foundation.h>
+#import "ValueStore.h"
+#import "ListComp.h"
+
+@implementation ValueStore 
+static ValueStore *singletonValueStore;
++(void)initialize {
+	if ([ValueStore class] == self) {
+		singletonValueStore = [[self alloc] init];
+	}
+}
++valueStore {
+	return singletonValueStore;
+}
+
+-(id)init {
+	[super init];
+	values=[[NSMutableDictionary dictionaryWithCapacity: 10] retain];
+	return self;
+}
+
+-(void)dealloc {
+	[values autorelease];
+	[super dealloc];
+}
+
+-getPList {
+	//return an array of triples sutable for loading with loadValueArray: call
+	NSArray *keys = [values allKeys];
+	NSMutableArray *res = [NSMutableArray arrayWithCapacity: [keys count]];
+	NSString *key;
+	NSEnumerator *e;
+	e = [keys objectEnumerator];
+	while ((key = [e nextObject])) {
+		id o = [values objectForKey: key];
+		NSArray *a = [NSArray arrayWithObjects: key,[o class],[o getPList],nil];
+		[res addObject: a];
+	}
+	NSLog(@"resultantarray: %@",res);
+	return res;
+}
+
+-initWithPList: (id)list {
+	//Dont actually implement, it moight be good to force this to use the singleton, but do we wipe then?...
+	NSLog(@"initWithPList called in singleton class");
+	return nil;
+};
+
+-loadKeyValueArray: (NSArray*)array {
+	NSEnumerator *e;
+	NSArray *a;
+	NSLog(@"loadValueArray %@",array);
+	e = [array objectEnumerator];
+	while ((a = [e nextObject])) {
+		NSLog(@"loading %@",a);
+		if ([a count]==3)
+			[self loadKey: [a objectAtIndex:0] withClass: [a objectAtIndex:1] andData: [a objectAtIndex:2]];
+	}
+	return self;
+}
+
+-loadKey: (NSString *)key withClass: (NSString *)clsName andData: (id)pListData {
+	Class c;
+	c = NSClassFromString(clsName);
+	NSLog(@"Load Class From %@ with %@",c,pListData);
+	if (c && [c conformsToProtocol: @protocol(PList)]) {
+		id o = [c alloc];
+		[o initWithPList: pListData];
+		[self setKey: key withValue: o];
+	}
+	return self;
+}
+-(void)setKey: (NSString *)key withValue: (id)value{
+	NSLog(@"setValue: %@ for Key: %@",key,value);
+	[values setValue: value forKey: key];
+	return; 
+}
+-getValue: (NSString *)key {
+	return [values objectForKey: key];
+}
+-(NSUInteger)count {
+	return [values count];
+}
+@end
