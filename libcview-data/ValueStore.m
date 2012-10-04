@@ -125,16 +125,16 @@ static ValueStore *singletonValueStore;
 	if (c && [c conformsToProtocol: @protocol(PList)]) {
 		id o = [c alloc];
 		[o initWithPList: pListData];
-		[self setKey: key withValue: o];
+		[self setKey: key withObject: o];
 	}
 	return self;
 }
--(void)setKey: (NSString *)key withValue: (id)value{
+-(void)setKey: (NSString *)key withObject: (id)value{
 	NSLog(@"setValue: %@ for Key: %@",key,value);
 	[values setValue: value forKey: key];
 	return; 
 }
--getValue: (NSString *)key {
+-getObject: (NSString *)key {
 	return [values objectForKey: key];
 }
 -(NSUInteger)count {

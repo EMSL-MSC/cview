@@ -176,7 +176,7 @@ static const char *gridTypeSelectors[] =	{
 
 		surfaceIndices = [[NSMutableData alloc] initWithLength: numSurfaceVertices*sizeof(GLuint)];
 		indices = (GLuint *)[surfaceIndices mutableBytes];
-			for(i=0;i<w-1;i++)
+		for(i=0;i<w-1;i++)
 			for(j=0;j<h;j++) {
 				indices[index++] = i*h + j;
 				indices[index++] = (i+1)*h + j;
@@ -215,8 +215,7 @@ static const char *gridTypeSelectors[] =	{
 	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
 	NSLog(@"dataSetClass is: %@", c);
 	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
-		ds=[c alloc];
-		[ds initWithPList: [list objectForKey: @"dataSet"]];
+		ds=[[c alloc] initWithPList: [list objectForKey: @"dataSet"]];
 		[self setDataSet: ds];
 	}
 	return self;

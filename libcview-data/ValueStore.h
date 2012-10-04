@@ -76,9 +76,9 @@ each class is required to comply with the PList protocol.
 /**Load an object as specified with a key and class name initializing it with data*/
 -loadKey: (NSString *)key withClass: (NSString *)clsName andData: (id)pListData;
 /** set a value for a specified key, if value is nil, it will remove the value */
--(void)setKey: (NSString *)key withValue: (id)value;
+-(void)setKey: (NSString *)key withObject: (id)value;
 /** retrive a value from the store */
--getValue: (NSString *)key;
+-getObject: (NSString *)key;
 /** Return the number of objects stored in the ValueStore */
 -(NSUInteger)count;
 @end
