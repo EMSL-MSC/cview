@@ -214,7 +214,7 @@ static const char *gridTypeSelectors[] =	{
 	Class c;
 	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
 	NSLog(@"dataSetClass is: %@ %@", c,[DataSet class]);
-	if (c && [c conformsToProtocol: @protocol(PList)] && [c isKindOfClass: [DataSet class]]) {
+	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
 		ds=[[c alloc] initWithPList: [list objectForKey: @"dataSet"]];
 		[self setDataSet: ds];
 	}
@@ -367,7 +367,9 @@ static const char *gridTypeSelectors[] =	{
 
 -drawPlane {
 	float dropit=-1.5;
-	int i;
+	int i,w,h;
+	w=[dataSet width];
+	h=[dataSet height];
 
 	glColor3f(0.5,0.0,0.0);
 
@@ -378,35 +380,35 @@ static const char *gridTypeSelectors[] =	{
 
 	//glNormal3f(0.0, -1.0, 0.0);
 	glVertex3f(0, dropit, 0 );
-	glVertex3f(0, dropit, [dataSet height] );
-	glVertex3f([dataSet width], dropit, [dataSet height] );
-	glVertex3f([dataSet width], dropit, 0 );
+	glVertex3f(0, dropit, h );
+	glVertex3f(w, dropit, h );
+	glVertex3f(w, dropit, 0 );
 
 	glEnd();
 
 	glColor3f(fontColorR,fontColorG,fontColorB);
 	if (yTicks) {
-		int p = [dataSet width];
+		int p = w;
 		glBegin(GL_LINES);
-		for (i = 0;i < [dataSet height];i += yTicks) {
+		for (i = 0;i < h;i += yTicks) {
 			glVertex3f(p,0.0,i);
 			glVertex3f(p+2.0/xscale,0,i);
 		}
 		glEnd();
-		for (i = 0;i < [dataSet height];i += yTicks) {
+		for (i = 0;i < h;i += yTicks) {
 			NSString *str = [dataSet rowTick: i];
 			drawString3D(p+2.5/xscale,0,i,GLUT_BITMAP_HELVETICA_12,str,0);
 		}
 	}
 	if (xTicks) {
-		int p = [dataSet height];
+		int p = h;
 		glBegin(GL_LINES);
-		for (i = 0;i < [dataSet width]; i += xTicks) {
+		for (i = 0;i < w; i += xTicks) {
 			glVertex3f(i,dropit,p);
 			glVertex3f(i,dropit,p+2.0/zscale);
 		}
 		glEnd();
-		for (i = 0;i < [dataSet width]; i += xTicks) {
+		for (i = 0;i < w; i += xTicks) {
 			NSString *str = [dataSet columnTick: i];
 			drawString3D(i,dropit,p+12/zscale,GLUT_BITMAP_HELVETICA_12,str,0);
 		}
@@ -478,6 +480,7 @@ static const char *gridTypeSelectors[] =	{
 
 -drawLines {
 	int i,j;
+	int w,h;
 	float *dl;
 	float *verts;
 	int prevPoint=0;
@@ -493,7 +496,10 @@ static const char *gridTypeSelectors[] =	{
 	glVertexPointer(3, GL_FLOAT, 0, verts);
 	glColorPointer(4, GL_FLOAT, 0, [colorRow mutableBytes]);
 
-	for (i=0;i<[dataSet width];i++) {
+	w=[dataSet width];
+	h=[dataSet height];
+
+	for (i=0;i<w;i++) {
 		dl=[dataSet dataRow: i];
 
 		/// @todo is there a gooder way to draw all the lines?
@@ -502,7 +508,7 @@ static const char *gridTypeSelectors[] =	{
 		verts[0] = (float)i;
 		countPoints = 1;
 		prevPoint=0;
-		for (j=1;j<[dataSet height];j++) {
+		for (j=1;j<h;j++) {
 			if(prevValue != dl[j]) {
 				if(j-1 != prevPoint) {
 					verts[countPoints*3+2] = (float)j-1;
