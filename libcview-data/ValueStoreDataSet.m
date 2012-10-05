@@ -61,16 +61,56 @@ All rights reserved.
 #import "ValueStore.h"
 
 @implementation ValueStoreDataSet
+-(void)forwardInvocation:(NSInvocation*)invocation
+{
+        NSLog(@"Invocation:%@ ",invocation);
+        [invocation invokeWithTarget:dataSet];
+}
++(void)forwardInvocation:(NSInvocation*)invocation
+{
+	NSLog(@"Invocation:%@ ",invocation);
+	[invocation invokeWithTarget:[DataSet class]];
+}
+-(NSMethodSignature*)methodSignatureForSelector:(SEL)selector
+{
+	NSLog(@"Imsfs: %@",dataSet);
+	NSMethodSignature *sig;
+	sig=[dataSet methodSignatureForSelector:selector];
+	NSLog(@"Signature:%@ ",sig);
+	return sig;
+}
++(NSMethodSignature*)methodSignatureForSelector:(SEL)selector
+{
+	NSLog(@"Cmsfs: %@",NSStringFromSelector(selector));
+	NSMethodSignature *sig;
+	sig=[DataSet methodSignatureForSelector:selector];
+	NSLog(@"Signature:%p ",sig);
+	return sig;
+}
++(BOOL)respondsToSelector:(SEL)selector {
+	NSLog(@"Responds to Selector: %@",NSStringFromSelector(selector));
+	if ([DataSet respondsToSelector:selector])
+		return YES;
+	return NO;
+}
 -getPList {
 	NSLog(@"ValueStoreDataSet getPList was called...");
-	return nil;	
+	return [NSDictionary dictionaryWithObjectsAndKeys: dataKey,@"key",nil];	
 }
 -initWithPList: (id)list {
-	[super initWithName: [list objectForKey: @"key"] Width: 1 Height: 1];
-
+	
 	NSLog(@"ValueStoreDataSet: %@",list);
+	dataKey = [[list objectForKey: @"key"] retain];
 	dataSet = [[ValueStore valueStore] getObject: [list objectForKey: @"key"]];
 
 	return self;
 };
++(BOOL)isKindOfClass: (Class)c {
+	NSLog(@"isKindOfClass: %p %p %d",c,[DataSet class],c==[DataSet class]);
+	return c==[DataSet class];
+}
+-(void)dealloc {
+	[super dealloc];
+	[dataKey autorelease];
+}
 @end

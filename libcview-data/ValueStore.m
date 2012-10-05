@@ -124,8 +124,9 @@ static ValueStore *singletonValueStore;
 	NSLog(@"Load Class From %@ with %@",c,pListData);
 	if (c && [c conformsToProtocol: @protocol(PList)]) {
 		id o = [c alloc];
-		[o initWithPList: pListData];
+		o = [o initWithPList: pListData];
 		[self setKey: key withObject: o];
+		[o autorelease];
 	}
 	return self;
 }

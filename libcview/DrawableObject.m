@@ -61,12 +61,13 @@ All rights reserved.
 
 @implementation DrawableObject 
 -init {
+	self=[super init];
 	isVisible=YES;
 	return self;
 }
 
 -initWithPList: (id)list {
-	[self init];
+	self=[self init];
 	isVisible = [[list objectForKey: @"isVisible" missing: @"YES"] boolValue];
 	name = [[list objectForKey: @"name" missing: @"Drawable"] retain];
 	return self;

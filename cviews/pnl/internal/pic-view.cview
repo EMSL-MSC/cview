@@ -5,7 +5,7 @@
     valueStore = (
 				("lustre_write","WebDataSet",
 				{
-				    baseURL = "http://pic-view/cluster/pic/";
+				    baseURL = "http://pic-view.pnl.gov/cluster/pic/";
 				    key = "lusclt.writekbs";
 				    name = "lusclt.writekbs";
 				    rateSuffix = "writekbs/sec";
@@ -68,7 +68,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://pic-view/cluster/pic/";
+				    baseURL = "http://pic-view.pnl.gov/cluster/pic/";
 				    key = "cputotals.sys";
 				    name = "cputotals.sys";
 				    rateSuffix = percent;
@@ -104,7 +104,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://pic-view/cluster/pic/";
+				    baseURL = "http://pic-view.pnl.gov/cluster/pic/";
 				    key = "cputotals.user";
 				    name = "cputotals.user";
 				    rateSuffix = percent;
@@ -148,13 +148,13 @@
 				    name = "Interconnect GB/s";
 				    planes = (
 					{
-					    baseURL = "http://pic-view/cluster/pic/";
+					    baseURL = "http://pic-view.pnl.gov/cluster/pic/";
 					    key = "iconnect.kbout";
 					    name = "iconnect.kbout";
 					    rateSuffix = "kb/sec";
 					},
 					{
-					    baseURL = "http://pic-view/cluster/pic/";
+					    baseURL = "http://pic-view.pnl.gov/cluster/pic/";
 					    key = "iconnect.kbin";
 					    name = "iconnect.kbin";
 					    rateSuffix = "kb/sec";
@@ -193,7 +193,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://pic-view/cluster/pic/";
+				    baseURL = "http://pic-view.pnl.gov/cluster/pic/";
 				    key = "lusclt.readkbs";
 				    name = "lusclt.readkbs";
 				    rateSuffix = "readkbs/sec";
@@ -229,12 +229,9 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://pic-view/cluster/pic/";
-				    key = "lusclt.writekbs";
-				    name = "lusclt.writekbs";
-				    rateSuffix = "writekbs/sec";
+				    key = "lustre_write";
 				};
-				dataSetClass = WebDataSet;
+				dataSetClass = ValueStoreDataSet;
 				fontColorB = 1;
 				fontColorG = 1;
 				fontColorR = 1;

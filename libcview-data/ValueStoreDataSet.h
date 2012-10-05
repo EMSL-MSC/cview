@@ -66,7 +66,11 @@ All rights reserved.
 	@author Evan Felix
 	@ingroup cviewdata
 */
-@interface ValueStoreDataSet: DataSet <PList> {
+@interface ValueStoreDataSet: NSProxy <PList> {
 	DataSet *dataSet;
+	NSString *dataKey;
 }
+-(void)forwardInvocation:(NSInvocation*)invocation;
+-(NSMethodSignature*)methodSignatureForSelector:(SEL)selector;
++(BOOL)respondsToSelector:(SEL)selector;
 @end
