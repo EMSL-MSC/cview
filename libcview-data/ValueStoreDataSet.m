@@ -63,32 +63,27 @@ All rights reserved.
 @implementation ValueStoreDataSet
 -(void)forwardInvocation:(NSInvocation*)invocation
 {
-        NSLog(@"Invocation:%@ ",invocation);
         [invocation invokeWithTarget:dataSet];
 }
 +(void)forwardInvocation:(NSInvocation*)invocation
 {
-	NSLog(@"Invocation:%@ ",invocation);
 	[invocation invokeWithTarget:[DataSet class]];
 }
 -(NSMethodSignature*)methodSignatureForSelector:(SEL)selector
 {
-	NSLog(@"Imsfs: %@",dataSet);
+	//NSLog(@"Imsfs: %@",NSStringFromSelector(selector));
 	NSMethodSignature *sig;
 	sig=[dataSet methodSignatureForSelector:selector];
-	NSLog(@"Signature:%@ ",sig);
 	return sig;
 }
 +(NSMethodSignature*)methodSignatureForSelector:(SEL)selector
 {
-	NSLog(@"Cmsfs: %@",NSStringFromSelector(selector));
+	//NSLog(@"Cmsfs: %@",NSStringFromSelector(selector));
 	NSMethodSignature *sig;
 	sig=[DataSet methodSignatureForSelector:selector];
-	NSLog(@"Signature:%p ",sig);
 	return sig;
 }
 +(BOOL)respondsToSelector:(SEL)selector {
-	NSLog(@"Responds to Selector: %@",NSStringFromSelector(selector));
 	if ([DataSet respondsToSelector:selector])
 		return YES;
 	return NO;
@@ -98,15 +93,16 @@ All rights reserved.
 	return [NSDictionary dictionaryWithObjectsAndKeys: dataKey,@"key",nil];	
 }
 -initWithPList: (id)list {
-	
-	NSLog(@"ValueStoreDataSet: %@",list);
+	NSLog(@"initWithPList: ValueStoreDataSet: %@",list);
 	dataKey = [[list objectForKey: @"key"] retain];
 	dataSet = [[ValueStore valueStore] getObject: [list objectForKey: @"key"]];
-
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:dataSet];
 	return self;
 };
-+(BOOL)isKindOfClass: (Class)c {
-	NSLog(@"isKindOfClass: %p %p %d",c,[DataSet class],c==[DataSet class]);
+-(void)receiveResizeNotification: (NSNotification *)notification {
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetResize" object: self];
+}
++(BOOL)isSubclassOfClass: (Class)c {
 	return c==[DataSet class];
 }
 -(void)dealloc {

@@ -70,7 +70,4 @@ All rights reserved.
 	DataSet *dataSet;
 	NSString *dataKey;
 }
--(void)forwardInvocation:(NSInvocation*)invocation;
--(NSMethodSignature*)methodSignatureForSelector:(SEL)selector;
-+(BOOL)respondsToSelector:(SEL)selector;
 @end
