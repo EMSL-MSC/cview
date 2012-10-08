@@ -70,4 +70,5 @@ All rights reserved.
 	DataSet *dataSet;
 	NSString *dataKey;
 }
+-(NSString*) className;
 @end

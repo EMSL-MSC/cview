@@ -203,7 +203,7 @@ static float bar_quads[72] = {
 	NSLog(@"getPList: %@",self);
 	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary: [super getPList]];
 	[dict setObject: [dataSet getPList] forKey: @"dataSet"];
-	[dict setObject: [dataSet class] forKey: @"dataSetClass"];
+	[dict setObject: [dataSet className] forKey: @"dataSetClass"];
 	[dict setObject: [NSNumber numberWithFloat: fontScale] forKey: @"fontScale"];
 	[dict setObject: [NSNumber numberWithFloat: fontColorR] forKey: @"fontColorR"];
 	[dict setObject: [NSNumber numberWithFloat: fontColorG] forKey: @"fontColorG"];

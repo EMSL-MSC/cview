@@ -214,7 +214,7 @@ static const char *gridTypeSelectors[] =	{
 
 	Class c;
 	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
-	NSLog(@"dataSetClass is: %@ %@", c,[DataSet class]);
+	NSLog(@"dataSetClass is: %@", [c className]);
 	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
 		ds=[[c alloc] initWithPList: [list objectForKey: @"dataSet"]];
 		[self setDataSet: ds];
@@ -228,7 +228,7 @@ static const char *gridTypeSelectors[] =	{
 	[dict setObject: [NSNumber numberWithInt: xTicks] forKey: @"xTicks"];
 	[dict setObject: [NSNumber numberWithInt: yTicks] forKey: @"yTicks"];
 	[dict setObject: [dataSet getPList] forKey: @"dataSet"];
-	[dict setObject: [dataSet class] forKey: @"dataSetClass"];
+	[dict setObject: [dataSet className] forKey: @"dataSetClass"];
 	[dict setObject: [NSNumber numberWithFloat: fontScale] forKey: @"fontScale"];
 	[dict setObject: [NSNumber numberWithFloat: fontColorR] forKey: @"fontColorR"];
 	[dict setObject: [NSNumber numberWithFloat: fontColorG] forKey: @"fontColorG"];

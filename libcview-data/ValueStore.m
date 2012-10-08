@@ -131,7 +131,7 @@ static ValueStore *singletonValueStore;
 	return self;
 }
 -(void)setKey: (NSString *)key withObject: (id)value{
-	NSLog(@"setValue: %@ for Key: %@",key,value);
+	NSLog(@"setValue: %@ for Key: %@",value,key);
 	[values setValue: value forKey: key];
 	return; 
 }

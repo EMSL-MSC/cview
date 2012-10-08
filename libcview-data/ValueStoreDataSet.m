@@ -63,7 +63,7 @@ All rights reserved.
 @implementation ValueStoreDataSet
 -(void)forwardInvocation:(NSInvocation*)invocation
 {
-        [invocation invokeWithTarget:dataSet];
+	[invocation invokeWithTarget:dataSet];
 }
 +(void)forwardInvocation:(NSInvocation*)invocation
 {
@@ -95,18 +95,30 @@ All rights reserved.
 -initWithPList: (id)list {
 	NSLog(@"initWithPList: ValueStoreDataSet: %@",list);
 	dataKey = [[list objectForKey: @"key"] retain];
-	dataSet = [[ValueStore valueStore] getObject: [list objectForKey: @"key"]];
+	dataSet = [[[ValueStore valueStore] getObject: dataKey] retain];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:dataSet];
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveUpdateNotification:) name:@"DataSetUpdate" object:dataSet];
 	return self;
 };
+
 -(void)receiveResizeNotification: (NSNotification *)notification {
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetResize" object: self];
+}
+-(void)receiveUpdateNotification: (NSNotification *)notification {
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
 }
 +(BOOL)isSubclassOfClass: (Class)c {
 	return c==[DataSet class];
 }
+-(NSString*) className
+{
+	//Override so plist creation gets the proper class name
+	return NSStringFromClass([self class]);
+}
+
 -(void)dealloc {
 	[super dealloc];
 	[dataKey autorelease];
+	[dataSet autorelease];
 }
 @end
