@@ -23,37 +23,6 @@
 	    }
 	),
 	(
-	    ibout,
-	    WebDataSet,
-	    {
-		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
-		key = "iconnect.kbout";
-		name = "iconnect.kbout";
-		rateSuffix = "kb/sec";
-	    }
-	),
-	(
-	    totalib,
-	    CalculatedDataSet,
-	    {
-		classes = (
-		    ValueStoreDataSet,
-		    ValueStoreDataSet
-		);
-		formula = "$0:$1:+:1024:/:1024:/";
-		name = "Interconnect GB/s";
-		planes = (
-		    {
-			key = ibout;
-		    },
-		    {
-			key = ibin;
-		    }
-		);
-		rateSuffix = "GB/s";
-	    }
-	),
-	(
 	    "cpu_user",
 	    WebDataSet,
 	    {
@@ -74,6 +43,16 @@
 	    }
 	),
 	(
+	    ibout,
+	    WebDataSet,
+	    {
+		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
+		key = "iconnect.kbout";
+		name = "iconnect.kbout";
+		rateSuffix = "kb/sec";
+	    }
+	),
+	(
 	    "lustre_read",
 	    WebDataSet,
 	    {
@@ -81,6 +60,27 @@
 		key = "lusclt.readkbs";
 		name = "lusclt.readkbs";
 		rateSuffix = "readkbs/sec";
+	    }
+	),
+	(
+	    ib,
+	    CalculatedDataSet,
+	    {
+		classes = (
+		    ValueStoreDataSet,
+		    ValueStoreDataSet
+		);
+		formula = "$0:$1:+:1024:/:1024:/";
+		name = "Interconnect GB/s";
+		planes = (
+		    {
+			key = ibout;
+		    },
+		    {
+			key = ibin;
+		    }
+		);
+		rateSuffix = "GB/s";
 	    }
 	)
     );
@@ -208,7 +208,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    key = totalib;
+				    key = ib;
 				};
 				dataSetClass = ValueStoreDataSet;
 				fontColorB = 1;

@@ -124,7 +124,7 @@ typedef enum { CT_FIXED=0, CT_FG, CT_FGT, CT_BG, CT_BGT } ColorType;
 	NSError *err = nil;
 	NSStringEncoding enc;
     NSLog(@"initWithFile: %@",filename);
-    NSString *linestring = [NSString stringWithContentsOfFile: filename usedEncoding: &enc error: &err];
+    NSString *linestring = [NSString stringWithContentsOfFile: find_resource_path(filename) usedEncoding: &enc error: &err];
 	if (enc != NSUTF8StringEncoding) {
 		NSLog(@"Strange file encoding seen for %@: %lu",filename,enc);
 	}
@@ -179,7 +179,7 @@ typedef enum { CT_FIXED=0, CT_FG, CT_FGT, CT_BG, CT_BGT } ColorType;
 		return [self initWithString: dataSource];
 	}
 	else if ([from compare: FROMFILE_STRING] == NSOrderedSame) {
-		return [self initWithFile: find_resource_path(dataSource)];
+		return [self initWithFile: dataSource];
 	}
 	else {
 		NSLog(@"Bad Source in GGR:%@",from);

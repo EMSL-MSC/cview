@@ -60,10 +60,21 @@ All rights reserved.
 #import "ValueStoreDataSet.h"
 #import "ValueStore.h"
 
+
+
 @implementation ValueStoreDataSet
+static DataSet *blank;
++initialize {
+
+	blank = [[DataSet alloc] initWithName: @"TotallyBlank" Width:32 Height: 32];
+}
 -(void)forwardInvocation:(NSInvocation*)invocation
 {
-	[invocation invokeWithTarget:dataSet];
+	DataSet *ds;
+	if (dataSet == nil)
+		[self validateDataSet];
+	ds = dataSet?dataSet:blank;
+	[invocation invokeWithTarget:ds];
 }
 +(void)forwardInvocation:(NSInvocation*)invocation
 {
@@ -71,9 +82,13 @@ All rights reserved.
 }
 -(NSMethodSignature*)methodSignatureForSelector:(SEL)selector
 {
+	DataSet *ds;
+	if (dataSet == nil)
+		[self validateDataSet];
+	ds = dataSet?dataSet:blank;
 	//NSLog(@"Imsfs: %@",NSStringFromSelector(selector));
 	NSMethodSignature *sig;
-	sig=[dataSet methodSignatureForSelector:selector];
+	sig=[ds methodSignatureForSelector:selector];
 	return sig;
 }
 +(NSMethodSignature*)methodSignatureForSelector:(SEL)selector
@@ -95,9 +110,18 @@ All rights reserved.
 -initWithPList: (id)list {
 	NSLog(@"initWithPList: ValueStoreDataSet: %@",list);
 	dataKey = [[list objectForKey: @"key"] retain];
+	[self validateDataSet];
+	return self;
+}
+
+-(void)validateDataSet {
 	dataSet = [[[ValueStore valueStore] getObject: dataKey] retain];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:dataSet];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveUpdateNotification:) name:@"DataSetUpdate" object:dataSet];
+	if (dataSet) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:dataSet];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveUpdateNotification:) name:@"DataSetUpdate" object:dataSet];
+	}
+	else
+		NSLog(@"No DataSet Yet");
 	return self;
 };
 

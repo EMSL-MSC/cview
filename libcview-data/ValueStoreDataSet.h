@@ -70,5 +70,8 @@ All rights reserved.
 	DataSet *dataSet;
 	NSString *dataKey;
 }
+/** get Class name */
 -(NSString*) className;
+/**internal function*/
+-(void)validateDataSet;
 @end
