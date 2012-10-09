@@ -114,7 +114,7 @@ static float blankdata[] = {
 	/* Sane Defaults until we have actual data */
 
 	if([self getDescription] == nil)
-		[super initWithName: @"Blank DataSet" Width: 32 Height: 32];
+		[super initWithName: name Width: 32 Height: 32];
 	else
 		[super initWithWidth: 32 Height: 32];
 	dataValid=NO;

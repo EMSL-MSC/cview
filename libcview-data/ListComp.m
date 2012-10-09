@@ -82,5 +82,24 @@ int nsarray_integer = 7;
 
 	return arr;
 }
+-(NSArray *)arrayObjectsFromPerformedSelector: (SEL)aSelector withObject: (id)arg {
+	SEL oaiSel = @selector(objectAtIndex:);
+
+	NSMutableArray *arr = [NSMutableArray arrayWithCapacity: [self count]];
+
+	unsigned c = [self count];
+	if ( c > 0 ) {
+		IMP get = [self methodForSelector: oaiSel];
+		unsigned  i = 0;
+		
+		while (i < c) {
+			id res = [(*get)(self, oaiSel, i) performSelector: aSelector withObject: arg];
+          	[arr insertObject: res atIndex: i];
+			i++;
+        }
+	}
+
+	return arr;
+}
 @end
 

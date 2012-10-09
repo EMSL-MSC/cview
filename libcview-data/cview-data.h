@@ -2,7 +2,7 @@
 
 This file is part of the CVIEW graphics system, which is goverened by the following License
 
-Copyright © 2008,2009, Battelle Memorial Institute
+Copyright © 2008-2012 Battelle Memorial Institute
 All rights reserved.
 
 1.	Battelle Memorial Institute (hereinafter Battelle) hereby grants permission
@@ -62,6 +62,7 @@ All rights reserved.
 	@ingroup cviewdata
 */
 #include "calcdataset.h"
+#import "ValueStore.h"
 #import "CalculatedDataSet.h"
 #import "DataSet.h"
 #import "DictionaryExtra.h"

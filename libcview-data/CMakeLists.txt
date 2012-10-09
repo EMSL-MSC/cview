@@ -8,6 +8,8 @@ SET(CVIEW_DATA_CLASSES
 	SinDataSet
 	StreamDataSet
 	UpdateRunLoop
+	ValueStore
+	ValueStoreDataSet
 	WebDataSet
 	XYDataSet
 )

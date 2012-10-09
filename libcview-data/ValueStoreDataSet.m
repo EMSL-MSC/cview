@@ -2,7 +2,7 @@
 
 This file is port of the CVIEW graphics system, which is goverened by the following License
 
-Copyright © 2008,2009, Battelle Memorial Institute
+Copyright © 2008-2012 Battelle Memorial Institute
 All rights reserved.
 
 1.	Battelle Memorial Institute (hereinafter Battelle) hereby grants permission
@@ -56,70 +56,99 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-#import "DrawableObject.h"
-#import "DictionaryExtra.h"
+#import <Foundation/Foundation.h>
+#import "ValueStoreDataSet.h"
+#import "ValueStore.h"
 
-@implementation DrawableObject 
--init {
-	self=[super init];
-	isVisible=YES;
-	return self;
+
+
+@implementation ValueStoreDataSet
+static DataSet *blank;
++(void)initialize {
+	blank = [[DataSet alloc] initWithName: @"TotallyBlank" Width:32 Height: 32];
+}
+
++(NSMethodSignature*)methodSignatureForSelector:(SEL)selector {
+	//NSLog(@"Cmsfs: %@",NSStringFromSelector(selector));
+	NSMethodSignature *sig;
+	sig=[DataSet methodSignatureForSelector:selector];
+	return sig;
+}
+
++(BOOL)respondsToSelector:(SEL)selector {
+	if ([DataSet respondsToSelector:selector])
+		return YES;
+	return NO;
+}
+
+//Needed to handle class functions such as conformsToProtocol:, and isKindOf:, etc
++(void)forwardInvocation:(NSInvocation*)invocation {
+	[invocation invokeWithTarget:[DataSet class]];
+}
+
++(BOOL)isSubclassOfClass: (Class)c {
+	return c==[DataSet class];
+}
+
+-(void)forwardInvocation:(NSInvocation*)invocation {
+	DataSet *ds;
+	if (dataSet == nil)
+		[self validateDataSet];
+	ds = dataSet?dataSet:blank;
+	[invocation invokeWithTarget:ds];
+}
+
+-(NSMethodSignature*)methodSignatureForSelector:(SEL)selector {
+	DataSet *ds;
+	if (dataSet == nil)
+		[self validateDataSet];
+	ds = dataSet?dataSet:blank;
+	//NSLog(@"Imsfs: %@",NSStringFromSelector(selector));
+	NSMethodSignature *sig;
+	sig=[ds methodSignatureForSelector:selector];
+	return sig;
+}
+
+-getPList {
+	NSLog(@"ValueStoreDataSet getPList was called...");
+	return [NSDictionary dictionaryWithObjectsAndKeys: dataKey,@"key",nil];	
 }
 
 -initWithPList: (id)list {
-	self=[self init];
-	isVisible = [[list objectForKey: @"isVisible" missing: @"YES"] boolValue];
-	name = [[list objectForKey: @"name" missing: @"Drawable"] retain];
+	NSLog(@"initWithPList: ValueStoreDataSet: %@",list);
+	dataKey = [[list objectForKey: @"key"] retain];
+	[self validateDataSet];
 	return self;
 }
- 
--getPList {
-	NSLog(@"getPList: %@",self);
-	NSMutableDictionary *plist = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
-		[NSNumber numberWithBool: isVisible],@"isVisible",
-		nil];
-        if ([name compare: @"Drawable"] != NSOrderedSame) {
-                [plist setObject: name forKey: @"name"];
-        }
-	return plist;
-} 
+
+-(void)validateDataSet {
+	dataSet = [[[ValueStore valueStore] getObject: dataKey] retain];
+	if (dataSet) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:dataSet];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveUpdateNotification:) name:@"DataSetUpdate" object:dataSet];
+	}
+	else
+		NSLog(@"No DataSet Yet");
+	return;
+};
+
+-(void)receiveResizeNotification: (NSNotification *)notification {
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetResize" object: self];
+}
+
+-(void)receiveUpdateNotification: (NSNotification *)notification {
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
+}
+
+-(NSString*) className
+{
+	//Override so plist creation gets the proper class name
+	return NSStringFromClass([self class]);
+}
 
 -(void)dealloc {
-	[name autorelease];
-	return [super dealloc];
-}
-
--(id) glDraw {
-	NSLog(@"Ahh... someone Screwed up and didnt subclass correctly...");
-	return self;
-}
--(id) glPickDraw {
-	return self;  // Someone didn't subclass, so he/she doesn't care about our pickdrawing abilities..... so sad! :-(
-}
--show {
-	isVisible = YES;
-	return self;
-}
--hide {
-	isVisible = NO;
-	return self;
-}
--(BOOL)visible {
-	return isVisible;
-}
--(int)width {
-	return 1;
-}
--(int)height {
-	return 1;
-}
--(NSString*)getName {
-	return name;
-}
--setName: (NSString*)n {
-	[n retain];
-	[name autorelease];
-	name = n;
-	return self;
+	[super dealloc];
+	[dataKey autorelease];
+	[dataSet autorelease];
 }
 @end

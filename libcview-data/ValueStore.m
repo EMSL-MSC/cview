@@ -56,70 +56,89 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-#import "DrawableObject.h"
-#import "DictionaryExtra.h"
 
-@implementation DrawableObject 
--init {
-	self=[super init];
-	isVisible=YES;
+#import <Foundation/Foundation.h>
+#import "ValueStore.h"
+#import "ListComp.h"
+
+@implementation ValueStore 
+static ValueStore *singletonValueStore;
++(void)initialize {
+	if ([ValueStore class] == self) {
+		singletonValueStore = [[self alloc] init];
+	}
+}
++valueStore {
+	return singletonValueStore;
+}
+
+-(id)init {
+	[super init];
+	values=[[NSMutableDictionary dictionaryWithCapacity: 10] retain];
 	return self;
+}
+
+-(void)dealloc {
+	[values autorelease];
+	[super dealloc];
+}
+
+-getPList {
+	//return an array of triples sutable for loading with loadValueArray: call
+	NSArray *keys = [values allKeys];
+	NSMutableArray *res = [NSMutableArray arrayWithCapacity: [keys count]];
+	NSString *key;
+	NSEnumerator *e;
+	e = [keys objectEnumerator];
+	while ((key = [e nextObject])) {
+		id o = [values objectForKey: key];
+		NSArray *a = [NSArray arrayWithObjects: key,[o class],[o getPList],nil];
+		[res addObject: a];
+	}
+	NSLog(@"resultantarray: %@",res);
+	return res;
 }
 
 -initWithPList: (id)list {
-	self=[self init];
-	isVisible = [[list objectForKey: @"isVisible" missing: @"YES"] boolValue];
-	name = [[list objectForKey: @"name" missing: @"Drawable"] retain];
-	return self;
-}
- 
--getPList {
-	NSLog(@"getPList: %@",self);
-	NSMutableDictionary *plist = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
-		[NSNumber numberWithBool: isVisible],@"isVisible",
-		nil];
-        if ([name compare: @"Drawable"] != NSOrderedSame) {
-                [plist setObject: name forKey: @"name"];
-        }
-	return plist;
-} 
+	//Dont actually implement, it might be good to force this to use the singleton, but do we wipe then?...
+	NSLog(@"initWithPList called in singleton class");
+	return nil;
+};
 
--(void)dealloc {
-	[name autorelease];
-	return [super dealloc];
+-loadKeyValueArray: (NSArray*)array {
+	NSEnumerator *e;
+	NSArray *a;
+	NSLog(@"loadValueArray %@",array);
+	e = [array objectEnumerator];
+	while ((a = [e nextObject])) {
+		NSLog(@"loading %@",a);
+		if ([a count]==3)
+			[self loadKey: [a objectAtIndex:0] withClass: [a objectAtIndex:1] andData: [a objectAtIndex:2]];
+	}
+	return self;
 }
 
--(id) glDraw {
-	NSLog(@"Ahh... someone Screwed up and didnt subclass correctly...");
+-loadKey: (NSString *)key withClass: (NSString *)clsName andData: (id)pListData {
+	Class c;
+	c = NSClassFromString(clsName);
+	NSLog(@"Load Class From %@ with %@",c,pListData);
+	if (c && [c conformsToProtocol: @protocol(PList)]) {
+		id o = [c alloc];
+		o = [o initWithPList: pListData];
+		[self setKey: key withObject: o];
+		[o autorelease];
+	}
 	return self;
 }
--(id) glPickDraw {
-	return self;  // Someone didn't subclass, so he/she doesn't care about our pickdrawing abilities..... so sad! :-(
+-(void)setKey: (NSString *)key withObject: (id)value{
+	NSLog(@"setValue: %@ for Key: %@",value,key);
+	[values setValue: value forKey: key];
+	return; 
 }
--show {
-	isVisible = YES;
-	return self;
+-getObject: (NSString *)key {
+	return [values objectForKey: key];
 }
--hide {
-	isVisible = NO;
-	return self;
-}
--(BOOL)visible {
-	return isVisible;
-}
--(int)width {
-	return 1;
-}
--(int)height {
-	return 1;
-}
--(NSString*)getName {
-	return name;
-}
--setName: (NSString*)n {
-	[n retain];
-	[name autorelease];
-	name = n;
-	return self;
+-(NSUInteger)count {
+	return [values count];
 }
 @end

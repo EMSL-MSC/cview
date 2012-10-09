@@ -1,8 +1,8 @@
 /*
 
-This file is port of the CVIEW graphics system, which is goverened by the following License
+This file is part of the CVIEW graphics system, which is goverened by the following License
 
-Copyright © 2008,2009, Battelle Memorial Institute
+Copyright © 2008-2012 Battelle Memorial Institute
 All rights reserved.
 
 1.	Battelle Memorial Institute (hereinafter Battelle) hereby grants permission
@@ -56,70 +56,22 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-#import "DrawableObject.h"
-#import "DictionaryExtra.h"
+#import <Foundation/Foundation.h>
+#import "DataSet.h"
 
-@implementation DrawableObject 
--init {
-	self=[super init];
-	isVisible=YES;
-	return self;
-}
 
--initWithPList: (id)list {
-	self=[self init];
-	isVisible = [[list objectForKey: @"isVisible" missing: @"YES"] boolValue];
-	name = [[list objectForKey: @"name" missing: @"Drawable"] retain];
-	return self;
-}
- 
--getPList {
-	NSLog(@"getPList: %@",self);
-	NSMutableDictionary *plist = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
-		[NSNumber numberWithBool: isVisible],@"isVisible",
-		nil];
-        if ([name compare: @"Drawable"] != NSOrderedSame) {
-                [plist setObject: name forKey: @"name"];
-        }
-	return plist;
-} 
+/**
+	Load a Dataset from the ValueStore Has no direct DataSet functionality, and normally returns another dataset in its place.  Hopefully we can integrate some of this functionality directly into the other classes.
 
--(void)dealloc {
-	[name autorelease];
-	return [super dealloc];
+	@author Evan Felix
+	@ingroup cviewdata
+*/
+@interface ValueStoreDataSet: NSProxy <PList> {
+	DataSet *dataSet;
+	NSString *dataKey;
 }
-
--(id) glDraw {
-	NSLog(@"Ahh... someone Screwed up and didnt subclass correctly...");
-	return self;
-}
--(id) glPickDraw {
-	return self;  // Someone didn't subclass, so he/she doesn't care about our pickdrawing abilities..... so sad! :-(
-}
--show {
-	isVisible = YES;
-	return self;
-}
--hide {
-	isVisible = NO;
-	return self;
-}
--(BOOL)visible {
-	return isVisible;
-}
--(int)width {
-	return 1;
-}
--(int)height {
-	return 1;
-}
--(NSString*)getName {
-	return name;
-}
--setName: (NSString*)n {
-	[n retain];
-	[name autorelease];
-	name = n;
-	return self;
-}
+/** get Class name */
+-(NSString*) className;
+/**internal function*/
+-(void)validateDataSet;
 @end
