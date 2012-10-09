@@ -64,24 +64,41 @@ All rights reserved.
 
 @implementation ValueStoreDataSet
 static DataSet *blank;
-+initialize {
-
++(void)initialize {
 	blank = [[DataSet alloc] initWithName: @"TotallyBlank" Width:32 Height: 32];
 }
--(void)forwardInvocation:(NSInvocation*)invocation
-{
+
++(NSMethodSignature*)methodSignatureForSelector:(SEL)selector {
+	//NSLog(@"Cmsfs: %@",NSStringFromSelector(selector));
+	NSMethodSignature *sig;
+	sig=[DataSet methodSignatureForSelector:selector];
+	return sig;
+}
+
++(BOOL)respondsToSelector:(SEL)selector {
+	if ([DataSet respondsToSelector:selector])
+		return YES;
+	return NO;
+}
+
+//Needed to handle class functions such as conformsToProtocol:, and isKindOf:, etc
++(void)forwardInvocation:(NSInvocation*)invocation {
+	[invocation invokeWithTarget:[DataSet class]];
+}
+
++(BOOL)isSubclassOfClass: (Class)c {
+	return c==[DataSet class];
+}
+
+-(void)forwardInvocation:(NSInvocation*)invocation {
 	DataSet *ds;
 	if (dataSet == nil)
 		[self validateDataSet];
 	ds = dataSet?dataSet:blank;
 	[invocation invokeWithTarget:ds];
 }
-+(void)forwardInvocation:(NSInvocation*)invocation
-{
-	[invocation invokeWithTarget:[DataSet class]];
-}
--(NSMethodSignature*)methodSignatureForSelector:(SEL)selector
-{
+
+-(NSMethodSignature*)methodSignatureForSelector:(SEL)selector {
 	DataSet *ds;
 	if (dataSet == nil)
 		[self validateDataSet];
@@ -91,22 +108,12 @@ static DataSet *blank;
 	sig=[ds methodSignatureForSelector:selector];
 	return sig;
 }
-+(NSMethodSignature*)methodSignatureForSelector:(SEL)selector
-{
-	//NSLog(@"Cmsfs: %@",NSStringFromSelector(selector));
-	NSMethodSignature *sig;
-	sig=[DataSet methodSignatureForSelector:selector];
-	return sig;
-}
-+(BOOL)respondsToSelector:(SEL)selector {
-	if ([DataSet respondsToSelector:selector])
-		return YES;
-	return NO;
-}
+
 -getPList {
 	NSLog(@"ValueStoreDataSet getPList was called...");
 	return [NSDictionary dictionaryWithObjectsAndKeys: dataKey,@"key",nil];	
 }
+
 -initWithPList: (id)list {
 	NSLog(@"initWithPList: ValueStoreDataSet: %@",list);
 	dataKey = [[list objectForKey: @"key"] retain];
@@ -122,18 +129,17 @@ static DataSet *blank;
 	}
 	else
 		NSLog(@"No DataSet Yet");
-	return self;
+	return;
 };
 
 -(void)receiveResizeNotification: (NSNotification *)notification {
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetResize" object: self];
 }
+
 -(void)receiveUpdateNotification: (NSNotification *)notification {
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
 }
-+(BOOL)isSubclassOfClass: (Class)c {
-	return c==[DataSet class];
-}
+
 -(NSString*) className
 {
 	//Override so plist creation gets the proper class name

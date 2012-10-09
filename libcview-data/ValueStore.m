@@ -100,7 +100,7 @@ static ValueStore *singletonValueStore;
 }
 
 -initWithPList: (id)list {
-	//Dont actually implement, it moight be good to force this to use the singleton, but do we wipe then?...
+	//Dont actually implement, it might be good to force this to use the singleton, but do we wipe then?...
 	NSLog(@"initWithPList called in singleton class");
 	return nil;
 };

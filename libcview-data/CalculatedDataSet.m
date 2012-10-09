@@ -359,7 +359,7 @@ All rights reserved.
 	/* The last point in a row is going to be bogus on certain classes of calculated data
 	 * sets. Particularly anything that uses shiftvariables.
 	 */
-	retdata[height-1] = 1;
+	//retdata[height-1] = 1;
 	return retdata;
 }
 - (float *)data {
