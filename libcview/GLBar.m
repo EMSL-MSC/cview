@@ -188,9 +188,8 @@ static float bar_quads[72] = {
 	Class c;
 	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
 	NSLog(@"dataSetClass is: %@", c);
-	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
-		ds=[c alloc];
-		[ds initWithPList: [list objectForKey: @"dataSet"]];
+	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {;
+		ds=[[c alloc] initWithPList: [list objectForKey: @"dataSet"]];
 		[self setDataSet: ds];
 		if (w > 0) {
 			[self setWidth: w];
@@ -204,7 +203,7 @@ static float bar_quads[72] = {
 	NSLog(@"getPList: %@",self);
 	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary: [super getPList]];
 	[dict setObject: [dataSet getPList] forKey: @"dataSet"];
-	[dict setObject: [dataSet class] forKey: @"dataSetClass"];
+	[dict setObject: [dataSet className] forKey: @"dataSetClass"];
 	[dict setObject: [NSNumber numberWithFloat: fontScale] forKey: @"fontScale"];
 	[dict setObject: [NSNumber numberWithFloat: fontColorR] forKey: @"fontColorR"];
 	[dict setObject: [NSNumber numberWithFloat: fontColorG] forKey: @"fontColorG"];

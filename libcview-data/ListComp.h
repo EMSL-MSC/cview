@@ -73,5 +73,13 @@ All rights reserved.
 	@return an autoreleased array with the results of running the selector on each object
 */
 -(NSArray *)arrayObjectsFromPerformedSelector: (SEL)aSelector;
+/**
+	perform a given selector on each element of the array, and return the resulting objects
+
+	@param aSelector the selector to perform on the list of objects in the array, it should return an object or nil
+	@param arg is any object that is passed as the single argument to the selector
+	@return an autoreleased array with the results of running the selector on each object
+*/
+-(NSArray *)arrayObjectsFromPerformedSelector: (SEL)aSelector withObject: (id)arg;
 @end
 

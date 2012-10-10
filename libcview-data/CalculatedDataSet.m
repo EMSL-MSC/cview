@@ -139,8 +139,7 @@ All rights reserved.
 	while ((pl = [p nextObject]) && (cls = [c nextObject])) {
 		newc = NSClassFromString((NSString *)cls);
 		if (newc && [newc conformsToProtocol: @protocol(PList)] && [newc isSubclassOfClass: [DataSet class]]) {
-			ds=[newc alloc];
-			[ds initWithPList: pl];
+			ds=[[newc alloc] initWithPList: pl];
 			[ds disableScaling];
 			[dataPlanes addObject: ds];
 		}
@@ -191,7 +190,7 @@ All rights reserved.
 	[dict setObject: name forKey: @"name"];
 	[dict setObject: rateSuffix forKey: @"rateSuffix"];
 	[dict setObject: [dataPlanes arrayObjectsFromPerformedSelector:@selector(getPList)] forKey: @"planes"];
-	[dict setObject: [dataPlanes arrayObjectsFromPerformedSelector:@selector(class)] forKey: @"classes"];
+	[dict setObject: [dataPlanes arrayObjectsFromPerformedSelector:@selector(className)] forKey: @"classes"];
 	return dict;
 }
 -(NSArray *)attributeKeys {
@@ -360,7 +359,7 @@ All rights reserved.
 	/* The last point in a row is going to be bogus on certain classes of calculated data
 	 * sets. Particularly anything that uses shiftvariables.
 	 */
-	retdata[height] = 1;
+	//retdata[height-1] = 1;
 	return retdata;
 }
 - (float *)data {

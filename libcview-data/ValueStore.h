@@ -1,8 +1,8 @@
 /*
 
-This file is port of the CVIEW graphics system, which is goverened by the following License
+This file is part of the CVIEW graphics system, which is goverened by the following License
 
-Copyright © 2008,2009, Battelle Memorial Institute
+Copyright © 2008-2012 Battelle Memorial Institute
 All rights reserved.
 
 1.	Battelle Memorial Institute (hereinafter Battelle) hereby grants permission
@@ -56,70 +56,29 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-#import "DrawableObject.h"
-#import "DictionaryExtra.h"
+/**
+A Generic Value Store.  Implemented as a singleton, classes can store classes here using a 'key', and retrieve them later. 
 
-@implementation DrawableObject 
--init {
-	self=[super init];
-	isVisible=YES;
-	return self;
-}
+@author Evan Felix
+@ingroup cviewdata
+*/
+#import <Foundation/Foundation.h>
+#import "PList.h"
 
--initWithPList: (id)list {
-	self=[self init];
-	isVisible = [[list objectForKey: @"isVisible" missing: @"YES"] boolValue];
-	name = [[list objectForKey: @"name" missing: @"Drawable"] retain];
-	return self;
+@interface ValueStore: NSObject <PList> {
+	NSMutableDictionary *values;
 }
- 
--getPList {
-	NSLog(@"getPList: %@",self);
-	NSMutableDictionary *plist = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
-		[NSNumber numberWithBool: isVisible],@"isVisible",
-		nil];
-        if ([name compare: @"Drawable"] != NSOrderedSame) {
-                [plist setObject: name forKey: @"name"];
-        }
-	return plist;
-} 
-
--(void)dealloc {
-	[name autorelease];
-	return [super dealloc];
-}
-
--(id) glDraw {
-	NSLog(@"Ahh... someone Screwed up and didnt subclass correctly...");
-	return self;
-}
--(id) glPickDraw {
-	return self;  // Someone didn't subclass, so he/she doesn't care about our pickdrawing abilities..... so sad! :-(
-}
--show {
-	isVisible = YES;
-	return self;
-}
--hide {
-	isVisible = NO;
-	return self;
-}
--(BOOL)visible {
-	return isVisible;
-}
--(int)width {
-	return 1;
-}
--(int)height {
-	return 1;
-}
--(NSString*)getName {
-	return name;
-}
--setName: (NSString*)n {
-	[n retain];
-	[name autorelease];
-	name = n;
-	return self;
-}
++valueStore;
+/**Load a set of objects from an array of arrays.  Each element in the array is a triple consisting of: key,className,initData
+each class is required to comply with the PList protocol.
+*/
+-loadKeyValueArray: (NSArray*)array;
+/**Load an object as specified with a key and class name initializing it with data*/
+-loadKey: (NSString *)key withClass: (NSString *)clsName andData: (id)pListData;
+/** set a value for a specified key, if value is nil, it will remove the value */
+-(void)setKey: (NSString *)key withObject: (id)value;
+/** retrive a value from the store */
+-getObject: (NSString *)key;
+/** Return the number of objects stored in the ValueStore */
+-(NSUInteger)count;
 @end
