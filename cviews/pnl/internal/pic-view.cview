@@ -3,13 +3,33 @@
     name = "PIC CView";
     valueStore = (
 	(
-	    "cpu_sys",
+	    "mem_cached",
 	    WebDataSet,
 	    {
 		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
-		key = "cputotals.sys";
-		name = "cputotals.sys";
-		rateSuffix = percent;
+		key = "meminfo.cached";
+		rateSuffix = kb;
+	    }
+	),
+	(
+	    memused,
+	    CalculatedDataSet,
+	    {
+		classes = (
+		    ValueStoreDataSet,
+		    ValueStoreDataSet
+		);
+		formula = "$0:$1:-:1024:/:1024:/";
+		name = "Memory Used GB";
+		planes = (
+		    {
+			key = "mem_used";
+		    },
+		    {
+			key = "mem_cached";
+		    }
+		);
+		rateSuffix = GB;
 	    }
 	),
 	(
@@ -43,23 +63,12 @@
 	    }
 	),
 	(
-	    ibout,
+	    "mem_used",
 	    WebDataSet,
 	    {
 		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
-		key = "iconnect.kbout";
-		name = "iconnect.kbout";
-		rateSuffix = "kb/sec";
-	    }
-	),
-	(
-	    "lustre_read",
-	    WebDataSet,
-	    {
-		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
-		key = "lusclt.readkbs";
-		name = "lusclt.readkbs";
-		rateSuffix = "readkbs/sec";
+		key = "meminfo.used";
+		rateSuffix = kb;
 	    }
 	),
 	(
@@ -81,6 +90,26 @@
 		    }
 		);
 		rateSuffix = "GB/s";
+	    }
+	),
+	(
+	    "lustre_read",
+	    WebDataSet,
+	    {
+		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
+		key = "lusclt.readkbs";
+		name = "lusclt.readkbs";
+		rateSuffix = "readkbs/sec";
+	    }
+	),
+	(
+	    ibout,
+	    WebDataSet,
+	    {
+		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
+		key = "iconnect.kbout";
+		name = "iconnect.kbout";
+		rateSuffix = "kb/sec";
 	    }
 	)
     );
@@ -142,7 +171,7 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    key = "cpu_sys";
+				    key = memused;
 				};
 				dataSetClass = ValueStoreDataSet;
 				fontColorB = 1;

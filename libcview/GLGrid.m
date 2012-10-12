@@ -304,7 +304,7 @@ static const char *gridTypeSelectors[] =	{
 
 	[dataSetLock lock];
 	if (currentHeight != [dataSet height] || currentWidth != [dataSet width]) {
-		NSLog(@"WARNING: Size mismatch since last time - This should not happen if DataSet Notifications are working on resizes. Attempting to handl cleanly.");
+		NSLog(@"WARNING: Size mismatch since last time - This should not happen if DataSet Notifications are working on resizes. Attempting to handle cleanly.");
 		[self resetDrawingArrays];
 	}
 	[self drawPlane];

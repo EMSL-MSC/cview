@@ -117,6 +117,10 @@ static float blankdata[] = {
 		[super initWithName: name Width: 32 Height: 32];
 	else
 		[super initWithWidth: 32 Height: 32];
+	
+	if (name==nil)
+		name = [key retain];
+	
 	dataValid=NO;
 	Xticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
 	Yticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
@@ -231,9 +235,9 @@ static float blankdata[] = {
 		case DESC:
 			//NSLog(@"DESC finish");
 			[incomingData increaseLengthBy:1];
-			if([[self getDescription] compare: @"Blank DataSet"] == NSOrderedSame)
+			if([[self getDescription] compare: DS_DEFAULT_NAME] == NSOrderedSame)
 				[self setDescription: [NSString stringWithUTF8String: [incomingData bytes]]];
-			//NSLog(@"desc: %@",textDescription);
+			NSLog(@"desc: %@ %@",textDescription,[NSString stringWithUTF8String: [incomingData bytes]]);
 
 			stage = RATE;
 			req = [NSURLRequest requestWithURL: rateURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
@@ -324,7 +328,7 @@ static float blankdata[] = {
 }
 
 -(void)fireTimer:(NSTimer*)aTimer {
-	NSLog(@"WebDataSet::fireTimer()");
+	//NSLog(@"WebDataSet::fireTimer()");
 	[self initializeIndexByStringDictionary];
 	[self resetMax];
 
