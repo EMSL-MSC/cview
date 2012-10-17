@@ -60,6 +60,7 @@ All rights reserved.
 #include <glut.h>
 #include <string.h>
 #include <FTGL/ftgl.h>
+#include <math.h>
 #include "config.h"
 #include "cview.h"
 
@@ -199,3 +200,45 @@ void dumpV(flts f) {
 		printf("% 8.2f ",f.f[i]);
 	printf("\n");
 }
+
+
+
+#define log10(x) (log(x)/log(10.))
+
+/*code based on algorithm from Graphics Gems by Andrew S. Glassner */
+float nicenum(float num,int flag){
+	int exp;
+	float f,nf;
+	exp = floor(log10(num));
+	f = num/pow(10.,exp);
+	if (flag) {
+		if (f<1.5) nf=1.;
+		else if (f<3) nf=2.;
+		else if (f<7) nf=5.;
+		else nf=10.;
+	}
+	else {
+		if (f<=1) nf=1.;
+		else if (f<=2) nf=2.;
+		else if (f<=5) nf=5.;
+		else nf=10.;
+	}
+	return nf*pow(10.,exp);
+}
+
+int niceticks(float min,float max,float *ticks,int ticklen) {
+	float gmin,gmax,d,range,x;
+	int i;
+
+	range=nicenum(max-min,0);
+	d=nicenum(range/(ticklen-1),1);
+	gmin=floor(min/d)*d;
+	gmax=ceil(max/d)*d;
+	
+	i=0;
+	for (x=gmin; x<gmax+.5*d && i<ticklen;x+=d,i++) {
+		ticks[i]=x;
+	}
+	return i;
+}
+

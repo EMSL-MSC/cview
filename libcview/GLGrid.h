@@ -77,6 +77,7 @@ typedef enum { G_LINES=0,G_RIBBON,G_SURFACE,G_POINTS,G_COUNT } GridTypesEnum;
 	DataSet *dataSet;
 	ColorMap *colorMap;
 	int xTicks,yTicks;
+	int axisTicks;
 	int currentMax,currentWidth,currentHeight;
 	NSMutableData *dataRow;
 	NSMutableData *colorRow;
