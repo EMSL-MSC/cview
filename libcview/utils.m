@@ -206,7 +206,7 @@ void dumpV(flts f) {
 #define log10(x) (log(x)/log(10.))
 
 /*code based on algorithm from Graphics Gems by Andrew S. Glassner */
-float nicenum(float num,int flag){
+double nicenum(double num,int flag){
 	int exp;
 	float f,nf;
 	exp = floor(log10(num));
@@ -226,7 +226,7 @@ float nicenum(float num,int flag){
 	return nf*pow(10.,exp);
 }
 
-int niceticks(float min,float max,float *ticks,int ticklen) {
+int niceticks(double min,double max,double *ticks,int ticklen) {
 	float gmin,gmax,d,range,x;
 	int i;
 

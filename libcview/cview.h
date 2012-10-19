@@ -98,4 +98,4 @@ NSFileHandle *find_resource(NSString *filename);
 NSString *find_resource_path(NSString *filename);
 flts multQbyV(const flts *m,const flts v);
 void dumpV(flts f);
-int niceticks(float min,float max,float *ticks,int ticklen);
+int niceticks(double min,double max,double *ticks,int ticklen);

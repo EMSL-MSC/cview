@@ -164,7 +164,7 @@ static const char *gridTypeSelectors[] =	{
 	if (gridType == G_RIBBON)
 		num++;
 	dataRow = [[NSMutableData alloc] initWithLength: num*3*h*sizeof(float)];
-	NSLog(@"reset %@ dataRow: %d",dataSet,num*3*h*sizeof(float));
+	NSLog(@"reset %@ dataRow: %lu",dataSet,num*3*h*sizeof(float));
 	colorRow = [[NSMutableData alloc] initWithLength: num*4*h*sizeof(float)];
 	d = (float *)[dataRow mutableBytes];
 	// setup drawable array... (0,unknown,rownum)
@@ -335,10 +335,10 @@ static const char *gridTypeSelectors[] =	{
 
 -drawAxis {
 	int i,nticks;
-	float bsize=0.25/xscale;
-	float ticks[10];//this should match axisTicks Max
+	float bsize=0.5/xscale;
+	double ticks[10];//this should match axisTicks Max
 	float x,y;
-	float realMax;
+	double realMax,scale;
 
 	x=[dataSet width];
 	y=0.0;
@@ -357,21 +357,22 @@ static const char *gridTypeSelectors[] =	{
 	glEnd();
 
 	nticks = niceticks(0,realMax,ticks,axisTicks);
-	NSLog(@"Ticks: %d %f %f",nticks,ticks[0],ticks[nticks-1]);
+	scale=currentMax/realMax;
+	//NSLog(@"Ticks: %d %f %d %f",nticks,realMax,currentMax,scale);
 
 	glColor3f(fontColorR,fontColorG,fontColorB);
 	glBegin(GL_QUADS);
 	for (i=0;i<nticks;i++) {
-		NSLog(@"Tick: %f",ticks[i]);
-		glVertex3f(x-bsize,ticks[i],y-bsize);
-		glVertex3f(x-bsize,ticks[i],y+bsize);
-		glVertex3f(x+bsize,ticks[i],y+bsize);
-		glVertex3f(x+bsize,ticks[i],y-bsize);
+		//NSLog(@"Tick: %f",ticks[i]);
+		glVertex3f(x-bsize,ticks[i]*scale,y-bsize);
+		glVertex3f(x-bsize,ticks[i]*scale,y+bsize);
+		glVertex3f(x+bsize,ticks[i]*scale,y+bsize);
+		glVertex3f(x+bsize,ticks[i]*scale,y-bsize);
 	}
 	glEnd();
 
 	for (i=0;i<nticks;i++) 
-		drawString3D(x+4.0/xscale,ticks[i],y,GLUT_BITMAP_HELVETICA_12,[dataSet getLabel: ticks[i]],1.0);
+		drawString3D(x+4.0/xscale,ticks[i]*scale,y,GLUT_BITMAP_HELVETICA_12,[dataSet getLabel: ticks[i]*scale],1.0);
 
 	glPopMatrix();
 	return self;
