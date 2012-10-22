@@ -87,7 +87,7 @@ All rights reserved.
 	if (rateSuffix == nil)
 		rateSuffix = DS_DEFAULT_RATE_SUFFIX;
 	//lockedMax=0;
-	allowScaling=YES;
+	allowScaling=NO;
 	if (textDescription == nil)
 		[self setDescription: name];
 	labelFormat=DS_DEFAULT_LABEL_FORMAT;
@@ -319,7 +319,7 @@ All rights reserved.
 	[dataLock lock];
 	float *d = (float *)[data mutableBytes];
 	allowScaling = NO;
-	//undo any previos scaling
+	//undo any previous scaling
 	if ( currentScale != 1.0 ) {
 		for (i=0;i<width*height;i++)
 				d[i] = (d[i]/currentScale);
@@ -363,6 +363,7 @@ All rights reserved.
 		}
 	} else {
 		[data setData: newdata];
+		[self resetMax];
 	}
 	U();
 	[dataLock unlock];

@@ -264,7 +264,7 @@ static const char *gridTypeSelectors[] =	{
 		@"min=0.0 step=0.01 max=1.0",@"fontColorG",
 		@"min=0.0 step=0.01 max=1.0",@"fontColorB",
 		@"min=0 max=3",@"gridType",
-		@"min=2 max=10",@"axisTicks",
+		@"min=2 max=10",@"axisTicks",///@fixme stringify MAX_TICKS
 		nil];
 }
 
@@ -285,20 +285,23 @@ static const char *gridTypeSelectors[] =	{
 -resetColorMap {
 	[colorMap autorelease];
 	if (ggr == nil)
-		colorMap = [ColorMap mapWithMax: currentMax];
+		colorMap = [ColorMap mapWithMax: tickMax];
 	else
-		colorMap = [ColorMap mapWithGradient: ggr andMax: currentMax];
+		colorMap = [ColorMap mapWithGradient: ggr andMax: tickMax];
 	[colorMap retain];
 	return self;
 }
 
 -glDraw {
 	[dataSet lock];
-	int max = roundf([dataSet getScaledMax]);
+	int max = [dataSet getMax];
 
 	if (currentMax != max) {
 		//NSLog(@"New Max: %d %d",max,currentMax);
 		currentMax = max;
+		numTicks = niceticks(0,currentMax,currentTicks,axisTicks);
+		tickMax = currentTicks[numTicks-1];
+		
 		[self resetColorMap];
 	}
 	
@@ -334,45 +337,38 @@ static const char *gridTypeSelectors[] =	{
 }
 
 -drawAxis {
-	int i,nticks;
+	int i;
 	float bsize=0.5/xscale;
-	double ticks[10];//this should match axisTicks Max
-	float x,y;
-	double realMax,scale;
+	float j,step,x,y;
 
 	x=[dataSet width];
 	y=0.0;
-	realMax=[dataSet getMax];
 
 	glPushMatrix();
-	glScalef(xscale,yscale,zscale);
+	glScalef(xscale,yscale*100.0/tickMax,zscale);
 
 	glBegin(GL_LINES);
-	for (i=1;i<currentMax+1;i++) {
-		[colorMap glMap: i];
+	step=currentMax/100.0;
+	for (j=step;j<tickMax+1.0;j+=step) {
+		[colorMap glMap: j];
 		//glColor3f(1.0,1.0,1.0);
-		glVertex3f(x,i-1.0,y);
-		glVertex3f(x,i,y);
+		glVertex3f(x,j-step,y);
+		glVertex3f(x,j,y);
 	}
 	glEnd();
-
-	nticks = niceticks(0,realMax,ticks,axisTicks);
-	scale=currentMax/realMax;
-	//NSLog(@"Ticks: %d %f %d %f",nticks,realMax,currentMax,scale);
 
 	glColor3f(fontColorR,fontColorG,fontColorB);
 	glBegin(GL_QUADS);
-	for (i=0;i<nticks;i++) {
-		//NSLog(@"Tick: %f",ticks[i]);
-		glVertex3f(x-bsize,ticks[i]*scale,y-bsize);
-		glVertex3f(x-bsize,ticks[i]*scale,y+bsize);
-		glVertex3f(x+bsize,ticks[i]*scale,y+bsize);
-		glVertex3f(x+bsize,ticks[i]*scale,y-bsize);
+	for (i=0;i<numTicks;i++) {
+		glVertex3f(x-bsize,currentTicks[i],y-bsize);
+		glVertex3f(x-bsize,currentTicks[i],y+bsize);
+		glVertex3f(x+bsize,currentTicks[i],y+bsize);
+		glVertex3f(x+bsize,currentTicks[i],y-bsize);
 	}
 	glEnd();
 
-	for (i=0;i<nticks;i++) 
-		drawString3D(x+4.0/xscale,ticks[i]*scale,y,GLUT_BITMAP_HELVETICA_12,[dataSet getLabel: ticks[i]*scale],1.0);
+	for (i=0;i<numTicks;i++) 
+		drawString3D(x+4.0/xscale,currentTicks[i],y,GLUT_BITMAP_HELVETICA_12,[dataSet getLabel: currentTicks[i]],1.0);
 
 	glPopMatrix();
 	return self;
@@ -504,7 +500,7 @@ static const char *gridTypeSelectors[] =	{
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glPushMatrix();
-	glScalef(xscale,yscale,zscale);
+	glScalef(xscale,yscale*100.0/tickMax,zscale);
 
 	glVertexPointer(3, GL_FLOAT, 0, verts);
 	glColorPointer(4, GL_FLOAT, 0, [colorRow mutableBytes]);
@@ -574,7 +570,7 @@ static const char *gridTypeSelectors[] =	{
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glPushMatrix();
-	glScalef(xscale,yscale,zscale);
+	glScalef(xscale,yscale*100.0/tickMax,zscale);
 
 	[colorMap doMapWithData: data thatHasLength: h * w toColors: color];
 	for(i=0;i<w;i++) {
@@ -608,7 +604,7 @@ static const char *gridTypeSelectors[] =	{
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glPushMatrix();
-	glScalef(xscale,yscale,zscale);
+	glScalef(xscale,yscale*100.0/tickMax,zscale);
 
 	glVertexPointer(3, GL_FLOAT, 0, verts);
 	glColorPointer(4, GL_FLOAT, 0, [colorRow mutableBytes]);
@@ -660,7 +656,7 @@ static const char *gridTypeSelectors[] =	{
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
 	glPushMatrix();
-	glScalef(xscale,yscale,zscale);
+	glScalef(xscale,yscale*100.0/tickMax,zscale);
 
 	glVertexPointer(3, GL_FLOAT, 0, verts);
 	glColorPointer(4, GL_FLOAT, 0, [colorRow mutableBytes]);
