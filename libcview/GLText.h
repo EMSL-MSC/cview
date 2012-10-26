@@ -91,6 +91,4 @@ All rights reserved.
 - doFontSet;
 - glDraw;
 - bestFitForWidth: (float)w andHeight: (float)h;
--(float)width;
--(float)height;
 @end

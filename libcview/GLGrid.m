@@ -106,6 +106,10 @@ static const char *gridTypeSelectors[] =	{
 	dzmult=0.0;
 	rmult=0.25;
 	axisTicks=6;
+	tickMax=1.0;
+	currentTicks[0]=0.0;
+	currentTicks[1]=1.0;
+	numTicks=2;
 	surfaceIndices=nil;
 	gridType=G_LINES;
 	descText = [[GLText alloc] initWithString: @"Unset" andFont: @"LinLibertine_Re.ttf"];
@@ -264,7 +268,7 @@ static const char *gridTypeSelectors[] =	{
 		@"min=0.0 step=0.01 max=1.0",@"fontColorG",
 		@"min=0.0 step=0.01 max=1.0",@"fontColorB",
 		@"min=0 max=3",@"gridType",
-		@"min=2 max=10",@"axisTicks",///@fixme stringify MAX_TICKS
+		[NSString stringWithFormat: @"min=2 max=%d",MAX_TICKS],@"axisTicks",
 		nil];
 }
 
@@ -296,9 +300,9 @@ static const char *gridTypeSelectors[] =	{
 	[dataSet lock];
 	int max = [dataSet getMax];
 
-	if (currentMax != max) {
+	if (currentMax != max || currentMax==0) {
 		//NSLog(@"New Max: %d %d",max,currentMax);
-		currentMax = max;
+		currentMax = max==0?1:max;
 		numTicks = niceticks(0,currentMax,currentTicks,axisTicks);
 		tickMax = currentTicks[numTicks-1];
 		
@@ -349,7 +353,7 @@ static const char *gridTypeSelectors[] =	{
 
 	glBegin(GL_LINES);
 	step=currentMax/100.0;
-	for (j=step;j<tickMax+1.0;j+=step) {
+	for (j=step;j<tickMax;j+=step) {
 		[colorMap glMap: j];
 		//glColor3f(1.0,1.0,1.0);
 		glVertex3f(x,j-step,y);

@@ -81,7 +81,6 @@ int main(int argc,char *argv[], char *env[]) {
 	[h contractDataSetWidth: 400 andHeight: 500];
 	[f lockMax: 4];
 	[h lockMax: 4];
-	[f autoScale:200];
 	
 	XYDataSet *f1 = [[XYDataSet alloc] initWithURL: [NSURL fileURLWithPath: testdata] columnName: @"BinaryOpFun"];
 	XYDataSet *h1 = [[XYDataSet alloc] initWithURL: [NSURL fileURLWithPath: testdata] columnNum: 2 columnXNum: 0 columnYNum: 1];

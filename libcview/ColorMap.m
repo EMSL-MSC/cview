@@ -77,7 +77,7 @@ All rights reserved.
 	float *cm;
 	NSLog(@"initWithMax: %d",max);
 	theMax = max>=1?max:1;
-	scale = (float)MAP_SIZE/theMax;
+	scale = (double)MAP_SIZE/theMax;
 	colormap = [[NSMutableData alloc] initWithLength: (MAP_SIZE+1)*sizeof(float)*4];
 	cm = (float *)[colormap mutableBytes];
 	//NSLog(@"cm: %p",cm);
@@ -108,9 +108,9 @@ All rights reserved.
 	int i;
 	float *cm,val;
 	NSLog(@"ColorMap initWithGradient");
-	theMax = max>=1?max:1; 
+	theMax = max>=1?max:1;
 	scale = (float)MAP_SIZE/theMax;
-	colormap = [[NSMutableData alloc] initWithLength: (theMax+1)*sizeof(float)*4];
+	colormap = [[NSMutableData alloc] initWithLength: (MAP_SIZE+1)*sizeof(float)*4];
 	cm = (float *)[colormap mutableBytes];
 	
 	for (i=0;i<MAP_SIZE;i++) {
@@ -146,10 +146,6 @@ All rights reserved.
 		if (data < 0)
 			data = 0;
 
-		//colors[i*4+0] = cm[data*4+0];
-		//colors[i*4+1] = cm[data*4+1];
-		//colors[i*4+2] = cm[data*4+2];
-		//colors[i*4+3] = cm[data*4+3];
 		memcpy(colors+i*4,cm+data*4,4*sizeof(float));
 	}
 	return self;
@@ -168,10 +164,6 @@ All rights reserved.
 		if (d < 0)
 			d = 0;
 
-		//colors[i*4+0] = cm[d*4+0];
-		//colors[i*4+1] = cm[d*4+1];
-		//colors[i*4+2] = cm[d*4+2];
-		//colors[i*4+3] = cm[d*4+3];
 		memcpy(colors+i*4,cm+d*4,4*sizeof(float));
 	}
 	return self;
@@ -187,7 +179,7 @@ All rights reserved.
 		glColor4fv(cm+sval*4);
 	}
 	else
-		NSLog(@"Invalid Value in glMap: %f",val);
+		NSLog(@"Invalid Value in glMap: %f %d",val,sval);
 	return self;
 }
 

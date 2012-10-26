@@ -67,5 +67,5 @@ All rights reserved.
 */
 @interface JobDataSet: WebDataSet {
 }
-- autoScaleWithNewData: (NSData *)newdata;
+- setNewData: (NSData *)newdata;
 @end

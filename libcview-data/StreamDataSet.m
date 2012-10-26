@@ -203,10 +203,9 @@ All rights reserved.
 
 			i=0;
 			while ((str = [e nextObject]) != nil) {
-				d[i*height+0] = [str floatValue]*currentScale;
+				d[i*height+0] = [str floatValue];
 				i++;
 			}
-			[self autoScale];
 			break;
 		default:
 			NSLog(@"Bad Row Seen: %@",arr);
