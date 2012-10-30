@@ -298,13 +298,13 @@ static const char *gridTypeSelectors[] =	{
 
 -glDraw {
 	[dataSet lock];
-	int max = [dataSet getMax];
+	int max = round([dataSet getMax]);
 
 	if (currentMax != max || currentMax==0) {
 		//NSLog(@"New Max: %d %d",max,currentMax);
-		currentMax = max==0?1:max;
+		currentMax = max<=0?1:max;
 		numTicks = niceticks(0,currentMax,currentTicks,axisTicks);
-		tickMax = currentTicks[numTicks-1];
+		tickMax = round(currentTicks[numTicks-1]);
 		
 		[self resetColorMap];
 	}
@@ -353,7 +353,7 @@ static const char *gridTypeSelectors[] =	{
 
 	glBegin(GL_LINES);
 	step=currentMax/100.0;
-	for (j=step;j<tickMax;j+=step) {
+	for (j=step;j<=tickMax;j+=step) {
 		[colorMap glMap: j];
 		//glColor3f(1.0,1.0,1.0);
 		glVertex3f(x,j-step,y);
@@ -372,7 +372,7 @@ static const char *gridTypeSelectors[] =	{
 	glEnd();
 
 	for (i=0;i<numTicks;i++) 
-		drawString3D(x+4.0/xscale,currentTicks[i],y,GLUT_BITMAP_HELVETICA_12,[dataSet getLabel: currentTicks[i]],1.0);
+		drawString3D(x+4.0/xscale,currentTicks[i],y,GLUT_BITMAP_HELVETICA_12,[dataSet getLabel: currentTicks[i]],0.0);
 
 	glPopMatrix();
 	return self;

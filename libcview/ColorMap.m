@@ -77,7 +77,7 @@ All rights reserved.
 	float *cm;
 	NSLog(@"initWithMax: %d",max);
 	theMax = max>=1?max:1;
-	scale = (double)MAP_SIZE/theMax;
+	scale = (double)(MAP_SIZE-1)/theMax;
 	colormap = [[NSMutableData alloc] initWithLength: (MAP_SIZE+1)*sizeof(float)*4];
 	cm = (float *)[colormap mutableBytes];
 	//NSLog(@"cm: %p",cm);
@@ -107,9 +107,9 @@ All rights reserved.
 -initWithGradient: (GimpGradient *)ggr andMax: (int)max {
 	int i;
 	float *cm,val;
-	NSLog(@"ColorMap initWithGradient");
+	NSLog(@"ColorMap initWithGradient-max:%d",max);
 	theMax = max>=1?max:1;
-	scale = (float)MAP_SIZE/theMax;
+	scale = (float)(MAP_SIZE-1)/theMax;
 	colormap = [[NSMutableData alloc] initWithLength: (MAP_SIZE+1)*sizeof(float)*4];
 	cm = (float *)[colormap mutableBytes];
 	
@@ -171,9 +171,10 @@ All rights reserved.
 
 -glMap: (float)val {
 	float *cm;
-	int sval=val*scale;
+	int sval=(int)(val*scale);
 	cm = (float *)[colormap mutableBytes];
 	//NSLog(@"cm: %p",cm);
+
 	if (sval >= 0 && sval <= MAP_SIZE) {
 		//NSLog(@"glMap: %d (%.2f,%.2f,%.2f,%.2f)",sval,cm[sval*4+0],cm[sval*4+1],cm[sval*4+2],cm[sval*4+3]);
 		glColor4fv(cm+sval*4);

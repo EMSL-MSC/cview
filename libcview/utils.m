@@ -238,6 +238,7 @@ int niceticks(double min,double max,double *ticks,int ticklen) {
 	i=0;
 	for (x=gmin; x<gmax+.5*d && i<ticklen;x+=d,i++) {
 		ticks[i]=x;
+		//NSLog(@"tick[%d]=%f",i,ticks[i]);
 	}
 	return i;
 }

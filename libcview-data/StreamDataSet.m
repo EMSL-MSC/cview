@@ -78,6 +78,8 @@ All rights reserved.
 	BOOL nodata;
 	NSNull *n;
 
+	currentMax=1;
+
 	//1. Start command Stream
 	command = [cmd retain];
 	arguments = [args retain];
@@ -206,6 +208,7 @@ All rights reserved.
 				d[i*height+0] = [str floatValue];
 				i++;
 			}
+			[self resetMax];
 			break;
 		default:
 			NSLog(@"Bad Row Seen: %@",arr);
@@ -265,6 +268,7 @@ All rights reserved.
 			newdata = [theFile availableData];
 			if (newdata != nil && [newdata length] > 0 ) {
 				[remainingData appendData: newdata];
+				[newdata autorelease];
 			}
 			else {
 				return nil;
@@ -284,6 +288,7 @@ All rights reserved.
 
 	count=0;
 	while (running) {
+		NSLog(@"getting Next Line");
 		arr = [self getNextLineArray];
 		if (arr == nil) {
 			running = NO;

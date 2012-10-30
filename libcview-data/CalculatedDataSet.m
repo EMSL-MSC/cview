@@ -193,7 +193,7 @@ All rights reserved.
 	return dict;
 }
 -(NSArray *)attributeKeys {
-	return [NSArray arrayWithObjects: @"formula",@"dataPlanes",@"name",@"rateSuffix",nil];
+	return [NSArray arrayWithObjects: @"formula",@"dataPlanes",@"name",@"rateSuffix",@"labelFormat",nil];
 }
 
 -(void)registerForNotifications {
@@ -300,7 +300,7 @@ All rights reserved.
 	for (i=0;i<[dataPlanes count];i++)
 		datap[i] = (float *)[(DataSet *)[dataPlanes objectAtIndex: i] data];
 	calculation([formula UTF8String],width,height,new_data_bytes,[dataPlanes count],datap);
-	int max = 0;
+	float max = 0;
 	for (i = 0; i < width*height; i++) {
 		if (new_data_bytes[i] > max) {
 			max = new_data_bytes[i];
@@ -311,8 +311,10 @@ All rights reserved.
 	///@todo check if we  can write directly into d above instead of another memcopy
 	float *d = [data mutableBytes];
 	memcpy(d,new_data_bytes,width*height*sizeof(float));
-	currentMax=max;
 	
+	currentMax=max;
+	//NSLog(@"CDS max: %f",currentMax);
+
 	[self unlock];
 	//NSLog(@"Exiting [CalculatedDataSet(%@:%u) performCalculation] %p %p", self,self,data, newData);
 }
@@ -327,7 +329,7 @@ All rights reserved.
 }
 
 -(void)receiveResizeNotification: (NSNotification *)notification {
-	NSLog(@"Resize notification: %@",notification);
+	//NSLog(@"Resize notification: %@",notification);
 	[self checkAndResetDataPlanes];
 }
 
