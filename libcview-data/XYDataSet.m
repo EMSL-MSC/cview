@@ -226,8 +226,8 @@ All rights reserved.
 	d=[self contractDataSetWidth: MaxX+1 andHeight: MaxY+1];//base zero
 
 	//NSLog(@"Scan Done");
-	[self autoScale];
-
+	[self resetMax];
+	
 	return self;
 }
 

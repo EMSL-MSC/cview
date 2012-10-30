@@ -66,6 +66,7 @@ All rights reserved.
 	[super initWithName: key Width: w Height: h];
 	dx=0.0;
 	rateSuffix=@"Nums";
+	currentMax=100.0;
 	
 	[[UpdateRunLoop runLoop] addTimer: 
 								[[NSTimer alloc] initWithFireDate: [NSDate dateWithTimeIntervalSinceNow: 1] 
@@ -96,6 +97,7 @@ All rights reserved.
 	d = [self dataRow: 0];
 	for (j=0;j<height;j++)
 			d[j]=50;
+
 	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
 	return NO;
 }

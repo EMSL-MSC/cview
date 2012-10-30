@@ -67,8 +67,6 @@ int main(int argc,char *argv[], char *env[]) {
 #endif
 	SinDataSet *ds = [[SinDataSet alloc] initWithName: @"Sin()" Width: 1000 Height: 128 interval:1.0];
 	SinDataSet *ds2 = [[SinDataSet alloc] initWithName: @"Sin()" Width: 500 Height: 128 interval:1.0];
-	[ds autoScale: 100];
-	[ds2 autoScale: 100];
 
 	GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test"];
 	Scene * scene = [[Scene alloc] initWithObject:

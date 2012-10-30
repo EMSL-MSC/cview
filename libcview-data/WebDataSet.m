@@ -308,7 +308,7 @@ static float blankdata[] = {
 			//NSLog(@"DATA finish");
 
 			if (width*height*sizeof(float) == [incomingData length]) {
-				[self autoScaleWithNewData: incomingData];
+				[self setNewData: incomingData];
 			} else
 				NSLog(@"Very BAD! Incoming data was not the correct size. Width = %d Height = %d Width * Height = %d DataSet Size = %ld", width, height, width * height, [incomingData length] / sizeof(float));
 

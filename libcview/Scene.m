@@ -249,11 +249,10 @@ All rights reserved.
 				x=0;
 				break;
 			case 0:
-				x=(width-[o->object width])/2;
-				NSLog(@"Object Width: %d", [o->object width]);
+				x=(width-[[o getObject] width])/2;
 				break;
 			case 1:
-				x=(width-[o->object width]);
+				x=(width-[[o getObject] width]);
 				break;
 			default:
 				NSLog(@"Bad Horizontal Alignment: %d",o->halign);
