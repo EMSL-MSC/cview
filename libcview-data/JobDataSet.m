@@ -89,7 +89,7 @@ All rights reserved.
 @end
 
 @implementation JobDataSet
-- autoScaleWithNewData: (NSData *)newdata {
+- setNewData: (NSData *)newdata {
 	NSMutableDictionary *mutable = [[NSMutableDictionary alloc] init];
 	int i;
 	int count;
@@ -116,7 +116,6 @@ All rights reserved.
 	enumerator = [sortedArray objectEnumerator];
 	newvalue = count;
 	currentMax = count * 1.25;
-	currentScale = currentLimit / currentMax;
 	while((key = [enumerator nextObject]))
 	{
 		newvalue--;
@@ -131,14 +130,14 @@ All rights reserved.
 		{
 			if(frm[i] > 0)
 			{
-				to[i] = currentScale * ([value get] + count * .25);
+				to[i] = ([value get] + count * .25);
 			}
 		}
 		[key release];
 	}
 
 	[mutable release];
-	[self autoScale];
+	
 	return self;
 }
 - (NSString *)getLabel: (float)rate {

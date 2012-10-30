@@ -140,7 +140,6 @@ All rights reserved.
 		newc = NSClassFromString((NSString *)cls);
 		if (newc && [newc conformsToProtocol: @protocol(PList)] && [newc isSubclassOfClass: [DataSet class]]) {
 			ds=[[newc alloc] initWithPList: pl];
-			[ds disableScaling];
 			[dataPlanes addObject: ds];
 		}
 	}
@@ -194,7 +193,7 @@ All rights reserved.
 	return dict;
 }
 -(NSArray *)attributeKeys {
-	return [NSArray arrayWithObjects: @"formula",@"dataPlanes",@"name",@"rateSuffix",nil];
+	return [NSArray arrayWithObjects: @"formula",@"dataPlanes",@"name",@"rateSuffix",@"labelFormat",nil];
 }
 
 -(void)registerForNotifications {
@@ -227,35 +226,10 @@ All rights reserved.
 	currentMax = max;
 	return max;
 }
-- autoScale {
-	//figure out a scaling that will make the data be <limit> 'high'..  could be configuarable.
-	//NSLog(@"[CalculatedDataSet(%@) autoScale]", self);
-	int i;
-	float *d = (float *)[newData mutableBytes];
-	double newscale;
-	float oldmax = [self resetMax];
-	if (allowScaling) {
-		//newscale = MAX(1.0,currentLimit/oldmax);
-		if (oldmax != 0 )
-			newscale = currentLimit/oldmax;
-		else
-			newscale = 1;
-	
-		for (i=0;i<width*height;i++)
-			d[i] = d[i]*newscale;
-		
-		currentScale=newscale;
-		//NSLog(@"CalculatedDatSet scale(%@): %.2f %.10f %.2f %d %.2f",self,oldmax,newscale,currentMax,currentLimit, [[dataPlanes objectAtIndex: 0] resetMax]);
-	}
-	oldData = data;
-	data = newData;
-	newData = oldData;
-	return self;
-}
 
-- autoScaleWithNewData: (NSData *)newdata {
+- setNewData: (NSData *)newdata {
 	[self checkAndResetDataPlanes];
-	[super autoScaleWithNewData: newdata];
+	[super setNewData: newdata];
 	return self;
 }
 
@@ -326,14 +300,20 @@ All rights reserved.
 	for (i=0;i<[dataPlanes count];i++)
 		datap[i] = (float *)[(DataSet *)[dataPlanes objectAtIndex: i] data];
 	calculation([formula UTF8String],width,height,new_data_bytes,[dataPlanes count],datap);
-	int max = 0;
+	float max = 0;
 	for (i = 0; i < width*height; i++) {
 		if (new_data_bytes[i] > max) {
 			max = new_data_bytes[i];
 		}
 	}
 	[dataPlanes makeObjectsPerformSelector: @selector(unlock)];
-	[self autoScale];
+	
+	///@todo check if we  can write directly into d above instead of another memcopy
+	float *d = [data mutableBytes];
+	memcpy(d,new_data_bytes,width*height*sizeof(float));
+	
+	currentMax=max;
+	//NSLog(@"CDS max: %f",currentMax);
 
 	[self unlock];
 	//NSLog(@"Exiting [CalculatedDataSet(%@:%u) performCalculation] %p %p", self,self,data, newData);
@@ -349,7 +329,7 @@ All rights reserved.
 }
 
 -(void)receiveResizeNotification: (NSNotification *)notification {
-	NSLog(@"Resize notification: %@",notification);
+	//NSLog(@"Resize notification: %@",notification);
 	[self checkAndResetDataPlanes];
 }
 

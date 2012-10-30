@@ -75,6 +75,10 @@ typedef enum { B_SQUARE=0,B_COUNT } BarTypesEnum;
 @interface GLBar: DrawableObject {
 	DataSet *dataSet;
 	ColorMap *colorMap;
+	int axisTicks;
+	double currentTicks[MAX_TICKS];
+	int numTicks;
+	int tickMax;
 	double currentMax;
 	GLText *descText;
 	float fontScale;

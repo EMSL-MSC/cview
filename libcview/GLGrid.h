@@ -69,6 +69,7 @@ The class can display 4 types of Grid: Lines, Surfaces, Ribbons and Points.
 #import "DrawableObject.h"
 #import "GLText.h"
 #import "GimpGradient.h"
+#define MAX_TICKS 10
 
 typedef enum { G_LINES=0,G_RIBBON,G_SURFACE,G_POINTS,G_COUNT } GridTypesEnum;
 #define G_LINES_STRING @"0"
@@ -77,6 +78,10 @@ typedef enum { G_LINES=0,G_RIBBON,G_SURFACE,G_POINTS,G_COUNT } GridTypesEnum;
 	DataSet *dataSet;
 	ColorMap *colorMap;
 	int xTicks,yTicks;
+	int axisTicks;
+	double currentTicks[MAX_TICKS];
+	int numTicks;
+	int tickMax;
 	int currentMax,currentWidth,currentHeight;
 	NSMutableData *dataRow;
 	NSMutableData *colorRow;

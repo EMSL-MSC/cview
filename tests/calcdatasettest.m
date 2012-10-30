@@ -69,9 +69,7 @@ int main(int argc,char *argv[], char *env[]) {
 	SinDataSet *ds = [[SinDataSet alloc] initWithWidth: 500 Height: 128 interval: 1.0];
 	SinDataSet *ds2 = [[SinDataSet alloc] initWithWidth: 500 Height: 128 interval: 1.0];
 	CalculatedDataSet *cds = [[CalculatedDataSet alloc] initWithName: @"test" usingFormula: @"$0:2:/:50:+" onPlanes: ds, nil];
-	[cds autoScale: 100];
-	[ds2 autoScale: 100];
-
+	
 	Scene * scene = [[Scene alloc] initWithObject:
 		[[[[GLGrid alloc] initWithDataSet: cds andType: G_SURFACE] setXTicks: 50] setYTicks: 16]
 		atX: 0 Y: 0 Z: 0];

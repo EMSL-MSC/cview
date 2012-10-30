@@ -65,10 +65,12 @@ All rights reserved.
 
 #import <Foundation/Foundation.h>
 #import "GimpGradient.h"
+#define MAP_SIZE 1024  //this determines the granularity of changes.
 
 @interface ColorMap: NSObject {
 	NSMutableData *colormap; //formatted as 3 floats per color]
 	int theMax;
+	double scale;
 }
 +mapWithMax: (int)max;
 -initWithMax: (int)max;
@@ -76,7 +78,7 @@ All rights reserved.
 -initWithGradient: (GimpGradient *)ggr andMax: (int)max;
 -doMapWithData: (float *)data thatHasLength: (int)len toColors: (float *)colors;
 -doMapWithPoints: (float *)Points thatHasLength: (int)len toColors: (float *)colors;
--glMap: (int)val;
+-glMap: (float)val;
 -(float)r: (float)i;
 -(float)g: (float)i;
 -(float)b: (float)i;

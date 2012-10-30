@@ -274,7 +274,8 @@ static NSMutableDictionary *fontCache=nil;
 	return self;
 }
 
--(float)width {
+-(int)width {
+	int i;
 ///@todo store the bounding box infos
 	float bounds[6];
 	if (theFont == NULL)
@@ -284,10 +285,11 @@ static NSMutableDictionary *fontCache=nil;
 	ftglGetFontBBox(theFont,[string UTF8String],[string length],bounds);
 	//This really should deal with any rotations that may have happened
 	//TODO: what about dealing with the scale??????????
-	return abs(bounds[3]-bounds[0]);
+	i=abs(bounds[3]-bounds[0]);
+	return i;
 }
 
--(float)height {
+-(int)height {
 ///@todo store the bounding box infos
 	float bounds[6];
 	if (theFont == NULL)

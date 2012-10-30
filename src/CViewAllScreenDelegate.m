@@ -231,7 +231,7 @@ static void TW_CALL CVASD_intGlobalSetCallback(const void *value, void *clientDa
 				NSLog(@"Showing a new dataset!");
 				wds = [[WebDataSet alloc] initWithUrlBase: url andKey: key];
 				[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:wds];
-				[wds autoScale: 100];	
+				
 				grid=[[[[[GLGrid alloc] initWithDataSet: wds] setXTicks: xTicks] setYTicks: yTicks] show];
 				[grid setValue: [NSNumber numberWithFloat: xscale] forKeyPath: @"xscale"];
 				[grid setValue: [NSNumber numberWithFloat: yscale] forKeyPath: @"yscale"];
