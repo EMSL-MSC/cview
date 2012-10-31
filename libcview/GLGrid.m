@@ -299,10 +299,11 @@ static const char *gridTypeSelectors[] =	{
 -glDraw {
 	[dataSet lock];
 	int max = round([dataSet getMax]);
+	max = max<5?5:max;
 
 	if (currentMax != max || currentMax==0) {
 		//NSLog(@"New Max: %d %d",max,currentMax);
-		currentMax = max<=0?1:max;
+		currentMax = max;
 		numTicks = niceticks(0,currentMax,currentTicks,axisTicks);
 		tickMax = round(currentTicks[numTicks-1]);
 		
