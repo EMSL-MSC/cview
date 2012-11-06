@@ -62,6 +62,7 @@ All rights reserved.
 #import "cview.h"
 #import "CViewAllScreenDelegate.h"
 #import "LoadClasses.h"
+#import "ListComp.h"
 #import <stdio.h>
 
 /** 
@@ -92,7 +93,7 @@ cviewall <PList file>\n\
     Defaults that affect cviewall:\n\
        Name                Type         Default     Description\n\
        gridw               Int          1           How many Grids to lay down in the horizontal direction\n\
-       metrics             String Array (all)       What metrics to show.\n\
+       metrics             String Array (all)       What metrics to show. Wild cards(*,?) are allowed\n\
        dataUpdateInterval  Float        30          How often in seconds to update the data from the given URL\n\
 \n\
     in the second form, cviewall <PList file>, the PList file would be something like this:\n\
@@ -108,7 +109,7 @@ cviewall <PList file>\n\
 /* Attempt to load arguments from a PList file */
 void tryParseFile(const char *cFilePath, NSUserDefaults *args) {
 	NSString *err;
-	NSString *filePath = [NSString stringWithCString: cFilePath];
+	NSString *filePath = [NSString stringWithUTF8String: cFilePath];
 	NSURL *url = [NSURL URLWithString: filePath];
 	NSMutableData *file = [NSData dataWithContentsOfURL: url];
 	if (file == nil) {
@@ -133,7 +134,7 @@ void tryParseFile(const char *cFilePath, NSUserDefaults *args) {
 				format: &fmt
 				errorDescription: &err
 				];
-	NSLog(@"plist: %@ %@ %d %@",filePath,plist,fmt,err);
+	NSLog(@"plist: %@ %@ %ld %@",filePath,plist,fmt,err);
 	if(plist != nil) {
 		id url = [plist objectForKey: @"url"];
 		id metrics = [plist objectForKey: @"metrics"];
@@ -147,6 +148,19 @@ void tryParseFile(const char *cFilePath, NSUserDefaults *args) {
 		NSLog(@"Could not load the plist!");
 	}
 }
+
+@interface NSString (MakePredicates)
+-(NSPredicate *)makeSelfLikePredicate;
+@end
+
+@implementation NSString (MakePredicates)
+-(NSPredicate *)makeSelfLikePredicate {
+	if ([self compare: @"all"]==NSOrderedSame)
+		return [NSPredicate predicateWithValue: YES];
+	else
+		return [NSPredicate predicateWithFormat: @"(SELF like %@)",self];
+}
+@end
 
 int main(int argc,char *argv[], char *env[]) {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -193,7 +207,8 @@ int main(int argc,char *argv[], char *env[]) {
 	Scene * scene1 = [[Scene alloc] init];
 
 	NSURL *baseurl = [NSURL URLWithString: [args stringForKey: @"url"]];
-	NSString *index = [NSString stringWithContentsOfURL: [NSURL URLWithString: @"index" relativeToURL: baseurl]];
+	NSStringEncoding enc;
+	NSString *index = [NSString stringWithContentsOfURL: [NSURL URLWithString: @"index" relativeToURL: baseurl] usedEncoding: &enc error:NULL];
 	if (index == nil)
 		usage([NSString stringWithFormat: @"Index file not found at given URL:%@",baseurl],-2);
 	[cvasd setURL: baseurl];
@@ -204,11 +219,14 @@ int main(int argc,char *argv[], char *env[]) {
 	NSMutableDictionary *mf = [NSMutableDictionary dictionary];
 	NSNumber *n;
 	NSArray *arr = [args arrayForKey: @"metrics"];
+	NSArray *preds = [arr arrayObjectsFromPerformedSelector: @selector(makeSelfLikePredicate)];
+
+	NSLog(@"predicates: %@",preds);
+	NSPredicate *predicate = [NSCompoundPredicate orPredicateWithSubpredicates: preds];
 
 	while ([scanner scanUpToString: NEWLINE intoString: &str] == YES) {
-		//NSLog(@"string: %@",str);
-		//[indexes addObject: str];
-		n = [NSNumber numberWithBool: [arr containsObject: str] || [arr containsObject: @"all"]];
+		//NSLog(@"string: %@ %d",str,[predicate evaluateWithObject: str]);
+		n = [NSNumber numberWithBool: [predicate evaluateWithObject: str]];
 		[mf setObject: n forKey: str];
 	}
 

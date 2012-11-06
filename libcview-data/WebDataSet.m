@@ -114,16 +114,18 @@ static float blankdata[] = {
 	/* Sane Defaults until we have actual data */
 
 	if([self getDescription] == nil)
-		[super initWithName: key Width: 32 Height: 32];
+		[super initWithName: name Width: 32 Height: 32];
 	else
 		[super initWithWidth: 32 Height: 32];
+	
+	if (name==nil)
+		name = [key retain];
+	
 	dataValid=NO;
 	Xticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
 	Yticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
 	allowRescale = YES;
 	rateSuffix = @"...";
-	if(textDescription == nil)
-		textDescription = @"Blank DataSet";
 	[data setData: [NSData dataWithBytes: blankdata length: sizeof(blankdata)]];
 
 	incomingData = [[NSMutableData data] retain];
@@ -233,9 +235,9 @@ static float blankdata[] = {
 		case DESC:
 			//NSLog(@"DESC finish");
 			[incomingData increaseLengthBy:1];
-			if([[self getDescription] compare: @"Blank DataSet"] == NSOrderedSame)
+			if([[self getDescription] compare: DS_DEFAULT_NAME] == NSOrderedSame)
 				[self setDescription: [NSString stringWithUTF8String: [incomingData bytes]]];
-			//NSLog(@"desc: %@",textDescription);
+			NSLog(@"desc: %@ %@",textDescription,[NSString stringWithUTF8String: [incomingData bytes]]);
 
 			stage = RATE;
 			req = [NSURLRequest requestWithURL: rateURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
@@ -277,7 +279,7 @@ static float blankdata[] = {
 			U();
 			[dataLock unlock];
 			stage = YTICK;
-			req = [NSURLRequest requestWithURL: YticksURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
+			req = [NSURLRequest requestWithURL: YticksURL cachePolicy: NSURLRequestReloadIgnoringCacheData timeoutInterval: 60.0];
 			webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];
 			break;
 
@@ -298,7 +300,7 @@ static float blankdata[] = {
 			U();
 			[dataLock unlock];
 			stage = DATA;
-			req = [NSURLRequest requestWithURL: dataURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
+			req = [NSURLRequest requestWithURL: dataURL cachePolicy: NSURLRequestReloadIgnoringCacheData timeoutInterval: 60.0];
 			webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];
 			break;
 
@@ -306,9 +308,9 @@ static float blankdata[] = {
 			//NSLog(@"DATA finish");
 
 			if (width*height*sizeof(float) == [incomingData length]) {
-				[self autoScaleWithNewData: incomingData];
+				[self setNewData: incomingData];
 			} else
-				NSLog(@"Very BAD! Incoming data was not the correct size. Width = %d Height = %d Width * Height = %d DataSet Size = %d", width, height, width * height, [incomingData length] / sizeof(float));
+				NSLog(@"Very BAD! Incoming data was not the correct size. Width = %d Height = %d Width * Height = %d DataSet Size = %ld", width, height, width * height, [incomingData length] / sizeof(float));
 
 			dataValid=YES;
 			[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
@@ -326,7 +328,7 @@ static float blankdata[] = {
 }
 
 -(void)fireTimer:(NSTimer*)aTimer {
-	NSLog(@"WebDataSet::fireTimer()");
+	//NSLog(@"WebDataSet::fireTimer()");
 	[self initializeIndexByStringDictionary];
 	[self resetMax];
 

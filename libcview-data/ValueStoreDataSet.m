@@ -2,7 +2,7 @@
 
 This file is port of the CVIEW graphics system, which is goverened by the following License
 
-Copyright © 2008,2009, Battelle Memorial Institute
+Copyright © 2008-2012 Battelle Memorial Institute
 All rights reserved.
 
 1.	Battelle Memorial Institute (hereinafter Battelle) hereby grants permission
@@ -57,87 +57,98 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
-#import "DefaultGLScreenDelegate.h"
-#import "GLGrid.h"
-#import "WebDataSet.h"
-#import "cview.h"
+#import "ValueStoreDataSet.h"
+#import "ValueStore.h"
 
-@interface Toggle: DefaultGLScreenDelegate
-@end
 
-@implementation Toggle
--(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world; {
-	if ([super keyPress: key atX: x andY: y inGLWorld: world] == NO && key == 'g') {
-		//Find the GLGrids:	
-		id o;
-		NSEnumerator *list;
-		list = [[[world scene] getAllObjects] objectEnumerator];
-		while ( (o = [list nextObject]) ) {
-			if ([o isKindOfClass: [GLGrid class]]) {	
-				GLGrid *g = (GLGrid *)o;
-				[g setGridType: ([g getGridType]+1)%G_COUNT];
-			}
-		}
+
+@implementation ValueStoreDataSet
+static DataSet *blank;
++(void)initialize {
+	blank = [[DataSet alloc] initWithName: @"TotallyBlank" Width:32 Height: 32];
+}
+
++(NSMethodSignature*)methodSignatureForSelector:(SEL)selector {
+	//NSLog(@"Cmsfs: %@",NSStringFromSelector(selector));
+	NSMethodSignature *sig;
+	sig=[DataSet methodSignatureForSelector:selector];
+	return sig;
+}
+
++(BOOL)respondsToSelector:(SEL)selector {
+	if ([DataSet respondsToSelector:selector])
 		return YES;
-	}
 	return NO;
 }
-@end
 
-int main(int argc,char *argv[], char *env[]) {
-	DrawableObject *o;
-	Toggle *toggler;
-
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-#ifndef __APPLE__
-	//needed for NSLog
-	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
-#endif
-	@try {
-		NSURL *cluster = [NSURL URLWithString: @"http://www.emsl.pnnl.gov/msc-datasets/chinook/"];
-		WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.user"];
-		WebDataSet *f = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.sys"];
-		
-	
-		GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test" withWidth: 1200 andHeight: 600];
-	
-	
-		Scene * scene1 = [[Scene alloc] init];
-	
-		o=[[[[GLGrid alloc] initWithDataSet: d] setXTicks: 50] setYTicks: 32];
-		[scene1 addObject: o atX: 0 Y: 0 Z: 0];
-	
-		[[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50] 
-			setScene: scene1] 
-			setEye: [[[Eye alloc] init] setX: 56.0 Y: 1250.0 Z: 1000.0 Hangle:-4.72 Vangle: -2.45]
-		];
-		
-		// SCENE2
-		Scene * scene2 = [[Scene alloc] init];
-		o=[[[[GLGrid alloc] initWithDataSet: f] setXTicks: 50] setYTicks: 32];
-		[scene2 addObject: o atX: 0 Y: 0 Z: 0];
-	
-		[[[g addWorld: @"TR" row: 0 col: 2 rowPercent: 50 colPercent:50] 
-			setScene: scene2] 
-			setEye: [[[Eye alloc] init] setX: 56.0 Y: 1250.0 Z: 1000.0 Hangle:-4.72 Vangle: -2.45]
-		];
-		
-		toggler = [[Toggle alloc] initWithScreen: g];
-		[g setDelegate: toggler];
-		
-		[g run];
-	}
-	@catch (NSException *localException) {
-		NSLog(@"Error: %@", localException);
-		//NSArray *arr = [localException callStackReturnAddresses];
-		//NSEnumerator *e = [arr objectEnumerator];
-		//NSObject *o;
-		//while ( (o=[e nextObject]) != nil) {
-		//	NSLog(@"Stack: %@",o);	
-		//}
-		return -1;
-	}
-	[pool release];
-
-	return 0;
+//Needed to handle class functions such as conformsToProtocol:, and isKindOf:, etc
++(void)forwardInvocation:(NSInvocation*)invocation {
+	[invocation invokeWithTarget:[DataSet class]];
 }
+
++(BOOL)isSubclassOfClass: (Class)c {
+	return c==[DataSet class];
+}
+
+-(void)forwardInvocation:(NSInvocation*)invocation {
+	DataSet *ds;
+	if (dataSet == nil)
+		[self validateDataSet];
+	ds = dataSet?dataSet:blank;
+	[invocation invokeWithTarget:ds];
+}
+
+-(NSMethodSignature*)methodSignatureForSelector:(SEL)selector {
+	DataSet *ds;
+	if (dataSet == nil)
+		[self validateDataSet];
+	ds = dataSet?dataSet:blank;
+	//NSLog(@"Imsfs: %@",NSStringFromSelector(selector));
+	NSMethodSignature *sig;
+	sig=[ds methodSignatureForSelector:selector];
+	return sig;
+}
+
+-getPList {
+	NSLog(@"ValueStoreDataSet getPList was called...");
+	return [NSDictionary dictionaryWithObjectsAndKeys: dataKey,@"key",nil];	
+}
+
+-initWithPList: (id)list {
+	NSLog(@"initWithPList: ValueStoreDataSet: %@",list);
+	dataKey = [[list objectForKey: @"key"] retain];
+	[self validateDataSet];
+	return self;
+}
+
+-(void)validateDataSet {
+	dataSet = [[[ValueStore valueStore] getObject: dataKey] retain];
+	if (dataSet) {
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:dataSet];
+		[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveUpdateNotification:) name:@"DataSetUpdate" object:dataSet];
+	}
+	else
+		NSLog(@"No DataSet Yet");
+	return;
+};
+
+-(void)receiveResizeNotification: (NSNotification *)notification {
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetResize" object: self];
+}
+
+-(void)receiveUpdateNotification: (NSNotification *)notification {
+	[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
+}
+
+-(NSString*) className
+{
+	//Override so plist creation gets the proper class name
+	return NSStringFromClass([self class]);
+}
+
+-(void)dealloc {
+	[super dealloc];
+	[dataKey autorelease];
+	[dataSet autorelease];
+}
+@end

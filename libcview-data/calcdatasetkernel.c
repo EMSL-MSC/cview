@@ -123,10 +123,6 @@ struct operators *setup_operators(const char *calc) {
 		fprintf(stderr, "Failed to allocate space for operators.\n");
 		return NULL;
 	}
-	if ((tmpbuf = (char *)malloc(sizeof(char)*max_oper_len)) == NULL ) {
-		fprintf(stderr, "Failed to allocate space for tmpbuf.\n");
-		return NULL;
-	}
 	calc_modifiable = strdup(calc);
 	operator_index = 0;
 	tmpbuf = strtok(calc_modifiable, ":");

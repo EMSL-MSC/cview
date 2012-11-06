@@ -337,6 +337,7 @@ All rights reserved.
 
 -dumpImage: (NSString *)prefix withBaseDir: (NSString *)dir dailySubDirs:(BOOL)dailies {
 	NSString *extra = @"";
+	NSError *err;
 	NSString *suffix;
 	NSFileManager *fm = [NSFileManager defaultManager];
 	NSDate *date = [NSDate date];
@@ -358,11 +359,11 @@ All rights reserved.
 			}
 		}
 		else {
-			if ([fm createDirectoryAtPath: dailypath attributes: nil]) {
+			if ([fm createDirectoryAtPath: dailypath withIntermediateDirectories:YES attributes:nil error:&err]) {
 				extra=datestamp;
 			}
 			else {
-				NSLog(@"Error trying to make a directory: %@",dailypath);
+				NSLog(@"Error trying to make a directory: %@ error:%@",dailypath, err);
 				return nil;
 			}
 		}

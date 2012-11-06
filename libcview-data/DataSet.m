@@ -80,14 +80,12 @@ All rights reserved.
 	width=w;
 	height=h;
 	data = [[NSMutableData alloc] initWithLength: w*h*sizeof(float)];
-	currentScale = 1.0;
 	currentMax = 1.0;
 	if (currentLimit==0.0)
 		currentLimit = DS_DEFAULT_LIMIT;
 	if (rateSuffix == nil)
 		rateSuffix = DS_DEFAULT_RATE_SUFFIX;
 	//lockedMax=0;
-	allowScaling=YES;
 	if (textDescription == nil)
 		[self setDescription: name];
 	labelFormat=DS_DEFAULT_LABEL_FORMAT;
@@ -96,7 +94,7 @@ All rights reserved.
 }
 
 - initWithFile: (NSString *)file Width: (int)w Transpose: (BOOL)inv {
-	int len,height;
+	int len;
 	int i,j,h;
 	float *f,*t;
 	NSFileManager *fm = [NSFileManager defaultManager];
@@ -122,7 +120,7 @@ All rights reserved.
 				t[i*h+j] = f[i+w*j]; 
 		dtmp=md;
 	}
-	[self autoScaleWithNewData: dtmp];
+	[self setNewData: dtmp];
 	return self;
 }
 
@@ -251,13 +249,8 @@ All rights reserved.
 	float *d = (float *)[data mutableBytes];
 	float max = 0.001;
 	for (i=0;i<width*height;i++)
-		max = MAX(max,d[i]/currentScale);
+		max = MAX(max,d[i]);
 	NSLog(@"The Max(%@): %f",name,max);
-
-	float pct = currentMax/max;
-	if (pct > 2.0) {
-		NSLog(@"<%@>PCT: %f",name,pct);
-	}
 
 	currentMax=max;
 	U();
@@ -269,101 +262,18 @@ All rights reserved.
 	return currentMax;
 }
 
-- (float)getScaledMax {
-	//NSLog(@"scaled maxes: %10f %10f %10f",currentMax,currentScale,(currentMax*currentScale)*1.0);
-	return currentMax*currentScale;
-}
-
 - lockMax: (int)max {
 	lockedMax = (float)max;
-
-	[self autoScale];
+///@todo what does this really do?  should we 'crop' the data here?
 	return self;
 }
-
-- autoScale: (int)limit {
-	currentLimit = limit;
-	[self autoScale];
-	return self;
-}
-
-- autoScale {
-	//figure out a scaling that will make the data be <limit> 'high'..  could be configuarable.
-	int i;
+- setNewData: (NSData *)newdata {
 	L();
 	[dataLock lock];
-	float *d = (float *)[data mutableBytes];
-	float newscale,u;
-	float oldmax = [self resetMax];
-
-	if (allowScaling) {
-		//newscale = MAX(1.0,currentLimit/oldmax);
-		newscale = currentLimit/oldmax;
-
-		for (i=0;i<width*height;i++) {
-			u=(d[i]/currentScale)*newscale;
-			d[i]=MIN(currentLimit+1,MAX(u,0.0));
-		}
-		currentScale=newscale;
-		[self resetMax];
-		//NSLog(@"scale(%@): %.2f %6f %.2f %d",name,oldmax,newscale,currentMax,currentLimit);
-	}
-	U();
-	[dataLock unlock];
-	return self;
-}
-
-- disableScaling {
-	int i;
-	L();
-	[dataLock lock];
-	float *d = (float *)[data mutableBytes];
-	allowScaling = NO;
-	//undo any previos scaling
-	if ( currentScale != 1.0 ) {
-		for (i=0;i<width*height;i++)
-				d[i] = (d[i]/currentScale);
-		currentMax /= currentScale;
-		currentScale = 1.0;
-	}
-	U();
-	[dataLock unlock];
-	return self;
-}
-
-- autoScaleWithNewData: (NSData *)newdata {
-	BOOL rescale = NO;
-	int i;
-	L();
-	[dataLock lock];
-	if (allowScaling) {
-		float *frm = (float *)[newdata bytes];
-		float *to = (float *)[data mutableBytes];
-		float max = 0.001;
-
-		for (i=0;i<width*height;i++) {
-			to[i] = frm[i]*currentScale;
-			max = MIN(currentLimit+1,MAX(max,frm[i]));
-			if (frm[i] > currentMax) {
-				//NSLog(@"bigger(%@): %6f > %6f",name,frm[i],currentMax);
-				rescale = YES;
-			}
-		}
-
-		float pct = currentMax/max;
-		if (pct > 2.0) {
-			NSLog(@"<%@>aswnd PCT: %f",name,pct);
-			rescale = YES;
-		}
-
-		if (rescale) {
-			NSLog(@"rescale active(%@): %6f %6f",name,currentScale,currentMax);
-
-			[self autoScale];
-		}
-	} else {
-		[data setData: newdata];
-	}
+	
+	[data setData: newdata];
+	[self resetMax];
+	
 	U();
 	[dataLock unlock];
 	return self;
@@ -372,7 +282,7 @@ All rights reserved.
 
 - (NSString *)getLabel: (float)rate {
 	//FIXME scaling?
-	return [NSString stringWithFormat: labelFormat,rate/currentScale,rateSuffix];
+	return [NSString stringWithFormat: labelFormat,rate,rateSuffix];
 }
 - (NSString *)getLabelFormat {
 	return labelFormat;

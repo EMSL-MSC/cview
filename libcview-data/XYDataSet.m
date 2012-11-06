@@ -90,7 +90,8 @@ All rights reserved.
 		ptr=memchr(d,'\n',len);
 		if (ptr != NULL) {
 			i=ptr-d;
-			str = [NSString stringWithCString:d length: i];
+			d[i]=0;
+			str = [NSString stringWithUTF8String:d];
 			//NSLog(@"Headers String: %@",str);
 			arr = getStringFields(str);
 			columnCount = [arr count];
@@ -225,8 +226,8 @@ All rights reserved.
 	d=[self contractDataSetWidth: MaxX+1 andHeight: MaxY+1];//base zero
 
 	//NSLog(@"Scan Done");
-	[self autoScale];
-
+	[self resetMax];
+	
 	return self;
 }
 
@@ -315,7 +316,7 @@ All rights reserved.
 
 	[super initWithPList: list];
 
-	dataURL = [NSURL URLWithString: [list objectForKey: @"dataURL"]];
+	dataURL = [[NSURL URLWithString: [list objectForKey: @"dataURL"]] retain] ;
 	theCol = [list objectForKey: @"column"]; //required field
 	[self readHeaders];
 	
@@ -328,13 +329,13 @@ All rights reserved.
 
 	tmp = [list objectForKey:@"X"];
 	if (tmp) {
-		theX = tmp;
+		theX = [tmp retain];
 		xIndex = [self convertTagToIndex: theX];
 	}
 
 	tmp = [list objectForKey:@"Y"];
 	if (tmp) {
-		theY = tmp;
+		theY = [tmp retain];
 		yIndex = [self convertTagToIndex: theY];
 	}
 

@@ -92,7 +92,7 @@ All rights reserved.
 		[runLock lock];
 #ifdef __APPLE__
 //handling the fact that the mac does things very differently should be handled better here, probably just make the whole file dissapear would be better.
-		str = @"None";
+		str = "None";
 #else
 		str = GSDebugAllocationList(NO);
 #endif

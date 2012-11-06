@@ -1,6 +1,118 @@
 {
     height = 1200;
     name = "PIC CView";
+    valueStore = (
+	(
+	    "mem_cached",
+	    WebDataSet,
+	    {
+		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
+		key = "meminfo.cached";
+		rateSuffix = kb;
+	    }
+	),
+	(
+	    memused,
+	    CalculatedDataSet,
+	    {
+		classes = (
+		    ValueStoreDataSet,
+		    ValueStoreDataSet
+		);
+		formula = "$0:$1:-:1024:/:1024:/";
+		name = "Memory Used GB";
+		planes = (
+		    {
+			key = "mem_used";
+		    },
+		    {
+			key = "mem_cached";
+		    }
+		);
+		rateSuffix = GB;
+	    }
+	),
+	(
+	    ibin,
+	    WebDataSet,
+	    {
+		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
+		key = "iconnect.kbin";
+		name = "iconnect.kbin";
+		rateSuffix = "kb/sec";
+	    }
+	),
+	(
+	    "cpu_user",
+	    WebDataSet,
+	    {
+		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
+		key = "cputotals.user";
+		name = "cputotals.user";
+		rateSuffix = percent;
+	    }
+	),
+	(
+	    "lustre_write",
+	    WebDataSet,
+	    {
+		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
+		key = "lusclt.writekbs";
+		name = "lusclt.writekbs";
+		rateSuffix = "writekbs/sec";
+	    }
+	),
+	(
+	    "mem_used",
+	    WebDataSet,
+	    {
+		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
+		key = "meminfo.used";
+		rateSuffix = kb;
+	    }
+	),
+	(
+	    ib,
+	    CalculatedDataSet,
+	    {
+		classes = (
+		    ValueStoreDataSet,
+		    ValueStoreDataSet
+		);
+		formula = "$0:$1:+:1024:/:1024:/";
+		name = "Interconnect GB/s";
+		planes = (
+		    {
+			key = ibout;
+		    },
+		    {
+			key = ibin;
+		    }
+		);
+		rateSuffix = "GB/s";
+	    }
+	),
+	(
+	    "lustre_read",
+	    WebDataSet,
+	    {
+		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
+		key = "lusclt.readkbs";
+		name = "lusclt.readkbs";
+		rateSuffix = "readkbs/sec";
+	    }
+	),
+	(
+	    ibout,
+	    WebDataSet,
+	    {
+		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
+		key = "iconnect.kbout";
+		name = "iconnect.kbout";
+		rateSuffix = "kb/sec";
+	    }
+	)
+    );
     width = 1600;
     worlds = (
 	{
@@ -59,12 +171,9 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://pic-view/cluster/pic/";
-				    key = "cputotals.sys";
-				    name = "cputotals.sys";
-				    rateSuffix = percent;
+				    key = memused;
 				};
-				dataSetClass = WebDataSet;
+				dataSetClass = ValueStoreDataSet;
 				fontColorB = 1;
 				fontColorG = 1;
 				fontColorR = 1;
@@ -95,12 +204,9 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://pic-view/cluster/pic/";
-				    key = "cputotals.user";
-				    name = "cputotals.user";
-				    rateSuffix = percent;
+				    key = "cpu_user";
 				};
-				dataSetClass = WebDataSet;
+				dataSetClass = ValueStoreDataSet;
 				fontColorB = 1;
 				fontColorG = 1;
 				fontColorR = 1;
@@ -131,29 +237,9 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    classes = (
-					WebDataSet,
-					WebDataSet
-				    );
-				    formula = "$0:$1:+:1024:/:1024:/";
-				    name = "Interconnect GB/s";
-				    planes = (
-					{
-					    baseURL = "http://pic-view/cluster/pic/";
-					    key = "iconnect.kbout";
-					    name = "iconnect.kbout";
-					    rateSuffix = "kb/sec";
-					},
-					{
-					    baseURL = "http://pic-view/cluster/pic/";
-					    key = "iconnect.kbin";
-					    name = "iconnect.kbin";
-					    rateSuffix = "kb/sec";
-					}
-				    );
-				    rateSuffix = "GB/s";
+				    key = ib;
 				};
-				dataSetClass = CalculatedDataSet;
+				dataSetClass = ValueStoreDataSet;
 				fontColorB = 1;
 				fontColorG = 1;
 				fontColorR = 1;
@@ -184,12 +270,9 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://pic-view/cluster/pic/";
-				    key = "lusclt.readkbs";
-				    name = "lusclt.readkbs";
-				    rateSuffix = "readkbs/sec";
+				    key = "lustre_read";
 				};
-				dataSetClass = WebDataSet;
+				dataSetClass = ValueStoreDataSet;
 				fontColorB = 1;
 				fontColorG = 1;
 				fontColorR = 1;
@@ -220,12 +303,9 @@
 			    halign = 0;
 			    object = {
 				dataSet = {
-				    baseURL = "http://pic-view/cluster/pic/";
-				    key = "lusclt.writekbs";
-				    name = "lusclt.writekbs";
-				    rateSuffix = "writekbs/sec";
+				    key = "lustre_write";
 				};
-				dataSetClass = WebDataSet;
+				dataSetClass = ValueStoreDataSet;
 				fontColorB = 1;
 				fontColorG = 1;
 				fontColorR = 1;

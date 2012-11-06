@@ -1,8 +1,8 @@
 /*
 
-This file is port of the CVIEW graphics system, which is goverened by the following License
+This file is part of the CVIEW graphics system, which is goverened by the following License
 
-Copyright © 2008,2009, Battelle Memorial Institute
+Copyright © 2008-2012 Battelle Memorial Institute
 All rights reserved.
 
 1.	Battelle Memorial Institute (hereinafter Battelle) hereby grants permission
@@ -56,88 +56,29 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
+/**
+A Generic Value Store.  Implemented as a singleton, classes can store classes here using a 'key', and retrieve them later. 
+
+@author Evan Felix
+@ingroup cviewdata
+*/
 #import <Foundation/Foundation.h>
-#import "DefaultGLScreenDelegate.h"
-#import "GLGrid.h"
-#import "WebDataSet.h"
-#import "cview.h"
+#import "PList.h"
 
-@interface Toggle: DefaultGLScreenDelegate
-@end
-
-@implementation Toggle
--(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world; {
-	if ([super keyPress: key atX: x andY: y inGLWorld: world] == NO && key == 'g') {
-		//Find the GLGrids:	
-		id o;
-		NSEnumerator *list;
-		list = [[[world scene] getAllObjects] objectEnumerator];
-		while ( (o = [list nextObject]) ) {
-			if ([o isKindOfClass: [GLGrid class]]) {	
-				GLGrid *g = (GLGrid *)o;
-				[g setGridType: ([g getGridType]+1)%G_COUNT];
-			}
-		}
-		return YES;
-	}
-	return NO;
+@interface ValueStore: NSObject <PList> {
+	NSMutableDictionary *values;
 }
++valueStore;
+/**Load a set of objects from an array of arrays.  Each element in the array is a triple consisting of: key,className,initData
+each class is required to comply with the PList protocol.
+*/
+-loadKeyValueArray: (NSArray*)array;
+/**Load an object as specified with a key and class name initializing it with data*/
+-loadKey: (NSString *)key withClass: (NSString *)clsName andData: (id)pListData;
+/** set a value for a specified key, if value is nil, it will remove the value */
+-(void)setKey: (NSString *)key withObject: (id)value;
+/** retrive a value from the store */
+-getObject: (NSString *)key;
+/** Return the number of objects stored in the ValueStore */
+-(NSUInteger)count;
 @end
-
-int main(int argc,char *argv[], char *env[]) {
-	DrawableObject *o;
-	Toggle *toggler;
-
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-#ifndef __APPLE__
-	//needed for NSLog
-	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
-#endif
-	@try {
-		NSURL *cluster = [NSURL URLWithString: @"http://www.emsl.pnnl.gov/msc-datasets/chinook/"];
-		WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.user"];
-		WebDataSet *f = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.sys"];
-		
-	
-		GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test" withWidth: 1200 andHeight: 600];
-	
-	
-		Scene * scene1 = [[Scene alloc] init];
-	
-		o=[[[[GLGrid alloc] initWithDataSet: d] setXTicks: 50] setYTicks: 32];
-		[scene1 addObject: o atX: 0 Y: 0 Z: 0];
-	
-		[[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50] 
-			setScene: scene1] 
-			setEye: [[[Eye alloc] init] setX: 56.0 Y: 1250.0 Z: 1000.0 Hangle:-4.72 Vangle: -2.45]
-		];
-		
-		// SCENE2
-		Scene * scene2 = [[Scene alloc] init];
-		o=[[[[GLGrid alloc] initWithDataSet: f] setXTicks: 50] setYTicks: 32];
-		[scene2 addObject: o atX: 0 Y: 0 Z: 0];
-	
-		[[[g addWorld: @"TR" row: 0 col: 2 rowPercent: 50 colPercent:50] 
-			setScene: scene2] 
-			setEye: [[[Eye alloc] init] setX: 56.0 Y: 1250.0 Z: 1000.0 Hangle:-4.72 Vangle: -2.45]
-		];
-		
-		toggler = [[Toggle alloc] initWithScreen: g];
-		[g setDelegate: toggler];
-		
-		[g run];
-	}
-	@catch (NSException *localException) {
-		NSLog(@"Error: %@", localException);
-		//NSArray *arr = [localException callStackReturnAddresses];
-		//NSEnumerator *e = [arr objectEnumerator];
-		//NSObject *o;
-		//while ( (o=[e nextObject]) != nil) {
-		//	NSLog(@"Stack: %@",o);	
-		//}
-		return -1;
-	}
-	[pool release];
-
-	return 0;
-}

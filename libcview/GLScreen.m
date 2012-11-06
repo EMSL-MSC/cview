@@ -71,6 +71,7 @@ All rights reserved.
 #import "cview.h"
 #import "ListComp.h"
 #import "PList.h"
+#import "ValueStore.h"
 
 @interface AScreen: NSObject <PList> {
 	@public
@@ -268,11 +269,14 @@ NSComparisonResult compareScreenColumns(id one,id two,void *context) {
 	NSLog(@"GLScreen getPList: %@",self);
 
 	NSArray *ws = [[worlds allObjects] arrayObjectsFromPerformedSelector: @selector(getPList)];
-	return [NSDictionary dictionaryWithObjectsAndKeys: ws, @"worlds", 
+	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithObjectsAndKeys: ws, @"worlds", 
 		[NSNumber numberWithInt: width],@"width",
 		[NSNumber numberWithInt: height],@"height",
 		myName,@"name",
 		nil];
+	if ([[ValueStore valueStore] count]>0)
+		[dict setObject: [[ValueStore valueStore] getPList] forKey: @"valueStore"];
+	return dict;
 }
 
 -initWithPList: (id)list {
@@ -282,6 +286,8 @@ NSComparisonResult compareScreenColumns(id one,id two,void *context) {
 			withWidth: [[list objectForKey: @"width"] intValue]
 			andHeight: [[list objectForKey: @"height"] intValue]
 	];
+	NSArray *arr = [list objectForKey: @"valueStore"];
+	[[ValueStore valueStore] loadKeyValueArray: arr];
 
 	NSArray *ws = [list objectForKey: @"worlds"];
 	//NSLog(@"%@",ws);
@@ -686,7 +692,6 @@ double mysecond()
 
 +(GLScreen *)getMaster {
 	return _theMaster_;
-	return self;
 }
 
 +setMaster: (GLScreen *)m {

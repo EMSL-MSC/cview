@@ -103,7 +103,7 @@ typedef enum { CT_FIXED=0, CT_FG, CT_FGT, CT_BG, CT_BGT } ColorType;
 }
 
 -description {
-    return [NSString stringWithFormat: @"Segment: %f %f %f %f-%f-%f-%f %f-%f-%f-%f %d %d %d",
+    return [NSString stringWithFormat: @"Segment: %f %f %f %f-%f-%f-%f %f-%f-%f-%f %d %d %d %d",
             left,mid,right,
             leftRGBA[0],leftRGBA[1],leftRGBA[2],leftRGBA[3],
             rightRGBA[0],rightRGBA[1],rightRGBA[2],rightRGBA[3],
@@ -121,8 +121,16 @@ typedef enum { CT_FIXED=0, CT_FG, CT_FGT, CT_BG, CT_BGT } ColorType;
 }
 
 -initWithFile: (NSString*)filename {
+	NSError *err = nil;
+	NSStringEncoding enc;
     NSLog(@"initWithFile: %@",filename);
-    NSString *linestring = [NSString stringWithContentsOfFile: filename];
+    NSString *linestring = [NSString stringWithContentsOfFile: find_resource_path(filename) usedEncoding: &enc error: &err];
+	if (enc != NSUTF8StringEncoding) {
+		NSLog(@"Strange file encoding seen for %@: %lu",filename,enc);
+	}
+	if (err != nil) {
+		NSLog(@"Error reading file %@: %@",filename,err);
+	}
 	
     source = FROMFILE;
     lastcolor = -1.0;
@@ -171,7 +179,7 @@ typedef enum { CT_FIXED=0, CT_FG, CT_FGT, CT_BG, CT_BGT } ColorType;
 		return [self initWithString: dataSource];
 	}
 	else if ([from compare: FROMFILE_STRING] == NSOrderedSame) {
-		return [self initWithFile: find_resource_path(dataSource)];
+		return [self initWithFile: dataSource];
 	}
 	else {
 		NSLog(@"Bad Source in GGR:%@",from);

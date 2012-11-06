@@ -80,7 +80,7 @@ All rights reserved.
 #endif
 
 /**
-This class provides a basic data store, with associated information.  It is organized as a 2 dimensional array of floating point values.  A set of row and column names is provided, along with some averaging and total functions.  The data may be stored pre-scaled so that it fits within a specific range for display.
+This class provides a basic data store, with associated information.  It is organized as a 2 dimensional array of floating point values.  A set of row and column names is provided, along with some averaging and total functions.  
 
 @author Evan Felix
 @ingroup cviewdata
@@ -91,10 +91,9 @@ This class provides a basic data store, with associated information.  It is orga
 	int width,height;
 	int currentLimit; ///< the 'size' of the data in the z direction or how high the data should be...
 	NSString *rateSuffix;
-	float currentScale;
 	float currentMax;
 	float lockedMax;
-	BOOL allowScaling,dataValid;
+	BOOL dataValid;
 	BOOL isCustomTextDescription;
 	NSString *textDescription;
 	NSString *labelFormat;
@@ -119,8 +118,6 @@ This class provides a basic data store, with associated information.  It is orga
 - (NSDictionary *)columnMeta: (int)col;
 /** return the maimum value of the data set */ 
 - (float)getMax;
-/** return the scaled verion of the max, or the true value */
-- (float)getScaledMax;
 /** recalculate stored maximum values */
 - (float)resetMax;
 - lockMax: (int)max;
@@ -130,12 +127,8 @@ This class provides a basic data store, with associated information.  It is orga
 - (NSString *)getLabelFormat;
 /** set a new label format for displaying data this should contain one %f and one %@ for formatting in that order*/
 - setLabelFormat: (NSString *)fmt;
-- autoScale: (int)limit;
-/** Auto scale the data according to the current limit */
-- autoScale;
-/** replace the data in the dataset with a new one, scaling where necessary */
-- autoScaleWithNewData: (NSData *)data;
-- disableScaling;
+/** replace the data in the dataset with a new one */
+- setNewData: (NSData *)data;
 -setDescription: (NSString *)description;
 - (NSString *)getDescription;
 - setRate:(NSString *)r;

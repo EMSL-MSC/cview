@@ -67,7 +67,7 @@ All rights reserved.
 
 
 @implementation  GLBar
-static NSArray *barTypeStrings=nil;  //these are for expansion and not used yet.
+//static NSArray *barTypeStrings=nil;  //these are for expansion and not used yet.
 static const char *barTypeSelectors[] =	{ 
 	"drawSquares",
 };
@@ -98,6 +98,11 @@ static float bar_quads[72] = {
 	zscale=1.0;
 	dzmult=0.0;
 	rmult=1.0;
+	axisTicks=6;
+	tickMax=1.0;
+	currentTicks[0]=0.0;
+	currentTicks[1]=1.0;
+	numTicks=2;
 	baseWidth=50.0;
 	baseLength=50.0;
 	barWidth=30.0;
@@ -188,9 +193,8 @@ static float bar_quads[72] = {
 	Class c;
 	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
 	NSLog(@"dataSetClass is: %@", c);
-	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
-		ds=[c alloc];
-		[ds initWithPList: [list objectForKey: @"dataSet"]];
+	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {;
+		ds=[[c alloc] initWithPList: [list objectForKey: @"dataSet"]];
 		[self setDataSet: ds];
 		if (w > 0) {
 			[self setWidth: w];
@@ -204,7 +208,7 @@ static float bar_quads[72] = {
 	NSLog(@"getPList: %@",self);
 	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary: [super getPList]];
 	[dict setObject: [dataSet getPList] forKey: @"dataSet"];
-	[dict setObject: [dataSet class] forKey: @"dataSetClass"];
+	[dict setObject: [dataSet className] forKey: @"dataSetClass"];
 	[dict setObject: [NSNumber numberWithFloat: fontScale] forKey: @"fontScale"];
 	[dict setObject: [NSNumber numberWithFloat: fontColorR] forKey: @"fontColorR"];
 	[dict setObject: [NSNumber numberWithFloat: fontColorG] forKey: @"fontColorG"];
@@ -231,7 +235,7 @@ static float bar_quads[72] = {
 									@"dzmult",@"rmult",@"fontColorR",@"fontColorG",@"fontColorB",
 									@"barType",@"dataSet",@"baseWidth",@"barWidth",@"baseLength",
 									@"highlightColorR",@"highlightColorG",@"highlightColorB",
-									@"barLength",@"width",nil];
+									@"barLength",@"width",@"axisTicks",nil];
 }
 
 -(NSDictionary *)tweaksettings {
@@ -255,6 +259,7 @@ static float bar_quads[72] = {
 		@"min=1.0",@"baseLength",
 		@"min=1.0",@"barLength",
 		[NSString stringWithFormat: @"min=1 step=1 max=%d",[dataSet width]],@"width",
+		[NSString stringWithFormat: @"min=2 max=%d",MAX_TICKS],@"axisTicks",
 		nil];
 }
 
@@ -269,13 +274,16 @@ static float bar_quads[72] = {
 }
 
 -glDraw {
-	float max = [dataSet getScaledMax];
+	float max = [dataSet getMax];
 	
-	if (currentMax != max) {
+	if (currentMax != max || currentMax==0) {
 		NSLog(@"New Max: %.2f %.2f",max,currentMax);
-		currentMax = max;
+		currentMax = max==0?1:max;
+		numTicks = niceticks(0,currentMax,currentTicks,axisTicks);
+		tickMax = currentTicks[numTicks-1];
+		
 		[colorMap autorelease];
-		colorMap = [ColorMap mapWithMax: currentMax];
+		colorMap = [ColorMap mapWithMax: tickMax];
 		[colorMap retain];
 	}
 
@@ -310,35 +318,35 @@ static float bar_quads[72] = {
 -drawAxis {
 	int i;
 	float bsize=0.25/xscale;
-	float x,y;
+	float j,step,x,y;
 
 	x=gridw*baseWidth;
 	y=0.0;
 
 	glPushMatrix();
-	glScalef(xscale,yscale,zscale); 	
+	glScalef(xscale,yscale*100.0/tickMax,zscale); 	
 
 	glBegin(GL_LINES);
-	for (i=1;i<currentMax+1;i++) {
-		[colorMap glMap: i];
+	step=currentMax/100.0;
+	for (j=step;j<tickMax;j+=step) {
+		[colorMap glMap: j];
 		//glColor3f(1.0,1.0,1.0);
-		glVertex3f(x,i-1.0,y);
-		glVertex3f(x,i,y);
+		glVertex3f(x,j-step,y);
+		glVertex3f(x,j,y);
 	}
 	glEnd();
 	
 	glColor3f(fontColorR,fontColorG,fontColorB);
 	glBegin(GL_QUADS);
-	for (i=0;i<currentMax+1;i+=(int)MAX(4,currentMax/5)) {
-		glVertex3f(x-bsize,i,y-bsize);
-		glVertex3f(x-bsize,i,y+bsize);
-		glVertex3f(x+bsize,i,y+bsize);
-		glVertex3f(x+bsize,i,y-bsize);
-	}
+	for (i=0;i<numTicks;i++) {
+		glVertex3f(x-bsize,currentTicks[i],y-bsize);
+		glVertex3f(x-bsize,currentTicks[i],y+bsize);
+		glVertex3f(x+bsize,currentTicks[i],y+bsize);
+		glVertex3f(x+bsize,currentTicks[i],y-bsize);	}
 	glEnd();
 
-	for (i=0;i<currentMax+1;i+=(int)MAX(4,currentMax/5))
-		drawString3D(x+4.0/xscale,i,y,GLUT_BITMAP_HELVETICA_12,[dataSet getLabel: i],1.0);
+	for (i=0;i<numTicks;i++)
+		drawString3D(x+4.0/xscale,currentTicks[i],y,GLUT_BITMAP_HELVETICA_12,[dataSet getLabel: currentTicks[i]],1.0);
 
 	glPopMatrix();
 	return self;
@@ -387,7 +395,7 @@ static float bar_quads[72] = {
 
 
 -(void)setBarType:(BarTypesEnum)code {
-	if (code >=0 && code < B_COUNT)
+	if (code < B_COUNT)
 		barType = code;
 }
 
@@ -410,7 +418,7 @@ static float bar_quads[72] = {
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_COLOR_ARRAY);
 	glPushMatrix();	
-	glScalef(xscale,yscale,zscale);
+	glScalef(xscale,yscale*100.0/tickMax,zscale);
 
 	glVertexPointer(3, GL_FLOAT, 0, bar_quads);
 

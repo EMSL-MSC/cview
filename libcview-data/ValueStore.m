@@ -56,88 +56,89 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
+
 #import <Foundation/Foundation.h>
-#import "DefaultGLScreenDelegate.h"
-#import "GLGrid.h"
-#import "WebDataSet.h"
-#import "cview.h"
+#import "ValueStore.h"
+#import "ListComp.h"
 
-@interface Toggle: DefaultGLScreenDelegate
-@end
-
-@implementation Toggle
--(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world; {
-	if ([super keyPress: key atX: x andY: y inGLWorld: world] == NO && key == 'g') {
-		//Find the GLGrids:	
-		id o;
-		NSEnumerator *list;
-		list = [[[world scene] getAllObjects] objectEnumerator];
-		while ( (o = [list nextObject]) ) {
-			if ([o isKindOfClass: [GLGrid class]]) {	
-				GLGrid *g = (GLGrid *)o;
-				[g setGridType: ([g getGridType]+1)%G_COUNT];
-			}
-		}
-		return YES;
+@implementation ValueStore 
+static ValueStore *singletonValueStore;
++(void)initialize {
+	if ([ValueStore class] == self) {
+		singletonValueStore = [[self alloc] init];
 	}
-	return NO;
+}
++valueStore {
+	return singletonValueStore;
+}
+
+-(id)init {
+	[super init];
+	values=[[NSMutableDictionary dictionaryWithCapacity: 10] retain];
+	return self;
+}
+
+-(void)dealloc {
+	[values autorelease];
+	[super dealloc];
+}
+
+-getPList {
+	//return an array of triples sutable for loading with loadValueArray: call
+	NSArray *keys = [values allKeys];
+	NSMutableArray *res = [NSMutableArray arrayWithCapacity: [keys count]];
+	NSString *key;
+	NSEnumerator *e;
+	e = [keys objectEnumerator];
+	while ((key = [e nextObject])) {
+		id o = [values objectForKey: key];
+		NSArray *a = [NSArray arrayWithObjects: key,[o class],[o getPList],nil];
+		[res addObject: a];
+	}
+	NSLog(@"resultantarray: %@",res);
+	return res;
+}
+
+-initWithPList: (id)list {
+	//Dont actually implement, it might be good to force this to use the singleton, but do we wipe then?...
+	NSLog(@"initWithPList called in singleton class");
+	return nil;
+};
+
+-loadKeyValueArray: (NSArray*)array {
+	NSEnumerator *e;
+	NSArray *a;
+	NSLog(@"loadValueArray %@",array);
+	e = [array objectEnumerator];
+	while ((a = [e nextObject])) {
+		NSLog(@"loading %@",a);
+		if ([a count]==3)
+			[self loadKey: [a objectAtIndex:0] withClass: [a objectAtIndex:1] andData: [a objectAtIndex:2]];
+	}
+	return self;
+}
+
+-loadKey: (NSString *)key withClass: (NSString *)clsName andData: (id)pListData {
+	Class c;
+	c = NSClassFromString(clsName);
+	NSLog(@"Load Class From %@ with %@",c,pListData);
+	if (c && [c conformsToProtocol: @protocol(PList)]) {
+		id o = [c alloc];
+		o = [o initWithPList: pListData];
+		[self setKey: key withObject: o];
+		[o autorelease];
+	}
+	return self;
+}
+-(void)setKey: (NSString *)key withObject: (id)value{
+	NSLog(@"setValue: %@ for Key: %@",value,key);
+	[values setValue: value forKey: key];
+	return; 
+}
+-getObject: (NSString *)key {
+	return [values objectForKey: key];
+}
+-(NSUInteger)count {
+	return [values count];
 }
 @end
-
-int main(int argc,char *argv[], char *env[]) {
-	DrawableObject *o;
-	Toggle *toggler;
-
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-#ifndef __APPLE__
-	//needed for NSLog
-	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
-#endif
-	@try {
-		NSURL *cluster = [NSURL URLWithString: @"http://www.emsl.pnnl.gov/msc-datasets/chinook/"];
-		WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.user"];
-		WebDataSet *f = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.sys"];
-		
-	
-		GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test" withWidth: 1200 andHeight: 600];
-	
-	
-		Scene * scene1 = [[Scene alloc] init];
-	
-		o=[[[[GLGrid alloc] initWithDataSet: d] setXTicks: 50] setYTicks: 32];
-		[scene1 addObject: o atX: 0 Y: 0 Z: 0];
-	
-		[[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50] 
-			setScene: scene1] 
-			setEye: [[[Eye alloc] init] setX: 56.0 Y: 1250.0 Z: 1000.0 Hangle:-4.72 Vangle: -2.45]
-		];
-		
-		// SCENE2
-		Scene * scene2 = [[Scene alloc] init];
-		o=[[[[GLGrid alloc] initWithDataSet: f] setXTicks: 50] setYTicks: 32];
-		[scene2 addObject: o atX: 0 Y: 0 Z: 0];
-	
-		[[[g addWorld: @"TR" row: 0 col: 2 rowPercent: 50 colPercent:50] 
-			setScene: scene2] 
-			setEye: [[[Eye alloc] init] setX: 56.0 Y: 1250.0 Z: 1000.0 Hangle:-4.72 Vangle: -2.45]
-		];
-		
-		toggler = [[Toggle alloc] initWithScreen: g];
-		[g setDelegate: toggler];
-		
-		[g run];
-	}
-	@catch (NSException *localException) {
-		NSLog(@"Error: %@", localException);
-		//NSArray *arr = [localException callStackReturnAddresses];
-		//NSEnumerator *e = [arr objectEnumerator];
-		//NSObject *o;
-		//while ( (o=[e nextObject]) != nil) {
-		//	NSLog(@"Stack: %@",o);	
-		//}
-		return -1;
-	}
-	[pool release];
-
-	return 0;
-}

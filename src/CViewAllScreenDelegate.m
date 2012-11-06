@@ -231,7 +231,7 @@ static void TW_CALL CVASD_intGlobalSetCallback(const void *value, void *clientDa
 				NSLog(@"Showing a new dataset!");
 				wds = [[WebDataSet alloc] initWithUrlBase: url andKey: key];
 				[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:wds];
-				[wds autoScale: 100];	
+				
 				grid=[[[[[GLGrid alloc] initWithDataSet: wds] setXTicks: xTicks] setYTicks: yTicks] show];
 				[grid setValue: [NSNumber numberWithFloat: xscale] forKeyPath: @"xscale"];
 				[grid setValue: [NSNumber numberWithFloat: yscale] forKeyPath: @"yscale"];
@@ -348,7 +348,7 @@ static void TW_CALL CVASD_intGlobalSetCallback(const void *value, void *clientDa
 }
 -(void)addGlobalTweak: (const char *)name withType: (int)TYPE withTweakSettings: (const char *)tweaksettings needingRepopulate: (BOOL)needsRepopulate {
 	NSArray *arr;
-	arr = [NSArray arrayWithObjects: self,[NSString stringWithCString: name],[NSNumber numberWithBool: needsRepopulate],nil];
+	arr = [NSArray arrayWithObjects: self,[NSString stringWithUTF8String: name],[NSNumber numberWithBool: needsRepopulate],nil];
 	[tweakObjects addObject: arr];
 	TwSetVarCallback setCB;
 	TwGetVarCallback getCB;

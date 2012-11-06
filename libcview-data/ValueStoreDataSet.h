@@ -1,8 +1,8 @@
 /*
 
-This file is port of the CVIEW graphics system, which is goverened by the following License
+This file is part of the CVIEW graphics system, which is goverened by the following License
 
-Copyright © 2008,2009, Battelle Memorial Institute
+Copyright © 2008-2012 Battelle Memorial Institute
 All rights reserved.
 
 1.	Battelle Memorial Institute (hereinafter Battelle) hereby grants permission
@@ -57,87 +57,21 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
-#import "DefaultGLScreenDelegate.h"
-#import "GLGrid.h"
-#import "WebDataSet.h"
-#import "cview.h"
+#import "DataSet.h"
 
-@interface Toggle: DefaultGLScreenDelegate
-@end
 
-@implementation Toggle
--(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world; {
-	if ([super keyPress: key atX: x andY: y inGLWorld: world] == NO && key == 'g') {
-		//Find the GLGrids:	
-		id o;
-		NSEnumerator *list;
-		list = [[[world scene] getAllObjects] objectEnumerator];
-		while ( (o = [list nextObject]) ) {
-			if ([o isKindOfClass: [GLGrid class]]) {	
-				GLGrid *g = (GLGrid *)o;
-				[g setGridType: ([g getGridType]+1)%G_COUNT];
-			}
-		}
-		return YES;
-	}
-	return NO;
+/**
+	Load a Dataset from the ValueStore Has no direct DataSet functionality, and normally returns another dataset in its place.  Hopefully we can integrate some of this functionality directly into the other classes.
+
+	@author Evan Felix
+	@ingroup cviewdata
+*/
+@interface ValueStoreDataSet: NSProxy <PList> {
+	DataSet *dataSet;
+	NSString *dataKey;
 }
+/** get Class name */
+-(NSString*) className;
+/**internal function*/
+-(void)validateDataSet;
 @end
-
-int main(int argc,char *argv[], char *env[]) {
-	DrawableObject *o;
-	Toggle *toggler;
-
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-#ifndef __APPLE__
-	//needed for NSLog
-	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
-#endif
-	@try {
-		NSURL *cluster = [NSURL URLWithString: @"http://www.emsl.pnnl.gov/msc-datasets/chinook/"];
-		WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.user"];
-		WebDataSet *f = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.sys"];
-		
-	
-		GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test" withWidth: 1200 andHeight: 600];
-	
-	
-		Scene * scene1 = [[Scene alloc] init];
-	
-		o=[[[[GLGrid alloc] initWithDataSet: d] setXTicks: 50] setYTicks: 32];
-		[scene1 addObject: o atX: 0 Y: 0 Z: 0];
-	
-		[[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50] 
-			setScene: scene1] 
-			setEye: [[[Eye alloc] init] setX: 56.0 Y: 1250.0 Z: 1000.0 Hangle:-4.72 Vangle: -2.45]
-		];
-		
-		// SCENE2
-		Scene * scene2 = [[Scene alloc] init];
-		o=[[[[GLGrid alloc] initWithDataSet: f] setXTicks: 50] setYTicks: 32];
-		[scene2 addObject: o atX: 0 Y: 0 Z: 0];
-	
-		[[[g addWorld: @"TR" row: 0 col: 2 rowPercent: 50 colPercent:50] 
-			setScene: scene2] 
-			setEye: [[[Eye alloc] init] setX: 56.0 Y: 1250.0 Z: 1000.0 Hangle:-4.72 Vangle: -2.45]
-		];
-		
-		toggler = [[Toggle alloc] initWithScreen: g];
-		[g setDelegate: toggler];
-		
-		[g run];
-	}
-	@catch (NSException *localException) {
-		NSLog(@"Error: %@", localException);
-		//NSArray *arr = [localException callStackReturnAddresses];
-		//NSEnumerator *e = [arr objectEnumerator];
-		//NSObject *o;
-		//while ( (o=[e nextObject]) != nil) {
-		//	NSLog(@"Stack: %@",o);	
-		//}
-		return -1;
-	}
-	[pool release];
-
-	return 0;
-}
