@@ -68,6 +68,7 @@ The class can display 4 types of Grid: Lines, Surfaces, Ribbons and Points.
 #import "ColorMap.h"
 #import "DrawableObject.h"
 #import "GLText.h"
+#define MAX_TICKS 10
 
 typedef enum { B_SQUARE=0,B_COUNT } BarTypesEnum;
 #define B_SQUARE_STRING @"0"

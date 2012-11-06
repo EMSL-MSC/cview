@@ -483,7 +483,7 @@ extern GLuint g_textureID;
     c = NSClassFromString([list objectForKey: @"dataSetClass"]);
     if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
         ds=[c alloc];
-        [[ds initWithPList: [list objectForKey: @"dataSet"]] disableScaling];
+        [ds initWithPList: [list objectForKey: @"dataSet"]];
         self->dataSet = ds;
     }
     self->gendersFilePath = [[list objectForKey: @"gendersFilePath" missing: @"/etc/genders"] retain];
@@ -493,7 +493,7 @@ extern GLuint g_textureID;
     if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
         ds=[c alloc];
         [ds initWithPList: [list objectForKey: @"jobIDDataSet"]];
-        jobIds = [[ds retain] disableScaling];
+        jobIds = [ds retain];
     }
     self->drawLegend = [[list objectForKey: @"drawLegend"] boolValue];
     self->legend_padd_side = [[list objectForKey: @"legend_padd_side"] floatValue];

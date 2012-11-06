@@ -219,7 +219,7 @@ static const char *gridTypeSelectors[] =	{
 
 	Class c;
 	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
-	NSLog(@"dataSetClass is: %@", [c className]);
+	NSLog(@"dataSetClass is: %@ == %@", [c className],[list objectForKey: @"dataSetClass"]);
 	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
 		ds=[[c alloc] initWithPList: [list objectForKey: @"dataSet"]];
 		[self setDataSet: ds];

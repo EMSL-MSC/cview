@@ -59,50 +59,58 @@ All rights reserved.
 #import <Foundation/Foundation.h>
 #import "LoadClasses.h"
 
-#import "StreamDataSet.h"
-#import "CalculatedDataSet.h"
-#import "DataSet.h"
-#import "cview-data.h"
-#import "debug.h"
-#import "WebDataSet.h"
-#import "JobDataSet.h"
-#import "DictionaryExtra.h"
-#import "SinDataSet.h"
-#import "calcdataset.h"
-#import "ListComp.h"
-#import "XYDataSet.h"
-#import "PList.h"
-#import "config.h"
-#import "DataCenterCViewScreenDelegate.h"
-#import "LoadClasses.h"
-#import "CViewScreenDelegate.h"
-#import "ObjectTracker.h"
-#import "GLGrid.h"
-#import "GLTooltip.h"
-#import "cview.h"
 #import "ColorMap.h"
-#import "Pickable.h"
-#import "GLWorld.h"
-#import "GLImage.h"
-#import "GLText.h"
-#import "GLScreen.h"
-#import "DrawableObject.h"
-#import "GLBar.h"
-#import "IdDatabase.h"
-#import "DefaultGLScreenDelegate.h"
-#import "GLDataCenter.h"
-#import "Identifiable.h"
+#import "cview.h"
+#import "calcdataset.h"
+#import "CalculatedDataSet.h"
+#import "DataCenter/Drawable.h"
 #import "DataCenter/Locatable.h"
 #import "DataCenter/Node.h"
-#import "DataCenter/Vector.h"
-#import "DataCenter/Drawable.h"
 #import "DataCenter/Rack.h"
-#import "Wand.h"
-#import "GLScreenDelegate.h"
+#import "DataCenter/Vector.h"
+#import "cview-data.h"
+#import "DataSet.h"
+#import "debug.h"
+#import "DictionaryExtra.h"
+#import "JobDataSet.h"
+#import "ListComp.h"
+#import "PList.h"
+#import "SinDataSet.h"
+#import "StreamDataSet.h"
+#import "UpdateRunLoop.h"
+#import "ValueStoreDataSet.h"
+#import "ValueStore.h"
+#import "WebDataSet.h"
+#import "XYDataSet.h"
+#import "DefaultGLScreenDelegate.h"
+#import "DrawableObject.h"
 #import "Eye.h"
+#import "GimpGradient.h"
+#import "GLBar.h"
+#import "GLDataCenter.h"
+#import "GLGrid.h"
+#import "GLImage.h"
+#import "GLInfinibandNetwork.h"
+#import "GLScreenDelegate.h"
+#import "GLScreen.h"
+#import "GLText.h"
+#import "GLTooltip.h"
+#import "GLWorld.h"
+#import "Graph.h"
+#import "IdDatabase.h"
+#import "Identifiable.h"
+#import "Pickable.h"
 #import "Scene.h"
+#import "Wand.h"
+#import "CViewAllScreenDelegate.h"
+#import "CViewScreenDelegate.h"
+#import "DataCenterCViewScreenDelegate.h"
+#import "LoadClasses.h"
+#import "ObjectTracker.h"
+
 extern int aninteger;
 extern int nsarray_integer;
+
 @implementation LoadClasses
 +(void)loadAllClasses {
     /* How to regenerate this class:  run: ./regenerateLoadClasses.sh
@@ -115,45 +123,50 @@ extern int nsarray_integer;
 aninteger++;
 nsarray_integer++;
 
-[GLImage class];
-[DrawableObject class];
-[GLBar class];
-[GLText class];
+
 [ColorMap class];
-[GLWorld class];
-[Eye class];
-[GLTooltip class];
-[DefaultGLScreenDelegate class];
-[GLGrid class];
-#if HAVE_GENDERS
-[Node class];
-#endif
+[CalculatedDataSet class];
 #if HAVE_GENDERS
 [Locatable class];
 #endif
 #if HAVE_GENDERS
-[Vector class];
+[Node class];
 #endif
 #if HAVE_GENDERS
 [Rack class];
 #endif
-[Identifiable class];
+#if HAVE_GENDERS
+[Vector class];
+#endif
+[DataSet class];
+[NSDictionary class];
+[JobDataSet class];
+[NSArray class];
+[SinDataSet class];
+[StreamDataSet class];
+[ValueStoreDataSet class];
+[ValueStore class];
+[WebDataSet class];
+[XYDataSet class];
+[DefaultGLScreenDelegate class];
+[DrawableObject class];
+[Eye class];
+[GimpGradient class];
+[GLBar class];
 #if HAVE_GENDERS
 [GLDataCenter class];
 #endif
-[AScreen class];
+[GLGrid class];
+[GLImage class];
+[GLInfinibandNetwork class];
 [GLScreen class];
+[AScreen class];
+[GLText class];
+[GLTooltip class];
+[GLWorld class];
+[Graph class];
 [IdDatabase class];
+[Identifiable class];
 [Scene class];
-[NSDictionary class];
-[NSArray class];
-[CalculatedDataSet class];
-//[StreamDataSet class];
-//[UpdateRunLoop class];
-[WebDataSet class];
-[SinDataSet class];
-[JobDataSet class];
-[DataSet class];
-[XYDataSet class];
 }
 @end

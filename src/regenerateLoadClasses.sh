@@ -64,7 +64,7 @@ All rights reserved.
 #import \"LoadClasses.h\"
 "
 
-for x in `find . -name "*.h"`; do
+for x in `find . -name "*.h" | sort`; do
 	DIRNAME=`dirname $x`
 	BASENAME=`basename $DIRNAME`
 	if [ "$BASENAME" = "DataCenter" ]; then
@@ -95,12 +95,26 @@ nsarray_integer++;
 
 "
 
-/bin/grep -n --color=auto @implementation `find libcview libcview-data -name "*.[hm]"` | \
+function contains() {
+    local c
+    for c in "${@:2}"
+    do
+        [[ "$c" == "$1" ]] && return 0
+    done
+    return 1
+}
+
+gendersclasses=(Vector Node Rack Locatable GLDataCenter)
+ignoreclasses=(ATB_Node BarWrapper NumberObject SceneObject JobDataSetMutableInt AntTweakBarManager AntTweakBarOverlay IBLink IBPort GimpSegment IBChassis GraphVertex UpdateRunLoop)
+#set -x
+/bin/grep -n --color=auto @implementation `find libcview libcview-data -name "*.[hm]"` |sort| \
 	(while read x; do
 	 	c=`echo $x | sed 's+^.*@implementation ++g' | sed 's+ .*$++g'`
-		if [ $c != ATB_Node -a $c != BarWrapper -a $c != NumberObject -a $c != SceneObject -a $c != JobDataSetMutableInt -a $c != AntTweakBarManager -a $c != AntTweakBarOverlay ]; then
+		if ! contains $c "${ignoreclasses[@]}"
+        then
 			DEFINE=""
-			if [ $c = Vector -o $c = Node -o $c = Rack -o $c = Locatable -o $c = GLDataCenter ] ; then
+			if contains $c "${gendersclasses[@]}"
+            then
 				DEFINE="HAVE_GENDERS"
 			fi
 			if [ "X$DEFINE" != "X" ] ; then
