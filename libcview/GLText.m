@@ -237,7 +237,7 @@ static NSMutableDictionary *fontCache=nil;
 ///@todo store the bounding box infos
 	float bounds[6];
     if(string == nil) {
-        NSLog(@"in GLText::glDraw() string is nil! cannot draw this....");
+        //NSLog(@"in GLText::glDraw() string is nil! cannot draw this....");
         return self;
     }
 	if (theFont == NULL)

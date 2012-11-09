@@ -260,7 +260,7 @@ static float blankdata[] = {
 			break;
 
 		case XTICK:
-			//NSLog(@"XTICK finish");
+			//NSLog(@"XTICK finish: %@",dataKey);
 			w = [incomingData length];
 			if (w%TICK_LEN != 0) { //inproper read
 				stage = IDLE;
@@ -284,7 +284,7 @@ static float blankdata[] = {
 			break;
 
 		case YTICK:
-			//NSLog(@"YTICK finish");
+			//NSLog(@"YTICK finish: %@",dataKey);
 			h = [incomingData length];
 			if (h%TICK_LEN != 0) { //inproper read
 				stage = IDLE;
@@ -305,12 +305,18 @@ static float blankdata[] = {
 			break;
 
 		case DATA:
-			//NSLog(@"DATA finish");
+			//NSLog(@"DATA finish: %@",dataKey);
 
 			if (width*height*sizeof(float) == [incomingData length]) {
 				[self setNewData: incomingData];
-			} else
-				NSLog(@"Very BAD! Incoming data was not the correct size. Width = %d Height = %d Width * Height = %d DataSet Size = %ld", width, height, width * height, [incomingData length] / sizeof(float));
+			} else {
+				NSLog(@"Possible Badness! Incoming data was not the correct size. Width = %d Height = %d Width * Height = %d DataSet Size = %ld", width, height, width * height, [incomingData length] / sizeof(float));
+				//If the data is too big lets just truncate for now, as the depth stretching could be ok
+				if (width*height*sizeof(float)<[incomingData length]) {
+					[incomingData setLength: width*height*sizeof(float)];
+					[self setNewData: incomingData];
+				}
+			}
 
 			dataValid=YES;
 			[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
