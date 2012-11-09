@@ -293,7 +293,7 @@ static float blankdata[] = {
 			h /= TICK_LEN;
 			L();
 			[dataLock lock];
-			if (h != height)
+			if (h != height && h>0)
 				[self setHeight: h];
 
 			[Yticks setData: incomingData];

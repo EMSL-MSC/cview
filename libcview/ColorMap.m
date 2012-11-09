@@ -66,16 +66,16 @@ All rights reserved.
 
 @implementation ColorMap
 
-+mapWithMax: (int)max {
++mapWithMax: (unsigned long)max {
 	ColorMap *map = [[ColorMap alloc] initWithMax: max];
 	return [map autorelease];
 }
 
--initWithMax: (int)max {
+-initWithMax: (unsigned long)max {
 	int i;
 	float val;
 	float *cm;
-	NSLog(@"initWithMax: %d",max);
+	NSLog(@"initWithMax: %lu",max);
 	theMax = max>=1?max:1;
 	scale = (double)(MAP_SIZE-1)/theMax;
 	colormap = [[NSMutableData alloc] initWithLength: (MAP_SIZE+1)*sizeof(float)*4];
@@ -99,12 +99,12 @@ All rights reserved.
 	return self;
 }
 
-+mapWithGradient: (GimpGradient *)ggr andMax: (int)max {
++mapWithGradient: (GimpGradient *)ggr andMax: (unsigned long)max {
 	ColorMap *map = [[ColorMap alloc] initWithGradient: ggr andMax: max];
 	return [map autorelease];
 }
 
--initWithGradient: (GimpGradient *)ggr andMax: (int)max {
+-initWithGradient: (GimpGradient *)ggr andMax: (unsigned long)max {
 	int i;
 	float *cm,val;
 	NSLog(@"ColorMap initWithGradient-max:%d",max);

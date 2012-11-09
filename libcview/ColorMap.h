@@ -69,13 +69,13 @@ All rights reserved.
 
 @interface ColorMap: NSObject {
 	NSMutableData *colormap; //formatted as 3 floats per color]
-	int theMax;
+	unsigned long theMax;
 	double scale;
 }
-+mapWithMax: (int)max;
--initWithMax: (int)max;
-+mapWithGradient: (GimpGradient *)ggr andMax: (int)max;
--initWithGradient: (GimpGradient *)ggr andMax: (int)max;
++mapWithMax: (unsigned long)max;
+-initWithMax: (unsigned long)max;
++mapWithGradient: (GimpGradient *)ggr andMax: (unsigned long)max;
+-initWithGradient: (GimpGradient *)ggr andMax: (unsigned long)max;
 -doMapWithData: (float *)data thatHasLength: (int)len toColors: (float *)colors;
 -doMapWithPoints: (float *)Points thatHasLength: (int)len toColors: (float *)colors;
 -glMap: (float)val;
