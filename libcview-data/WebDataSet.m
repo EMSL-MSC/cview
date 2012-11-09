@@ -222,7 +222,8 @@ static float blankdata[] = {
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection  {
 //	NSLog(@"connection Finished: %@",connection);
 	NSURLRequest *req;
-	int w,h;
+	float *to,*from;
+	int w,h,i;
 	/**
 	Evan: I didn't dig into this, but this line seems to break things.  Why
 	are you increasing the datalength by one?  There are other lines here that
@@ -313,9 +314,13 @@ static float blankdata[] = {
 				NSLog(@"Possible Badness! Incoming data was not the correct size. Width = %d Height = %d Width * Height = %d DataSet Size = %ld", width, height, width * height, [incomingData length] / sizeof(float));
 				//If the data is too big lets just truncate for now, as the depth stretching could be ok
 				if (width*height*sizeof(float)<[incomingData length]) {
-					[incomingData setLength: width*height*sizeof(float)];
-					[self setNewData: incomingData];
-				}
+					h = [incomingData length]/(width*sizeof(float));
+					NSMutableData *d = [NSMutableData dataWithLength: width*height*sizeof(float)];
+					from = [incomingData mutableBytes];
+					to = [d mutableBytes];
+					for (i=0;i<width;i++)
+						memcpy(to+i*height,from+i*h,sizeof(float)*height);
+					}
 			}
 
 			dataValid=YES;
