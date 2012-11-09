@@ -236,6 +236,9 @@ int main(int argc,char *argv[], char *env[]) {
 			setScene: scene1] 
 		setEye: [[[Eye alloc] init] setX: 514.0 Y: 2585.0 Z: 1617.0 Hangle:-4.72 Vangle: -2.45]
 	];
+	[world setOverlay:[[Scene alloc] initWithObject: 
+		[[GLText alloc] initWithString: [baseurl absoluteString] andFont: @"LinLibertine_Re.ttf"] 
+		alignHoriz:-1 Vert:1]];
 	[[cvasd setWorld: world] toggleTweakersVisibility];
 	NSLog(@"Setup done");
 
