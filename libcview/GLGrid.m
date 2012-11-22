@@ -63,6 +63,7 @@ All rights reserved.
 #import "cview.h"
 #import "DataSet.h"
 #import "DictionaryExtra.h"
+#import "ValueStore.h"
 
 /**
 Data layout for reference:
@@ -201,6 +202,7 @@ static const char *gridTypeSelectors[] =	{
 	id o;
 	NSLog(@"initWithPList: %@",[self class]);
 	DataSet *ds;
+	NSString *key;
 	[super initWithPList: list];
 	/// @todo error checking or exception handling.
 	xTicks = [[list objectForKey: @"xTicks"] intValue];
@@ -217,12 +219,32 @@ static const char *gridTypeSelectors[] =	{
 	if (o!=nil)
 		ggr = [[GimpGradient alloc] initWithPList: o];
 
-	Class c;
-	c = NSClassFromString([list objectForKey: @"dataSetClass"]);
-	NSLog(@"dataSetClass is: %@ == %@", [c className],[list objectForKey: @"dataSetClass"]);
-	if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
-		ds=[[c alloc] initWithPList: [list objectForKey: @"dataSet"]];
+	key = [list objectForKey: @"valueStoreDataSetKey"];
+	if (key) {
+		//New Method using DataStore
+		ds=[[ValueStore valueStore] getObject: key];
+		NSLog(@"DataSet from ValueStore: %@",ds);
 		[self setDataSet: ds];
+	}
+	else {
+		//Deprecated Method.. with upgrade code
+		Class c;
+		c = NSClassFromString([list objectForKey: @"dataSetClass"]);
+		NSLog(@"dataSetClass is: %@ == %@", [c className],[list objectForKey: @"dataSetClass"]);
+		if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
+			ds=[[c alloc] initWithPList: [list objectForKey: @"dataSet"]];
+
+			if ([[list objectForKey: @"dataSetClass"] compare: @"ValueStoreDataSet"]==NSOrderedSame) {
+				key = [[list objectForKey: @"dataSet"] objectForKey:@"key"];
+				ds = [[ValueStore valueStore] getObject:key];
+			}
+			else {
+				//Add it to the value store
+				key = [NSString stringWithFormat:@"AutoName-%p",ds];
+				[[ValueStore valueStore] setKey: key withObject: ds];
+			}
+			[self setDataSet: ds];
+		}
 	}
 	return self;
 }
@@ -232,8 +254,6 @@ static const char *gridTypeSelectors[] =	{
 	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary: [super getPList]];
 	[dict setObject: [NSNumber numberWithInt: xTicks] forKey: @"xTicks"];
 	[dict setObject: [NSNumber numberWithInt: yTicks] forKey: @"yTicks"];
-	[dict setObject: [dataSet getPList] forKey: @"dataSet"];
-	[dict setObject: [dataSet className] forKey: @"dataSetClass"];
 	[dict setObject: [NSNumber numberWithFloat: fontScale] forKey: @"fontScale"];
 	[dict setObject: [NSNumber numberWithFloat: fontColorR] forKey: @"fontColorR"];
 	[dict setObject: [NSNumber numberWithFloat: fontColorG] forKey: @"fontColorG"];
@@ -242,6 +262,8 @@ static const char *gridTypeSelectors[] =	{
 	[dict setObject: [NSNumber numberWithFloat: yscale] forKey: @"yscale"];
 	[dict setObject: [NSNumber numberWithFloat: zscale] forKey: @"zscale"];
 	[dict setObject: [NSNumber numberWithInt: gridType] forKey: @"gridType"];
+	[dict setObject: [[ValueStore valueStore] getKeyForObject:dataSet] forKey: @"valueStoreDataSetKey"];
+
 	if (ggr != nil)
 		[dict setObject: [ggr getPList] forKey: @"gradient"];
 	return dict;

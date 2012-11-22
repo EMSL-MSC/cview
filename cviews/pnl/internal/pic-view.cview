@@ -170,10 +170,6 @@
 			    align = 0;
 			    halign = 0;
 			    object = {
-				dataSet = {
-				    key = memused;
-				};
-				dataSetClass = ValueStoreDataSet;
 				fontColorB = 1;
 				fontColorG = 1;
 				fontColorR = 1;
@@ -184,6 +180,7 @@
 				};
 				gridType = 0;
 				isVisible = 1;
+				valueStoreDataSetKey = memused;
 				xTicks = 50;
 				xscale = 2;
 				yTicks = 32;
@@ -203,10 +200,6 @@
 			    align = 0;
 			    halign = 0;
 			    object = {
-				dataSet = {
-				    key = "cpu_user";
-				};
-				dataSetClass = ValueStoreDataSet;
 				fontColorB = 1;
 				fontColorG = 1;
 				fontColorR = 1;
@@ -217,6 +210,7 @@
 				};
 				gridType = 0;
 				isVisible = 1;
+				valueStoreDataSetKey = "cpu_user";
 				xTicks = 50;
 				xscale = 2;
 				yTicks = 32;
@@ -236,10 +230,6 @@
 			    align = 0;
 			    halign = 0;
 			    object = {
-				dataSet = {
-				    key = ib;
-				};
-				dataSetClass = ValueStoreDataSet;
 				fontColorB = 1;
 				fontColorG = 1;
 				fontColorR = 1;
@@ -250,6 +240,7 @@
 				};
 				gridType = 0;
 				isVisible = 1;
+				valueStoreDataSetKey = ib;
 				xTicks = 50;
 				xscale = 2;
 				yTicks = 32;
@@ -269,10 +260,6 @@
 			    align = 0;
 			    halign = 0;
 			    object = {
-				dataSet = {
-				    key = "lustre_read";
-				};
-				dataSetClass = ValueStoreDataSet;
 				fontColorB = 1;
 				fontColorG = 1;
 				fontColorR = 1;
@@ -283,6 +270,7 @@
 				};
 				gridType = 0;
 				isVisible = 1;
+				valueStoreDataSetKey = "lustre_read";
 				xTicks = 50;
 				xscale = 2;
 				yTicks = 32;
@@ -302,10 +290,6 @@
 			    align = 0;
 			    halign = 0;
 			    object = {
-				dataSet = {
-				    key = "lustre_write";
-				};
-				dataSetClass = ValueStoreDataSet;
 				fontColorB = 1;
 				fontColorG = 1;
 				fontColorR = 1;
@@ -316,6 +300,7 @@
 				};
 				gridType = 0;
 				isVisible = 1;
+				valueStoreDataSetKey = "lustre_write";
 				xTicks = 50;
 				xscale = 2;
 				yTicks = 32;

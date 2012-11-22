@@ -92,7 +92,7 @@ static ValueStore *singletonValueStore;
 	e = [keys objectEnumerator];
 	while ((key = [e nextObject])) {
 		id o = [values objectForKey: key];
-		NSArray *a = [NSArray arrayWithObjects: key,[o class],[o getPList],nil];
+		NSArray *a = [NSArray arrayWithObjects: key,[o className],[o getPList],nil];
 		[res addObject: a];
 	}
 	NSLog(@"resultantarray: %@",res);
@@ -137,6 +137,16 @@ static ValueStore *singletonValueStore;
 }
 -getObject: (NSString *)key {
 	return [values objectForKey: key];
+}
+-getKeyForObject: (id)object {
+	NSArray *arr;
+	arr = [values allKeysForObject: object];
+	if ([arr count]>1)
+		NSLog(@"WARNING: multiple keys for same object:%@ %@",object,arr);
+	if ([arr count]>=1)
+		return [arr objectAtIndex:0];
+	else 
+		return nil;
 }
 -(NSUInteger)count {
 	return [values count];
