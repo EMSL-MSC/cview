@@ -1,3 +1,11 @@
+cview (0.3.3) precise; urgency=low
+
+  * Value Store changes
+  * New Tick generation code
+  * DataSets now store raw data 
+
+ -- Evan Felix <e@pnnl.gov>  Wed, 28 Nov 2012 09:50:39 -0800
+
 cview (0.3.0) precise; urgency=low
 
   * CMake Build system, New GIT repository
