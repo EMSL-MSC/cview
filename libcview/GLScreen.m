@@ -496,7 +496,7 @@ NSComparisonResult compareScreenColumns(id one,id two,void *context) {
 	
 	list = [worlds objectEnumerator];
 	while ((s = [list nextObject])) {
-		NSLog(@"S<%@>: RC(%d,%d) - (%d,%d) -> (%d,%d) win:%d",s->name,s->row,s->col,s->x,s->y,s->x+s->w,s->y+s->h,s->window);
+		NSLog(@"S<%@>: RC(%d,%d)<%d,%d> - (%d,%d) -> (%d,%d) win:%d",s->name,s->row,s->col,s->rowp,s->colp,s->x,s->y,s->x+s->w,s->y+s->h,s->window);
 	}	
 	return self;
 }
@@ -637,6 +637,7 @@ double mysecond()
 			s->rowp = MAX(0,s->rowp+heightchange);
 			s->colp = MAX(0,s->colp+widthchange);
 			[self doLayout];
+			[self resizeWidth:width Height:height];
 			[self postRedrawAll];
 		}
 	return self;

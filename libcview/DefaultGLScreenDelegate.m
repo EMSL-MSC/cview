@@ -156,6 +156,18 @@ All rights reserved.
 			case 'l':
 				[myScreen moveWorld: world Row: 0 Col: 1];
 				break;
+			case 'H':
+				[myScreen resizeWorld: world Width: -2 Height:  0];
+				break;
+			case 'J':
+				[myScreen resizeWorld: world Width:  0 Height:  2];
+				break;
+			case 'K':
+				[myScreen resizeWorld: world Width:  0 Height: -2];
+				break;
+			case 'L':
+				[myScreen resizeWorld: world Width:  2 Height:  0];
+				break;
 			default:
 				[[NSNotificationCenter defaultCenter] postNotificationName: @"keyPress" object: self userInfo:
 					[NSDictionary dictionaryWithObject: [NSNumber numberWithUnsignedChar: key] forKey: @"key"]
