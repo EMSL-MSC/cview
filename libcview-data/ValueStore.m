@@ -61,6 +61,11 @@ All rights reserved.
 #import "ValueStore.h"
 #import "ListComp.h"
 
+NSComparisonResult arrayObjectReverseAlpha(id one,id two,void *indexp) {
+	int index = *(int *)indexp;
+	return [[(NSArray *)two objectAtIndex: index] compare: [(NSArray *)one objectAtIndex: index]];
+}
+
 @implementation ValueStore 
 static ValueStore *singletonValueStore;
 +(void)initialize {
@@ -108,6 +113,11 @@ static ValueStore *singletonValueStore;
 -loadKeyValueArray: (NSArray*)array {
 	NSEnumerator *e;
 	NSArray *a;
+	int index=1;
+	/** @fixme Crazy hack to deal with CalulatedDataSets needing sub datasets.
+		It so happens that if we sort the array re-verse alphabetically by Class name, We should add all the datasets before calculated needs them.  This is a more general issue that classes using this should dealwith by delaying grabbing objects at initialization time.
+	*/
+	array = [array sortedArrayUsingFunction: arrayObjectReverseAlpha context: &index];
 	NSLog(@"loadValueArray %@",array);
 	e = [array objectEnumerator];
 	while ((a = [e nextObject])) {

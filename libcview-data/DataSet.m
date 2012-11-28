@@ -61,6 +61,7 @@ All rights reserved.
 #import "DataSet.h"
 #import "DictionaryExtra.h"
 #import "math.h"
+#import "ValueStore.h"
 
 
 @implementation DataSet
@@ -375,5 +376,9 @@ All rights reserved.
 - (BOOL)dataValid {
 	return dataValid;
 }
+- (NSString*)valueStoreKey {
+	return [[ValueStore valueStore] getKeyForObject: self];
+}
+
 @end /* DataSet */
 

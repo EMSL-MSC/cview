@@ -15,21 +15,13 @@
 	    memused,
 	    CalculatedDataSet,
 	    {
-		classes = (
-		    ValueStoreDataSet,
-		    ValueStoreDataSet
-		);
 		formula = "$0:$1:-:1024:/:1024:/";
 		name = "Memory Used GB";
-		planes = (
-		    {
-			key = "mem_used";
-		    },
-		    {
-			key = "mem_cached";
-		    }
-		);
 		rateSuffix = GB;
+		valueStorePlanes = (
+		    "mem_used",
+		    "mem_cached"
+		);
 	    }
 	),
 	(
@@ -75,31 +67,13 @@
 	    ib,
 	    CalculatedDataSet,
 	    {
-		classes = (
-		    ValueStoreDataSet,
-		    ValueStoreDataSet
-		);
 		formula = "$0:$1:+:1024:/:1024:/";
 		name = "Interconnect GB/s";
-		planes = (
-		    {
-			key = ibout;
-		    },
-		    {
-			key = ibin;
-		    }
-		);
 		rateSuffix = "GB/s";
-	    }
-	),
-	(
-	    "lustre_read",
-	    WebDataSet,
-	    {
-		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
-		key = "lusclt.readkbs";
-		name = "lusclt.readkbs";
-		rateSuffix = "readkbs/sec";
+		valueStorePlanes = (
+		    ibout,
+		    ibin
+		);
 	    }
 	),
 	(
@@ -110,6 +84,16 @@
 		key = "iconnect.kbout";
 		name = "iconnect.kbout";
 		rateSuffix = "kb/sec";
+	    }
+	),
+	(
+	    "lustre_read",
+	    WebDataSet,
+	    {
+		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
+		key = "lusclt.readkbs";
+		name = "lusclt.readkbs";
+		rateSuffix = "readkbs/sec";
 	    }
 	)
     );

@@ -61,6 +61,7 @@ All rights reserved.
 #import "CalculatedDataSet.h"
 #import "calcdataset.h"
 #import "ListComp.h"
+#import "ValueStore.h"
 
 @implementation CalculatedDataSet
 -init {
@@ -117,8 +118,6 @@ All rights reserved.
 
 	formula = [[list objectForKey: @"formula"] retain];
 
-	NSArray *arr  = [list objectForKey: @"planes"];
-	NSArray *typs = [list objectForKey: @"classes"];
 
 	NSString *myName = [list objectForKey: @"name"];
 	if (myName == nil) {
@@ -133,14 +132,41 @@ All rights reserved.
 	id pl,cls;
 	NSEnumerator *p,*c;
 	Class newc;
+	NSString *key;
+	NSArray *vsp = [list objectForKey: @"valueStorePlanes"];
+	NSArray *arr  = [list objectForKey: @"planes"];
+	NSArray *typs = [list objectForKey: @"classes"];
 
-	p = [arr objectEnumerator];
-	c = [typs objectEnumerator];
-	while ((pl = [p nextObject]) && (cls = [c nextObject])) {
-		newc = NSClassFromString((NSString *)cls);
-		if (newc && [newc conformsToProtocol: @protocol(PList)] && [newc isSubclassOfClass: [DataSet class]]) {
-			ds=[[newc alloc] initWithPList: pl];
+	if (vsp) {
+		//New method
+		p = [vsp objectEnumerator];
+		while ((pl = [p nextObject])) {
+			ds = [[ValueStore valueStore] getObject: pl];
+			NSLog(@"DataSet plane from ValueStore: %@",ds);
 			[dataPlanes addObject: ds];
+		}
+	}
+	else {
+		//deprecated, with upgrade code
+		p = [arr objectEnumerator];
+		c = [typs objectEnumerator];
+		while ((pl = [p nextObject]) && (cls = [c nextObject])) {
+			newc = NSClassFromString((NSString *)cls);
+			if (newc && [newc conformsToProtocol: @protocol(PList)] && [newc isSubclassOfClass: [DataSet class]]) {
+				ds=[[newc alloc] initWithPList: pl];
+
+				if ([(NSString *)cls compare: @"ValueStoreDataSet"]==NSOrderedSame) {
+					key = [pl objectForKey: @"key"];
+					[ds autorelease];
+					ds = [[ValueStore valueStore] getObject: key];
+				}
+				else {
+					key = [NSString stringWithFormat:@"AutoName-%p",ds];
+					[[ValueStore valueStore] setKey:key withObject: ds];
+				}
+
+				[dataPlanes addObject: ds];
+			}
 		}
 	}
 	if (ds) {
@@ -188,8 +214,7 @@ All rights reserved.
 	[dict setObject: formula forKey: @"formula"];
 	[dict setObject: name forKey: @"name"];
 	[dict setObject: rateSuffix forKey: @"rateSuffix"];
-	[dict setObject: [dataPlanes arrayObjectsFromPerformedSelector:@selector(getPList)] forKey: @"planes"];
-	[dict setObject: [dataPlanes arrayObjectsFromPerformedSelector:@selector(className)] forKey: @"classes"];
+	[dict setObject: [dataPlanes arrayObjectsFromPerformedSelector:@selector(valueStoreKey)] forKey:@"valueStorePlanes"];
 	return dict;
 }
 -(NSArray *)attributeKeys {

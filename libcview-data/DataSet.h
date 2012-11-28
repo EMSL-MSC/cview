@@ -144,5 +144,7 @@ This class provides a basic data store, with associated information.  It is orga
 - setHeight: (int)newHeight;
 /** report data valid status */
 - (BOOL)dataValid;
+/** Return the key that references this dataSet in the ValueDataStore */
+-(NSString*)valueStoreKey;
 @end
 
