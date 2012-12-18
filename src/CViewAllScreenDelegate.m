@@ -58,6 +58,7 @@ All rights reserved.
 */
 #import "CViewAllScreenDelegate.h"
 #import "WebDataSet.h"
+#import "ValueStore.h"
 #import "GLGrid.h"
 
 #if HAVE_ANTTWEAKBAR
@@ -229,7 +230,13 @@ static void TW_CALL CVASD_intGlobalSetCallback(const void *value, void *clientDa
 		if ([n boolValue]) {
 			if ( ![activeKeys containsObject: key] ) {
 				NSLog(@"Showing a new dataset!");
-				wds = [[WebDataSet alloc] initWithUrlBase: url andKey: key];
+				wds=[[ValueStore valueStore] getObject: key];
+				NSLog(@"WDS:%@",wds);
+				if ( ! wds ) {
+					wds = [[WebDataSet alloc] initWithUrlBase: url andKey: key];
+					[[ValueStore valueStore] setKey: key withObject: wds];
+				}
+				NSLog(@"WDS:%@",wds);
 				[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(receiveResizeNotification:) name:@"DataSetResize" object:wds];
 				
 				grid=[[[[[GLGrid alloc] initWithDataSet: wds] setXTicks: xTicks] setYTicks: yTicks] show];

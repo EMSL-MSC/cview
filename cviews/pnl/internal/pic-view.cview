@@ -77,16 +77,6 @@
 	    }
 	),
 	(
-	    ibout,
-	    WebDataSet,
-	    {
-		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
-		key = "iconnect.kbout";
-		name = "iconnect.kbout";
-		rateSuffix = "kb/sec";
-	    }
-	),
-	(
 	    "lustre_read",
 	    WebDataSet,
 	    {
@@ -94,6 +84,16 @@
 		key = "lusclt.readkbs";
 		name = "lusclt.readkbs";
 		rateSuffix = "readkbs/sec";
+	    }
+	),
+	(
+	    ibout,
+	    WebDataSet,
+	    {
+		baseURL = "http://pic-view.pnl.gov/cluster/pic/";
+		key = "iconnect.kbout";
+		name = "iconnect.kbout";
+		rateSuffix = "kb/sec";
 	    }
 	)
     );
@@ -115,9 +115,9 @@
 		    "rotate_speed" = "0.025";
 		    "strafe_speed" = 10;
 		    vangle = "-2.274999";
-		    x = "959.9141";
-		    y = "2005.834";
-		    z = "2000.845";
+		    x = "1092.433";
+		    y = "2234.075";
+		    z = "2287.611";
 		};
 		imageCycleTime = 0;
 		imageDailyDir = 0;

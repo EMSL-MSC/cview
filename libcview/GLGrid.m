@@ -236,6 +236,7 @@ static const char *gridTypeSelectors[] =	{
 
 			if ([[list objectForKey: @"dataSetClass"] compare: @"ValueStoreDataSet"]==NSOrderedSame) {
 				key = [[list objectForKey: @"dataSet"] objectForKey:@"key"];
+				[ds autorelease];
 				ds = [[ValueStore valueStore] getObject:key];
 			}
 			else {
