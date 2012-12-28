@@ -2,6 +2,7 @@
 SET(CVIEW_DATA_CLASSES
 	CalculatedDataSet
 	DataSet
+	Defaults
 	DictionaryExtra
 	JobDataSet
 	ListComp

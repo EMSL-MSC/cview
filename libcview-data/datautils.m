@@ -57,6 +57,8 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
+#import "cview-data.h"
+#import "config.h"
 
 NSArray *getStringFields(NSString *str) {
 	NSString *s;
@@ -78,4 +80,82 @@ int findStringInArray(NSArray *arr,NSString *str) {
 				col = i;
 		}
 	return col;
+}
+
+
+#if defined ON_MINGW_WIN32
+#include <windows.h>
+#include <stdio.h>
+#include <tchar.h>
+#include <psapi.h>
+NSString *getProcessPath() {
+	DWORD ProcessesID = [[NSProcessInfo processInfo] processIdentifier];
+	TCHAR szProcessName[2048] = TEXT("<unknown>");
+	HANDLE hProcess = OpenProcess( PROCESS_QUERY_INFORMATION | PROCESS_VM_READ, FALSE, ProcessesID);
+	if (NULL != hProcess ) {
+		GetModuleFileNameEx( hProcess, NULL, szProcessName, sizeof(szProcessName)/sizeof(TCHAR) );
+		CloseHandle( hProcess );
+		return [NSString stringWithUTF8String: szProcessName];
+	} else
+		return nil;
+}
+#endif
+
+/**
+ Find a resource, looking in:
+ sourcetree
+ pkgdatadir
+ current directory(should handle passed in full path)
+ --added by berwin on 2011-02-23--
+ 
+ */
+NSFileHandle *find_resource(NSString *filename) {
+	NSString *file = find_resource_path(filename);
+	if (file)
+		return [NSFileHandle fileHandleForReadingAtPath: file];
+	else
+		return nil;
+}
+
+NSString *find_resource_path(NSString *filename) {
+	static BOOL pathdumplog = NO;
+	NSFileManager *mgr = [NSFileManager defaultManager];
+	NSString *file=nil;
+	
+	NSString *exeDir = nil, *exeDataDir = nil;
+#if defined ON_MINGW_WIN32
+	NSString *p,*fullPath = getProcessPath();
+	NSLog(@"EXECUTABLE PATH  = %@", fullPath);
+	if (fullPath != nil) {
+		p = [fullPath stringByDeletingLastPathComponent];
+		exeDir =     [NSString stringWithFormat: @"%@", p];
+		p = [p stringByDeletingLastPathComponent];
+		exeDataDir = [NSString stringWithFormat: @"%@\\share\\cview\\", p];
+	}
+#endif
+	
+	NSMutableArray *paths = [NSMutableArray arrayWithObjects: @"",PKG_DATA_DIR@"/",@"../data/",@"./data/",
+							 exeDir,exeDataDir,nil];
+#if CVIEW_TEST_BUILD
+	[paths addObject: @"../tests/"];
+	[paths addObject: @"./tests/"];
+#endif
+	
+	if (! pathdumplog) {
+		NSLog(@"Resource Search Path=%@",paths);
+		pathdumplog=YES;
+	}
+	
+	NSEnumerator *e = [paths objectEnumerator];
+	id o;
+	NSString *path;
+	
+	while ((o = [e nextObject])) {
+		path = [NSString stringWithFormat: @"%@%@",(NSString *)o,filename];
+		//NSLog(@"Checking Path: %@",path);
+		if ( [mgr isReadableFileAtPath: path] ) {
+			file = path;
+		}
+	}
+	return file;
 }
