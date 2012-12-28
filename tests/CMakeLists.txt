@@ -30,11 +30,12 @@ ADD_TEST(streamdatasettest)
 ADD_TEST(webdatasettest)
 ADD_TEST(xydatasettest)
 ADD_TEST(datasetloadtest)
+ADD_TEST(defaulttest)
 
 ADD_EXECUTABLE(calcdatatest calcdatatest.c)
 TARGET_LINK_LIBRARIES(calcdatatest libcview-data)
 
-FILE(COPY slowcat funcdata streamdata.txt gimpgradient.ggr DESTINATION "${CMAKE_BINARY_DIR}/tests")
+FILE(COPY slowcat funcdata streamdata.txt gimpgradient.ggr defaultsfile.plist DESTINATION "${CMAKE_BINARY_DIR}/tests")
 
 ADD_CUSTOM_COMMAND(OUTPUT testdata.xy COMMAND python funcdata xy testdata.xy COMMENT "Building Test XY Data")
 ADD_CUSTOM_TARGET(buildtestdata ALL DEPENDS testdata.xy)

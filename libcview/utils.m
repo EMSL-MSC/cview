@@ -156,6 +156,7 @@ NSString *find_resource_path(NSString *filename) {
 
 	while ((o = [e nextObject])) {
 		path = [NSString stringWithFormat: @"%@%@",(NSString *)o,filename];
+		//NSLog(@"Checking Path: %@",path);
 		if ( [mgr isReadableFileAtPath: path] ) {
 			file = path;
 		}
