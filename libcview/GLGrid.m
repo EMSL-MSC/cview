@@ -395,6 +395,7 @@ static const char *gridTypeSelectors[] =	{
 	}
 	glEnd();
 
+	glColor3f(fontColorR,fontColorG,fontColorB);
 	for (i=0;i<numTicks;i++) 
 		drawString3D(x+4.0/xscale,currentTicks[i],y,GLUT_BITMAP_HELVETICA_12,[dataSet getLabel: currentTicks[i]],0.0);
 
