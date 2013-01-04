@@ -1,8 +1,8 @@
 /*
 
-This file is part of the CVIEW graphics system, which is goverened by the following License
+This file is port of the CVIEW graphics system, which is goverened by the following License
 
-Copyright © 2008-2012 Battelle Memorial Institute
+Copyright © 2012, Battelle Memorial Institute
 All rights reserved.
 
 1.	Battelle Memorial Institute (hereinafter Battelle) hereby grants permission
@@ -56,25 +56,50 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-/**
-	CView Data library
-	@author Evan Felix
-	@ingroup cviewdata
-*/
-#include "calcdataset.h"
-#import "ValueStore.h"
-#import "CalculatedDataSet.h"
-#import "DataSet.h"
-#import "DictionaryExtra.h"
-#import "ListComp.h"
-#import "SinDataSet.h"
-#import "UpdateRunLoop.h"
-#import "WebDataSet.h"
-#import "XYDataSet.h"
-#import "StreamDataSet.h"
+#import <Foundation/Foundation.h>
+#import "cview-data.h"
+#import "Defaults.h"
 
-NSArray *getStringFields(NSString *str);
-int findStringInArray(NSArray *arr,NSString *str);
-NSFileHandle *find_resource(NSString *filename);
-NSString *find_resource_path(NSString *filename);
+NSString * _getIDString(id cls) {
+	if ([cls isKindOfClass:[NSString class]]) {
+		return cls;
+	}
+	else
+		return [cls className];
+	
+}
+
+@implementation Defaults
+static NSUserDefaults *defs;
++(void)initialize {
+	//we really should be ble to dump this file in a system preferences directory somewhere and the addSuite below would pick it up..  now to figure out how to do that in a cross platform way is the challenge.  on MacOSX: /Library/Preferences
+	NSDictionary *cviewdefs = [NSDictionary dictionaryWithContentsOfFile: find_resource_path(@"gov.pnnl.emsl.cview.plist")];
+	
+	defs = [NSUserDefaults standardUserDefaults];
+	[defs addSuiteNamed:@"gov.pnnl.emsl.cview"];
+	[defs registerDefaults: cviewdefs];
+}
+
++(int)integerForKey:(NSString *)key Id: (id)cls {
+	NSString *k = [NSString stringWithFormat:@"%@.%@",_getIDString(cls),key];
+	return [defs integerForKey:k];
+}
++(int)integerForKey: (NSString *)key Id:(id)cls Override: (NSDictionary *)over {
+	NSString *k = [NSString stringWithFormat:@"%@.%@",_getIDString(cls),key];
+	id o = [over objectForKey:key];
+	if (o == nil)
+		return [defs integerForKey:k];
+	else
+		return [o intValue];
+}
+
++(NSString *)stringForKey:(NSString *)key Id: (id)cls {
+	NSString *k = [NSString stringWithFormat:@"%@.%@",_getIDString(cls),key];
+	return [defs stringForKey:k];
+}
++(float)floatForKey:(NSString *)key Id: (id)cls {
+	NSString *k = [NSString stringWithFormat:@"%@.%@",_getIDString(cls),key];
+	return [defs floatForKey:k];
+}
+@end
 

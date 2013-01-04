@@ -1,0 +1,8 @@
+{
+GLGrid.xTicks=50;
+GLGrid.yTicks=32;
+GLGrid.fontScale=1.0;
+TestClass.teststring="A Cool String";
+TestClass.testinteger=45;
+TestClass.testfloat=4.5;
+}

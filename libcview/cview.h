@@ -75,6 +75,7 @@ All rights reserved.
 #import "Graph.h"
 #import "GimpGradient.h"
 #import "GLInfinibandNetwork.h"
+#import "cview-data.h"
 #import <math.h>
 
 /*This ties us to gcc, though intell compilers have _mm_* instruction 
@@ -94,8 +95,6 @@ typedef union __flts {
 #endif
 //Implemented in utils.m
 void drawString3D(float x,float y,float z,void *font,NSString *string,float offset);
-NSFileHandle *find_resource(NSString *filename);
-NSString *find_resource_path(NSString *filename);
 flts multQbyV(const flts *m,const flts v);
 void dumpV(flts f);
 int niceticks(double min,double max,double *ticks,int ticklen);

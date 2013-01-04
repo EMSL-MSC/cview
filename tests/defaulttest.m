@@ -1,8 +1,8 @@
 /*
 
-This file is part of the CVIEW graphics system, which is goverened by the following License
+This file is port of the CVIEW graphics system, which is goverened by the following License
 
-Copyright © 2008-2012 Battelle Memorial Institute
+Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
 
 1.	Battelle Memorial Institute (hereinafter Battelle) hereby grants permission
@@ -56,25 +56,29 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
-/**
-	CView Data library
-	@author Evan Felix
-	@ingroup cviewdata
-*/
-#include "calcdataset.h"
-#import "ValueStore.h"
-#import "CalculatedDataSet.h"
-#import "DataSet.h"
-#import "DictionaryExtra.h"
-#import "ListComp.h"
-#import "SinDataSet.h"
-#import "UpdateRunLoop.h"
-#import "WebDataSet.h"
-#import "XYDataSet.h"
-#import "StreamDataSet.h"
+#import <Foundation/Foundation.h>
+#import "Defaults.h"
 
-NSArray *getStringFields(NSString *str);
-int findStringInArray(NSArray *arr,NSString *str);
-NSFileHandle *find_resource(NSString *filename);
-NSString *find_resource_path(NSString *filename);
+@interface TestClass:NSObject {
+}
+@end
+@implementation TestClass
+@end
 
+int main(int argc,char *argv[], char *env[]) {
+	
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+#ifndef __APPLE__
+	//needed for NSLog
+	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
+#endif
+	TestClass *tClass = [[TestClass alloc] init];
+	NSLog(@"Override: %d",[Defaults integerForKey: @"xTicks" Id: @"GLGrid"]);
+	NSLog(@"A String: %@",[Defaults stringForKey: @"teststring" Id: tClass]);
+	NSLog(@"An Integer: %d",[Defaults integerForKey: @"testinteger" Id: tClass]);
+	NSLog(@"A Float: %f",[Defaults floatForKey: @"testfloat" Id: tClass]);
+	//NSLog(@"%@",[[NSUserDefaults standardUserDefaults] persistentDomainNames]);
+	[pool release];
+
+	return 0;
+}

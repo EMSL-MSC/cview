@@ -2,7 +2,7 @@
 
 This file is part of the CVIEW graphics system, which is goverened by the following License
 
-Copyright © 2008-2012 Battelle Memorial Institute
+Copyright © 2012, Battelle Memorial Institute
 All rights reserved.
 
 1.	Battelle Memorial Institute (hereinafter Battelle) hereby grants permission
@@ -56,25 +56,27 @@ All rights reserved.
 	not infringe privately owned rights.  
 
 */
+#import <Foundation/NSObject.h>
+#import <Foundation/NSData.h>
+
 /**
-	CView Data library
+	Simple Defaults Helper Class for cview libraries.  Instantiates global defaults from plist file, and provides class methods for working with them.
+	Mostly a thin wrapper around NSUserDefaults.
+
 	@author Evan Felix
 	@ingroup cviewdata
 */
-#include "calcdataset.h"
-#import "ValueStore.h"
-#import "CalculatedDataSet.h"
-#import "DataSet.h"
-#import "DictionaryExtra.h"
-#import "ListComp.h"
-#import "SinDataSet.h"
-#import "UpdateRunLoop.h"
-#import "WebDataSet.h"
-#import "XYDataSet.h"
-#import "StreamDataSet.h"
+@interface Defaults: NSObject {
+}
+/** return an integer for the given key, in the ID space. cls is an instance or a string */
++(int)integerForKey: (NSString *)key Id:(id)cls;
+/** return an integer for the given key, in the ID space. cls is an instance or string. Override is a NSDictionary that may contain an override value */
++(int)integerForKey: (NSString *)key Id:(id)cls Override: (NSDictionary *)over;
++(NSString *)stringForKey: (NSString *)key Id:(id)cls;
++(float)floatForKey: (NSString *)key Id:(id)cls;
+@end
 
-NSArray *getStringFields(NSString *str);
-int findStringInArray(NSArray *arr,NSString *str);
-NSFileHandle *find_resource(NSString *filename);
-NSString *find_resource_path(NSString *filename);
+#define PLIST_SET_IF_NOT_DEFAULT_INT(plist,key) do { if (key != [Defaults integerForKey:@ #key Id:self]) [dict setObject: [NSNumber numberWithInt: key] forKey: @ #key ]; } while (0)
+#define PLIST_SET_IF_NOT_DEFAULT_FLT(plist,key) do { if (key != [Defaults floatForKey:@ #key Id:self]) [dict setObject: [NSNumber numberWithFloat: key] forKey: @ #key ]; } while (0)
+#define PLIST_SET_IF_NOT_DEFAULT_STR(plist,key) do { if ([key compare: [Defaults stringForKey:@ #key Id:self] != NSOrderedSame) [dict setObject: key forKey: @ #key ]; } while (0)
 
