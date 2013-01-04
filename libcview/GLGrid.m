@@ -64,6 +64,7 @@ All rights reserved.
 #import "DataSet.h"
 #import "DictionaryExtra.h"
 #import "ValueStore.h"
+#import "Defaults.h"
 
 /**
 Data layout for reference:
@@ -106,6 +107,8 @@ static const char *gridTypeSelectors[] =	{
 	zscale=1.0;
 	dzmult=0.0;
 	rmult=0.25;
+	xTicks=[Defaults integerForKey:@"xTicks" Id:self];
+	yTicks=[Defaults integerForKey:@"yTicks" Id:self];
 	axisTicks=6;
 	tickMax=1.0;
 	currentTicks[0]=0.0;
@@ -205,8 +208,8 @@ static const char *gridTypeSelectors[] =	{
 	NSString *key;
 	[super initWithPList: list];
 	/// @todo error checking or exception handling.
-	xTicks = [[list objectForKey: @"xTicks"] intValue];
-	yTicks = [[list objectForKey: @"yTicks"] intValue];
+	xTicks = [Defaults integerForKey: @"xTicks" Id: self Override: list];
+	yTicks = [Defaults integerForKey:@"yTicks" Id: self Override:list];
 	fontScale = [[list objectForKey: @"fontScale" missing: @"1.0"] floatValue];
 	fontColorR = [[list objectForKey: @"fontColorR" missing: @"1.0"] floatValue];
 	fontColorG = [[list objectForKey: @"fontColorG" missing: @"1.0"] floatValue];
@@ -234,7 +237,7 @@ static const char *gridTypeSelectors[] =	{
 		if (c && [c conformsToProtocol: @protocol(PList)] && [c isSubclassOfClass: [DataSet class]]) {
 			ds=[[c alloc] initWithPList: [list objectForKey: @"dataSet"]];
 
-			if ([[list objectForKey: @"dataSetClass"] compare: @"ValueStoreDataSet"]==NSOrderedSame) {
+			if ([(NSString *)[list objectForKey: @"dataSetClass"] compare: @"ValueStoreDataSet"]==NSOrderedSame) {
 				key = [[list objectForKey: @"dataSet"] objectForKey:@"key"];
 				[ds autorelease];
 				ds = [[ValueStore valueStore] getObject:key];
@@ -250,12 +253,13 @@ static const char *gridTypeSelectors[] =	{
 	return self;
 }
 
+
 -getPList {
 	NSLog(@"getPList: %@",self);
 	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary: [super getPList]];
-	[dict setObject: [NSNumber numberWithInt: xTicks] forKey: @"xTicks"];
-	[dict setObject: [NSNumber numberWithInt: yTicks] forKey: @"yTicks"];
-	[dict setObject: [NSNumber numberWithFloat: fontScale] forKey: @"fontScale"];
+	PLIST_SET_IF_NOT_DEFAULT_INT(dict, xTicks);
+	PLIST_SET_IF_NOT_DEFAULT_INT(dict, yTicks);
+	PLIST_SET_IF_NOT_DEFAULT_FLT(dict, fontScale);
 	[dict setObject: [NSNumber numberWithFloat: fontColorR] forKey: @"fontColorR"];
 	[dict setObject: [NSNumber numberWithFloat: fontColorG] forKey: @"fontColorG"];
 	[dict setObject: [NSNumber numberWithFloat: fontColorB] forKey: @"fontColorB"];

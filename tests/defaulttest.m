@@ -2,7 +2,7 @@
 
 This file is port of the CVIEW graphics system, which is goverened by the following License
 
-Copyright © 2012, Battelle Memorial Institute
+Copyright © 2008,2009, Battelle Memorial Institute
 All rights reserved.
 
 1.	Battelle Memorial Institute (hereinafter Battelle) hereby grants permission
@@ -57,49 +57,28 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
-#import "cview-data.h"
 #import "Defaults.h"
 
-NSString * _getIDString(id cls) {
-	if ([cls isKindOfClass:[NSString class]]) {
-		return cls;
-	}
-	else
-		return [cls className];
-	
-}
-
-@implementation Defaults
-static NSUserDefaults *defs;
-+(void)initialize {
-	//we really should be ble to dump this file in a system preferences directory somewhere and the addSuite below would pick it up..  now to figure out how to do that in a cross platform way is the challenge.  on MacOSX: /Library/Preferences
-	NSDictionary *cviewdefs = [NSDictionary dictionaryWithContentsOfFile: find_resource_path(@"gov.pnnl.emsl.cview.plist")];
-	
-	defs = [NSUserDefaults standardUserDefaults];
-	[defs addSuiteNamed:@"gov.pnnl.emsl.cview"];
-	[defs registerDefaults: cviewdefs];
-}
-
-+(int)integerForKey:(NSString *)key Id: (id)cls {
-	NSString *k = [NSString stringWithFormat:@"%@.%@",_getIDString(cls),key];
-	return [defs integerForKey:k];
-}
-+(int)integerForKey: (NSString *)key Id:(id)cls Override: (NSDictionary *)over {
-	NSString *k = [NSString stringWithFormat:@"%@.%@",_getIDString(cls),key];
-	id o = [over objectForKey:key];
-	if (o == nil)
-		return [defs integerForKey:k];
-	else
-		return [o intValue];
-}
-
-+(NSString *)stringForKey:(NSString *)key Id: (id)cls {
-	NSString *k = [NSString stringWithFormat:@"%@.%@",_getIDString(cls),key];
-	return [defs stringForKey:k];
-}
-+(float)floatForKey:(NSString *)key Id: (id)cls {
-	NSString *k = [NSString stringWithFormat:@"%@.%@",_getIDString(cls),key];
-	return [defs floatForKey:k];
+@interface TestClass:NSObject {
 }
 @end
+@implementation TestClass
+@end
 
+int main(int argc,char *argv[], char *env[]) {
+	
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+#ifndef __APPLE__
+	//needed for NSLog
+	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
+#endif
+	TestClass *tClass = [[TestClass alloc] init];
+	NSLog(@"Override: %d",[Defaults integerForKey: @"xTicks" Id: @"GLGrid"]);
+	NSLog(@"A String: %@",[Defaults stringForKey: @"teststring" Id: tClass]);
+	NSLog(@"An Integer: %d",[Defaults integerForKey: @"testinteger" Id: tClass]);
+	NSLog(@"A Float: %f",[Defaults floatForKey: @"testfloat" Id: tClass]);
+	//NSLog(@"%@",[[NSUserDefaults standardUserDefaults] persistentDomainNames]);
+	[pool release];
+
+	return 0;
+}

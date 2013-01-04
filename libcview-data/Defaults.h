@@ -70,5 +70,13 @@ All rights reserved.
 }
 /** return an integer for the given key, in the ID space. cls is an instance or a string */
 +(int)integerForKey: (NSString *)key Id:(id)cls;
+/** return an integer for the given key, in the ID space. cls is an instance or string. Override is a NSDictionary that may contain an override value */
++(int)integerForKey: (NSString *)key Id:(id)cls Override: (NSDictionary *)over;
++(NSString *)stringForKey: (NSString *)key Id:(id)cls;
++(float)floatForKey: (NSString *)key Id:(id)cls;
 @end
+
+#define PLIST_SET_IF_NOT_DEFAULT_INT(plist,key) do { if (key != [Defaults integerForKey:@ #key Id:self]) [dict setObject: [NSNumber numberWithInt: key] forKey: @ #key ]; } while (0)
+#define PLIST_SET_IF_NOT_DEFAULT_FLT(plist,key) do { if (key != [Defaults floatForKey:@ #key Id:self]) [dict setObject: [NSNumber numberWithFloat: key] forKey: @ #key ]; } while (0)
+#define PLIST_SET_IF_NOT_DEFAULT_STR(plist,key) do { if ([key compare: [Defaults stringForKey:@ #key Id:self] != NSOrderedSame) [dict setObject: key forKey: @ #key ]; } while (0)
 
