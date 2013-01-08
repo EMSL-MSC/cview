@@ -2,7 +2,15 @@
 GLGrid.xTicks=50;
 GLGrid.yTicks=32;
 GLGrid.fontScale=1.0;
+GLGrid.fontColorR=1.0;
+GLGrid.fontColorG=1.0;
+GLGrid.fontColorB=1.0;
+GLGrid.xscale=1.0;
+GLGrid.yscale=1.0;
+GLGrid.zscale=1.0;
+GLGrid.gridType=0;
 TestClass.teststring="A Cool String";
 TestClass.testinteger=45;
 TestClass.testfloat=4.5;
+
 }

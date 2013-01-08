@@ -213,14 +213,25 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 		switch (key) {
 			case '~':
 				if (PListOutputFile != nil) {
+					id plist = [myScreen getPList];
+#ifdef __APPLE__
 					NSError *err;
 					BOOL result;
-					id plist = [myScreen getPList];
 				
 					NSString *nsd = [NSString stringWithFormat: @"%@",plist];
-					result = [nsd writeToFile: PListOutputFile atomically: YES encoding: NSASCIIStringEncoding error:&err];
+					result = [nsd writeToFile: PListOutputFile atomically: YES 
+						encoding: NSASCIIStringEncoding error:&err];
 					if (result == NO)
 						NSLog(@"Error writing to config file(%@):%@",PListOutputFile,err);
+#else
+					NSString *err;
+					NSData *nsd = [NSPropertyListSerialization dataFromPropertyList: (NSDictionary *)plist  	
+            			format: NSPropertyListOpenStepFormat errorDescription: &err];
+	  				if (err == nil)
+	  					NSLog(@"Error writing to config file(%@):%@",PListOutputFile,err);
+	  				else
+          				[nsd writeToFile: PListOutputFile atomically: YES];
+#endif
 				}
 				break;
 #ifdef CLS_DUMP

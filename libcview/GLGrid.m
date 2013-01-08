@@ -209,15 +209,16 @@ static const char *gridTypeSelectors[] =	{
 	[super initWithPList: list];
 	/// @todo error checking or exception handling.
 	xTicks = [Defaults integerForKey: @"xTicks" Id: self Override: list];
-	yTicks = [Defaults integerForKey:@"yTicks" Id: self Override:list];
-	fontScale = [[list objectForKey: @"fontScale" missing: @"1.0"] floatValue];
-	fontColorR = [[list objectForKey: @"fontColorR" missing: @"1.0"] floatValue];
-	fontColorG = [[list objectForKey: @"fontColorG" missing: @"1.0"] floatValue];
-	fontColorB = [[list objectForKey: @"fontColorB" missing: @"1.0"] floatValue];
-	xscale = [[list objectForKey: @"xscale" missing: @"1.0"] floatValue];
-	yscale = [[list objectForKey: @"yscale" missing: @"1.0"] floatValue];
-	zscale = [[list objectForKey: @"zscale" missing: @"1.0"] floatValue];
-	gridType = [[list objectForKey: @"gridType" missing: G_LINES_STRING] intValue];
+	yTicks = [Defaults integerForKey: @"yTicks" Id: self Override:list];
+	fontScale = [Defaults floatForKey: @"fontScale" Id: self Override: list];
+	fontColorR = [Defaults floatForKey: @"fontColorR" Id: self Override: list];
+	fontColorG = [Defaults floatForKey: @"fontColorG" Id: self Override: list];
+	fontColorB = [Defaults floatForKey: @"fontColorB" Id: self Override: list];
+	xscale = [Defaults floatForKey: @"xscale" Id: self Override: list];
+	yscale = [Defaults floatForKey: @"yscale" Id: self Override: list];
+	zscale = [Defaults floatForKey: @"zscale" Id: self Override: list];
+	gridType = [Defaults integerForKey: @"gridType" Id: self Override:list];
+		
 	o = [list objectForKey: @"gradient" missing: nil];
 	if (o!=nil)
 		ggr = [[GimpGradient alloc] initWithPList: o];
@@ -260,13 +261,14 @@ static const char *gridTypeSelectors[] =	{
 	PLIST_SET_IF_NOT_DEFAULT_INT(dict, xTicks);
 	PLIST_SET_IF_NOT_DEFAULT_INT(dict, yTicks);
 	PLIST_SET_IF_NOT_DEFAULT_FLT(dict, fontScale);
-	[dict setObject: [NSNumber numberWithFloat: fontColorR] forKey: @"fontColorR"];
-	[dict setObject: [NSNumber numberWithFloat: fontColorG] forKey: @"fontColorG"];
-	[dict setObject: [NSNumber numberWithFloat: fontColorB] forKey: @"fontColorB"];
-	[dict setObject: [NSNumber numberWithFloat: xscale] forKey: @"xscale"];
-	[dict setObject: [NSNumber numberWithFloat: yscale] forKey: @"yscale"];
-	[dict setObject: [NSNumber numberWithFloat: zscale] forKey: @"zscale"];
-	[dict setObject: [NSNumber numberWithInt: gridType] forKey: @"gridType"];
+	PLIST_SET_IF_NOT_DEFAULT_FLT(dict, fontColorR);
+	PLIST_SET_IF_NOT_DEFAULT_FLT(dict, fontColorG);
+	PLIST_SET_IF_NOT_DEFAULT_FLT(dict, fontColorB);
+	PLIST_SET_IF_NOT_DEFAULT_FLT(dict, xscale);
+	PLIST_SET_IF_NOT_DEFAULT_FLT(dict, yscale);
+	PLIST_SET_IF_NOT_DEFAULT_FLT(dict, zscale);
+	PLIST_SET_IF_NOT_DEFAULT_INT(dict, gridType);
+
 	[dict setObject: [[ValueStore valueStore] getKeyForObject:dataSet] forKey: @"valueStoreDataSetKey"];
 
 	if (ggr != nil)
