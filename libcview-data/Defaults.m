@@ -97,9 +97,37 @@ static NSUserDefaults *defs;
 	NSString *k = [NSString stringWithFormat:@"%@.%@",_getIDString(cls),key];
 	return [defs stringForKey:k];
 }
++(NSString *)stringForKey:(NSString *)key Id: (id)cls Override: (NSDictionary *)over {
+	NSString *k = [NSString stringWithFormat:@"%@.%@",_getIDString(cls),key];
+	id o = [over objectForKey:key];
+	if (o == nil)
+		return [defs stringForKey:k];
+	else
+		return (NSString *)o;
+}
 +(float)floatForKey:(NSString *)key Id: (id)cls {
 	NSString *k = [NSString stringWithFormat:@"%@.%@",_getIDString(cls),key];
 	return [defs floatForKey:k];
+}
++(float)floatForKey:(NSString *)key Id: (id)cls Override: (NSDictionary *)over{
+	NSString *k = [NSString stringWithFormat:@"%@.%@",_getIDString(cls),key];
+	id o = [over objectForKey:key];
+	if (o == nil)
+		return [defs floatForKey:k];
+	else
+		return [o floatValue];
+}
++(BOOL)boolForKey: (NSString *)key Id:(id)cls {
+	NSString *k = [NSString stringWithFormat:@"%@.%@",_getIDString(cls),key];
+	return [defs boolForKey:k];
+}
++(BOOL)boolForKey: (NSString *)key Id:(id)cls Override: (NSDictionary *)over {
+	NSString *k = [NSString stringWithFormat:@"%@.%@",_getIDString(cls),key];
+	id o = [over objectForKey:key];
+	if (o == nil)
+		return [defs boolForKey:k];
+	else
+		return [o boolValue];
 }
 @end
 

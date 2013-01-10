@@ -58,6 +58,7 @@ All rights reserved.
 */
 #import "DrawableObject.h"
 #import "DictionaryExtra.h"
+#import "Defaults.h"
 
 @implementation DrawableObject 
 -init {
@@ -68,19 +69,18 @@ All rights reserved.
 
 -initWithPList: (id)list {
 	self=[self init];
-	isVisible = [[list objectForKey: @"isVisible" missing: @"YES"] boolValue];
+	isVisible = [Defaults boolForKey: @"isVisible" Id: self Override: list];
 	name = [[list objectForKey: @"name" missing: @"Drawable"] retain];
 	return self;
 }
  
 -getPList {
 	NSLog(@"getPList: %@",self);
-	NSMutableDictionary *plist = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
-		[NSNumber numberWithBool: isVisible],@"isVisible",
-		nil];
-        if ([name compare: @"Drawable"] != NSOrderedSame) {
-                [plist setObject: name forKey: @"name"];
-        }
+	NSMutableDictionary *plist = [NSMutableDictionary dictionaryWithCapacity: 10];
+	PLIST_SET_IF_NOT_DEFAULT_BOOL(plist,isVisible);
+    if ([name compare: @"Drawable"] != NSOrderedSame) {
+	    [plist setObject: name forKey: @"name"];
+    }
 	return plist;
 } 
 
