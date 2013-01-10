@@ -9,8 +9,11 @@ GLGrid.xscale=1.0;
 GLGrid.yscale=1.0;
 GLGrid.zscale=1.0;
 GLGrid.gridType=0;
+GLGrid.isVisible=YES;
+
+GLImage.isVisible=YES;
+
 TestClass.teststring="A Cool String";
 TestClass.testinteger=45;
 TestClass.testfloat=4.5;
-
 }

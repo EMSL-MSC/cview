@@ -73,10 +73,15 @@ All rights reserved.
 /** return an integer for the given key, in the ID space. cls is an instance or string. Override is a NSDictionary that may contain an override value */
 +(int)integerForKey: (NSString *)key Id:(id)cls Override: (NSDictionary *)over;
 +(NSString *)stringForKey: (NSString *)key Id:(id)cls;
++(NSString *)stringForKey: (NSString *)key Id:(id)cls Override: (NSDictionary *)over;
 +(float)floatForKey: (NSString *)key Id:(id)cls;
++(float)floatForKey: (NSString *)key Id:(id)cls Override: (NSDictionary *)over;
++(BOOL)boolForKey: (NSString *)key Id:(id)cls;
++(BOOL)boolForKey: (NSString *)key Id:(id)cls Override: (NSDictionary *)over;
 @end
 
-#define PLIST_SET_IF_NOT_DEFAULT_INT(plist,key) do { if (key != [Defaults integerForKey:@ #key Id:self]) [dict setObject: [NSNumber numberWithInt: key] forKey: @ #key ]; } while (0)
-#define PLIST_SET_IF_NOT_DEFAULT_FLT(plist,key) do { if (key != [Defaults floatForKey:@ #key Id:self]) [dict setObject: [NSNumber numberWithFloat: key] forKey: @ #key ]; } while (0)
-#define PLIST_SET_IF_NOT_DEFAULT_STR(plist,key) do { if ([key compare: [Defaults stringForKey:@ #key Id:self] != NSOrderedSame) [dict setObject: key forKey: @ #key ]; } while (0)
+#define PLIST_SET_IF_NOT_DEFAULT_INT(_plist,_key) do { if (_key != [Defaults integerForKey:@ #_key Id:self]) [dict setObject: [NSNumber numberWithInt: _key] forKey: @ #_key ]; } while (0)
+#define PLIST_SET_IF_NOT_DEFAULT_FLT(_plist,_key) do { if (_key != [Defaults floatForKey:@ #_key Id:self]) [dict setObject: [NSNumber numberWithFloat: _key] forKey: @ #_key ]; } while (0)
+#define PLIST_SET_IF_NOT_DEFAULT_STR(_plist,_key) do { if ([_key compare: [Defaults stringForKey:@ #_key Id:self] != NSOrderedSame) [_plist setObject: _key forKey: @ #_key ]; } while (0)
+#define PLIST_SET_IF_NOT_DEFAULT_BOOL(_plist,_key) do { if (_key != [Defaults boolForKey:@ #_key Id:self]) [_plist setObject: [NSNumber numberWithBool: _key] forKey: @ #_key ]; } while (0)
 
