@@ -72,7 +72,7 @@ NSString * _getIDString(id cls) {
 @implementation Defaults
 static NSUserDefaults *defs;
 +(void)initialize {
-	//we really should be ble to dump this file in a system preferences directory somewhere and the addSuite below would pick it up..  now to figure out how to do that in a cross platform way is the challenge.  on MacOSX: /Library/Preferences
+	//we really should be able to dump this file in a system preferences directory somewhere and the addSuite below would pick it up..  now to figure out how to do that in a cross platform way is the challenge.  on MacOSX: /Library/Preferences on GNUSTEP: as far as i can tell it should be added to the SystemDefaults file directly.
 	NSDictionary *cviewdefs = [NSDictionary dictionaryWithContentsOfFile: find_resource_path(@"gov.pnnl.emsl.cview.plist")];
 	
 	defs = [NSUserDefaults standardUserDefaults];
