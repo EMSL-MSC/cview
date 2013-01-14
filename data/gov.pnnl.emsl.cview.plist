@@ -1,19 +1,30 @@
 {
-GLGrid.xTicks=50;
-GLGrid.yTicks=32;
-GLGrid.fontScale=1.0;
-GLGrid.fontColorR=1.0;
-GLGrid.fontColorG=1.0;
-GLGrid.fontColorB=1.0;
-GLGrid.xscale=1.0;
-GLGrid.yscale=1.0;
-GLGrid.zscale=1.0;
-GLGrid.gridType=0;
-GLGrid.isVisible=YES;
-
-GLImage.isVisible=YES;
-
-TestClass.teststring="A Cool String";
-TestClass.testinteger=45;
-TestClass.testfloat=4.5;
+	"GLGrid.xTicks" = 50;
+	"GLGrid.yTicks" = 32;
+	"GLGrid.fontScale" = 1;
+	"GLGrid.fontColorR" = 1;
+	"GLGrid.fontColorG" = 1;
+	"GLGrid.fontColorB" = 1;
+	"GLGrid.xscale" = 1;
+	"GLGrid.yscale" = 1;
+	"GLGrid.zscale" = 1;
+	"GLGrid.gridType" = 0;
+	"GLGrid.isVisible" = YES;
+	"GLImage.isVisible" = YES;
+	"GLImage.h" = 0;
+	"GLImage.w" = 0;
+	"GLImage.vflip" = 0;
+	"GLImage.hflip" = 0;
+	"SceneObject.x" = 0;
+	"SceneObject.y" = 0;
+	"SceneObject.z" = 0;
+	"SceneObject.rotx" = 0;
+	"SceneObject.roty" = 0;
+	"SceneObject.rotz" = 0;
+	"SceneObject.halign" = 0;
+	"SceneObject.valign" = 0;
+	"SceneObject.align" = NO;
+	"TestClass.testfloat" = 4.5;
+	"TestClass.testinteger" = 45;
+	"TestClass.teststring" = "A Cool String";
 }

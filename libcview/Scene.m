@@ -76,20 +76,22 @@ All rights reserved.
 -getPList {
 	id o = [object getPList];
 	NSLog(@"SceneObject: %@ %f %f %f",object,x,y,z);
-	if (o) 
-		return [NSDictionary dictionaryWithObjectsAndKeys: 
+	if (o) {
+		NSMutableDictionary *dict =  [NSMutableDictionary dictionaryWithObjectsAndKeys:
 			[object class],@"objectclass",
 			o,@"object",
-			[NSNumber numberWithFloat: x],@"x",
-			[NSNumber numberWithFloat: y],@"y",
-			[NSNumber numberWithFloat: z],@"z",
-			[NSNumber numberWithFloat: rotx],@"rotx",
-			[NSNumber numberWithFloat: roty],@"roty",
-			[NSNumber numberWithFloat: rotz],@"rotz",
-			[NSNumber numberWithInt: halign],@"halign",
-			[NSNumber numberWithInt: valign],@"valign",
-			[NSNumber numberWithBool: align],@"align",
 			nil];
+		PLIST_SET_IF_NOT_DEFAULT_INT(dict, x);
+		PLIST_SET_IF_NOT_DEFAULT_INT(dict, y);
+		PLIST_SET_IF_NOT_DEFAULT_INT(dict, z);
+		PLIST_SET_IF_NOT_DEFAULT_INT(dict, rotx);
+		PLIST_SET_IF_NOT_DEFAULT_INT(dict, roty);
+		PLIST_SET_IF_NOT_DEFAULT_INT(dict, rotz);
+		PLIST_SET_IF_NOT_DEFAULT_INT(dict, halign);
+		PLIST_SET_IF_NOT_DEFAULT_INT(dict, valign);
+		PLIST_SET_IF_NOT_DEFAULT_BOOL(dict, align);
+		return dict;
+	}
 	else
 		return [NSNull null];
 }
@@ -97,16 +99,15 @@ All rights reserved.
 -initWithPList: (id)list {
 	NSLog(@"initWithPList: %@",[self class]);
 	[self init];
-	
-	x = [[list objectForKey: @"x" missing: @"0.0"] floatValue];
-	y = [[list objectForKey: @"y" missing: @"0.0"] floatValue];
-	z = [[list objectForKey: @"z" missing: @"0.0"] floatValue];
-	rotx = [[list objectForKey: @"rotx" missing: @"0.0"] floatValue];
-	roty = [[list objectForKey: @"roty" missing: @"0.0"] floatValue];
-	rotz = [[list objectForKey: @"rotz" missing: @"0.0"] floatValue];
-	halign = [[list objectForKey: @"halign" missing: @"0"] intValue];
-	valign = [[list objectForKey: @"valign" missing: @"0"] intValue];
-	align = [[list objectForKey: @"align" missing: @"NO"] boolValue];	
+	x = [Defaults integerForKey:@"x" Id:self Override:list];
+	y = [Defaults integerForKey:@"y" Id:self Override:list];
+	z = [Defaults integerForKey:@"z" Id:self Override:list];
+	rotx = [Defaults integerForKey:@"rotx" Id:self Override:list];
+	roty = [Defaults integerForKey:@"roty" Id:self Override:list];
+	rotz = [Defaults integerForKey:@"rotz" Id:self Override:list];
+	halign = [Defaults integerForKey:@"halign" Id:self Override:list];
+	valign = [Defaults integerForKey:@"valign" Id:self Override:list];
+	align = [Defaults boolForKey:@"align" Id:self Override:list];
 
 	Class c;
 	c = NSClassFromString([list objectForKey: @"objectclass"]);

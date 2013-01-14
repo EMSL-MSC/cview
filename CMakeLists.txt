@@ -107,6 +107,22 @@ ENDIF()
 CONFIGURE_FILE(cview.spec.in ${CMAKE_BINARY_DIR}/cview.spec)
 CONFIGURE_FILE(config.h.in ${CMAKE_BINARY_DIR}/config.h)
 
+FILE(GLOB DATA_FILES "${CMAKE_SOURCE_DIR}/data/*.ttf*" "${CMAKE_SOURCE_DIR}/data/*.svg" "${CMAKE_SOURCE_DIR}/data/*.ggr" "${CMAKE_SOURCE_DIR}/data/gov.pnnl.emsl.cview.plist")
+#this is for in tree testing
+ADD_CUSTOM_TARGET(DataFiles ALL
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/data ${CMAKE_BINARY_DIR}/data 
+	SOURCES ${DATA_FILES}
+	COMMENT "Copying Data File directory"
+)
+
+#this is for install
+INSTALL(FILES ${DATA_FILES} DESTINATION "share/${CMAKE_PROJECT_NAME}" COMPONENT "Data_Files")  # should we be more specific about which files?
+FILE(GLOB MAN_FILES "${CMAKE_SOURCE_DIR}/man/*.1")
+INSTALL(FILES ${MAN_FILES} DESTINATION "share/man/man1" COMPONENT "Man_Pages")
+FILE(COPY "${CMAKE_SOURCE_DIR}/cview.ico" DESTINATION ${CMAKE_BINARY_DIR})
+FILE(GLOB CVIEW_FILES_INTERNAL "${CMAKE_SOURCE_DIR}/cviews/pnl/pic-view.cview")
+FILE(GLOB CVIEW_FILES "${CMAKE_SOURCE_DIR}/cviews/pnl/chinook-hallway.cview")
+INSTALL(FILES ${CVIEW_FILES} ${CVIEW_FILES_INTERNAL} DESTINATION "share/cviews" COMPONENT "CVIEW_Files")
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libcview-data)
 INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/libcview)
@@ -121,18 +137,6 @@ IF (CVIEW_TEST_BUILD)
 ENDIF()
 ADD_SUBDIRECTORY(src)
 
-#this is for in tree testing
-FILE(COPY "${CMAKE_SOURCE_DIR}/data" DESTINATION ${CMAKE_BINARY_DIR})
-
-#this is for install
-FILE(GLOB DATA_FILES "${CMAKE_SOURCE_DIR}/data/*.ttf*" "${CMAKE_SOURCE_DIR}/data/*.svg" "${CMAKE_SOURCE_DIR}/data/*.ggr" "${CMAKE_SOURCE_DIR}/data/gov.pnnl.emsl.cview.plist")
-INSTALL(FILES ${DATA_FILES} DESTINATION "share/${CMAKE_PROJECT_NAME}" COMPONENT "Data_Files")  # should we be more specific about which files?
-FILE(GLOB MAN_FILES "${CMAKE_SOURCE_DIR}/man/*.1")
-INSTALL(FILES ${MAN_FILES} DESTINATION "share/man/man1" COMPONENT "Man_Pages")
-FILE(COPY "${CMAKE_SOURCE_DIR}/cview.ico" DESTINATION ${CMAKE_BINARY_DIR})
-FILE(GLOB CVIEW_FILES_INTERNAL "${CMAKE_SOURCE_DIR}/cviews/pnl/pic-view.cview")
-FILE(GLOB CVIEW_FILES "${CMAKE_SOURCE_DIR}/cviews/pnl/chinook-hallway.cview")
-INSTALL(FILES ${CVIEW_FILES} ${CVIEW_FILES_INTERNAL} DESTINATION "share/cviews" COMPONENT "CVIEW_Files")
 
 #-------------------------------------------------------
 #Packgaing settings for cpack

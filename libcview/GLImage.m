@@ -63,6 +63,7 @@ All rights reserved.
 #import "PList.h"
 #import "cview.h"
 #import "DictionaryExtra.h"
+#import "Defaults.h"
 
 
 @implementation GLImage
@@ -119,12 +120,10 @@ All rights reserved.
 	NSLog(@"initWithPList: %@",[self class]);
 	[super initWithPList: list];
 	[self initWithFilename: [list objectForKey: @"filename" missing: @"thefileisnotehere"]];
-	if ([list objectForKey: @"w"] != nil)
-		[self setWidth: [[list objectForKey: @"w"] intValue]];
-	if ([list objectForKey: @"h"] != nil)
-		[self setHeight: [[list objectForKey: @"h"] intValue]];
-	[self setVflip: [[list objectForKey: @"vflip" missing: @"0"] intValue]];
-	[self setHflip: [[list objectForKey: @"hflip" missing: @"0"] intValue]];
+	w = [Defaults integerForKey:@"w" Id:self Override:list];
+	h = [Defaults integerForKey:@"h" Id:self Override:list];
+	vflip = [Defaults integerForKey:@"vflip" Id:self Override:list];
+	hflip = [Defaults integerForKey:@"hflip" Id:self Override:list];
 	return self;
 }
  
@@ -132,10 +131,10 @@ All rights reserved.
 	NSLog(@"getPList: %@",self);
 	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary: [super getPList]];
 	[dict setObject: filename forKey: @"filename"];
-	[dict setObject: [NSNumber numberWithInt: w] forKey: @"w"];
-	[dict setObject: [NSNumber numberWithInt: h] forKey: @"h"];
-	[dict setObject: [NSNumber numberWithInt: vflip] forKey: @"vflip"];
-	[dict setObject: [NSNumber numberWithInt: hflip] forKey: @"hflip"];
+	PLIST_SET_IF_NOT_DEFAULT_INT(dict, w);
+	PLIST_SET_IF_NOT_DEFAULT_INT(dict, h);
+	PLIST_SET_IF_NOT_DEFAULT_INT(dict, vflip);
+	PLIST_SET_IF_NOT_DEFAULT_INT(dict, hflip);
 
 	return dict;
 }
