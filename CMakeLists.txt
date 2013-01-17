@@ -11,8 +11,11 @@ SET(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
 #options
 OPTION(CVIEW_TEST_BUILD "Build CView Testing Applications" OFF)
 OPTION(GCOBJECTDEBUG "Enable Tracking of Object Allocations" OFF)
+OPTION(SOURCE_BUILD_ONLY "Only Configure enough to build a source tar ball" OFF)
 
 SET(LIB_TYPE SHARED)
+
+IF (NOT SOURCE_BUILD_ONLY) 
 
 #detect libraries
 IF (APPLE)
@@ -104,8 +107,6 @@ IF(DOXYGEN_FOUND)
 	ADD_CUSTOM_TARGET(doc DEPENDS ${DOXYGEN_OUTPUT})
 ENDIF()
 
-CONFIGURE_FILE(cview.spec.in ${CMAKE_BINARY_DIR}/cview.spec)
-CONFIGURE_FILE(config.h.in ${CMAKE_BINARY_DIR}/config.h)
 
 FILE(GLOB DATA_FILES "${CMAKE_SOURCE_DIR}/data/*.ttf*" "${CMAKE_SOURCE_DIR}/data/*.svg" "${CMAKE_SOURCE_DIR}/data/*.ggr" "${CMAKE_SOURCE_DIR}/data/gov.pnnl.emsl.cview.plist")
 #this is for in tree testing
@@ -137,6 +138,10 @@ IF (CVIEW_TEST_BUILD)
 ENDIF()
 ADD_SUBDIRECTORY(src)
 
+ENDIF() # SOURCE_BUILD_ONLY
+
+CONFIGURE_FILE(cview.spec.in ${CMAKE_BINARY_DIR}/cview.spec)
+CONFIGURE_FILE(config.h.in ${CMAKE_BINARY_DIR}/config.h)
 
 #-------------------------------------------------------
 #Packgaing settings for cpack
