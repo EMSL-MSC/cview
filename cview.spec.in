@@ -77,7 +77,7 @@ Requires: cview%{?_isa} == %{version}-%{release}
 PNL tests for cview libraries and data sets.
 
 %prep
-%setup  -q -n @CPACK_SOURCE_PACKAGE_FILE_NAME@
+%setup  -q 
 
 %build
 %cmake .
