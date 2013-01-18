@@ -94,7 +94,6 @@ pushd build
 make install DESTDIR=%{buildroot}
 rm -f %{buildroot}/%{_libdir}/*.la
 rm -f %{buildroot}/%{_libdir}/*.a
-# install tests to sharedir
 mkdir -p "%{buildroot}/%{_datadir}/icons/hicolor/64x64/apps"
 install -m 644 contrib/icon64.png "%{buildroot}/%{_datadir}/icons/hicolor/64x64/apps/application-x-cview.png"
 install -m 644 contrib/icon64.png "%{buildroot}/%{_datadir}/icons/hicolor/64x64/apps/application-x-cviewall.png"
@@ -163,11 +162,6 @@ gtk-update-icon-cache /usr/share/icons/hicolor -f
 %{_datadir}/icons/hicolor/64x64/apps/application-x-cviewall.png
 %{_datadir}/icons/hicolor/64x64/mimetypes/application-x-cview.png
 %{_datadir}/icons/hicolor/64x64/mimetypes/application-x-cviewall.png
-
-%files tests
-%defattr(-,root,root,-)
-%doc README COPYING
-%{_datadir}/%{name}/tests
 
 %files docs
 %defattr(0644,root,root,-)
