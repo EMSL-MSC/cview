@@ -17,7 +17,12 @@ Source: @CPACK_SOURCE_PACKAGE_FILE_NAME@.tar.bz2
 URL: https://github.com/EMSL-MSC/%{name}
 BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel, gnustep-make, AntTweakBar-devel
 BuildRequires: mesa-libOSMesa-devel, freeglut-devel, libgenders-devel, gnustep-base-devel
-BuildRequires: ftgl-devel, desktop-file-utils, cmake28, libXi-devel, libXmu-devel, gcc-c++, gcc-objc
+BuildRequires: ftgl-devel, desktop-file-utils, libXi-devel, libXmu-devel, gcc-c++, gcc-objc
+%if 0%{?rhel} && (0%{?rhel} <= 6)
+BuildRequires: cmake28
+%else
+BuildRequires: cmake
+%endif
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: shared-mime-info, desktop-file-utils, gtk2
 %description
@@ -80,12 +85,20 @@ PNL tests for cview libraries and data sets.
 %setup  -q 
 
 %build
-%cmake .
+mkdir build
+pushd build
+%if 0%{?rhel} && (0%{?rhel} <= 6)
+%{cmake28} .. 
+%else
+%{cmake} .. 
+%endif
 %{__make} %{?_smp_mflags}
 %{__make} doc
+popd
 
 %install
 rm -rf %{buildroot}
+pushd build
 make install DESTDIR=%{buildroot}
 rm -f %{buildroot}/%{_libdir}/*.la
 rm -f %{buildroot}/%{_libdir}/*.a
@@ -107,6 +120,7 @@ desktop-file-install \
     --vendor=cview \
     contrib/%{name}.desktop \
     contrib/%{name}all.desktop
+popd
 
 %clean
 rm -rf %{buildroot}
