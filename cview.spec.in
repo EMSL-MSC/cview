@@ -7,7 +7,7 @@
 
 Name: @CMAKE_PROJECT_NAME@
 Version: @VERSION@
-Release: 4%{git_suffix}%{?dist}
+Release: 5%{git_suffix}%{?dist}
 Summary: PNNL Waterfall Visualization Tool
 Group: System Environment/Base
 License: BSD with advertising
@@ -72,16 +72,6 @@ Requires: libcview-data%{?_isa} == %{version}-%{release}
 %description -n libcview-data-devel
 PNL development data management library for cview packages
 
-%package tests
-Summary: PNL tests for cview internals
-Group: System Environment/Libraries
-License: BSD with advertising
-BuildRequires: numpy,python
-Requires: cview%{?_isa} == %{version}-%{release}
-
-%description tests
-PNL tests for cview libraries and data sets.
-
 %prep
 %setup  -q 
 
@@ -105,8 +95,6 @@ make install DESTDIR=%{buildroot}
 rm -f %{buildroot}/%{_libdir}/*.la
 rm -f %{buildroot}/%{_libdir}/*.a
 # install tests to sharedir
-mkdir -p "%{buildroot}/%{_datadir}/%{name}/tests"
-cp tests/* "%{buildroot}/%{_datadir}/%{name}/tests"
 mkdir -p "%{buildroot}/%{_datadir}/icons/hicolor/64x64/apps"
 install -m 644 contrib/icon64.png "%{buildroot}/%{_datadir}/icons/hicolor/64x64/apps/application-x-cview.png"
 install -m 644 contrib/icon64.png "%{buildroot}/%{_datadir}/icons/hicolor/64x64/apps/application-x-cviewall.png"
@@ -211,6 +199,10 @@ gtk-update-icon-cache /usr/share/icons/hicolor -f
 %{_includedir}/%{name}/*
 
 %changelog
+* Fri Jan 18 2013 Evan Felix <e@pnnl.gov> - @VERSION@-5.git8fd92560ec
+- Version format issues with git
+- remove test build, we should not be shipping development test executables
+
 * Fri May 18 2012 David Brown <david.brown@pnnl.gov> - @VERSION@-4.gitaf101b5
 - Updated build system to work with cmake
 
