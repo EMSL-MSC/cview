@@ -79,11 +79,10 @@ PNL development data management library for cview packages
 mkdir build
 pushd build
 %if 0%{?rhel} && (0%{?rhel} <= 6)
-%{cmake28} .. \
+%{cmake28} .. 
 %else
-%{cmake} .. \
+%{cmake} .. 
 %endif
- -DCVIEW_TEST_BUILD=ON
 %{__make} %{?_smp_mflags}
 %{__make} doc
 popd
