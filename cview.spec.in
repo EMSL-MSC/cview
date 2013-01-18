@@ -76,6 +76,7 @@ PNL development data management library for cview packages
 Summary: PNL tests for cview internals
 Group: System Environment/Libraries
 License: BSD with advertising
+BuildRequires: python-numpy
 Requires: cview%{?_isa} == %{version}-%{release}
 
 %description tests
