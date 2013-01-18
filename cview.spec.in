@@ -17,7 +17,7 @@ Source: @CPACK_SOURCE_PACKAGE_FILE_NAME@.tar.bz2
 URL: https://github.com/EMSL-MSC/%{name}
 BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel, gnustep-make, AntTweakBar-devel
 BuildRequires: mesa-libOSMesa-devel, freeglut-devel, libgenders-devel, gnustep-base-devel
-BuildRequires: ftgl-devel, desktop-file-utils, cmake, libXi-devel, libXmu-devel, gcc-c++, gcc-objc
+BuildRequires: ftgl-devel, desktop-file-utils, cmake28, libXi-devel, libXmu-devel, gcc-c++, gcc-objc
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires: shared-mime-info, desktop-file-utils, gtk2
 %description
