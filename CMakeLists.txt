@@ -116,6 +116,13 @@ ADD_CUSTOM_TARGET(DataFiles ALL
 	SOURCES ${DATA_FILES}
 	COMMENT "Copying Data File directory"
 )
+#fixme: These reaslly should installed properly with an install target.
+FILE(GLOB CONTRIB_FILES "${CMAKE_SOURCE_DIR}/contrib/*")
+ADD_CUSTOM_TARGET(ContribFiles ALL
+	COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/contrib ${CMAKE_BINARY_DIR}/contrib 
+	SOURCES ${CONTRIB_FILES}
+	COMMENT "Copying Contrib File directory"
+)
 
 #this is for install
 INSTALL(FILES ${DATA_FILES} DESTINATION "share/${CMAKE_PROJECT_NAME}" COMPONENT "Data_Files")  # should we be more specific about which files?
