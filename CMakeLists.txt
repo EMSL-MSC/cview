@@ -8,6 +8,7 @@ SET(VERSION_MAJOR 0)
 SET(VERSION_MINOR 3)
 SET(VERSION_PATCH 3)
 SET(VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH})
+EXECUTE_PROCESS(COMMAND git show-ref -s HEAD WORKING_DIRECTORY ${CMAKE_SOURCE_DIR} OUTPUT_VARIABLE GIT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
 #options
 OPTION(CVIEW_TEST_BUILD "Build CView Testing Applications" OFF)
 OPTION(GCOBJECTDEBUG "Enable Tracking of Object Allocations" OFF)
@@ -140,8 +141,6 @@ ADD_SUBDIRECTORY(src)
 
 ENDIF() # SOURCE_BUILD_ONLY
 
-CONFIGURE_FILE(cview.spec.in ${CMAKE_BINARY_DIR}/cview.spec)
-CONFIGURE_FILE(config.h.in ${CMAKE_BINARY_DIR}/config.h)
 
 #-------------------------------------------------------
 #Packgaing settings for cpack
@@ -206,6 +205,8 @@ ENDIF()
 SET(CPACK_SOURCE_IGNORE_FILES "/${CMAKE_PROJECT_NAME}-${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}.*tar.*;/_CPack_Packages/;/.git/;~$")
 INCLUDE(CPack)
 
+CONFIGURE_FILE(cview.spec.in ${CMAKE_BINARY_DIR}/cview.spec)
+CONFIGURE_FILE(config.h.in ${CMAKE_BINARY_DIR}/config.h)
 #GET_CMAKE_PROPERTY(res VARIABLES)
 #FOREACH(var ${res})
 #MESSAGE("${var}=${${var}}")

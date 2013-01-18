@@ -1,17 +1,18 @@
 %if 0%(test -d .git && echo 1) == 1
 %define commit %(git show | grep '^commit' | head -n 1 | sed 's/commit \\\(\.\.\.\.\.\.\.\\\)\.*/\\1/'|tr -d '\n')
 %else
-%define commit d73f142
+%define commit @GIT_VERSION@
 %endif
 %define git_suffix .git%{commit}
 
 Name: @CMAKE_PROJECT_NAME@
 Version: @VERSION@
 Release: 4%{git_suffix}%{?dist}
-Summary: PNL Waterfall Visualization Tool
+Summary: PNNL Waterfall Visualization Tool
 Group: System Environment/Base
 License: BSD with advertising
-Source: https://github.com/EMSL-MSC/%{name}/tarball/%{commit}/EMSL-MSC-%{name}-%{commit}.tar.gz
+#Source: https://github.com/EMSL-MSC/%{name}/tarball/%{commit}/EMSL-MSC-%{name}-%{commit}.tar.gz
+Source: @CPACK_SOURCE_PACKAGE_FILE_NAME@.tar.bz2
 
 URL: https://github.com/EMSL-MSC/%{name}
 BuildRequires: ImageMagick-devel, mesa-libGL-devel, mesa-libGLU-devel, gnustep-make, AntTweakBar-devel
