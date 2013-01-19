@@ -113,14 +113,15 @@ All rights reserved.
 		overlay=[[[Scene alloc] initWithPList: ov] retain];
 	}
 
-	imagePrefix = [[NSMutableString stringWithString:[list objectForKey: @"imagePrefix" missing: @"glworld"]] retain];
-	imageDir = [[NSMutableString stringWithString: [list objectForKey: @"imageDir" missing: @"."]] retain];
-	imageDailyDir = [[list objectForKey: @"imageDailyDir" missing: @"NO"] boolValue];
-	imageCycleTime = [[list objectForKey: @"imageCycleTime" missing: @"0"] intValue];
-	backgroundColorR = [[list objectForKey: @"backgroundColorR" missing: @"0.0"] floatValue];
-	backgroundColorG = [[list objectForKey: @"backgroundColorG" missing: @"0.0"] floatValue];
-	backgroundColorB = [[list objectForKey: @"backgroundColorB" missing: @"0.0"] floatValue];
-	lineWidth = [[list objectForKey: @"lineWidth" missing: @"1.0"] floatValue];
+	imagePrefix = [[Defaults stringForKey: @"imagePrefix" Id: self Override: list] retain];
+	imageDir = [[Defaults stringForKey: @"imageDir" Id: self Override: list] retain];
+	imageDailyDir = [Defaults boolForKey: @"imageDailyDir" Id: self Override: list];
+	imageCycleTime = [Defaults integerForKey: @"imageCycleTime" Id: self Override: list];
+	
+	backgroundColorR = [Defaults floatForKey: @"backgroundColorR" Id: self Override: list];
+	backgroundColorG = [Defaults floatForKey: @"backgroundColorG" Id: self Override: list];
+	backgroundColorB = [Defaults floatForKey: @"backgroundColorB" Id: self Override: list];
+	lineWidth = [Defaults floatForKey: @"lineWidth" Id: self Override: list];
 
 	return self;
 }
@@ -140,14 +141,15 @@ All rights reserved.
 		[plist setObject: [tooltip getPList] forKey: @"tooltip"];
 	}
 
-	[plist setObject: imagePrefix forKey: @"imagePrefix"];
-	[plist setObject: imageDir forKey: @"imageDir"];
-	[plist setObject: [NSNumber numberWithBool: imageDailyDir] forKey: @"imageDailyDir"];
-	[plist setObject: [NSNumber numberWithInt: imageCycleTime] forKey: @"imageCycleTime"];
-	[plist setObject: [NSNumber numberWithFloat: backgroundColorR] forKey: @"backgroundColorR"];
-	[plist setObject: [NSNumber numberWithFloat: backgroundColorG] forKey: @"backgroundColorG"];
-	[plist setObject: [NSNumber numberWithFloat: backgroundColorB] forKey: @"backgroundColorB"];
-	[plist setObject: [NSNumber numberWithFloat: lineWidth] forKey: @"lineWidth"];
+	PLIST_SET_IF_NOT_DEFAULT_STR(plist,imagePrefix);
+	PLIST_SET_IF_NOT_DEFAULT_STR(plist,imageDir);
+	PLIST_SET_IF_NOT_DEFAULT_BOOL(plist,imageDailyDir);
+	PLIST_SET_IF_NOT_DEFAULT_INT(plist,imageCycleTime);
+	PLIST_SET_IF_NOT_DEFAULT_FLT(plist,backgroundColorR);
+	PLIST_SET_IF_NOT_DEFAULT_FLT(plist,backgroundColorG);
+	PLIST_SET_IF_NOT_DEFAULT_FLT(plist,backgroundColorB);
+	PLIST_SET_IF_NOT_DEFAULT_FLT(plist,lineWidth);
+	
 	return plist;
 }
 

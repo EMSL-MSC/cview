@@ -71,8 +71,8 @@ static NSMutableDictionary *fontCache=nil;
 - initWithString: (NSString *)str andFont: (NSString *)font {
 	int i;
 	[super init];
-	NSString *tmpFont = find_resource_path(font);
-	[self setFont: tmpFont];
+	//NSString *tmpFont = find_resource_path(font);
+	[self setFont: font];
 	string = [str retain];
 	for (i=0;i<3;i++) {
 		color[i]=1.0;
@@ -94,21 +94,21 @@ static NSMutableDictionary *fontCache=nil;
 	NSLog(@"initWithPList: %@",[self class]);
 	[super initWithPList: list];
 	///@todo use a resource
-	NSString *font_res = [list objectForKey: @"fontfile" missing: @"LinLibertine_Re.ttf"];
+	NSString *font_res = [Defaults stringForKey: @"fontfile" Id: self Override: list];
 
-	NSString *s = [list objectForKey: @"string" missing: @"FIXME"];
+	NSString *s = [Defaults stringForKey: @"string" Id: self Override: list];
 	[self initWithString: s andFont: font_res];
 
-	#define GD(x,k,m) x=[[list objectForKey: k missing: m] floatValue]
-	GD(color[0],@"colorR",@"1.0");
-	GD(color[1],@"colorG",@"1.0");
-	GD(color[2],@"colorB",@"1.0");
-	GD(scale[0],@"scaleX",@"1.0");
-	GD(scale[1],@"scaleY",@"1.0");
-	GD(scale[2],@"scaleZ",@"1.0");
-	GD(rotates[0],@"rotX",@"0.0");
-	GD(rotates[1],@"rotY",@"0.0");
-	GD(rotates[2],@"rotZ",@"0.0");
+	#define GD(x,k) x=[Defaults floatForKey: k Id: self Override: list]
+	GD(color[0],@"colorR");
+	GD(color[1],@"colorG");
+	GD(color[2],@"colorB");
+	GD(scale[0],@"scaleX");
+	GD(scale[1],@"scaleY");
+	GD(scale[2],@"scaleZ");
+	GD(rotates[0],@"rotX");
+	GD(rotates[1],@"rotY");
+	GD(rotates[2],@"rotZ");
 	#undef GD
 
 	return self;
@@ -117,10 +117,11 @@ static NSMutableDictionary *fontCache=nil;
 -getPList {
 	NSLog(@"getPList: %@",self);
 	NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary: [super getPList]];
-	[dict setObject: fontResource forKey: @"fontfile"];
-	[dict setObject: string forKey: @"string"];
-
-	#define SD(x,k) [dict setObject: [NSNumber numberWithFloat: x] forKey: k];
+	if ([fontResource compare: [Defaults stringForKey:@"fontfile" Id:self]] != NSOrderedSame)
+		[dict setObject: fontResource forKey: @"fontfile" ]; 
+	PLIST_SET_IF_NOT_DEFAULT_STR(dict,string);
+	
+	#define SD(x,k) do { if (x != [Defaults floatForKey:k Id:self]) [dict setObject: [NSNumber numberWithFloat: x] forKey: k ]; } while (0)
 	SD(color[0],@"colorR");
 	SD(color[1],@"colorG");
 	SD(color[2],@"colorB");
@@ -215,13 +216,14 @@ static NSMutableDictionary *fontCache=nil;
 
 - doFontSet {
 	id fontPointer;
-	NSString * key = [NSString stringWithFormat: @"%@-%d",fontResource,glutGetWindow()];
+	NSString *fnt = find_resource_path(fontResource);
+	NSString *key = [NSString stringWithFormat: @"%@-%d",fnt,glutGetWindow()];
 
 	fontPointer = [fontCache valueForKey: key];
 	if (fontPointer == nil) {
-		theFont = ftglCreateExtrudeFont([fontResource UTF8String]);
+		theFont = ftglCreateExtrudeFont([fnt UTF8String]);
 		if (!theFont)
-			NSLog(@"Error Loading Font:%@",fontResource);
+			NSLog(@"Error Loading Font:%@",fnt);
 		ftglSetFontFaceSize(theFont,36,72);
 		ftglSetFontCharMap(theFont,ft_encoding_unicode);
 		fontPointer = [NSNumber numberWithLong: (long)theFont];

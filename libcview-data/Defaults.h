@@ -80,8 +80,8 @@ All rights reserved.
 +(BOOL)boolForKey: (NSString *)key Id:(id)cls Override: (NSDictionary *)over;
 @end
 
-#define PLIST_SET_IF_NOT_DEFAULT_INT(_plist,_key) do { if (_key != [Defaults integerForKey:@ #_key Id:self]) [dict setObject: [NSNumber numberWithInt: _key] forKey: @ #_key ]; } while (0)
-#define PLIST_SET_IF_NOT_DEFAULT_FLT(_plist,_key) do { if (_key != [Defaults floatForKey:@ #_key Id:self]) [dict setObject: [NSNumber numberWithFloat: _key] forKey: @ #_key ]; } while (0)
-#define PLIST_SET_IF_NOT_DEFAULT_STR(_plist,_key) do { if ([_key compare: [Defaults stringForKey:@ #_key Id:self] != NSOrderedSame) [_plist setObject: _key forKey: @ #_key ]; } while (0)
+#define PLIST_SET_IF_NOT_DEFAULT_INT(_plist,_key) do { if (_key != [Defaults integerForKey:@ #_key Id:self]) [_plist setObject: [NSNumber numberWithInt: _key] forKey: @ #_key ]; } while (0)
+#define PLIST_SET_IF_NOT_DEFAULT_FLT(_plist,_key) do { if (_key != [Defaults floatForKey:@ #_key Id:self]) [_plist setObject: [NSNumber numberWithFloat: _key] forKey: @ #_key ]; } while (0)
+#define PLIST_SET_IF_NOT_DEFAULT_STR(_plist,_key) do { if ([_key compare: [Defaults stringForKey:@ #_key Id:self]] != NSOrderedSame) [_plist setObject: _key forKey: @ #_key ]; } while (0)
 #define PLIST_SET_IF_NOT_DEFAULT_BOOL(_plist,_key) do { if (_key != [Defaults boolForKey:@ #_key Id:self]) [_plist setObject: [NSNumber numberWithBool: _key] forKey: @ #_key ]; } while (0)
 

@@ -1,4 +1,7 @@
 {
+	"Eye.strafe_speed" = 10;
+	"Eye.rotate_speed" = 0.025;
+	"Eye.move_speed" = 10;
 	"GLGrid.xTicks" = 50;
 	"GLGrid.yTicks" = 32;
 	"GLGrid.fontScale" = 1;
@@ -15,6 +18,26 @@
 	"GLImage.w" = 0;
 	"GLImage.vflip" = 0;
 	"GLImage.hflip" = 0;
+	"GLText.colorR" = 1;
+	"GLText.colorG" = 1;
+	"GLText.colorB" = 1;
+	"GLText.scaleX" = 1;
+	"GLText.scaleY" = 1;
+	"GLText.scaleZ" = 1;
+	"GLText.rotX" = 0;
+	"GLText.rotY" = 0;
+	"GLText.rotZ" = 0;
+	"GLText.isVisible" = YES;
+	"GLText.string" = "Put Some Text Here";
+	"GLText.fontfile" = "LinLibertine_Re.ttf";
+	"GLWorld.imagePrefix" = "glworld";
+	"GLWorld.imageDir" = ".";
+	"GLWorld.imageDailyDir" = NO;
+	"GLWorld.imageCycleTime" = 0;
+	"GLWorld.backgroundColorR" = 0;
+	"GLWorld.backgroundColorG" = 0;
+	"GLWorld.backgroundColorB" = 0;
+	"GLWorld.lineWidth" = 1;
 	"SceneObject.x" = 0;
 	"SceneObject.y" = 0;
 	"SceneObject.z" = 0;
