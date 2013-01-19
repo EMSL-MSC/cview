@@ -172,6 +172,8 @@ gtk-update-icon-cache /usr/share/icons/hicolor -f
 %doc README COPYING
 %{_libdir}/libcview.so.0*
 %{_datadir}/%{name}/*.ttf*
+%{_datadir}/%{name}/gov.pnnl.emsl.cview.plist
+%{_datadir}/%{name}/cviews
 
 %files -n libcview-devel
 %defattr(-,root,root,-)
