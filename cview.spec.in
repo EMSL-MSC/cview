@@ -165,8 +165,7 @@ gtk-update-icon-cache /usr/share/icons/hicolor -f
 %files docs
 %defattr(0644,root,root,-)
 %doc README COPYING
-#${_datadir}/${name}/html
-%doc build/docs/html
+${_datadir}/${name}/html
 
 %files -n libcview
 %defattr(-,root,root,-)
