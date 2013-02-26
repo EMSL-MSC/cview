@@ -23,4 +23,4 @@ usr/include/cview/Identifiable.h
 usr/include/cview/Pickable.h
 usr/include/cview/Scene.h
 usr/include/cview/Wand.h
-usr/share/pkgconfig/cview.pc
+usr/lib/pkgconfig/cview.pc

@@ -60,6 +60,7 @@ All rights reserved.
 #import <Foundation/Foundation.h>
 #import <math.h>
 #import "Eye.h"
+#import "Defaults.h"
 #import "DictionaryExtra.h"
 
 @implementation Eye
@@ -81,25 +82,26 @@ All rights reserved.
 	z = [[list objectForKey: @"z"] floatValue];
 	hangle = [[list objectForKey: @"hangle"] floatValue];
 	vangle = [[list objectForKey: @"vangle"] floatValue];
-	strafe_speed = [[list objectForKey: @"strafe_speed" missing: @"10.0"] floatValue];
-	rotate_speed = [[list objectForKey: @"rotate_speed" missing: @"0.025"] floatValue];
-	move_speed = [[list objectForKey: @"move_speed" missing: @"10.0"] floatValue];
+	strafe_speed = [Defaults floatForKey: @"strafe_speed" Id: self Override: list];
+	rotate_speed = [Defaults floatForKey: @"rotate_speed" Id: self Override: list];
+	move_speed = [Defaults floatForKey: @"move_speed" Id: self Override: list];
 	[self setLooks];
 	return self;
 }
  
 -getPList {
 	NSLog(@"getPList: %@",self);
-	return [NSDictionary dictionaryWithObjectsAndKeys: 
+	NSMutableDictionary *d = [NSMutableDictionary dictionaryWithObjectsAndKeys: 
 		[NSNumber numberWithFloat: x],@"x",
 		[NSNumber numberWithFloat: y],@"y",
 		[NSNumber numberWithFloat: z],@"z",
 		[NSNumber numberWithFloat: hangle],@"hangle",
 		[NSNumber numberWithFloat: vangle],@"vangle",
-		[NSNumber numberWithFloat: strafe_speed],@"strafe_speed",
-		[NSNumber numberWithFloat: rotate_speed],@"rotate_speed",
-		[NSNumber numberWithFloat: move_speed],@"move_speed",
 		nil];
+	PLIST_SET_IF_NOT_DEFAULT_FLT(d,strafe_speed);
+	PLIST_SET_IF_NOT_DEFAULT_FLT(d,rotate_speed);
+	PLIST_SET_IF_NOT_DEFAULT_FLT(d,move_speed);
+	return d;
 }
 
 -(NSArray *)attributeKeys {
