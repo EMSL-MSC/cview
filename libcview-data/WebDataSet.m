@@ -96,6 +96,14 @@ static float blankdata[] = {
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
 };
+#ifndef LOG_STAGE
+#define LOG_STAGE 0
+#endif
+#if LOG_STAGE
+#define LOGSTAGE(x,a...) NSLog(x,##a)
+#else
+#define LOGSTAGE(x,a...) 
+#endif
 
 @implementation WebDataSet
 -initWithUrlBase: (NSURL *)base andKey: (NSString *)key {
@@ -191,7 +199,7 @@ static float blankdata[] = {
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
 	int code;
-	//NSLog(@"Incoming Data: %d %@",stage,response);
+	LOGSTAGE(@"Incoming Data: %d %@",stage,response);
 	if ([response respondsToSelector:@selector(statusCode)]) {
 		code = [((NSHTTPURLResponse *)response) statusCode];
 		switch (code) {
@@ -214,7 +222,7 @@ static float blankdata[] = {
 - (void)connection:(NSURLConnection *)connection
   didFailWithError:(NSError *)error
 {
-	NSLog(@"Error Recieved: %@ %@",connection,error);
+	LOGSTAGE(@"Error Recieved: %@ %@",connection,error);
 	[connection autorelease];
 	stage = IDLE;
 }
@@ -234,7 +242,7 @@ static float blankdata[] = {
 
 	switch (stage) {
 		case DESC:
-			//NSLog(@"DESC finish");
+			LOGSTAGE(@"DESC finish");
 			[incomingData increaseLengthBy:1];
 			if([[self getDescription] compare: DS_DEFAULT_NAME] == NSOrderedSame)
 				[self setDescription: [NSString stringWithUTF8String: [incomingData bytes]]];
@@ -246,7 +254,7 @@ static float blankdata[] = {
 			break;
 
 		case RATE:
-			//NSLog(@"RATE finish");
+			LOGSTAGE(@"RATE finish");
 			[incomingData increaseLengthBy:1];
 			[self setRate: [NSString stringWithUTF8String: [incomingData bytes]]];
 			//NSLog(@"rate: %@",rateSuffix);
@@ -261,7 +269,7 @@ static float blankdata[] = {
 			break;
 
 		case XTICK:
-			//NSLog(@"XTICK finish: %@",dataKey);
+			LOGSTAGE(@"XTICK finish: %@",dataKey);
 			w = [incomingData length];
 			if (w%TICK_LEN != 0) { //inproper read
 				stage = IDLE;
@@ -285,7 +293,7 @@ static float blankdata[] = {
 			break;
 
 		case YTICK:
-			//NSLog(@"YTICK finish: %@",dataKey);
+			LOGSTAGE(@"YTICK finish: %@",dataKey);
 			h = [incomingData length];
 			if (h%TICK_LEN != 0) { //inproper read
 				stage = IDLE;
@@ -306,7 +314,7 @@ static float blankdata[] = {
 			break;
 
 		case DATA:
-			//NSLog(@"DATA finish: %@",dataKey);
+			LOGSTAGE(@"DATA finish: %@",dataKey);
 
 			if (width*height*sizeof(float) == [incomingData length]) {
 				[self setNewData: incomingData];
@@ -331,7 +339,7 @@ static float blankdata[] = {
 		case ERR:
 			break;
 		default:
-			NSLog(@"Invalid Stage in state machine..");
+			LOGSTAGE(@"Invalid Stage in state machine..");
 			break;
 	}
 	[connection autorelease];
@@ -347,11 +355,13 @@ static float blankdata[] = {
 	NSURLRequest *req;
 
 	if (stage == IDLE) {
+		LOGSTAGE(@"IDLE begin");
 		req = [NSURLRequest requestWithURL: XticksURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
 		stage = XTICK;
 		webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];
 	}
 	else if (stage == START) {
+		LOGSTAGE(@"START begin");
 		req = [NSURLRequest requestWithURL: descURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
 		stage = DESC;
 		webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];
