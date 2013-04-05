@@ -13,4 +13,4 @@ usr/include/cview/UpdateRunLoop.h
 usr/include/cview/WebDataSet.h
 usr/include/cview/XYDataSet.h
 usr/lib/libcview-data.so
-usr/share/pkgconfig/cview-data.pc
+usr/lib/pkgconfig/cview-data.pc
