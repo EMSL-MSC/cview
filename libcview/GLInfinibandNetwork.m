@@ -60,6 +60,8 @@ All rights reserved.
 #import "GLText.h"
 #import "ListComp.h"
 #import "DictionaryExtra.h"
+#import <stdint.h>
+#import <stdlib.h>
 static float box_quads[72] = {
 0.0 , 1.0 , 0.0 , 1.0 , 1.0 , 0.0 , 1.0 , 1.0 , 1.0 , 0.0 , 1.0 , 1.0 , //Top  keep here.
 0.0 , 0.0 , 1.0 , 0.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 1.0 , 0.0 , 1.0 , //Back
@@ -69,6 +71,31 @@ static float box_quads[72] = {
 0.0 , 0.0 , 0.0 , 1.0 , 0.0 , 0.0 , 1.0 , 1.0 , 0.0 , 0.0 , 1.0 , 0.0 , //Front Face
 };
 
+NSString *ibIDfix(NSString *in) {
+	uint64_t first,second;
+	int len;
+	NSString *out;
+	char *ptr;
+	const char *str;
+	char buffer[32];
+
+	str = [in UTF8String];
+	len = strnlen(str,32);
+	if ( len>8 ) {
+		strncpy(buffer,str,len-8);
+		first = strtoull(buffer,&ptr,16);
+		second = strtoull(str+len-8,&ptr,16);
+	}
+	else {
+		first = 0;
+		second = strtoull(str,&ptr,16);
+	}
+
+	out = [NSString stringWithFormat: @"0x%08qx%08qx",first,second];
+	//NSLog(@"%@ %qx %qx %@",in,first,second,out);
+	return out;
+}
+
 //Scan a nodemapfile..  format is: GUID "text" where GUID is a hex code witha a 0x preceding it.
 // skip blank lines..
 // anything that starts with # is a comment, ignore line.
@@ -77,7 +104,7 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 	NSMutableDictionary *dict = [NSMutableDictionary dictionary];
 	NSError *err=nil;
 	NSString *linestring = [NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:&err];
-	NSArray *lines;
+	NSArray *lines,*parts;
 	NSString *line,*guid,*label;
 	NSEnumerator *e;
 	
@@ -90,16 +117,18 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 			continue;
 		
 		//verify the line looks like we want it to
-		if ([line hasPrefix: @"0x"] && 
-			[line hasSuffix: @"\""] &&
-		    [line compare: @" \"" options: NSLiteralSearch range: NSMakeRange(15,2)] == NSOrderedSame ) {
-			   guid = [line substringWithRange: NSMakeRange(0,15)];
-			   label = [line substringWithRange: NSMakeRange(17,[line length]-18)];
+		if ([line hasPrefix: @"0x"] && [line hasSuffix: @"\""]) {
+			parts = [line componentsSeparatedByCharactersInSet: [NSCharacterSet whitespaceCharacterSet]];
+			if ([parts count]==2) {
+			   guid = ibIDfix([parts objectAtIndex:0]);
+			   label = [[parts objectAtIndex:1] stringByTrimmingCharactersInSet: [NSCharacterSet punctuationCharacterSet]];
 			   //NSLog(@"%@,%@",guid,label);
 			   [dict setObject:guid forKey: label];
+			}
 		}
 		//NSLog(@"%@",line);
 	}
+	//NSLog(@"%@",dict);
 	return dict;
 }
 
@@ -108,7 +137,7 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 	float locx,locy,locz;
 	flts reference[4];
 	float rotx,roty,rotz;
-	int nLineBoards,nLineExtPorts,nLineIntPorts,nFabricBoards,nFabricChips,nFabricChipPorts;
+	int nLineBoards,nLineExtPorts,nLineIntPorts,nLineColumns,nFabricBoards,nFabricChips,nFabricChipPorts;
 	float switchHeight,switchWidth,switchPortHeight,switchPortWidth,switchDepth;
 	float chassisDepth,chassisHeight,chassisWidth;
 	float portHeight,portWidth;
@@ -250,17 +279,29 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 		nLineBoards      = 4;
 		nLineExtPorts    = 4;
 		nLineIntPorts    = 4;
+		nLineColumns     = 1;
+		nFabricBoards    = 1;
+		nFabricChips     = 2;
+		nFabricChipPorts = 8;
+	}
+
+	if ([type compare: @"TEST040208D" ] == NSOrderedSame) {
+		nLineBoards      = 4;
+		nLineExtPorts    = 4;
+		nLineIntPorts    = 4;
+		nLineColumns     = 2;
 		nFabricBoards    = 1;
 		nFabricChips     = 2;
 		nFabricChipPorts = 8;
 	}
 
 	if ([type compare: @"ISR9024D-M" ] == NSOrderedSame) {
-		//This switch really has two rows of ports on thr front..  need to deal with that
+		//This switch really has two rows of ports on the front..  need to deal with that
 		/**@todo deal with dual row switches */
 		nLineBoards      = 1;
 		nLineExtPorts    = 24;
 		nLineIntPorts    = 0;
+		nLineColumns     = 1;
 		nFabricBoards    = 0;
 		nFabricChips     = 0;
 		nFabricChipPorts = 0;
@@ -270,21 +311,32 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 		nLineBoards      = 24;
 		nLineExtPorts    = 12;
 		nLineIntPorts    = 12;
+		nLineColumns     = 1;
 		nFabricBoards    = 4;
 		nFabricChips     = 3;
 		nFabricChipPorts = 24;
 	}
-	
+
+	if ([type compare: @"SX6536" ] == NSOrderedSame) {
+		nLineBoards      = 36;
+		nLineExtPorts    = 18;
+		nLineIntPorts    = 18;
+		nLineColumns     = 2;
+		nFabricBoards    = 18;
+		nFabricChips     = 1;
+		nFabricChipPorts = 36;
+	}
+
 	chassisWidth = nLineExtPorts * 20.0;
-	chassisHeight = nLineBoards * 10.0;
+	chassisHeight = nLineBoards / nLineColumns * 10.0;
 	chassisDepth = chassisWidth*0.6;
 	if (nFabricBoards>0)
 		chassisDepth *= 2;
 		
-	portWidth = chassisWidth / nLineExtPorts;
-	portHeight = chassisHeight / nLineBoards;
+	portWidth = chassisWidth / nLineExtPorts / nLineColumns;
+	portHeight = chassisHeight / (nLineBoards / nLineColumns);
 	
-	switchWidth = MIN(MAX(nLineIntPorts,nLineExtPorts) * 5,chassisWidth*0.9);
+	switchWidth = MIN(MAX(nLineIntPorts,nLineExtPorts) * 5,chassisWidth*0.9)/nLineColumns;
 	switchDepth = switchWidth*0.5;
 	switchPortWidth = switchWidth/nLineExtPorts;
 	switchPortHeight = 8.0;
@@ -313,39 +365,39 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 
 -(id)populateGraph: (Graph *)g nodeMap: (NSDictionary *)map {
 	//add all the ports..
-	int i,j,p;
+	int i,j,p,ss;
 	IBPort * port;
 	NSString *s;
 	
 		for (i=0;i<nLineExtPorts;i++)
 			for (j=0;j<nLineBoards;j++) {
-				//Front Port
-				port = [[[IBPort alloc] init] autorelease];
-				port->x = i*portWidth+0.5;
-				port->y = (nLineBoards-1-j)*portHeight+0.5;
-				port->z = 0;
-				port->w = portWidth-1;
-				port->h = portHeight-1;
-				[port setChassis: self];
-				//NSLog([NSString stringWithFormat: @"%@-L%d",name,j+1]);
-				s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@-L%d",name,j+1]],nLineExtPorts+nLineIntPorts-i];
-				//NSLog(@"FP: %@ %@",s,port);
-				[g addVertex: s withInfo: port];
+					//Front Port
+					port = [[[IBPort alloc] init] autorelease];
+					port->x = (portWidth*nLineExtPorts)*(j%nLineColumns)+i*portWidth+0.5;
+					port->y = ((nLineBoards-1-j)/nLineColumns)*portHeight+0.5;
+					port->z = 0;
+					port->w = portWidth-1;
+					port->h = portHeight-1;
+					[port setChassis: self];
+					//NSLog([NSString stringWithFormat: @"%@-L%d",name,j+1]);
+					s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@-L%d",name,j+1]],nLineExtPorts+nLineIntPorts-i];
+					//NSLog(@"FP: %@ %@",s,port);
+					[g addVertex: s withInfo: port];
 			}
 			
-			
+		ss=(chassisWidth-nLineColumns*switchWidth)/(nLineColumns+1); //interswitch spacing	
 		for (i=0;i<nLineIntPorts;i++)
 			for (j=0;j<nLineBoards;j++) {
 				//switch back port
 				port = [[[IBPort alloc] init] autorelease];
-				port->x = (chassisWidth - switchWidth)/2 + i*switchPortWidth + 0.5;
-				port->y = (nLineBoards-1-j) * portHeight + 0.5;
+				port->x = ss + (j%nLineColumns)*(ss+switchWidth) + i*switchPortWidth + 0.5;
+				port->y = ((nLineBoards-1-j)/nLineColumns) * portHeight + 0.5;
 				port->z = chassisDepth*0.25 - switchDepth/2.0;
 				port->w = switchPortWidth-1;
 				port->h = switchPortHeight;
 				[port setChassis: self];
 				s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@-L%d",name,j+1]],1+i];
-				//NSLog(@"BP: %@ %@",s,port);
+				//NSLog(@"BP: %@ %@ %@",s,port,[NSString stringWithFormat: @"%@-L%d",name,j+1]);
 				[g addVertex: s withInfo: port];
 			}
 			
@@ -372,7 +424,7 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 
 -(id) glDraw {
 	int l,i,j;
-	float sn,sf,sl,sr,sh;
+	float sn,sf,sl,sr,sh,ss;
 	glPushMatrix();
 	glTranslatef(locx,locy,locz);
 	glRotatef(rotx,1.0,0.0,0.0);
@@ -397,13 +449,15 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 		}
 		/// end bounding
 
-		//line board switches
-		sl=(chassisWidth-switchWidth)/2; //Switch Left
-		sr=sl+switchWidth;               //Switch Right
 		sf=chassisDepth*(nFabricBoards==0?0.50:0.25) - switchDepth/2.0; //switch Far
+		ss=(chassisWidth-nLineColumns*switchWidth)/(nLineColumns+1); //interswitch spacing
 		sn=sf-switchDepth; //switch Near
 		for (i=0;i<nLineBoards;i++) {
-			sh=i*(chassisHeight/nLineBoards);
+			//line board switches
+			sl=ss+(i%nLineColumns)*(ss+switchWidth); //Switch Left
+			sr=sl+switchWidth;               //Switch Right
+			sh=(i/nLineColumns)*(chassisHeight/(nLineBoards/nLineColumns));
+			//NSLog(@"%d,%f,%f,%f,%f,%f",i,sl,sr,sh,chassisWidth,ss);
 			glColor3f(0.0,0.0,0.7);
 			glBegin(GL_LINE_LOOP);
 			glVertex3f(sl,sh,sn);
@@ -414,8 +468,8 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 			glColor3f(0.0,0.0,0.4);
 			glBegin(GL_LINES);
 			for (l=0;l<nLineExtPorts;l++) {
-				glVertex3f(portWidth*l+portWidth/2,i*portHeight+portHeight/2,0);
-				glVertex3f(sl+l*switchPortWidth,i*(chassisHeight/nLineBoards),sn);
+				glVertex3f(portWidth*(l+nLineExtPorts*(i%nLineColumns))+portWidth/2,(i/nLineColumns)*portHeight+portHeight/2,0);
+				glVertex3f(sl+l*switchPortWidth,(i/nLineColumns)*(chassisHeight/(nLineBoards/nLineColumns)),sn);
 			}
 			glEnd();
 		}
@@ -543,11 +597,8 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 		tport = [[line substringWithRange: NSMakeRange(49,2)] intValue];
 		speed = [line substringWithRange: NSMakeRange(34,3)];
 		
-		
-		if ([from hasPrefix: @"0x000"])
-			from = [NSString stringWithFormat: @"0x%@",[from substringFromIndex: 5]];
-		if ([to hasPrefix: @"0x000"])
-			to = [NSString stringWithFormat: @"0x%@",[to substringFromIndex: 5]];
+		from=ibIDfix(from);
+		to=ibIDfix(to);
 		//NSLog(@"%@ %d  %@ %d  %@",from,fport,to,tport,speed);
 		
 		

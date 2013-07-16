@@ -85,7 +85,7 @@ int main(int argc,char *argv[], char *env[]) {
 				];
 		NSLog(@"%@",plist);
 		GLInfinibandNetwork *ib = [[GLInfinibandNetwork alloc] initWithPList: plist];
-		
+		[ib show];
 		[scene1 addObject: ib atX: 0 Y: 0 Z: 0];
 	
 		[[[g addWorld: @"Top" row: 0 col: 0 rowPercent: 50 colPercent:50] 
