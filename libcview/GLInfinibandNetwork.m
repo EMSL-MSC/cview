@@ -138,6 +138,7 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 	flts reference[4];
 	float rotx,roty,rotz;
 	int nLineBoards,nLineExtPorts,nLineIntPorts,nLineColumns,nFabricBoards,nFabricChips,nFabricChipPorts;
+	BOOL flipLinePorts;
 	float switchHeight,switchWidth,switchPortHeight,switchPortWidth,switchDepth;
 	float chassisDepth,chassisHeight,chassisWidth;
 	float portHeight,portWidth;
@@ -283,6 +284,7 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 		nFabricBoards    = 1;
 		nFabricChips     = 2;
 		nFabricChipPorts = 8;
+		flipLinePorts    = NO;
 	}
 
 	if ([type compare: @"TEST040208D" ] == NSOrderedSame) {
@@ -293,6 +295,7 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 		nFabricBoards    = 1;
 		nFabricChips     = 2;
 		nFabricChipPorts = 8;
+		flipLinePorts    = NO;
 	}
 
 	if ([type compare: @"ISR9024D-M" ] == NSOrderedSame) {
@@ -305,6 +308,7 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 		nFabricBoards    = 0;
 		nFabricChips     = 0;
 		nFabricChipPorts = 0;
+		flipLinePorts    = NO;
 	}
 
 	if ([type compare: @"ISR2012" ] == NSOrderedSame) {
@@ -315,6 +319,7 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 		nFabricBoards    = 4;
 		nFabricChips     = 3;
 		nFabricChipPorts = 24;
+		flipLinePorts    = NO;
 	}
 
 	if ([type compare: @"SX6536" ] == NSOrderedSame) {
@@ -325,6 +330,7 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 		nFabricBoards    = 18;
 		nFabricChips     = 1;
 		nFabricChipPorts = 36;
+		flipLinePorts    = YES;
 	}
 
 	chassisWidth = nLineExtPorts * 20.0;
@@ -369,6 +375,7 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 	IBPort * port;
 	NSString *s;
 	
+#define FLIPIT(_p) (flipLinePorts?(1+nLineExtPorts+nLineIntPorts-(_p)):(_p))
 		for (i=0;i<nLineExtPorts;i++)
 			for (j=0;j<nLineBoards;j++) {
 					//Front Port
@@ -380,7 +387,7 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 					port->h = portHeight-1;
 					[port setChassis: self];
 					//NSLog([NSString stringWithFormat: @"%@-L%d",name,j+1]);
-					s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@-L%d",name,j+1]],nLineExtPorts+nLineIntPorts-i];
+					s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@-L%d",name,j+1]],FLIPIT(nLineExtPorts+nLineIntPorts-i)];
 					//NSLog(@"FP: %@ %@",s,port);
 					[g addVertex: s withInfo: port];
 			}
@@ -396,7 +403,7 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 				port->w = switchPortWidth-1;
 				port->h = switchPortHeight;
 				[port setChassis: self];
-				s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@-L%d",name,j+1]],1+i];
+				s = [NSString stringWithFormat: @"%@-%d",[map objectForKey: [NSString stringWithFormat: @"%@-L%d",name,j+1]],FLIPIT(1+i)];
 				//NSLog(@"BP: %@ %@ %@",s,port,[NSString stringWithFormat: @"%@-L%d",name,j+1]);
 				[g addVertex: s withInfo: port];
 			}
@@ -628,7 +635,7 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 	NSString *line;
 	NSArray *parts;
 	NSEnumerator *e;
-	NSString *from,*to;
+	NSString *from,*to,*fport,*tport;
 	IBLink *link;
 	int count;
 	int max=1;
@@ -645,12 +652,14 @@ NSDictionary *scanNodeMapFile(NSString *file) {
 			continue;
 		parts = [line componentsSeparatedByCharactersInSet: [NSCharacterSet whitespaceCharacterSet]];
 		count = [[parts objectAtIndex: 0] intValue];
-		from = [parts objectAtIndex: 1];
-		to = [parts objectAtIndex: 2];
+		from = ibIDfix([parts objectAtIndex: 1]);
+		fport = [parts objectAtIndex: 2];
+		to = ibIDfix([parts objectAtIndex: 3]);
+		tport = [parts objectAtIndex: 4];
 
 
-		//NSLog(@"Link: %@ %@ %d",from,to,count);
-		link = [graph edgeData: from and: to];
+		//NSLog(@"Link: %@ %@ %@ %@ %d",from,fport,to,tport,count);
+		link = [graph edgeData: [NSString stringWithFormat: @"%@-%@",from,fport] and: [NSString stringWithFormat: @"%@-%@",to,tport]];
 		if (link) {
 			[link setValue: count];
 			max = MAX(max,count);

@@ -214,6 +214,7 @@ void TW_CALL cv_getGridType(void *value, void *clientData)
 			case '~':
 				if (PListOutputFile != nil) {
 					id plist = [myScreen getPList];
+					NSLog(@"Writing Screen config to %@",PListOutputFile);
 #ifdef __APPLE__
 					NSError *err;
 					BOOL result;
