@@ -215,7 +215,7 @@ static float blankdata[] = {
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)indata {
-	//NSLog(@"Data Recieved: %@ - %d - %d",connection, [indata length],stage);
+	//NSLog(@"Data Recieved: %@ - %ld - %d",connection, [indata length],stage);
 	[incomingData appendData: indata];
 }
 
@@ -314,7 +314,7 @@ static float blankdata[] = {
 			break;
 
 		case DATA:
-			LOGSTAGE(@"DATA finish: %@",dataKey);
+			LOGSTAGE(@"DATA finish: %@ len=%ld",dataKey,[incomingData length]);
 
 			if (width*height*sizeof(float) == [incomingData length]) {
 				[self setNewData: incomingData];

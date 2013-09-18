@@ -107,7 +107,7 @@ All rights reserved.
 -initWithGradient: (GimpGradient *)ggr andMax: (unsigned long)max {
 	int i;
 	float *cm,val;
-	NSLog(@"ColorMap initWithGradient-max:%d",max);
+	NSLog(@"ColorMap initWithGradient-max:%lu",max);
 	theMax = max>=1?max:1;
 	scale = (float)(MAP_SIZE-1)/theMax;
 	colormap = [[NSMutableData alloc] initWithLength: (MAP_SIZE+1)*sizeof(float)*4];
