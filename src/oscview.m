@@ -164,7 +164,7 @@ int main(int argc,char *argv[], char *env[]) {
     glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 //////////////
 /* before we draw we need to make sure the data sets are all valid: we only look in Grids For now.. */
-/** @fixme add GLBars */
+/** @todo add GLBars */
 	NSEnumerator *list;
 	list = [[[g scene] getAllObjects] objectEnumerator];
 	while ( (o = [list nextObject]) ) {

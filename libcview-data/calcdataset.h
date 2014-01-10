@@ -69,5 +69,8 @@ typedef int (*calc_data_set_func)(const char *, const long, const long, float *,
 	@param calc        A text string describing the calulation to be done on the data planes.
 	@param col_count   normally is the number of items sets of data, for cluster data it would be the number of hosts
     @param row_count   would then be the number of data points for a host
+    @param output      Float array of values size=row*col*sizeof(float)
+    @param datacount   number of data sets input
+    @param datas       data set pointers for all data sets, should be row*col*sizeof(float) in size each.
 */
 int calc_data_set(const char *calc, const long col_count, const long row_count, float *output, const long datacount, float const * datas[]);

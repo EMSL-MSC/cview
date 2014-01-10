@@ -114,7 +114,7 @@ static ValueStore *singletonValueStore;
 	NSEnumerator *e;
 	NSArray *a;
 	int index=1;
-	/** @fixme Crazy hack to deal with CalulatedDataSets needing sub datasets.
+	/** @todo Crazy hack to deal with CalulatedDataSets needing sub datasets.
 		It so happens that if we sort the array re-verse alphabetically by Class name, We should add all the datasets before calculated needs them.  This is a more general issue that classes using this should dealwith by delaying grabbing objects at initialization time.
 	*/
 	array = [array sortedArrayUsingFunction: arrayObjectReverseAlpha context: &index];

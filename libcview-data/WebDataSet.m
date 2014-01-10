@@ -385,8 +385,8 @@ static float blankdata[] = {
 }
 /**
 	@author: Brock Erwin
-	@description: Returns an array of data (a row) by searching the dictionary
-	              for the column name (xTick).
+	Returns an array of data (a row) by searching the dictionary
+	for the column name (xTick).
  */
 -(float*)dataRowByString:(NSString*)xTick {
 	if(indexByString != nil) {

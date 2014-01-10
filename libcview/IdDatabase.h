@@ -69,14 +69,14 @@ All rights reserved.
 /// resets the whole database - erases old ids
 +initialize;
 /**
-    @returns a unique id to be used in conjunction with glPushName(*theid*)
-    @param the object that should be associated with the id
+    @returns      a unique id to be used in conjunction with glPushName(*theid*)
+    @param object the object that should be associated with the id
  */
 +(unsigned int)reserveUniqueId: (id) object;
 /**
-    @returns the object that is associated with the unique id that is passed
-             is nil if no object with that number is found
-    @param   the unique identification number
+    @returns        the object that is associated with the unique id that is passed
+                    is nil if no object with that number is found
+    @param   number the unique identification number
   */
 +(id) objectForId: (unsigned int) number; 
 /// this probably won't get used, instead just call initIds to reset the whole thing

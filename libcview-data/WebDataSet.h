@@ -68,8 +68,8 @@ Extension of the data class to retrieve the data from a URL, implement the Updat
 The initWithPList method will start its own update thread based off the application default updateThreadInterval
 
 This class expects that for a given key there will be the following files rooted at the given URL:
- - <key>.data file with data, which should have the size == x*y*sizeof(float)
- - <key>.yticks file with row ticks, that should have size == y*32
+ - \<key\>.data file with data, which should have the size == x*y*sizeof(float)
+ - \<key\>.yticks file with row ticks, that should have size == y*32
  - xticks file with column ticks that should have size x*32
 
 The tick files are 32 byte zero-byte padded strings and should always have a file size that is a multiple of 32. This example should be 40*32 , or 1280 bytes.
