@@ -147,6 +147,7 @@ static float bar_quads[72] = {
 		[txt setRotationOnX: -90.0 Y:0.0 Z:0.0];
 		//[txt setColorRed: 0.0 Green: 0.0 Blue: 0.0];
 		[barText insertObject: txt atIndex: i];
+        [txt autorelease];
 	}
 	
 	return self;

@@ -161,7 +161,7 @@ All rights reserved.
 
 -addRow: (NSArray *)arr {
 	float *d;
-	int i;
+	NSUInteger i;
 	NSEnumerator *e;
 	NSString *str,*host,*key;
 	NSNumber *num;
