@@ -17,6 +17,7 @@ SET(CVIEW_DATA_CLASSES
 	IdDatabase
 	Identifiable
 	Scene
+	ValueStoreTweakBar
 )
 
 IF(HAVE_ANTTWEAKBAR)
