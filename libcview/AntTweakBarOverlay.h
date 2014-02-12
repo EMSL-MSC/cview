@@ -68,6 +68,30 @@ All rights reserved.
 #include <AntTweakBar.h>
 #import "AntTweakBarManager.h"
 
+void TW_CALL floatSetCallback(const void *value, void *clientData);
+void TW_CALL floatGetCallback(void *value, void *clientData);
+void TW_CALL intSetCallback(const void *value, void *clientData);
+void TW_CALL intGetCallback(void *value, void *clientData);
+void TW_CALL stringSetCallback(const void *value, void *clientData);
+void TW_CALL mutableStringSetCallback(const void *value, void *clientData);
+void TW_CALL stringGetCallback(void *value, void *clientData);
+BOOL parseTree(TwBar *bar, NSString *name, NSObject *tree, NSString *grp, NSMutableSet *nodeTracker);
+/**
+ Data Node to store a representation of the users tweakable tree for the AntTweakBarOverlay & others.  normally given to AntTweakBar calls as data
+     for the get/set Callbacks
+ 
+ @author Evan Felix
+ @ingroup cview3d
+ */
+@interface ATB_Node:NSObject {
+@public
+	NSObject *object;
+	NSString *name;
+}
+-initWithName: (NSString *)n andObject: (NSObject *)o;
+@end
+
+
 @interface AntTweakBarOverlay:NSObject {
 	NSString *name;
 	AntTweakBarManager *manager;

@@ -63,20 +63,6 @@ All rights reserved.
 
 #define MAX_STRING 255
 
-/**
-	Internal node to store a representation of the users tweakable tree for the AntTweakBarOverlay
-
-	@author Evan Felix
-	@ingroup cview3d
-*/
-@interface ATB_Node:NSObject {
-	@public
-	NSObject *object;
-	NSString *name;
-}
--initWithName: (NSString *)n andObject: (NSObject *)o;
-@end
-
 @implementation ATB_Node
 -initWithName: (NSString *)n andObject: (NSObject *)o {
 	name = [n retain];
@@ -91,26 +77,26 @@ All rights reserved.
 }
 @end
 
-static void TW_CALL floatSetCallback(const void *value, void *clientData) {
+void TW_CALL floatSetCallback(const void *value, void *clientData) {
 	ATB_Node *atb = (ATB_Node *)clientData;
 
 	[atb->object setValue: [NSNumber numberWithFloat: *(const float *)value] forKeyPath: atb->name];	
 }
 
-static void TW_CALL floatGetCallback(void *value, void *clientData) {
+void TW_CALL floatGetCallback(void *value, void *clientData) {
 	ATB_Node *atb = (ATB_Node *)clientData;
 
 	NSNumber *f=[atb->object valueForKeyPath: atb->name];
 	*(float *)value = [f floatValue];
 }
 
-static void TW_CALL intSetCallback(const void *value, void *clientData) {
+void TW_CALL intSetCallback(const void *value, void *clientData) {
 	ATB_Node *atb = (ATB_Node *)clientData;
 	
 	[atb->object setValue: [NSNumber numberWithInt: *(const int *)value] forKeyPath: atb->name];
 }
 
-static void TW_CALL intGetCallback(void *value, void *clientData) {
+void TW_CALL intGetCallback(void *value, void *clientData) {
 	ATB_Node *atb = (ATB_Node *)clientData;
 
 	NSNumber *i=[atb->object valueForKeyPath: atb->name];
@@ -119,21 +105,21 @@ static void TW_CALL intGetCallback(void *value, void *clientData) {
 
 /*The Setting of strings can be dangeous, as if there is not a set<attrib> Function call the string may overwrite
  *  things that are not retained properly.  It should be safe if the set<attib> is in place properly.  but we cant garruntee that here. */
-static void TW_CALL stringSetCallback(const void *value, void *clientData) {
+void TW_CALL stringSetCallback(const void *value, void *clientData) {
 	ATB_Node *atb = (ATB_Node *)clientData;
 
 	[atb->object setValue: [NSString stringWithUTF8String: (const char *)value] forKeyPath: atb->name];
 }
 
 
-static void TW_CALL mutableStringSetCallback(const void *value, void *clientData) {
+void TW_CALL mutableStringSetCallback(const void *value, void *clientData) {
 	ATB_Node *atb = (ATB_Node *)clientData;
 
 	NSMutableString *ms=[atb->object valueForKeyPath: atb->name];
 	[ms setString: [NSString stringWithUTF8String: (const char *)value]];
 }
 
-static void TW_CALL stringGetCallback(void *value, void *clientData) {
+void TW_CALL stringGetCallback(void *value, void *clientData) {
 	ATB_Node *atb = (ATB_Node *)clientData;
 	const char *f;
 	NSString *s=[atb->object valueForKeyPath: atb->name];
@@ -164,6 +150,124 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 	((char *)value)[MIN(strlen(f),MAX_STRING)]=0;
 }
 */
+
+BOOL parseTree(TwBar *bar, NSString *name, NSObject *tree, NSString *grp, NSMutableSet *nodeTracker) {
+	
+	//Add all attributes from this tree
+	NSArray *att = [tree attributeKeys];
+	NSString *key;
+	NSEnumerator *list;
+	NSDictionary *settings;
+	NSString *keybase;
+  
+  
+  
+	if (grp)
+		keybase=[NSString stringWithFormat:@"%@.",grp];
+    else
+      keybase=@"";
+      
+      //NSLog(@"Node props: %@ keybase: %@",att, keybase);
+      if (att) {
+        
+        if ([tree respondsToSelector: @selector(tweaksettings)])
+          settings = [tree valueForKey: @"tweaksettings"];
+        else
+          settings = [NSDictionary dictionary];
+        
+        //NSLog(@"settings=%@",settings);
+        list = [att objectEnumerator];
+        while ((key = [list nextObject])) {
+          NSObject *o = [tree valueForKey: key];
+          //NSLog(@"O:%p key=%@",o,key);
+          /** @fixme probably leaking keypath */
+          //NSString *keypath = [[NSString stringWithFormat:@"%@%@",keybase,key] retain];
+          NSString *keypath = [NSString stringWithFormat:@"%@%@",keybase,key];
+          ATB_Node *atb = [[ATB_Node alloc] initWithName: key andObject: tree];
+          [nodeTracker addObject:atb];
+          
+          NSString *setting = [settings objectForKey: key];
+          
+          const char *data="";
+          
+          if (setting)
+            data=[setting UTF8String];
+          data=[[NSString stringWithFormat:@"label='%@' %s",key,data] UTF8String];
+          //NSLog(@"name: %@, class: %@ keypath: %@ settings: %s",key,[o class],keypath, data);
+          
+          if ([o isKindOfClass: [NSNumber class]]) {
+            NSNumber *n = (NSNumber *)o;
+            //NSLog(@"is number:%c",*[n objCType]);
+            switch (*[n objCType]) {
+              case 'f':
+                TwAddVarCB(bar, [keypath UTF8String], TW_TYPE_FLOAT, floatSetCallback, floatGetCallback, atb, data);
+                break;
+              case 'i':
+                TwAddVarCB(bar, [keypath UTF8String], TW_TYPE_INT32, intSetCallback, intGetCallback, atb, data);
+                break;
+              default:
+                //NSLog(@"Unhandled Number Type: %s",[n objCType]);
+                break;
+            }
+            if (grp)
+              TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@",name,keypath,grp] UTF8String]);
+          }
+          
+          else if ([o isKindOfClass: [NSMutableString class]]) {
+            TwAddVarCB(bar, [keypath UTF8String], TW_TYPE_CSSTRING(MAX_STRING), mutableStringSetCallback, stringGetCallback, atb, data);
+            
+            if (grp)
+              TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@",name,keypath,grp] UTF8String]);
+          }
+          
+          else if ([o isKindOfClass: [NSString class]]) {
+            TwAddVarCB(bar, [keypath UTF8String], TW_TYPE_CSSTRING(MAX_STRING), stringSetCallback, stringGetCallback, atb, data);
+            
+            if (grp)
+              TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@",name,keypath,grp] UTF8String]);
+          }
+          /*
+           else if ([o isKindOfClass: [NSURL class]]) {
+           NSURL *u=(NSURL *)o;
+           
+           TwAddVarCB(myBar, [keypath UTF8String], TW_TYPE_CSSTRING(MAX_STRING), urlSetCallback, urlGetCallback, atb, data);
+           
+           if (grp)
+           TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@",name,keypath,grp] UTF8String]);
+           }
+           */
+          else if ([o isKindOfClass: [NSArray class]]) {
+            NSArray *a = (NSArray *)o;
+            int i;
+            
+            for (i=0;i<[a count];i++) {
+              NSString *newpath=[NSString stringWithFormat:@"%@.%d",keypath,i];
+              NSString *newkey=[NSString stringWithFormat:@"%@[%d]",key,i];
+              //NSLog(@"Array Member: %@  keypath: %@",newpath,newkey);
+              if ( parseTree(bar, name, [a objectAtIndex: i], newpath,nodeTracker)) {
+                if (grp)
+                  TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@ label='%@-%@' close",name,newpath,grp,newkey,[[a objectAtIndex: i] description]] UTF8String]);
+                else
+                  TwDefine([[NSString stringWithFormat:@"%@/%@ label=%@-%@ close",name,newpath,newkey,[[a objectAtIndex: i] description]] UTF8String]);
+              }
+            }
+          }
+          else {
+            //NSLog(@"Class Type Unhandled: %@  keypath: %@",[o class],keypath);
+            if ( parseTree(bar, name, o, keypath, nodeTracker ) ) {
+              if (grp)
+                TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@ label='%@-%@' close",name,keypath,grp,key,[o description]] UTF8String]);
+              else
+                TwDefine([[NSString stringWithFormat:@"%@/%@ label=%@-%@ close",name,keypath,key,[o description]] UTF8String]);
+            }
+          }
+        }
+        return YES; //we added something to the tree
+      }
+	return NO;//nothing in the tree had attributes
+}
+
+
 @implementation AntTweakBarOverlay
 
 -initWithName: (NSString *)aName andManager: (AntTweakBarManager *)theManager {
@@ -178,7 +282,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 
 -addNodeNamed: (NSString *)n andObject: (NSObject *)o {
 	ATB_Node *atb = [[ATB_Node alloc] initWithName: n andObject: o];
-	//FIXME: track these..
+	//@todo track these..
 	[myNodes addObject: atb];
 	return [atb autorelease];
 }
@@ -220,125 +324,12 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 	}
 }
 
--(BOOL)parseTree: (NSObject *)tree withGroup:(NSString *)grp {
-	
-	//Add all attributes from this tree
-	NSArray *att = [tree attributeKeys];
-	NSString *key;
-	NSEnumerator *list;
-	NSDictionary *settings;
-	NSString *keybase;
-
-
-
-	if (grp)
-		keybase=[NSString stringWithFormat:@"%@.",grp];
-	else
-		keybase=@"";
-
-	//NSLog(@"Node props: %@ keybase: %@",att, keybase);
-	if (att) {
-		
-		if ([tree respondsToSelector: @selector(tweaksettings)])
-			settings = [tree valueForKey: @"tweaksettings"];
-		else
-			settings = [NSDictionary dictionary];
-
-		//NSLog(@"settings=%@",settings);
-		list = [att objectEnumerator];
-		while ((key = [list nextObject])) {
-			NSObject *o = [tree valueForKey: key];
-			//NSLog(@"O:%p key=%@",o,key);
-			/** @fixme probably leaking keypath */
-			//NSString *keypath = [[NSString stringWithFormat:@"%@%@",keybase,key] retain];
-			NSString *keypath = [NSString stringWithFormat:@"%@%@",keybase,key];
-			ATB_Node *atb = [self addNodeNamed: key andObject: tree];
-			NSString *setting = [settings objectForKey: key];
-			
-			const char *data="";
-		
-			if (setting)
-				data=[setting UTF8String];
-			data=[[NSString stringWithFormat:@"label='%@' %s",key,data] UTF8String];
-			//NSLog(@"name: %@, class: %@ keypath: %@ settings: %s",key,[o class],keypath, data);
-			
-			if ([o isKindOfClass: [NSNumber class]]) {
-				NSNumber *n = (NSNumber *)o;
-				//NSLog(@"is number:%c",*[n objCType]);
-				switch (*[n objCType]) {
-					case 'f':
-						TwAddVarCB(myBar, [keypath UTF8String], TW_TYPE_FLOAT, floatSetCallback, floatGetCallback, atb, data);
-						break;
-					case 'i':
-						TwAddVarCB(myBar, [keypath UTF8String], TW_TYPE_INT32, intSetCallback, intGetCallback, atb, data);
-						break;
-					default:
-						//NSLog(@"Unhandled Number Type: %s",[n objCType]);
-						break;
-				}
-				if (grp)
-					TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@",name,keypath,grp] UTF8String]);
-			}
-
-			else if ([o isKindOfClass: [NSMutableString class]]) {
-				TwAddVarCB(myBar, [keypath UTF8String], TW_TYPE_CSSTRING(MAX_STRING), mutableStringSetCallback, stringGetCallback, atb, data);
-
-				if (grp)
-					TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@",name,keypath,grp] UTF8String]);	
-			}
-
-			else if ([o isKindOfClass: [NSString class]]) {
-				TwAddVarCB(myBar, [keypath UTF8String], TW_TYPE_CSSTRING(MAX_STRING), stringSetCallback, stringGetCallback, atb, data);
-
-				if (grp)
-					TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@",name,keypath,grp] UTF8String]);	
-			}
-			/*
- 			else if ([o isKindOfClass: [NSURL class]]) {
-				NSURL *u=(NSURL *)o;
-
-				TwAddVarCB(myBar, [keypath UTF8String], TW_TYPE_CSSTRING(MAX_STRING), urlSetCallback, urlGetCallback, atb, data);
-
-				if (grp)
-					TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@",name,keypath,grp] UTF8String]);	
-			}
-*/
- 			else if ([o isKindOfClass: [NSArray class]]) {
- 				NSArray *a = (NSArray *)o;
-				int i;
- 
- 				for (i=0;i<[a count];i++) {
-					NSString *newpath=[NSString stringWithFormat:@"%@.%d",keypath,i];
-					NSString *newkey=[NSString stringWithFormat:@"%@[%d]",key,i];
-					//NSLog(@"Array Member: %@  keypath: %@",newpath,newkey);
-					if ([self parseTree: [a objectAtIndex: i] withGroup: newpath]) {
-						if (grp)
-							TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@ label='%@-%@' close",name,newpath,grp,newkey,[[a objectAtIndex: i] description]] UTF8String]);
-						else
-							TwDefine([[NSString stringWithFormat:@"%@/%@ label=%@-%@ close",name,newpath,newkey,[[a objectAtIndex: i] description]] UTF8String]);
-					}
- 				}
- 			}
-			else {
-				//NSLog(@"Class Type Unhandled: %@  keypath: %@",[o class],keypath);
-				if ([self parseTree: o withGroup: keypath] ) {
-					if (grp)
-						TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@ label='%@-%@' close",name,keypath,grp,key,[o description]] UTF8String]);
-					else
-						TwDefine([[NSString stringWithFormat:@"%@/%@ label=%@-%@ close",name,keypath,key,[o description]] UTF8String]);
-				}
-			}
-		}
-		return YES; //we added something to the tree
-	}
-	return NO;//nothing in the tree had attributes
-}
 
 -treeChanged: (NSNotification *)note {
 	if ([note object] == myTree) {// should alwasy happen, but check anyway.
 		//NSLog(@"Tree change Notification: %@",note);
 		TwRemoveAllVars(myBar);
-		[self parseTree: myTree withGroup:nil];
+		parseTree(myBar, name, myTree, nil, myNodes);
 	}
 	else {
 		NSLog(@"Strange notification: %@",note);
@@ -355,7 +346,7 @@ static void TW_CALL urlGetCallback(void *value, void *clientData) {
 	[myTree autorelease];
 	myTree = tree;
 	[[NSNotificationCenter defaultCenter] addObserver: self selector: @selector(treeChanged:) name: @"DataModelModified" object: myTree];
-	return [self parseTree: tree withGroup:nil];
+	return parseTree(myBar, name, tree, nil, myNodes);
 }
 
 -(void)dealloc {
