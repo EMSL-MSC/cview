@@ -155,7 +155,7 @@ All rights reserved.
 
 -(NSArray *)attributeKeys {
 	//isVisible comes from the DrawableObject
-	return [NSArray arrayWithObjects: @"lockedMax",@"labelFormat",@"rateSuffix",nil];
+	return [NSArray arrayWithObjects: @"lockedMax",@"labelFormat",@"rate",nil];
 }
 -(void)dealloc {
 	NSLog(@"DataSet dealloc: %@",name);

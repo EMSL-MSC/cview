@@ -67,6 +67,7 @@ All rights reserved.
 	dx=0.0;
 	rateSuffix=@"Nums";
 	currentMax=100.0;
+  mult=50.0;
 	
 	[[UpdateRunLoop runLoop] addTimer: 
 								[[NSTimer alloc] initWithFireDate: [NSDate dateWithTimeIntervalSinceNow: 1] 
@@ -91,7 +92,7 @@ All rights reserved.
 	for (i=0;i<width;i++) {
 		d = [self dataRow: i];
 		for (j=0;j<height;j++)
-			d[j]=50*sin(j/10.0+i*0.1+dx)+50.0;
+			d[j]=mult*sin(j/10.0+i*0.1+dx)+50.0;
 		d[j-1]=100;
 	}
 	d = [self dataRow: 0];
@@ -125,8 +126,15 @@ All rights reserved.
 }
 
 -(NSArray *)attributeKeys {
-	return [NSArray arrayWithObjects: @"dx",nil];
+	return [NSArray arrayWithObjects: @"mult",nil];
 }
+
+-(NSDictionary *)tweaksettings {
+	return [NSDictionary dictionaryWithObjectsAndKeys:
+         @"help='Multiplier calculating sin' label='Mult' min=0.00 max=100.0 step=1.0",@"mult",
+          nil];
+}
+
 
 -(void)dealloc {
 	NSLog(@"dealloc SinDataSet:%@",name);

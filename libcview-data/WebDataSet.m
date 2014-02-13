@@ -174,11 +174,11 @@ static float blankdata[] = {
 		[dict setObject: textDescription forKey: @"textDescription"];
 	return dict;
 }
-/*
+
 -(NSArray *)attributeKeys {
 	return [NSArray arrayWithObjects: @"baseURL",@"dataKey",nil];
 }
-*/
+
 -(void)dealloc {
 	NSLog(@"dealloc WebDataSet:%@",name);
 	[dataURL autorelease];

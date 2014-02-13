@@ -69,6 +69,7 @@ All rights reserved.
 */
 @interface SinDataSet: DataSet <PList> {
 	float dx;
+  float mult;
 }
 - initWithName: (NSString *)n Width: (int)w Height: (int)h interval: (float)timer;
 - initWithWidth: (int)w Height: (int)h interval: (float)timer;
