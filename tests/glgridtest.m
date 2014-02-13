@@ -76,6 +76,9 @@ int main(int argc,char *argv[], char *env[]) {
 	SinDataSet *ds = [[SinDataSet alloc] initWithName: @"Sin()" Width: 1000 Height: 128 interval: 1.0];
 	SinDataSet *ds2 = [[SinDataSet alloc] initWithName: @"Sin()" Width: 500 Height: 128 interval: 1.0];
 
+  [[ValueStore valueStore] setKey: @"ds" withObject: ds];
+  [[ValueStore valueStore] setKey: @"ds2" withObject: ds2];
+  
 	GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test"];
 	GLGrid *grid = [[[[GLGrid alloc] initWithDataSet: ds andType: G_SURFACE] setXTicks: 50] setYTicks: 16];
 	[grid setGradient: ggr];

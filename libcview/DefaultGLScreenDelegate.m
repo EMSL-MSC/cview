@@ -301,7 +301,8 @@ All rights reserved.
 			[tweakoverlays addObject: tweakoverlay];
 
 			NSLog(@"add vstweak");
-			ValueStoreTweakBar *vstweak = [[ValueStoreTweakBar alloc] initWithManager: tweaker]; 
+			ValueStoreTweakBar *vstweak = [[ValueStoreTweakBar alloc] initWithManager: tweaker];
+      [tweakoverlays addObject:vstweak];
 
 			// find the overlay and add ourselves..
 		

@@ -63,6 +63,9 @@ All rights reserved.
 
 #define MAX_STRING 255
 
+//#define TwDefine(x...) do { NSLog(@"TwDefine:%s",x);TwDefine(x);} while (0)
+
+
 @implementation ATB_Node
 -initWithName: (NSString *)n andObject: (NSObject *)o {
 	name = [n retain];
@@ -101,6 +104,19 @@ void TW_CALL intGetCallback(void *value, void *clientData) {
 
 	NSNumber *i=[atb->object valueForKeyPath: atb->name];
 	*(int *)value = [i intValue];
+}
+
+void TW_CALL boolSetCallback(const void *value, void *clientData) {
+	ATB_Node *atb = (ATB_Node *)clientData;
+	
+	[atb->object setValue: [NSNumber numberWithBool: *(const char *)value] forKeyPath: atb->name];
+}
+
+void TW_CALL boolGetCallback(void *value, void *clientData) {
+	ATB_Node *atb = (ATB_Node *)clientData;
+  
+	NSNumber *i=[atb->object valueForKeyPath: atb->name];
+	*(char *)value = [i boolValue];
 }
 
 /*The Setting of strings can be dangeous, as if there is not a set<attrib> Function call the string may overwrite
@@ -205,15 +221,18 @@ BOOL parseTree(TwBar *bar, NSString *name, NSObject *tree, NSString *grp, NSMuta
               case 'i':
                 TwAddVarCB(bar, [keypath UTF8String], TW_TYPE_INT32, intSetCallback, intGetCallback, atb, data);
                 break;
+              case 'c': /* this is probably handled badly, but so far we only have bool values that come back as 'c' type */
+                TwAddVarCB(bar, [keypath UTF8String], TW_TYPE_BOOL8, boolSetCallback , boolGetCallback, atb, data);
+                break;
               default:
-                //NSLog(@"Unhandled Number Type: %s",[n objCType]);
+                NSLog(@"Unhandled Number Type: %s",[n objCType]);
                 break;
             }
             if (grp)
               TwDefine([[NSString stringWithFormat:@"%@/%@ group=%@",name,keypath,grp] UTF8String]);
           }
           
-          else if ([o isKindOfClass: [NSMutableString class]]) {
+          else if ([o isMemberOfClass: [NSMutableString class]]) {
             TwAddVarCB(bar, [keypath UTF8String], TW_TYPE_CSSTRING(MAX_STRING), mutableStringSetCallback, stringGetCallback, atb, data);
             
             if (grp)

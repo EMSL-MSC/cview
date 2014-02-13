@@ -72,6 +72,8 @@ void TW_CALL floatSetCallback(const void *value, void *clientData);
 void TW_CALL floatGetCallback(void *value, void *clientData);
 void TW_CALL intSetCallback(const void *value, void *clientData);
 void TW_CALL intGetCallback(void *value, void *clientData);
+void TW_CALL boolSetCallback(const void *value, void *clientData);
+void TW_CALL boolGetCallback(void *value, void *clientData);
 void TW_CALL stringSetCallback(const void *value, void *clientData);
 void TW_CALL mutableStringSetCallback(const void *value, void *clientData);
 void TW_CALL stringGetCallback(void *value, void *clientData);

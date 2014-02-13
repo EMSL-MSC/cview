@@ -11,6 +11,8 @@
 #import <Foundation/Foundation.h>
 #include <AntTweakBar.h>
 #import "AntTweakBarManager.h"
+#import "AntTweakBarOverlay.h"
+#import "ValueStore.h"
 
 /**
 	Manage Editing of data sets in the Value Store using a TweakBar
@@ -19,8 +21,12 @@
 	@ingroup cview
 */
 @interface ValueStoreTweakBar: NSObject {
-	TWBar *vslist;
+	TwBar *myBar;
+  AntTweakBarManager *manager;
+  NSString *name;
+  NSMutableSet *atbNodes;
 }
 /** initalize the class */
--init;
+-initWithManager: (AntTweakBarManager *)mgr;
+-populateBar;
 @end
