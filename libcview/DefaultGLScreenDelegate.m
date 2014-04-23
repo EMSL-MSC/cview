@@ -82,7 +82,8 @@ All rights reserved.
 	NSEnumerator *e = [tweakoverlays objectEnumerator];
 	AntTweakBarOverlay *o;
 	while((o = [e nextObject]) != nil) {
-		[o setValues: val forKey: key];
+    if ([o class]==[AntTweakBarOverlay class])
+      [o setValues: val forKey: key];
 	}
 #endif
 }
