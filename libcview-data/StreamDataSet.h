@@ -94,7 +94,7 @@ Which came from: colmux -address "cu4n1 cu4n2 cu4n3 cu4n4" -command "-sc -P -i 3
 typedef enum {ROW_DATA,ROW_BLANK,ROW_HEADER,ROW_META,ROW_CRAP} RowTypeEnum;
 
 @interface StreamDataSet: DataSet <PList> {
-	int columnCount;
+	int columnCount,interval;
 	NSString *command;
 	NSArray *arguments;
 	NSTask *theTask;
@@ -104,6 +104,7 @@ typedef enum {ROW_DATA,ROW_BLANK,ROW_HEADER,ROW_META,ROW_CRAP} RowTypeEnum;
 	NSMutableArray *Yticks;
 	NSMutableArray *Xticks;
 	NSMutableArray *meta;
+  NSTimer *timer;
 	BOOL running;
 }
 -initWithCommand: (NSString *)cmd arguments: (NSArray *)args;
@@ -112,6 +113,5 @@ typedef enum {ROW_DATA,ROW_BLANK,ROW_HEADER,ROW_META,ROW_CRAP} RowTypeEnum;
 -addRow: (NSArray *)arr;
 -(NSArray *)getNextLineArray;
 -(NSData *)getNextLine;
-/** thread run */
--(void)run:(id)args;
+-(void)fireTimer:(NSTimer*)aTimer;
 @end

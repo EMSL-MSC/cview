@@ -79,6 +79,7 @@ All rights reserved.
 	NSNull *n;
 
 	currentMax=1;
+  interval = 1;
 
 	//1. Start command Stream
 	command = [cmd retain];
@@ -131,9 +132,15 @@ All rights reserved.
 	}
 
 
-	//5. Start thread to read rest of data.
+	//5. Start timers to read rest of data.
 	running = YES;
-	[NSThread detachNewThreadSelector: @selector(run:) toTarget: self withObject: nil];
+	timer = [[NSTimer alloc] initWithFireDate: [NSDate dateWithTimeIntervalSinceNow: 2]
+                                   interval: interval
+                                     target:self
+                                   selector: @selector(fireTimer:)
+                                   userInfo:nil
+                                    repeats:TRUE];
+	[[UpdateRunLoop runLoop] addTimer: timer forMode: NSDefaultRunLoopMode];
 
 	return self;
 }
@@ -281,34 +288,21 @@ All rights reserved.
 	return nil;
 }
 
--(void)run:(id)args {
-	int count;
-	NSArray *arr;
-	NSAutoreleasePool *tpool = [[NSAutoreleasePool alloc] init];
-
-	count=0;
-	while (running) {
+-(void)fireTimer:(NSTimer*)aTimer {
+  NSArray *arr;
+  if (running) {
 		NSLog(@"getting Next Line");
 		arr = [self getNextLineArray];
+    NSLog(@"Return: %@",arr);
 		if (arr == nil) {
-			running = NO;
+			//running = NO;
+      // @todo stop timer
 		}
 		else {
 			[self addRow:arr];
-		}
-
-
-		[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
-
-		if (count++ >= 1000 ) {
-			[tpool release];
-			tpool = [[NSAutoreleasePool alloc] init];
-			DUMPALLOCLIST(YES);
-			count=0;
-		}
-	}
-	[tpool release];
-	return;
+      [[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
+    }
+  }
 }
 
 - (NSString *)rowTick: (int)row {
@@ -361,6 +355,8 @@ All rights reserved.
 	NSLog(@"dealloc %@:%@",[self class],name);
 	[command autorelease];
 	[arguments autorelease];
+	[timer invalidate];
+  [timer autorelease];
 	if ([theTask isRunning])
 		[theTask terminate];
 	[theTask autorelease];
@@ -369,6 +365,8 @@ All rights reserved.
 	[Xticks autorelease];
 	[meta autorelease];
 	[remainingData autorelease];
+  [timer invalidate];
+  [timer autorelease];
 	[super dealloc];
 }
 
