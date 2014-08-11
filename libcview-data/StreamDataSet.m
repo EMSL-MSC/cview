@@ -139,7 +139,7 @@ All rights reserved.
                                      target:self
                                    selector: @selector(fireTimer:)
                                    userInfo:nil
-                                    repeats:TRUE];
+                                    repeats:YES];
 	[[UpdateRunLoop runLoop] addTimer: timer forMode: NSDefaultRunLoopMode];
 
 	return self;
