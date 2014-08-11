@@ -284,8 +284,8 @@ static const char *gridTypeSelectors[] =	{
 
 -(NSDictionary *)tweaksettings {
 	return [NSDictionary dictionaryWithObjectsAndKeys:
-		[NSString stringWithFormat: @"help='Tick separation in the X direction' min=1 max=%d step=1 precision=0",[dataSet width]],@"xTicks",
-		[NSString stringWithFormat: @"help='Tick separation in the Y direction' min=1 max=%d step=1 precision=0",[dataSet height]],@"yTicks",
+		[NSString stringWithFormat: @"help='Tick separation in the X direction' min=0 max=%d step=1 precision=0",[dataSet width]],@"xTicks",
+		[NSString stringWithFormat: @"help='Tick separation in the Y direction' min=0 max=%d step=1 precision=0",[dataSet height]],@"yTicks",
 		@"min=0.1 step=0.05",@"xscale",
 		@"min=0.1 step=0.05",@"yscale",
 		@"min=0.1 step=0.05",@"zscale",

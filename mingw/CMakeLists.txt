@@ -11,19 +11,19 @@ FILE(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/libs ${CMAKE_CURRENT_BINARY_DIR}
 ##########################
 #  freeglut
 ##########################
-SET(FREEGLUT_VERSION 2.8.0-1.mp)
+SET(FREEGLUT_VERSION 2.8.1-1.mp)
 SET(FREEGLUT_ZIP "freeglut-MinGW-${FREEGLUT_VERSION}.zip")
 SET(FREEGLUT_DOWNLOAD_URL "http://files.transmissionzero.co.uk/software/development/GLUT/${FREEGLUT_ZIP}")
 ADD_CUSTOM_COMMAND(OUTPUT ${FREEGLUT_ZIP} COMMAND ${URL_GRAB} ${FREEGLUT_DOWNLOAD_URL})
 ADD_CUSTOM_COMMAND(OUTPUT "freeglut/lib" COMMAND ${UNZIP} -o ${FREEGLUT_ZIP} DEPENDS ${FREEGLUT_ZIP})
-ADD_CUSTOM_COMMAND(OUTPUT "libs/libfreeglut.a" COMMAND cp "freeglut/lib/*" "freeglut/bin/freeglut.dll" "libs" COMMAND cp -a freeglut/include/* include DEPENDS "freeglut/lib")
+ADD_CUSTOM_COMMAND(OUTPUT "libs/libfreeglut.a" COMMAND cp "freeglut/lib/*.a" "freeglut/bin/freeglut.dll" "libs" COMMAND cp -a freeglut/include/* include DEPENDS "freeglut/lib")
 ADD_CUSTOM_TARGET(freeglut DEPENDS "libs/libfreeglut.a" )
 
 
 ##########################
 # AntTweakBar
 ##########################
-SET(ATB_VERSION 115)
+SET(ATB_VERSION 116)
 SET(ATB_ZIP "AntTweakBar_${ATB_VERSION}.zip")
 SET(ATB_DOWNLOAD_URL "http://www.antisphere.com/Tools/AntTweakBar/${ATB_ZIP}")
 ADD_CUSTOM_COMMAND(OUTPUT ${ATB_ZIP} COMMAND ${URL_GRAB} ${ATB_DOWNLOAD_URL})
