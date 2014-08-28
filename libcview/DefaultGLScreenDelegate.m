@@ -82,7 +82,8 @@ All rights reserved.
 	NSEnumerator *e = [tweakoverlays objectEnumerator];
 	AntTweakBarOverlay *o;
 	while((o = [e nextObject]) != nil) {
-		[o setValues: val forKey: key];
+    if ([o class]==[AntTweakBarOverlay class])
+      [o setValues: val forKey: key];
 	}
 #endif
 }
@@ -293,11 +294,17 @@ All rights reserved.
 		list = [worlds objectEnumerator];
 		while ((w = [list nextObject])) {
 			TwSetCurrentWindow([w context]);
+			
 			NSLog(@"add tweak: %@ %d",w,[w context]);
 			AntTweakBarOverlay *tweakoverlay = [[AntTweakBarOverlay alloc] initWithName: @"GLWorld" andManager: tweaker];
 			TwDefine("GLWorld iconified=true label='World Config'");
 			[tweakoverlay setTree: w];
 			[tweakoverlays addObject: tweakoverlay];
+
+			NSLog(@"add vstweak");
+			ValueStoreTweakBar *vstweak = [[ValueStoreTweakBar alloc] initWithManager: tweaker];
+      [tweakoverlays addObject:vstweak];
+
 			// find the overlay and add ourselves..
 		
 			s = [w overlay];

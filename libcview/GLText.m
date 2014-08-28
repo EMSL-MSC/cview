@@ -139,7 +139,7 @@ static NSMutableDictionary *fontCache=nil;
 -(NSArray *)attributeKeys {
 	//isVisible comes from the DrawableObject
 	return [NSArray arrayWithObjects: @"isVisible",
-									@"colorRed",@"colorGreen",@"colorBlue",
+									@"colorRed",@"colorGreen",@"colorBlue",@"string",
 									//@"scaleX",@"scaleY",@"scaleZ",
 									//@"rotX",@"rotY",@"rotZ",
 									nil];

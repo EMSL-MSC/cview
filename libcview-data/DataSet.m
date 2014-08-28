@@ -155,7 +155,7 @@ All rights reserved.
 
 -(NSArray *)attributeKeys {
 	//isVisible comes from the DrawableObject
-	return [NSArray arrayWithObjects: @"lockedMax",@"labelFormat",@"rateSuffix",nil];
+	return [NSArray arrayWithObjects: @"lockedMax",@"labelFormat",@"rate",nil];
 }
 -(void)dealloc {
 	NSLog(@"DataSet dealloc: %@",name);
@@ -251,7 +251,7 @@ All rights reserved.
 	float max = 0.001;
 	for (i=0;i<width*height;i++)
 		max = MAX(max,d[i]);
-	NSLog(@"The Max(%@): %f",name,max);
+	//NSLog(@"The Max(%@): %f",name,max);
 
 	currentMax=max;
 	U();

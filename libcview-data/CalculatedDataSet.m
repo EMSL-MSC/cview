@@ -240,6 +240,7 @@ All rights reserved.
 	 * find the current max of the data.
 	 */
 	//NSLog(@"[CalculatedDataSet(%@) resetMax]", self);
+	NSLog(@"Tell Evan if you see this.");
 	int i;
 	float max = 0;
 	float *d = [newData mutableBytes];
@@ -338,6 +339,11 @@ All rights reserved.
 	memcpy(d,new_data_bytes,width*height*sizeof(float));
 	
 	currentMax=max;
+	if (lockedMax > 0.0) {
+		NSLog(@"[CalculatedDataSet(%@) performCalculation] %f",self,lockedMax);
+		currentMax=lockedMax;
+	}
+	
 	//NSLog(@"CDS max: %f",currentMax);
 
 	[self unlock];

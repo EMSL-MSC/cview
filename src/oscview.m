@@ -115,6 +115,10 @@ int main(int argc,char *argv[], char *env[]) {
 	NSArray *worlds = [plist valueForKey: @"worlds"];
 	if (worlds != nil) {
 		NSLog(@"Compat Mode Detected: %@",worlds);
+		//load value store
+		NSArray *arr = [plist objectForKey: @"valueStore"];
+		[[ValueStore valueStore] loadKeyValueArray: arr];
+	
 		plist = [[worlds objectAtIndex: 0] valueForKey: @"world"];
 		NSLog(@"Compat list: %@",plist );
 	}

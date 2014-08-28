@@ -113,8 +113,8 @@ All rights reserved.
 		overlay=[[[Scene alloc] initWithPList: ov] retain];
 	}
 
-	imagePrefix = [[Defaults stringForKey: @"imagePrefix" Id: self Override: list] retain];
-	imageDir = [[Defaults stringForKey: @"imageDir" Id: self Override: list] retain];
+	imagePrefix = [[NSMutableString stringWithString: [Defaults stringForKey: @"imagePrefix" Id: self Override: list]] retain];
+	imageDir = [[NSMutableString stringWithString: [Defaults stringForKey: @"imageDir" Id: self Override: list]] retain];
 	imageDailyDir = [Defaults boolForKey: @"imageDailyDir" Id: self Override: list];
 	imageCycleTime = [Defaults integerForKey: @"imageCycleTime" Id: self Override: list];
 	

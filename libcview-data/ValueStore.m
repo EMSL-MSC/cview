@@ -161,4 +161,7 @@ static ValueStore *singletonValueStore;
 -(NSUInteger)count {
 	return [values count];
 }
+-(NSArray *)getKeys {
+  return [values allKeys];
+}
 @end

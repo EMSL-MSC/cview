@@ -84,6 +84,7 @@ digraph keymap {
 #if HAVE_ANTTWEAKBAR
 #import "AntTweakBarManager.h"
 #import "AntTweakBarOverlay.h"
+#import "ValueStoreTweakBar.h"
 #endif
 
 @interface DefaultGLScreenDelegate: NSObject <GLScreenDelegate> {

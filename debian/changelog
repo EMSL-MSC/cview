@@ -1,3 +1,9 @@
+cview (0.3.4) precise; urgency=medium
+
+  * Updates to make webDataSet work during failures
+
+ -- Evan Felix <e@pnnl.gov>  Fri, 22 Aug 2014 08:55:23 -0700
+
 cview (0.3.3) precise; urgency=low
 
   * Value Store changes

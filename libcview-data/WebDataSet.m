@@ -174,11 +174,11 @@ static float blankdata[] = {
 		[dict setObject: textDescription forKey: @"textDescription"];
 	return dict;
 }
-/*
+
 -(NSArray *)attributeKeys {
 	return [NSArray arrayWithObjects: @"baseURL",@"dataKey",nil];
 }
-*/
+
 -(void)dealloc {
 	NSLog(@"dealloc WebDataSet:%@",name);
 	[dataURL autorelease];
@@ -232,13 +232,6 @@ static float blankdata[] = {
 	NSURLRequest *req;
 	float *to,*from;
 	int w,h,i;
-	/**
-	Evan: I didn't dig into this, but this line seems to break things.  Why
-	are you increasing the datalength by one?  There are other lines here that
-	rely on the length of this data, and I think that it is throwing that off...
-	-Brock
-	[incomingData increaseLengthBy:1];
-	*/
 
 	switch (stage) {
 		case DESC:
@@ -271,7 +264,7 @@ static float blankdata[] = {
 		case XTICK:
 			LOGSTAGE(@"XTICK finish: %@",dataKey);
 			w = [incomingData length];
-			if (w%TICK_LEN != 0) { //inproper read
+			if (w%TICK_LEN != 0 || w == 0) { //inproper read
 				stage = IDLE;
 				break;
 			}
@@ -331,12 +324,15 @@ static float blankdata[] = {
 					}
 			}
 
+
 			dataValid=YES;
 			[[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
 			stage = IDLE;
 			webConn=nil;
 			break;
 		case ERR:
+			NSLog(@"error stage seen");
+			stage = IDLE;
 			break;
 		default:
 			LOGSTAGE(@"Invalid Stage in state machine..");

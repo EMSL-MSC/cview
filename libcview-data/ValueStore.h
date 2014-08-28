@@ -83,4 +83,6 @@ each class is required to comply with the PList protocol.
 -getKeyForObject: (id)object;
 /** Return the number of objects stored in the ValueStore */
 -(NSUInteger)count;
+/** Return all the keys of the objects */
+-(NSArray *)getKeys;
 @end
