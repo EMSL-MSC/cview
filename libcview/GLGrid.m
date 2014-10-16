@@ -120,6 +120,19 @@ static const char *gridTypeSelectors[] =	{
 	return self;
 }
 
+-initWithDataSetKey: (NSString *)key andType: (GridTypesEnum)type{
+  [self init];
+  [self setGridType:type];
+  [self setDataSet: [[ValueStore valueStore] getObject: key]];
+  return self;
+}
+
+-initWithDataSetKey: (NSString *)key {
+  [self init];
+  [self setDataSet: [[ValueStore valueStore] getObject: key]];
+  return self;
+}
+
 -initWithDataSet: (DataSet *)ds andType: (GridTypesEnum)type{
 	[self init];
 	[self setGridType:type];

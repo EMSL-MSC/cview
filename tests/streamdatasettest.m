@@ -85,13 +85,17 @@ int main(int argc,char *argv[], char *env[]) {
 
 
 	NSLog(@"starting");
-	StreamDataSet *f = [[StreamDataSet alloc] initWithCommand: find_resource_path(@"slowcat") arguments: 
+
+  StreamDataSet *f = [[StreamDataSet alloc] initWithCommand: find_resource_path(@"slowcat") arguments:
 		[NSArray arrayWithObjects: find_resource_path(@"streamdata.txt"),nil] depth: 64];
-	
+  
+  [[ValueStore valueStore] setKey:@"stream" withObject:f];
+  [f autorelease];
+  
 	GLScreen * g = [[GLScreen alloc] initName: @"StreamDataSet Test" withWidth: 1000 andHeight: 800];
 
 	Scene * scene1 = [[Scene alloc] init];
-	o=[[[[GLGrid alloc] initWithDataSet: f] setXTicks: 4] setYTicks: 4];
+	o=[[[[GLGrid alloc] initWithDataSetKey: @"stream"] setXTicks: 4] setYTicks: 4];
 	[scene1 addObject: o atX: 0 Y: 0 Z: 0];
 	
 	[[[g addWorld: @"Top" row: 0 col: 0 rowPercent: 50 colPercent:50] 
