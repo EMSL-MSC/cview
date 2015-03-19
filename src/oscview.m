@@ -80,6 +80,7 @@ int main(int argc,char *argv[], char *env[]) {
 	NSString *config;
 	NSString *err;
 	id o;
+	void * buf;
 
 #ifndef __APPLE__
 	//needed for NSLog
@@ -134,8 +135,9 @@ int main(int argc,char *argv[], char *env[]) {
 	ctx = OSMesaCreateContext( OSMESA_RGBA, NULL );
 
 	buffer = [NSMutableData dataWithCapacity: width * height * 4 * sizeof(GLubyte) ];
+	buf = [buffer mutableBytes];
 
-	if (!OSMesaMakeCurrent( ctx, [buffer mutableBytes], GL_UNSIGNED_BYTE, width, height )) {
+	if (!OSMesaMakeCurrent( ctx, buf, GL_UNSIGNED_BYTE, width, height )) {
 		NSLog(@"OSMesaMakeCurrent failed!");
 		exit(5);
    	}
@@ -191,7 +193,7 @@ int main(int argc,char *argv[], char *env[]) {
 	MagickSetSize(wand,width,height);
 
 	//Dump the alpha channel for now..  otherwise black shows up as transparent.
-	MagickConstituteImage(wand,width,height,"RGBP",CharPixel,[buffer mutableBytes]);
+	MagickConstituteImage(wand,width,height,"RGBP",CharPixel,buf);
 
 	MagickFlipImage(wand);
 	MagickWriteImage(wand,[filename UTF8String]);

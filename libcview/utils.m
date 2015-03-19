@@ -77,8 +77,10 @@ void drawString3D(float x,float y,float z,void *font,NSString *string,float offs
 	static FTGLfont *theFont=NULL;
 
 	if (theFont==NULL) {
+		int size = [Defaults integerForKey: @"rasterFontSize" Id:@"global"];
 		theFont = ftglCreateBitmapFont([find_resource_path(@"LinLibertine_Re.ttf") UTF8String]);
-		ftglSetFontFaceSize(theFont,14,72);
+		//NSLog(@"drawString3D: font size :%d",size);
+		ftglSetFontFaceSize(theFont,size,72);
 		ftglSetFontCharMap(theFont,ft_encoding_unicode);
 	}
 //	NSLog(@"drawString3D: %@ %p",string,theFont);

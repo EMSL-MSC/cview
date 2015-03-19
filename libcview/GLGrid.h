@@ -78,6 +78,7 @@ typedef enum { G_LINES=0,G_RIBBON,G_SURFACE,G_POINTS,G_COUNT } GridTypesEnum;
 	DataSet *dataSet;
 	ColorMap *colorMap;
 	int xTicks,yTicks;
+	float xTickDistance,yTickDistance;
 	int axisTicks;
 	double currentTicks[MAX_TICKS];
 	int numTicks;

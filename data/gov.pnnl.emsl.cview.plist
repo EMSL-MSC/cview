@@ -1,7 +1,10 @@
 {
+    "global.rasterFontSize" = 12;
 	"Eye.strafe_speed" = 10;
 	"Eye.rotate_speed" = 0.025;
 	"Eye.move_speed" = 10;
+	"GLGrid.xTickDistance" = "0.0";
+	"GLGrid.yTickDistance" = "0.0";
 	"GLGrid.xTicks" = 50;
 	"GLGrid.yTicks" = 32;
 	"GLGrid.fontScale" = 1;

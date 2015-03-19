@@ -1,0 +1,18 @@
+FROM ubuntu:trusty
+ENV DEBIAN_FRONTEND noninteractive
+RUN apt-get update
+RUN apt-get install -y g++ gobjc cmake libgnustep-base-dev libftgl-dev libfreetype6-dev libmagickwand-dev freeglut3-dev libosmesa6-dev libxmu-dev libxi-dev python-numpy
+
+ADD . /code
+RUN mkdir /build
+WORKDIR /build
+RUN cmake -DCMAKE_BUILD_TYPE=RelWithDebug -DCVIEW_TEST_BUILD=YES /code
+RUN make install
+RUN echo "/usr/local/lib/x86_64-linux-gnu/" > /etc/ld.so.conf.d/local.conf
+RUN ldconfig
+
+RUN defaults write gov.pnnl.emsl.cview GLGrid.yTickDistance 10
+RUN defaults write gov.pnnl.emsl.cview GLGrid.xTickDistance 20
+#oscview -c c2014cpu.cview -w 8400 -h 4200 c2014cpu.cview
+
+CMD /bin/bash

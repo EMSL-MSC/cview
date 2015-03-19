@@ -109,6 +109,8 @@ static const char *gridTypeSelectors[] =	{
 	rmult=0.25;
 	xTicks=[Defaults integerForKey:@"xTicks" Id:self];
 	yTicks=[Defaults integerForKey:@"yTicks" Id:self];
+	xTickDistance = [Defaults integerForKey: @"xTickDistance" Id: self];
+	yTickDistance = [Defaults integerForKey: @"yTickDistance" Id: self];
 	axisTicks=6;
 	tickMax=1.0;
 	currentTicks[0]=0.0;
@@ -371,7 +373,7 @@ static const char *gridTypeSelectors[] =	{
 -drawTitles {
 	glPushMatrix();
 	glScalef(1.0,1.0,zscale);
-	glTranslatef(0.0,0,[dataSet height]+15+15*fontScale);
+	glTranslatef(0.0,0,[dataSet height]+xTickDistance+15+15*fontScale);
 	glRotatef(90,1.0,0.0,0.0);
 
 	glScalef(fontScale,fontScale,fontScale/zscale);
@@ -454,7 +456,7 @@ static const char *gridTypeSelectors[] =	{
 		glEnd();
 		for (i = 0;i < h;i += yTicks) {
 			NSString *str = [dataSet rowTick: i];
-			drawString3D(p+2.5/xscale,0,i,GLUT_BITMAP_HELVETICA_12,str,0);
+			drawString3D(p+yTickDistance+2.5/xscale,0,i,GLUT_BITMAP_HELVETICA_12,str,0);
 		}
 	}
 	if (xTicks) {
@@ -467,7 +469,7 @@ static const char *gridTypeSelectors[] =	{
 		glEnd();
 		for (i = 0;i < w; i += xTicks) {
 			NSString *str = [dataSet columnTick: i];
-			drawString3D(i,dropit,p+12/zscale,GLUT_BITMAP_HELVETICA_12,str,0);
+			drawString3D(i,dropit,p+xTickDistance+12/zscale,GLUT_BITMAP_HELVETICA_12,str,0);
 		}
 	}
 	glPopMatrix();
@@ -561,7 +563,7 @@ static const char *gridTypeSelectors[] =	{
 
 		/// @todo is there a gooder way to draw all the lines?
 		verts[2] = 0;
-		verts[1] = prevValue = dl[0];
+		verts[1] = prevValue = MAX(0,dl[0]);
 		verts[0] = (float)i;
 		countPoints = 1;
 		prevPoint=0;
@@ -574,7 +576,7 @@ static const char *gridTypeSelectors[] =	{
 					countPoints++;
 				}
 				verts[countPoints*3+2] = (float)j;
-				verts[countPoints*3+1] = dl[j];
+				verts[countPoints*3+1] = MAX(0,dl[j]);
 				verts[countPoints*3+0] = (float)i;
 				countPoints++;
 				prevValue = dl[j];
@@ -583,7 +585,7 @@ static const char *gridTypeSelectors[] =	{
 		}
 		if(j-1 != prevPoint) {
 			verts[countPoints*3+2] = (float)j-1;
-			verts[countPoints*3+1] = dl[j-1];
+			verts[countPoints*3+1] = MAX(0,dl[j-1]);
 			verts[countPoints*3+0] = (float)i;
 			countPoints++;
 		}
