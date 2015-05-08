@@ -2,7 +2,7 @@ Source: cview
 Section: admin
 Priority: optional
 Maintainer: David Brown <dmlb2000@gmail.com>
-Build-Depends: cmake (>=2.8.0), cdbs (>= 0.4.15), debhelper (>= 4.1.16), freeglut3-dev, libmagickwand-dev, libgraphicsmagick1-dev, gobjc, libgnustep-base-dev, libftgl-dev, libgenders0-dev, doxygen, libxmu-dev, libanttweakbar-dev,
+Build-Depends: cmake (>=2.8.0), cdbs (>= 0.4.15), debhelper (>= 4.1.16), freeglut3-dev, libmagickwand-dev, libgraphicsmagick1-dev, gobjc, libgnustep-base-dev, libftgl-dev, libgenders0-dev, doxygen, libxmu-dev, libanttweakbar-dev, libxi-dev
 Standards-Version: 0.1
 
 Package: cview

@@ -1,4 +1,4 @@
-usr/lib/libcview.so
+usr/lib/x86_64-linux-gnu//libcview.so
 usr/include/cview/AntTweakBarManager.h
 usr/include/cview/AntTweakBarOverlay.h
 usr/include/cview/ColorMap.h
@@ -23,4 +23,4 @@ usr/include/cview/Identifiable.h
 usr/include/cview/Pickable.h
 usr/include/cview/Scene.h
 usr/include/cview/Wand.h
-usr/lib/pkgconfig/cview.pc
+usr/lib/x86_64-linux-gnu/pkgconfig/cview.pc
