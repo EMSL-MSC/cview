@@ -144,7 +144,7 @@ int main(int argc,char *argv[], char *env[]) {
 	int dumpclasses;
 
 	NSString *config = nil;
-	NSString *err;
+	NSString *err = nil;
 
 	[LoadClasses loadAllClasses];
 #ifndef __APPLE__
