@@ -1,3 +1,9 @@
+cview (0.3.4ubuntu1) xenial; urgency=medium
+
+  * Build fixes for trusty and xenial 
+
+ -- Evan Felix <e@pnnl.gov>  Tue, 17 May 2016 14:59:39 -0700
+
 cview (0.3.4) precise; urgency=medium
 
   * Updates to make webDataSet work during failures
