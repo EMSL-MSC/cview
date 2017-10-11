@@ -4,6 +4,7 @@ SET(CVIEW_DATA_CLASSES
 	DataSet
 	Defaults
 	DictionaryExtra
+	GraphiteDataSet
 	JobDataSet
 	ListComp
 	SinDataSet

@@ -22,12 +22,12 @@ REQUIREMENTS
 	Fedora 17 packages: cmake gcc-objc++ libXmu-devel libXi-devel ftgl-devel ImageMagick-devel gnustep-base-devel freeglut-devel
 	Fedora 17 optional packages: AntTweakBar-devel libgenders-devel doxygen mesa-libOSMesa-devel
 
-	Ubuntu 10.04 package build deps: g++ gobjc automake libgnustep-base-dev libftgl-dev libfreetype6-dev libmagickwand-dev freeglut3-dev
-	Ubuntu 10.04 package optional build deps: libosmesa6-dev libgenders0-dev doxygen
+	Ubuntu 16.04 package build deps: g++ gobjc cmake libgnustep-base-dev libftgl-dev libfreetype6-dev libmagickwand-dev freeglut3-dev  libxmu-dev libxi-dev  
+	Ubuntu 16.04 package optional build deps: libosmesa6-dev libgenders0-dev doxygen
 
 	Ubuntu packages for anttweakbar can be used by adding ppa:thjc/ppa to your sources with apt-add-repository
 
-	Test data generators need: python-numeric
+	Test data generators need: python-numpy
 
 	Mac OS X - 
 		XCode

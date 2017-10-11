@@ -38,6 +38,9 @@
 	"GLWorld.backgroundColorG" = 0;
 	"GLWorld.backgroundColorB" = 0;
 	"GLWorld.lineWidth" = 1;
+	"GraphiteDataSet.from" = "-2h";
+	"GraphiteDataSet.until" = "-1min";
+	"GraphiteDataSet.sort" = 0;
 	"SceneObject.x" = 0;
 	"SceneObject.y" = 0;
 	"SceneObject.z" = 0;

@@ -343,6 +343,9 @@ All rights reserved.
 
 
 - setWidth: (int)newWidth {
+  if (width == newWidth)
+    return self;
+  NSLog(@"%@ setWidth: %d",name,newWidth);
 	L();
 	[dataLock lock];
 	width=newWidth;
@@ -357,6 +360,9 @@ All rights reserved.
 	NSMutableData *d;
 	float *from,*to;
 	int i;
+  if (height == newHeight)
+    return self;
+  NSLog(@"%@ setHeight: %d",name,newHeight);
 	L();
 	[dataLock lock];
 	if (newHeight != height) {
@@ -378,6 +384,9 @@ All rights reserved.
 }
 - (NSString*)valueStoreKey {
 	return [[ValueStore valueStore] getKeyForObject: self];
+}
+- (NSString *)name {
+	return name;
 }
 
 @end /* DataSet */
