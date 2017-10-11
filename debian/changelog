@@ -1,3 +1,9 @@
+cview (0.3.5ubuntu1) xenial; urgency=medium
+
+  * Build for ubuntu 
+
+ -- Evan Felix <e@pnnl.gov>  Wed, 11 Oct 2017 11:23:08 -0700
+
 cview (0.3.5) xenial; urgency=medium
 
   * Add new GraphiteDataSet for reading data directly from graphite.
