@@ -202,7 +202,7 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 - (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response
 {
 	int code;
-	LOGSTAGE(@"Incoming Data: %s %@",gstage[stage],response);
+	LOGSTAGE(@"Incoming Data[%@]: %s %@",name,gstage[stage],response);
 	if ([response respondsToSelector:@selector(statusCode)]) {
 		code = [((NSHTTPURLResponse *)response) statusCode];
 		switch (code) {
@@ -218,7 +218,7 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 }
 
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)indata {
-	LOGSTAGE(@"Data Recieved: %@ - %ld - %s",connection, [indata length],gstage[stage]);
+	LOGSTAGE(@"Data Recieved[%@]: %@ - %ld - %s",name,connection, [indata length],gstage[stage]);
 	[incomingData appendData: indata];
 }
 
@@ -274,11 +274,14 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 		}
 		else {
 			/// check if other lines match the first line...???
+			if (line_start != start_time || line_end != end_time || line_step != step_time)
+				NSLog(@"Differing times: %d!=%d || %d!=%d || %d!=%d \n%@",
+							line_start,start_time,line_end,end_time,line_step,step_time,line);
 		}
 		count=0;
     line_points = [line_data objectForKey: line_name];
     if (line_points == nil)
-      line_points = [NSMutableData dataWithCapacity: ([chunks count] - 4)*sizeof(float)];
+      line_points = [NSMutableData dataWithCapacity: (height)*sizeof(float)];
 		d = (float *)[line_points mutableBytes];
 		while ((s = [c nextObject])) {
       if ([s compare: @"None"] == NSOrderedSame)
@@ -286,7 +289,7 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
       else
         d[count++] = [s floatValue];
 		}
-		//NSLog(@"count=%d num=%d",count,num);
+		//NSLog(@"count=%d num=%d height=%d line_data.count=%d",count,num,height,[line_data count]);
 		num++;
 		[line_data setObject: line_points forKey: line_name];
 	}
@@ -301,11 +304,11 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 		case G_START:
 		case G_IDLE:
 			NSLog(@"Should not recieve data during IDLE/START stage");
-			LOGSTAGE(@"%s finish: len=%ld",gstage[stage],[incomingData length]);
+			LOGSTAGE(@"%@:%s finish: len=%ld",name,gstage[stage],[incomingData length]);
 			break;
 
 		case G_DATA:
-			LOGSTAGE(@"%s finish: len=%ld",gstage[stage],[incomingData length]);
+			LOGSTAGE(@"%@:%s finish: len=%ld",name,gstage[stage],[incomingData length]);
 
 			NSDictionary *line_data;
 			const float *ld;
@@ -320,7 +323,6 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 
 
 			line_data = [self processLines:lines];
-			//need sort here...
 			if (sort == 0) {
 				keys = [[line_data allKeys] sortedArrayUsingSelector: @selector(caseInsensitiveCompare:)];
 			}
@@ -341,7 +343,7 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 				ld = [[line_data objectForKey:line] bytes];
 				memcpy(d + height * num++,ld,height*sizeof(float));
 			}
-            [self resetMax];
+			[self resetMax];
 			[dataLock unlock];
 
 			//NSLog(@"Data Done");
@@ -368,7 +370,7 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 
     switch (stage) {
 		case G_IDLE:
-			LOGSTAGE(@"%s begin",gstage[stage]);
+			LOGSTAGE(@"%@:%s begin",name,gstage[stage]);
 
 			//do we need sanitaztion?
 			NSString *params = [NSString stringWithFormat: @"?target=%@&format=raw&from=%@&until=%@",query,from,until];
@@ -378,13 +380,13 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 			stage = G_START;
 			//intentional Fall Through to G_START
 		case G_START:
-			LOGSTAGE(@"%s begin",gstage[stage]);
+			LOGSTAGE(@"%@:%s begin",name,gstage[stage]);
 			stage = G_DATA;
 			req = [NSURLRequest requestWithURL: baseURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
 			webConn = [[NSURLConnection connectionWithRequest: req delegate: self] retain];
 			break;
 		default:
-			LOGSTAGE(@"Timer Invalid Stage in state machine:%s",gstage[stage]);
+			LOGSTAGE(@"%@:Timer Invalid Stage in state machine:%s",name,gstage[stage]);
 			break;
 	}
 	return;
@@ -416,8 +418,6 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 	[from autorelease];
 	from = [_from retain];
 	stage = G_IDLE;
-	//trigger an update?
-	[timer fire];
 }
 - (NSString *)getFrom {
 	return from;
@@ -427,8 +427,6 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 	[until autorelease];
 	until = [_until retain];
 	stage = G_IDLE;
-	//trigger an update?
-	[timer fire];
 }
 - (NSString *)getUntil {
 	return until;

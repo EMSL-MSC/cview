@@ -63,7 +63,7 @@ All rights reserved.
 #import "cview.h"
 
 #define SCENE1 1
-//#define SCENE2 1
+#define SCENE2 1
 
 @interface Toggle: DefaultGLScreenDelegate
 @end
@@ -101,10 +101,10 @@ int main(int argc,char *argv[], char *env[]) {
 		#ifdef SCENE1
 		GraphiteDataSet *d = [[GraphiteDataSet alloc] initWithUrl: graphite named: @"Lustre" andQuery: @"aliasByNode(cascade.lustre.*.lusost.writekbs.*,5)"];
 		[[ValueStore valueStore] setKey: @"d" withObject: d];
-		[d setDescription: @"OSD Space Used"];
+		[d setDescription: @"Lustre writekbs"];
 		[d setRate:@"Bytes/s"];
-		[d setFrom:@"-3h"];
-		[d setSort:1];
+		//[d setFrom:@"-3h"];
+		//[d setSort:1];
 		#endif
 		#ifdef SCENE2
 		GraphiteDataSet *f = [[GraphiteDataSet alloc] initWithUrl: graphite named: @"CascadeAppUse" andQuery: @"aliasByNode(highestAverage(cascade.squeue.appnode.*,10),3)"];
