@@ -9,7 +9,7 @@ All rights reserved.
 	to any person or entity lawfully obtaining a copy of this software and
 	associated documentation files (hereinafter “the Software”) to redistribute
 	and use the Software in source and binary forms, with or without
-	modification.  Such person or entity may use, copy, modify, merge, publish,
+	modification.	Such person or entity may use, copy, modify, merge, publish,
 	distribute, sublicense, and/or sell copies of the Software, and may permit
 	others to do so, subject to the following conditions:
 
@@ -43,12 +43,12 @@ All rights reserved.
 	THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 3.	The Software was produced by Battelle under Contract No. DE-AC05-76RL01830
-	with the Department of Energy.  The U.S. Government is granted for itself
+	with the Department of Energy.	The U.S. Government is granted for itself
 	and others acting on its behalf a nonexclusive, paid-up, irrevocable
 	worldwide license in this data to reproduce, prepare derivative works,
 	distribute copies to the public, perform publicly and display publicly, and
-	to permit others to do so.  The specific term of the license can be
-	identified by inquiry made to Battelle or DOE.  Neither the United States
+	to permit others to do so.	The specific term of the license can be
+	identified by inquiry made to Battelle or DOE.	Neither the United States
 	nor the United States Department of Energy, nor any of their employees,
 	makes any warranty, express or implied, or assumes any legal liability or
 	responsibility for the accuracy, completeness or usefulness of any data,
@@ -57,47 +57,47 @@ All rights reserved.
 
 */
 #import <Foundation/Foundation.h>
-#import <sys/param.h>  //for max/min
+#import <sys/param.h>	//for max/min
 #import "cview-data.h"
 #import "UpdateRunLoop.h"
 #import "GraphiteDataSet.h"
 
 static float blankdata[] = {
-	0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-	0,  0,  0,  6, 26,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  6, 26,  0,  0,  0,
-	0,  0,  0,  6, 51,103,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 25,109, 26,  0,  0,  0,
-	0,  0,  0,  0, 25,127,110,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 25,133,104,  0,  0,  0,  0,
-	0,  0,  0,  0,  0, 25,147,136,  6,  0,  0,  2, 14, 26, 39, 50, 50, 48, 36, 24, 11,  0,  0,  0, 25,149,130, 11,  0,  0,  0,  0,
-	0,  0,  0,  0,  0,  0, 25,208,155,  6,  3, 39,112,164,214,255,255,244,193,142, 87, 22,  0, 25,149,203, 44,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  0, 25,208,165,104,175,255,255,255,255,255,255,255,255,233,135, 99,149,203, 44,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  0,  0, 40,238,247,255,249,211,153,127,127,134,172,229,255,250,237,225, 44,  0,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  0,  3, 70,230,255,254,207, 83, 26,  0,  0,  6, 44,128,234,255,254,197, 22,  0,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  1, 39,175,255,250,255,242,107,  0,  0,  0,  0, 25,157,255,253,255,233,126, 11,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0, 14,112,255,249,198,173,255,239,107,  0,  0, 25,152,255,247,176,229,255,219, 62,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0, 26,164,255,230,103, 25,152,255,239,113, 26,156,255,246,129, 25,152,255,232,114,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0, 39,214,255,211, 26,  0, 25,152,255,243,163,255,249,130,  0,  6, 76,255,244,165,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0, 50,255,255,205,  0,  0,  0, 25,168,255,255,249,154, 11,  0,  0, 50,255,255,205,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0, 50,255,255,205,  0,  0,  0, 25,156,255,255,243,120,  1,  0,  0, 50,255,255,205,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0, 48,244,255,211, 26,  0, 25,152,255,249,187,255,243,113,  0,  6, 76,255,253,194,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0, 36,193,255,230,103, 25,152,255,246,153, 35,168,255,239,107, 25,152,255,241,143,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0, 23,142,255,249,198,173,255,246,129,  0,  0, 25,152,255,239,162,229,255,229, 92,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0, 11, 87,233,255,250,255,248,129,  0,  0,  0,  0, 25,157,255,252,255,252,194, 40,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  0, 22,135,248,255,255,214, 83, 26,  0,  0,  6, 44,128,234,255,255,225, 81,  0,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  0,  0, 65,237,254,255,249,211,153,128,128,134,172,229,255,254,252,220,  6,  0,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  0, 25,149,213,197,233,255,255,255,255,255,255,255,255,252,218,161,208,155,  6,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0, 25,149,203, 44, 22,126,219,232,244,255,255,253,241,229,194, 81,  0, 25,208,155,  6,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0, 25,133,200, 44,  0,  0, 11, 62,114,165,205,205,194,143, 92, 40,  0,  0,  0, 25,208,136,  1,  0,  0,  0,  0,
-  0,  0,  0,  0, 25,127,127, 11,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 25,147,110,  0,  0,  0,  0,
-  0,  0,  0,  6, 51,103,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 25,109, 26,  0,  0,  0,
-  0,  0,  0,  6, 26,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  6, 26,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
-  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
+	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	6, 26,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	6, 26,	0,	0,	0,
+	0,	0,	0,	6, 51,103,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0, 25,109, 26,	0,	0,	0,
+	0,	0,	0,	0, 25,127,110,	1,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0, 25,133,104,	0,	0,	0,	0,
+	0,	0,	0,	0,	0, 25,147,136,	6,	0,	0,	2, 14, 26, 39, 50, 50, 48, 36, 24, 11,	0,	0,	0, 25,149,130, 11,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0, 25,208,155,	6,	3, 39,112,164,214,255,255,244,193,142, 87, 22,	0, 25,149,203, 44,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0, 25,208,165,104,175,255,255,255,255,255,255,255,255,233,135, 99,149,203, 44,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0, 40,238,247,255,249,211,153,127,127,134,172,229,255,250,237,225, 44,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	3, 70,230,255,254,207, 83, 26,	0,	0,	6, 44,128,234,255,254,197, 22,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	1, 39,175,255,250,255,242,107,	0,	0,	0,	0, 25,157,255,253,255,233,126, 11,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0, 14,112,255,249,198,173,255,239,107,	0,	0, 25,152,255,247,176,229,255,219, 62,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0, 26,164,255,230,103, 25,152,255,239,113, 26,156,255,246,129, 25,152,255,232,114,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0, 39,214,255,211, 26,	0, 25,152,255,243,163,255,249,130,	0,	6, 76,255,244,165,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0, 50,255,255,205,	0,	0,	0, 25,168,255,255,249,154, 11,	0,	0, 50,255,255,205,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0, 50,255,255,205,	0,	0,	0, 25,156,255,255,243,120,	1,	0,	0, 50,255,255,205,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0, 48,244,255,211, 26,	0, 25,152,255,249,187,255,243,113,	0,	6, 76,255,253,194,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0, 36,193,255,230,103, 25,152,255,246,153, 35,168,255,239,107, 25,152,255,241,143,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0, 23,142,255,249,198,173,255,246,129,	0,	0, 25,152,255,239,162,229,255,229, 92,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0, 11, 87,233,255,250,255,248,129,	0,	0,	0,	0, 25,157,255,252,255,252,194, 40,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0, 22,135,248,255,255,214, 83, 26,	0,	0,	6, 44,128,234,255,255,225, 81,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0, 65,237,254,255,249,211,153,128,128,134,172,229,255,254,252,220,	6,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0, 25,149,213,197,233,255,255,255,255,255,255,255,255,252,218,161,208,155,	6,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0, 25,149,203, 44, 22,126,219,232,244,255,255,253,241,229,194, 81,	0, 25,208,155,	6,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0, 25,133,200, 44,	0,	0, 11, 62,114,165,205,205,194,143, 92, 40,	0,	0,	0, 25,208,136,	1,	0,	0,	0,	0,
+	0,	0,	0,	0, 25,127,127, 11,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0, 25,147,110,	0,	0,	0,	0,
+	0,	0,	0,	6, 51,103,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0, 25,109, 26,	0,	0,	0,
+	0,	0,	0,	6, 26,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	6, 26,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,
+	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,	0,
 };
 #ifndef LOG_STAGE
-#define LOG_STAGE 1
+#define LOG_STAGE 0
 #endif
 #if LOG_STAGE
 #warning Logging Stages
@@ -135,6 +135,7 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 	sort = GDS_DEFAULT_SORT;
 	rateSuffix = @"...";
 	[data setData: [NSData dataWithBytes: blankdata length: sizeof(blankdata)]];
+	currentMax = 255.0;
 	incomingData = [[NSMutableData data] retain];
 
 	if(interval <= 0.0f)
@@ -223,7 +224,7 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 }
 
 - (void)connection:(NSURLConnection *)connection
-  didFailWithError:(NSError *)error
+	didFailWithError:(NSError *)error
 {
 	LOGSTAGE(@"Error Recieved: %s %@ %@",gstage[stage],connection,error);
 	[connection autorelease];
@@ -242,18 +243,18 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 	NSCharacterSet *commaNpipe = [NSCharacterSet characterSetWithCharactersInString: @",|"];
 
 	/* Expected Data Format:
-    10,1467067140,1467070680,60|2.62995262669e+12,2.62995376947e+12,2.62995474432e+12,...
-    <target name>,<start timestamp>,<end timestamp>,<series step>|[data]*
+		10,1467067140,1467070680,60|2.62995262669e+12,2.62995376947e+12,2.62995474432e+12,...
+		<target name>,<start timestamp>,<end timestamp>,<series step>|[data]*
 	| seperates metadata from metric data.
 	metdata fields:
 		metric id, or X tick in the dataset
 		Start time, End Time used to generate ticks
 		series step - how long between each datapoint..
-    */
+		*/
 
 	e = [lines objectEnumerator];
 	while ((line = [e nextObject])) {
-    //NSLog(@"line: %@",line);
+		//NSLog(@"line: %@",line);
 		chunks = [line componentsSeparatedByCharactersInSet: commaNpipe];
 		if ([chunks count] < 4) {
 			//NSLog(@"Strange Line: %@",chunks);
@@ -279,15 +280,15 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 							line_start,start_time,line_end,end_time,line_step,step_time,line);
 		}
 		count=0;
-    line_points = [line_data objectForKey: line_name];
-    if (line_points == nil)
-      line_points = [NSMutableData dataWithCapacity: (height)*sizeof(float)];
+		line_points = [line_data objectForKey: line_name];
+		if (line_points == nil)
+			line_points = [NSMutableData dataWithCapacity: (height)*sizeof(float)];
 		d = (float *)[line_points mutableBytes];
 		while ((s = [c nextObject])) {
-      if ([s compare: @"None"] == NSOrderedSame)
-        count++;
-      else
-        d[count++] = [s floatValue];
+			if ([s compare: @"None"] == NSOrderedSame)
+				count++;
+			else
+				d[count++] = [s floatValue];
 		}
 		//NSLog(@"count=%d num=%d height=%d line_data.count=%d",count,num,height,[line_data count]);
 		num++;
@@ -296,7 +297,7 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 	return line_data;
 }
 
-- (void)connectionDidFinishLoading:(NSURLConnection *)connection  {
+- (void)connectionDidFinishLoading:(NSURLConnection *)connection	{
 	//NSLog(@"connection Finished: %@ - %d",connection,stage);
 
 	switch (stage) {
@@ -368,7 +369,7 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 	NSLog(@"%@::fireTimer()",[self class]);
 	NSURLRequest *req;
 
-    switch (stage) {
+		switch (stage) {
 		case G_IDLE:
 			LOGSTAGE(@"%@:%s begin",name,gstage[stage]);
 
@@ -394,8 +395,8 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 
 - (NSString *)rowTick: (int)row {
 	//char *ticks = (char *)[Yticks mutableBytes];
-  NSDate *date = [NSDate dateWithTimeIntervalSince1970:start_time+row*step_time];
-  return [date descriptionWithCalendarFormat: @"%Y-%m-%d-%H:%M:%S" timeZone: [NSTimeZone defaultTimeZone] locale: nil];
+	NSDate *date = [NSDate dateWithTimeIntervalSince1970:start_time+row*step_time];
+	return [date descriptionWithCalendarFormat: @"%Y-%m-%d-%H:%M:%S" timeZone: [NSTimeZone defaultTimeZone] locale: nil];
 	//return [NSString stringWithUTF8String: ticks+TICK_LEN*row];
 }
 
@@ -448,6 +449,6 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 	//stage = G_IDLE;
 }
 - (int)getSort {
-  return sort;
+	return sort;
 }
 @end

@@ -111,14 +111,14 @@ All rights reserved.
 	h=len/4/w;
 	[self setDescription: file];
 	[self initWithWidth: w Height: h];
-	
+
 	if (inv) {
 		md = [NSMutableData dataWithLength: len];
 		f = (float *)[dtmp bytes];
 		t = (float *)[md bytes];
 		for (i=0;i<w;i++)
 			for (j=0;j<h;j++)
-				t[i*h+j] = f[i+w*j]; 
+				t[i*h+j] = f[i+w*j];
 		dtmp=md;
 	}
 	[self setNewData: dtmp];
@@ -271,10 +271,10 @@ All rights reserved.
 - setNewData: (NSData *)newdata {
 	L();
 	[dataLock lock];
-	
+
 	[data setData: newdata];
 	[self resetMax];
-	
+
 	U();
 	[dataLock unlock];
 	return self;
@@ -390,4 +390,3 @@ All rights reserved.
 }
 
 @end /* DataSet */
-

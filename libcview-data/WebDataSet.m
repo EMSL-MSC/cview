@@ -102,7 +102,7 @@ static float blankdata[] = {
 #if LOG_STAGE
 #define LOGSTAGE(x,a...) NSLog(x,##a)
 #else
-#define LOGSTAGE(x,a...) 
+#define LOGSTAGE(x,a...)
 #endif
 
 @implementation WebDataSet
@@ -125,16 +125,17 @@ static float blankdata[] = {
 		[super initWithName: name Width: 32 Height: 32];
 	else
 		[super initWithWidth: 32 Height: 32];
-	
+
 	if (name==nil)
 		name = [key retain];
-	
+
 	dataValid=NO;
 	Xticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
 	Yticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
 	allowRescale = YES;
 	rateSuffix = @"...";
 	[data setData: [NSData dataWithBytes: blankdata length: sizeof(blankdata)]];
+	currentMax = 255.0;
 
 	incomingData = [[NSMutableData data] retain];
 	stage = START;
