@@ -366,7 +366,7 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 }
 
 -(void)fireTimer:(NSTimer*)aTimer {
-	NSLog(@"%@::fireTimer()",[self class]);
+	//NSLog(@"%@::fireTimer()",[self class]);
 	NSURLRequest *req;
 
 		switch (stage) {
