@@ -1,8 +1,8 @@
 /*
 
-This file is port of the CVIEW graphics system, which is goverened by the following License
+This file is part of the CVIEW graphics system, which is goverened by the following License
 
-Copyright © 2008,2009, Battelle Memorial Institute
+Copyright © 2016, Battelle Memorial Institute
 All rights reserved.
 
 1.	Battelle Memorial Institute (hereinafter Battelle) hereby grants permission
@@ -14,13 +14,13 @@ All rights reserved.
 	others to do so, subject to the following conditions:
 
 	•	Redistributions of source code must retain the above copyright
-		notice, this list of conditions and the following disclaimers. 
+		notice, this list of conditions and the following disclaimers.
 	•	Redistributions in binary form must reproduce the above copyright
 		notice, this list of conditions and the following disclaimer in the
 		documentation and/or other materials provided with the distribution.
 	•	Other than as used herein, neither the name Battelle Memorial
 		Institute or Battelle may be used in any form whatsoever without the
-		express written consent of Battelle.  
+		express written consent of Battelle.
 	•	Redistributions of the software in any form, and publications based
 		on work performed using the software should include the following
 		citation as a reference:
@@ -53,62 +53,58 @@ All rights reserved.
 	makes any warranty, express or implied, or assumes any legal liability or
 	responsibility for the accuracy, completeness or usefulness of any data,
 	apparatus, product or process disclosed, or represents that its use would
-	not infringe privately owned rights.  
+	not infringe privately owned rights.
 
 */
 #import <Foundation/Foundation.h>
-#import "cview-data.h"
-#import "cview.h"
+#import "DataSet.h"
+#import "PList.h"
+#define GDS_DEFAULT_FROM @"-2h"
+#define GDS_DEFAULT_UNTIL @"-1min"
+#define GDS_DEFAULT_SORT 0
+#define GDS_DEFAULT_SORT_S S(GDS_DEFAULT_SORT)
+enum GDownloadStage { G_IDLE=0,G_START,G_DATA,G_ERR };
+/**
+Extension of the data class to retrieve the data from a graphite metrics server, implements the Updatable protocol so that it can be told to reload the data from the source
 
-int dump(DataSet *data) {
-	int i,j;
-	float *d;
+The initWithPList method will start its own update thread based off the application default updateThreadInterval
 
-
-	for (i=0;i<[data width];i++) {
-		printf("%3d: ",i);
-		d = [data dataRow: i];
-		for (j=0;j<10;j++)
-			printf("%f ",d[j]);
-		printf("\n");
-	}
-	return 0;
+@enddot
+@author Evan Felix
+@ingroup cviewdata
+*/
+@interface GraphiteDataSet: DataSet <PList> {
+	NSURLConnection *webConn;
+	NSMutableData *incomingData;
+	NSString *query;
+	NSString *from,*until;
+	NSArray *Xticks;
+	NSURL *graphiteURL;
+	NSURL *baseURL;
+	int sort;
+	long start_time,end_time,step_time;
+	enum GDownloadStage stage;
+	NSTimer *timer;
 }
-int main(int argc,char *argv[], char *env[]) {
-	DrawableObject *o;
-	
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-#ifndef __APPLE__
-	//needed for NSLog
-	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
-#endif
-
-
-	NSLog(@"starting");
-
-  StreamDataSet *f = [[StreamDataSet alloc] initWithCommand: find_resource_path(@"slowcat") arguments:
-		[NSArray arrayWithObjects: find_resource_path(@"streamdata.txt"),nil] depth: 64];
-  
-  [[ValueStore valueStore] setKey:@"stream" withObject:f];
-  [f autorelease];
-  
-	GLScreen * g = [[GLScreen alloc] initName: @"StreamDataSet Test" withWidth: 1000 andHeight: 800];
-
-	Scene * scene1 = [[Scene alloc] init];
-	o=[[[[GLGrid alloc] initWithDataSetKey: @"stream"] setXTicks: 4] setYTicks: 4];
-	[scene1 addObject: o atX: 0 Y: 0 Z: 0];
-	
-	[[[g addWorld: @"Top" row: 0 col: 0 rowPercent: 50 colPercent:50] 
-		setScene: scene1] 
-		setEye: [[[Eye alloc] init] setX: 200.0 Y: 500.0 Z: 400.0 Hangle:1.15 Vangle: -2.45]
-	];
-	
-	NSLog(@"%@",[g getPList]);
-
-	//dump(f);
-	[g run];
-
-	[pool release];
-
-	return 0;
-}
+/** Initialize given the graphite URL, with a name and query */
+- initWithUrl: (NSURL *)graphite named: (NSString *)thename andQuery: (NSString *)thequery;
+/** Set a new query for this Dataset */
+- (void)setQuery: (NSString *)newquery;
+/** Returns the current query */
+- (NSString *)getQuery;
+/** returns the stored row label from the loaded data */
+- (NSString *)rowTick: (int)row;
+/** returns the stored column label from the loaded data */
+- (NSString *)columnTick: (int)col;
+- (void)fireTimer:(NSTimer*)aTimer;
+- (void)setFrom: (NSString*)_from;
+- (NSString *)getFrom;
+- (void)setUntil: (NSString*)_until;
+- (NSString *)getUntil;
+- (void)setBaseURL: (NSURL*)_url;
+- (NSURL *)getBaseURL;
+- (void)setSort:(int) _sort;
+- (int)getSort;
+/** internal function */
+- (NSDictionary *)processLines: (NSArray *)lines;
+@end

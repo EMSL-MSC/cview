@@ -94,9 +94,9 @@ int main(int argc,char *argv[], char *env[]) {
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
 	@try {
-		NSURL *cluster = [NSURL URLWithString: @"http://www.emsl.pnnl.gov/msc-datasets/chinook/"];
-		WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.user"];
-		WebDataSet *f = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"cputotals.sys"];
+		NSURL *cluster = [NSURL URLWithString: @"http://www.emsl.pnnl.gov/msc-datasets/cascade/"];
+		WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"aggregation-cpu-average/cpu-user"];
+		WebDataSet *f = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"aggregation-cpu-average/cpu-system"];
 		
 	
 		GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test" withWidth: 1200 andHeight: 600];

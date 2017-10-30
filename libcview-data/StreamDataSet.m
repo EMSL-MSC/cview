@@ -77,7 +77,9 @@ All rights reserved.
 	int i;
 	BOOL nodata;
 	NSNull *n;
-
+  NSFileHandle *errFile;
+  NSPipe *errPipe;
+  
 	currentMax=1;
   interval = 1;
 
@@ -90,6 +92,9 @@ All rights reserved.
 	thePipe = [[NSPipe pipe] retain];
 	[theTask setStandardOutput: thePipe];
 	theFile = [thePipe fileHandleForReading];
+  errPipe = [NSPipe pipe];
+  [theTask setStandardError: errPipe];
+  errFile = [errPipe fileHandleForReading];
 	[theTask launch];
 
 	//2. Read first line of data to detemine width of dataStart
@@ -111,6 +116,14 @@ All rights reserved.
 		}
 		i--;
 	}
+  
+  if (![theTask isRunning]) {
+    NSData *dat;
+    NSLog(@"Task not running: %d : %d",[theTask terminationStatus], (int)[theTask terminationReason]);
+    dat = [errFile readDataToEndOfFile];
+    NSLog(@"%s",[dat bytes]);
+    return nil;
+  }
 
 	//3. initialze superclass.
 	[super initWithName: command Width: ([arr count]-1) Height: d];
@@ -275,7 +288,7 @@ All rights reserved.
 			newdata = [theFile availableData];
 			if (newdata != nil && [newdata length] > 0 ) {
 				[remainingData appendData: newdata];
-				[newdata autorelease];
+				//[newdata autorelease];
 			}
 			else {
 				return nil;
@@ -290,19 +303,21 @@ All rights reserved.
 
 -(void)fireTimer:(NSTimer*)aTimer {
   NSArray *arr;
-  if (running) {
-		NSLog(@"getting Next Line");
-		arr = [self getNextLineArray];
-    NSLog(@"Return: %@",arr);
-		if (arr == nil) {
-			//running = NO;
-      // @todo stop timer
-		}
-		else {
-			[self addRow:arr];
-      [[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
+  if (running)
+    do {
+      //NSLog(@"getting Next Line");
+      arr = [self getNextLineArray];
+      //NSLog(@"Return: %@",arr);
+      if (arr == nil) {
+        //running = NO;
+        // @todo stop timer
+      }
+      else {
+        [self addRow:arr];
+        [[NSNotificationCenter defaultCenter] postNotificationName: @"DataSetUpdate" object: self];
+      }
     }
-  }
+  while ([remainingData length]> 200); //This hoepfully allows for pre-load of a lot of lines early on
 }
 
 - (NSString *)rowTick: (int)row {

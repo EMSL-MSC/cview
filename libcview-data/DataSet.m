@@ -111,14 +111,14 @@ All rights reserved.
 	h=len/4/w;
 	[self setDescription: file];
 	[self initWithWidth: w Height: h];
-	
+
 	if (inv) {
 		md = [NSMutableData dataWithLength: len];
 		f = (float *)[dtmp bytes];
 		t = (float *)[md bytes];
 		for (i=0;i<w;i++)
 			for (j=0;j<h;j++)
-				t[i*h+j] = f[i+w*j]; 
+				t[i*h+j] = f[i+w*j];
 		dtmp=md;
 	}
 	[self setNewData: dtmp];
@@ -271,10 +271,10 @@ All rights reserved.
 - setNewData: (NSData *)newdata {
 	L();
 	[dataLock lock];
-	
+
 	[data setData: newdata];
 	[self resetMax];
-	
+
 	U();
 	[dataLock unlock];
 	return self;
@@ -343,6 +343,9 @@ All rights reserved.
 
 
 - setWidth: (int)newWidth {
+  if (width == newWidth)
+    return self;
+  NSLog(@"%@ setWidth: %d",name,newWidth);
 	L();
 	[dataLock lock];
 	width=newWidth;
@@ -357,6 +360,9 @@ All rights reserved.
 	NSMutableData *d;
 	float *from,*to;
 	int i;
+  if (height == newHeight)
+    return self;
+  NSLog(@"%@ setHeight: %d",name,newHeight);
 	L();
 	[dataLock lock];
 	if (newHeight != height) {
@@ -379,6 +385,8 @@ All rights reserved.
 - (NSString*)valueStoreKey {
 	return [[ValueStore valueStore] getKeyForObject: self];
 }
+- (NSString *)name {
+	return name;
+}
 
 @end /* DataSet */
-

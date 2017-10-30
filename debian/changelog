@@ -1,3 +1,28 @@
+cview (0.3.5ubuntu1) xenial; urgency=medium
+
+  * Build for ubuntu 
+
+ -- Evan Felix <e@pnnl.gov>  Wed, 11 Oct 2017 11:23:08 -0700
+
+cview (0.3.5) xenial; urgency=medium
+
+  * Add new GraphiteDataSet for reading data directly from graphite.
+  * Small cleanups for building on ubuntu16.04 and osx 
+
+ -- Evan Felix <e@pnnl.gov>  Wed, 11 Oct 2017 11:09:18 -0700
+
+cview (0.3.4ubuntu2) xenial; urgency=medium
+
+  * Build updates for xenial 
+
+ -- Evan Felix <e@pnnl.gov>  Thu, 16 Mar 2017 14:45:57 -0700
+
+cview (0.3.4ubuntu1) xenial; urgency=medium
+
+  * Build fixes for trusty and xenial 
+
+ -- Evan Felix <e@pnnl.gov>  Tue, 17 May 2016 14:59:39 -0700
+
 cview (0.3.4) precise; urgency=medium
 
   * Updates to make webDataSet work during failures

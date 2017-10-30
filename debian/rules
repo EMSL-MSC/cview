@@ -5,8 +5,8 @@ CC=gcc
 include /usr/share/cdbs/1/rules/buildcore.mk
 include /usr/share/cdbs/1/class/cmake.mk
 include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/rules/simple-patchsys.mk
+#include /usr/share/cdbs/1/rules/simple-patchsys.mk
 
-DEB_DH_INSTALL_ARGS := --sourcedir=debian/tmp
+DEB_DH_INSTALL_ARGS := --sourcedir=debian/tmp -X .git
 
 DEB_MAKE_CLEAN_TARGET := clean

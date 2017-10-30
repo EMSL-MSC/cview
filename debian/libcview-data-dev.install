@@ -12,5 +12,5 @@ usr/include/cview/StreamDataSet.h
 usr/include/cview/UpdateRunLoop.h
 usr/include/cview/WebDataSet.h
 usr/include/cview/XYDataSet.h
-usr/lib/libcview-data.so
-usr/lib/pkgconfig/cview-data.pc
+usr/lib/x86_64-linux-gnu/libcview-data.so
+usr/lib/x86_64-linux-gnu/pkgconfig/cview-data.pc

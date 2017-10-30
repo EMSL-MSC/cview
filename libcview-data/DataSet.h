@@ -129,10 +129,10 @@ This class provides a basic data store, with associated information.  It is orga
 - setLabelFormat: (NSString *)fmt;
 /** replace the data in the dataset with a new one */
 - setNewData: (NSData *)data;
--setDescription: (NSString *)description;
+- setDescription: (NSString *)description;
 - (NSString *)getDescription;
 - setRate:(NSString *)r;
--(NSString *)getRate;
+- (NSString *)getRate;
 - description;
 /** lock the dataset such that the dataset sizes cannot change until unlocked. */
 - lock;
@@ -145,6 +145,7 @@ This class provides a basic data store, with associated information.  It is orga
 /** report data valid status */
 - (BOOL)dataValid;
 /** Return the key that references this dataSet in the ValueDataStore */
--(NSString*)valueStoreKey;
+- (NSString*)valueStoreKey;
+- (NSString *)name;
 @end
 

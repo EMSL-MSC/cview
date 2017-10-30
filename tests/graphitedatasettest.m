@@ -2,7 +2,7 @@
 
 This file is port of the CVIEW graphics system, which is goverened by the following License
 
-Copyright © 2008,2009, Battelle Memorial Institute
+Copyright © 2016, Battelle Memorial Institute
 All rights reserved.
 
 1.	Battelle Memorial Institute (hereinafter Battelle) hereby grants permission
@@ -14,13 +14,13 @@ All rights reserved.
 	others to do so, subject to the following conditions:
 
 	•	Redistributions of source code must retain the above copyright
-		notice, this list of conditions and the following disclaimers. 
+		notice, this list of conditions and the following disclaimers.
 	•	Redistributions in binary form must reproduce the above copyright
 		notice, this list of conditions and the following disclaimer in the
 		documentation and/or other materials provided with the distribution.
 	•	Other than as used herein, neither the name Battelle Memorial
 		Institute or Battelle may be used in any form whatsoever without the
-		express written consent of Battelle.  
+		express written consent of Battelle.
 	•	Redistributions of the software in any form, and publications based
 		on work performed using the software should include the following
 		citation as a reference:
@@ -53,61 +53,108 @@ All rights reserved.
 	makes any warranty, express or implied, or assumes any legal liability or
 	responsibility for the accuracy, completeness or usefulness of any data,
 	apparatus, product or process disclosed, or represents that its use would
-	not infringe privately owned rights.  
+	not infringe privately owned rights.
 
 */
 #import <Foundation/Foundation.h>
-#import "cview-data.h"
+#import "DefaultGLScreenDelegate.h"
+#import "GLGrid.h"
+#import "GraphiteDataSet.h"
 #import "cview.h"
 
-int dump(DataSet *data) {
-	int i,j;
-	float *d;
+#define SCENE1 1
+#define SCENE2 1
 
+@interface Toggle: DefaultGLScreenDelegate
+@end
 
-	for (i=0;i<[data width];i++) {
-		printf("%3d: ",i);
-		d = [data dataRow: i];
-		for (j=0;j<10;j++)
-			printf("%f ",d[j]);
-		printf("\n");
+@implementation Toggle
+-(BOOL)keyPress: (unsigned char)key atX: (int)x andY: (int)y inGLWorld: (GLWorld *)world; {
+	if ([super keyPress: key atX: x andY: y inGLWorld: world] == NO && key == 'g') {
+		//Find the GLGrids:
+		id o;
+		NSEnumerator *list;
+		list = [[[world scene] getAllObjects] objectEnumerator];
+		while ( (o = [list nextObject]) ) {
+			if ([o isKindOfClass: [GLGrid class]]) {
+				GLGrid *g = (GLGrid *)o;
+				[g setGridType: ([g getGridType]+1)%G_COUNT];
+			}
+		}
+		return YES;
 	}
-	return 0;
+	return NO;
 }
+@end
+
 int main(int argc,char *argv[], char *env[]) {
 	DrawableObject *o;
-	
+	Toggle *toggler;
+
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 #ifndef __APPLE__
 	//needed for NSLog
 	[NSProcessInfo initializeWithArguments: argv count: argc environment: env ];
 #endif
+	@try {
+		NSURL *graphite = [NSURL URLWithString: @"https://graphite.emsl.pnl.gov/render/"];
+		#ifdef SCENE1
+		GraphiteDataSet *d = [[GraphiteDataSet alloc] initWithUrl: graphite named: @"Lustre" andQuery: @"aliasByNode(cascade.lustre.*.lusost.writekbs.*,5)"];
+		[[ValueStore valueStore] setKey: @"d" withObject: d];
+		[d setDescription: @"Lustre writekbs"];
+		[d setRate:@"Bytes/s"];
+		//[d setFrom:@"-3h"];
+		//[d setSort:1];
+		#endif
+		#ifdef SCENE2
+		GraphiteDataSet *f = [[GraphiteDataSet alloc] initWithUrl: graphite named: @"CascadeAppUse" andQuery: @"aliasByNode(highestAverage(cascade.squeue.appnode.*,10),3)"];
+		[[ValueStore valueStore] setKey: [f name] withObject: f];
+		[f setDescription: @"Cascade Application Use"];
+		[f setRate:@"Count"];
+		[f setFrom:@"-3h"];
+		#endif
 
+		GLScreen * g = [[GLScreen alloc] initName: @"Graphite Test" withWidth: 1200 andHeight: 600];
 
-	NSLog(@"starting");
+		#ifdef SCENE1
+		Scene * scene1 = [[Scene alloc] init];
 
-  StreamDataSet *f = [[StreamDataSet alloc] initWithCommand: find_resource_path(@"slowcat") arguments:
-		[NSArray arrayWithObjects: find_resource_path(@"streamdata.txt"),nil] depth: 64];
-  
-  [[ValueStore valueStore] setKey:@"stream" withObject:f];
-  [f autorelease];
-  
-	GLScreen * g = [[GLScreen alloc] initName: @"StreamDataSet Test" withWidth: 1000 andHeight: 800];
+		o=[[[[GLGrid alloc] initWithDataSet: d] setXTicks: 50] setYTicks: 32];
+		[scene1 addObject: o atX: 0 Y: 0 Z: 0];
 
-	Scene * scene1 = [[Scene alloc] init];
-	o=[[[[GLGrid alloc] initWithDataSetKey: @"stream"] setXTicks: 4] setYTicks: 4];
-	[scene1 addObject: o atX: 0 Y: 0 Z: 0];
-	
-	[[[g addWorld: @"Top" row: 0 col: 0 rowPercent: 50 colPercent:50] 
-		setScene: scene1] 
-		setEye: [[[Eye alloc] init] setX: 200.0 Y: 500.0 Z: 400.0 Hangle:1.15 Vangle: -2.45]
-	];
-	
-	NSLog(@"%@",[g getPList]);
+		[[[g addWorld: @"TL" row: 0 col: 0 rowPercent: 50 colPercent:50]
+			setScene: scene1]
+			setEye: [[[Eye alloc] init] setX: 367.0 Y: 740.0 Z: 591.0 Hangle:-5.27 Vangle: -2.45]
+		];
+		#endif
+		#ifdef SCENE2
+		// SCENE2
+		Scene * scene2 = [[Scene alloc] init];
+		o=[[[[GLGrid alloc] initWithDataSet: f] setXTicks: 1] setYTicks: 32];
+		[o setValue: [NSNumber numberWithInt: 10] forKey: @"xscale"];
 
-	//dump(f);
-	[g run];
+		[scene2 addObject: o atX: 0 Y: 0 Z: 0];
 
+		[[[g addWorld: @"TR" row: 0 col: 2 rowPercent: 50 colPercent:50]
+			setScene: scene2]
+			setEye: [[[Eye alloc] init] setX: 367.0 Y: 740.0 Z: 591.0 Hangle:-5.27 Vangle: -2.45]
+		];
+		#endif
+		toggler = [[Toggle alloc] initWithScreen: g];
+		[g setDelegate: toggler];
+		[g getPList];
+		[g run];
+	}
+	@catch (NSException *localException) {
+		NSLog(@"Error: %@", localException);
+		NSArray *arr = [localException callStackSymbols];
+		NSEnumerator *e = [arr objectEnumerator];
+		NSObject *o;
+		while ( (o=[e nextObject]) != nil) {
+			NSLog(@"Stack: %@",o);
+		}
+		return -1;
+	}
 	[pool release];
 
 	return 0;

@@ -104,8 +104,13 @@ typedef enum { G_LINES=0,G_RIBBON,G_SURFACE,G_POINTS,G_COUNT } GridTypesEnum;
 -init;
 /** Create GLGrid with a dataset, using the default Line Drawing method*/ 
 -initWithDataSet: (DataSet *)ds;
-/** Create GLGrid with a dataset, using the given Drawing method*/ 
+/** Create GLGrid with a dataset, using the given Drawing method*/
 -initWithDataSet: (DataSet *)ds andType: (GridTypesEnum)type;
+/** Create GLGrid with a dataset retrieved from the ValueStore, and a given drawing method*/
+-initWithDataSetKey: (NSString *)key andType: (GridTypesEnum)type;
+/** Create GLGrid with a dataset retrieved from the ValueStore */
+-initWithDataSetKey: (NSString *)key;
+
 /** change the dataSet displayed */
 -setDataSet: (DataSet *)ds;
 -(void)receiveResizeNotification: (NSNotification *)notification;
