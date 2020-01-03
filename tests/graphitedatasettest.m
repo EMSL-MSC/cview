@@ -142,7 +142,7 @@ int main(int argc,char *argv[], char *env[]) {
 		#endif
 		toggler = [[Toggle alloc] initWithScreen: g];
 		[g setDelegate: toggler];
-		[g getPList];
+		NSLog(@"%@\n",[g getPList]);
 		[g run];
 	}
 	@catch (NSException *localException) {
