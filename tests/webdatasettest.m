@@ -96,7 +96,7 @@ int main(int argc,char *argv[], char *env[]) {
 	@try {
 		NSURL *cluster = [NSURL URLWithString: @"http://www.emsl.pnnl.gov/msc-datasets/cascade/"];
 		WebDataSet *d = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"aggregation-cpu-average/cpu-user"];
-		WebDataSet *f = [[WebDataSet alloc] initWithUrlBase: cluster andKey: @"aggregation-cpu-average/cpu-system"];
+		WebDataSet *f = [[[WebDataSet alloc] initWithUrlBase: cluster andKey: @"aggregation-cpu-average/cpu-system"] setRate: @"Joffies"];
 		
 	
 		GLScreen * g = [[GLScreen alloc] initName: @"GLScreen Test" withWidth: 1200 andHeight: 600];
