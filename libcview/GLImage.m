@@ -140,7 +140,7 @@ All rights reserved.
 }
 
 -(NSArray *)attributeKeys {
-	return [NSArray arrayWithObjects: @"width",@"height",@"hflip",@"vflip",nil];
+	return [NSArray arrayWithObjects: @"isVisible",@"width",@"height",@"hflip",@"vflip",nil];
 }
 
 -setWidth: (int) width {
