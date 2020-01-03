@@ -1,3 +1,9 @@
+cview (0.3.6) bionic; urgency=medium
+
+  * update for bionic 
+
+ -- Evan Felix <e@pnnl.gov>  Thu, 05 Sep 2019 16:25:06 -0700
+
 cview (0.3.5ubuntu1) xenial; urgency=medium
 
   * Build for ubuntu 

@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 MAINTAINER karcaw@gmail.com
 
 #you should be able to build and run this docker file to get cview deb files:
@@ -8,7 +8,7 @@ MAINTAINER karcaw@gmail.com
 #RUN echo "deb http://ppa.launchpad.net/thjc/ppa/ubuntu precise main" > /etc/apt/sources.list.d/custom.list
 RUN echo "force-unsafe-io" > /etc/dpkg/dpkg.cfg.d/02apt-speedup
 
-RUN apt-get update
+RUN apt-get update && apt-get -y dist-upgrade && apt-get clean
 RUN apt-get install -y software-properties-common
 
 RUN /usr/bin/apt-add-repository ppa:karcaw/atb
@@ -20,8 +20,9 @@ ADD . /src/
 RUN mkdir /build/
 
 WORKDIR /src
-
+ENV DEBIAN_FRONTEND noninteractive 
 RUN apt-get install -y --allow-unauthenticated `gdebi --quiet --apt-line debian/control`
 VOLUME /.gnupg
+VOLUME /output
 
-CMD debuild
+CMD /src/dockerbuild
