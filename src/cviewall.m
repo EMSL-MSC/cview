@@ -197,7 +197,7 @@ int main(int argc,char *argv[], char *env[]) {
 
 	configfile = [args stringForKey: @"c"];
 
-	GLScreen * g = [[GLScreen alloc] initName: @"Cview All" withWidth: 1200 andHeight: 600];
+	GLScreen * g = [[GLScreen alloc] initName: @"Cview All" withWidth: 1600 andHeight: 1000];
 	CViewAllScreenDelegate *cvasd =
 		[[CViewAllScreenDelegate alloc] initWithScreen:g andUpdateInterval: [args floatForKey: @"dataUpdateInterval"]];
 	[cvasd setOutputFile: configfile];
