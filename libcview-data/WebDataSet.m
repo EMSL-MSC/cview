@@ -133,7 +133,7 @@ static float blankdata[] = {
 	Xticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
 	Yticks = [[NSMutableData dataWithLength: 32*TICK_LEN] retain];
 	allowRescale = YES;
-	rateSuffix = @"...";
+	rateSuffix = DS_DEFAULT_RATE_SUFFIX;
 	[data setData: [NSData dataWithBytes: blankdata length: sizeof(blankdata)]];
 	currentMax = 255.0;
 
@@ -240,7 +240,7 @@ static float blankdata[] = {
 			[incomingData increaseLengthBy:1];
 			if([[self getDescription] compare: DS_DEFAULT_NAME] == NSOrderedSame)
 				[self setDescription: [NSString stringWithUTF8String: [incomingData bytes]]];
-			NSLog(@"desc: %@ %@",textDescription,[NSString stringWithUTF8String: [incomingData bytes]]);
+			//NSLog(@"desc: %@ %@",textDescription,[NSString stringWithUTF8String: [incomingData bytes]]);
 
 			stage = RATE;
 			req = [NSURLRequest requestWithURL: rateURL cachePolicy: NSURLRequestUseProtocolCachePolicy timeoutInterval: 60.0];
@@ -250,8 +250,9 @@ static float blankdata[] = {
 		case RATE:
 			LOGSTAGE(@"RATE finish");
 			[incomingData increaseLengthBy:1];
-			[self setRate: [NSString stringWithUTF8String: [incomingData bytes]]];
-			//NSLog(@"rate: %@",rateSuffix);
+            if ([[self getRate] compare: DS_DEFAULT_RATE_SUFFIX] == NSOrderedSame )
+                [self setRate: [NSString stringWithUTF8String: [incomingData bytes]]];
+            NSLog(@"rate: %@",rateSuffix);
 
 			stage = IDLE;
 			[self fireTimer:nil]; //Start the data download in the timer code

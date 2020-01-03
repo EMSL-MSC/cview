@@ -133,7 +133,7 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 	stage = G_IDLE;
 	Xticks = nil;
 	sort = GDS_DEFAULT_SORT;
-	rateSuffix = @"...";
+	rateSuffix = DS_DEFAULT_RATE_SUFFIX;
 	[data setData: [NSData dataWithBytes: blankdata length: sizeof(blankdata)]];
 	currentMax = 255.0;
 	incomingData = [[NSMutableData data] retain];
