@@ -70,7 +70,6 @@ All rights reserved.
 	[self initWithWidth: w Height: h];
 	name = n;
 	[name retain];
-	textDescription=name;
 	return self;
 }
 
@@ -150,6 +149,8 @@ All rights reserved.
 		[dict setObject: name forKey: @"name"];
 	if ([rateSuffix compare: DS_DEFAULT_RATE_SUFFIX] != NSOrderedSame )
 		[dict setObject: rateSuffix forKey: @"rateSuffix"];
+    if (isCustomTextDescription)
+        [dict setObject: textDescription forKey:@"textDescription"];
 	return dict;
 }
 
