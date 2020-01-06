@@ -87,7 +87,11 @@ int main(int argc,char *argv[], char *env[]) {
 	[h1 contractDataSetWidth: 400 andHeight: 500];
 	[f1 lockMax: 256];
 	[h1 lockMax: 256];
-	
+    [[ValueStore valueStore] setKey: @"f" withObject: f];
+    [[ValueStore valueStore] setKey: @"h" withObject: h];
+    [[ValueStore valueStore] setKey: @"f1" withObject: f1];
+    [[ValueStore valueStore] setKey: @"h2" withObject: h1];
+
 	GLScreen * g = [[GLScreen alloc] initName: @"XYDataSet Test" withWidth: 1000 andHeight: 800];
 
 	Scene * scene1 = [[Scene alloc] init];

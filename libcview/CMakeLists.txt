@@ -17,11 +17,10 @@ SET(CVIEW_DATA_CLASSES
 	IdDatabase
 	Identifiable
 	Scene
-	ValueStoreTweakBar
 )
 
 IF(HAVE_ANTTWEAKBAR)
-	LIST(APPEND CVIEW_DATA_CLASSES AntTweakBarManager AntTweakBarOverlay)
+	LIST(APPEND CVIEW_DATA_CLASSES AntTweakBarManager AntTweakBarOverlay ValueStoreTweakBar)
 ENDIF(HAVE_ANTTWEAKBAR)
 
 IF(HAVE_GENDERS)

@@ -133,12 +133,17 @@ NSString *find_resource_path(NSString *filename) {
 		exeDataDir = [NSString stringWithFormat: @"%@\\share\\cview\\", p];
 	}
 #endif
-	
+
+#if __APPLE__
+    exeDir = @"../../data/";
+#endif
+    
 	NSMutableArray *paths = [NSMutableArray arrayWithObjects: @"",PKG_DATA_DIR@"/",@"../data/",@"./data/",
 							 exeDir,exeDataDir,nil];
 #if CVIEW_TEST_BUILD
 	[paths addObject: @"../tests/"];
 	[paths addObject: @"./tests/"];
+    [paths addObject: @"../../tests/"];
 #endif
 	
 	if (! pathdumplog) {
