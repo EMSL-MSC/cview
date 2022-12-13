@@ -133,7 +133,8 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 	stage = G_IDLE;
 	Xticks = nil;
 	sort = GDS_DEFAULT_SORT;
-	rateSuffix = DS_DEFAULT_RATE_SUFFIX;
+	if (rateSuffix == nil)
+		rateSuffix = DS_DEFAULT_RATE_SUFFIX;
 	[data setData: [NSData dataWithBytes: blankdata length: sizeof(blankdata)]];
 	currentMax = 255.0;
 	incomingData = [[NSMutableData data] retain];
@@ -160,6 +161,7 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 	NSURL *url = [NSURL URLWithString: [list objectForKey: @"graphiteURL"]];
 	NSString *q = [list objectForKey: @"query"];
 	NSString *n = [list objectForKey: @"name"];
+	rateSuffix=[list objectForKey:@"rateSuffix" missing: DS_DEFAULT_RATE_SUFFIX];
 	[self initWithUrl: url named: n andQuery: q];
 
 	[self setFrom: [list objectForKey:@"from" missing: GDS_DEFAULT_FROM]];
@@ -174,6 +176,7 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 	NSMutableDictionary *dict = [super getPList];
 	[dict setObject: graphiteURL forKey: @"graphiteURL"];
 	[dict setObject: query forKey: @"query"];
+	[dict setObject: rateSuffix forKey: @"rateSuffix"];
 
 	PLIST_SET_IF_NOT_DEFAULT_STR(dict,from);
 	PLIST_SET_IF_NOT_DEFAULT_STR(dict,until);
