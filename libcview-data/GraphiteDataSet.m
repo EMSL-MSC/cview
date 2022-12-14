@@ -107,11 +107,7 @@ char *gstage[] = {"IDLE", "START", "DATA", "ERROR"};
 #define LOGSTAGE(x,a...)
 #endif
 NSComparisonResult numericSort(id one,id two,void *ctxt) {
-	long o = [one integerValue];
-	long t = [two integerValue];
-	if (o>t) return NSOrderedDescending;
-	if (o<t) return NSOrderedAscending;
-	return NSOrderedSame;
+	return [one compare:two options:NSNumericSearch];
 }
 
 @implementation GraphiteDataSet
