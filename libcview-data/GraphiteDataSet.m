@@ -374,7 +374,7 @@ NSComparisonResult numericSort(id one,id two,void *ctxt) {
 
 			//do we need sanitaztion?
 			NSString *params = [NSString stringWithFormat: @"?target=%@&format=raw&from=%@&until=%@",query,from,until];
-			baseURL = [[NSURL URLWithString: params relativeToURL: graphiteURL] retain];
+			baseURL = [[NSURL URLWithString:[params stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding] relativeToURL: graphiteURL] retain];
 			NSLog(@"baseURL: %@",baseURL);
 			NSLog(@"graphiteURL: %@",graphiteURL);
 			stage = G_START;
