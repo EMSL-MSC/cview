@@ -19,6 +19,9 @@ REQUIREMENTS
 		ftgl2
 		freetype2
 
+	RHEL 8 packages: cmake gcc-objc++ libXmu-devel libXi-devel ftgl-devel ImageMagick-devel gnustep-base-devel freeglut-devel gnustep-make
+	RHEL 8 Optional packages: libgenders-devel doxygen mesa-libOSMesa-devel
+
 	Fedora 17 packages: cmake gcc-objc++ libXmu-devel libXi-devel ftgl-devel ImageMagick-devel gnustep-base-devel freeglut-devel
 	Fedora 17 optional packages: AntTweakBar-devel libgenders-devel doxygen mesa-libOSMesa-devel
 
@@ -75,6 +78,8 @@ BUILD
 	Build a set of makefiles for your platform using cmake.  Cmake can build the binaries out of tree, and prefers to, so create an empty directory, and chane into it and run:
 		cmake -G "<Makefile Type>" <path to source dir>
 	You can also Use the Cmake gui tool to perform this step.
+
+	NOTE: RedHat has stopped shipping Opjective-C with their GCC compilers.  You can get the extra bits from EPEL, but you'll need to define CC=gobjc on the cmake commandline: cmake -D gobjc -G "Unix Makefiles" <path to source dir>
 	
 	Tested Makefile types:
 		Windows: MSYS Makefiles
