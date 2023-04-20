@@ -21,6 +21,7 @@ REQUIREMENTS
 
 	RHEL 8 packages: cmake gcc-objc++ libXmu-devel libXi-devel ftgl-devel ImageMagick-devel gnustep-base-devel freeglut-devel gnustep-make
 	RHEL 8 Optional packages: libgenders-devel doxygen mesa-libOSMesa-devel
+	RHEL 8 Runtime: gnustep-base freeglut ftgl ImageMagick
 
 	Fedora 17 packages: cmake gcc-objc++ libXmu-devel libXi-devel ftgl-devel ImageMagick-devel gnustep-base-devel freeglut-devel
 	Fedora 17 optional packages: AntTweakBar-devel libgenders-devel doxygen mesa-libOSMesa-devel
